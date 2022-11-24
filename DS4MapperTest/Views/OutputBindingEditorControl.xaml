@@ -1,0 +1,133 @@
+﻿<UserControl x:Class="DS4MapperTest.Views.OutputBindingEditorControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:hc="https://handyorg.github.io/handycontrol"
+             xmlns:local="clr-namespace:DS4MapperTest.Views"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="boolVisConv" />
+    </UserControl.Resources>
+    <DockPanel Margin="8">
+        <StackPanel DockPanel.Dock="Bottom" HorizontalAlignment="Left" Margin="0,12,0,0">
+            <Button Content="Done" Width="100" Click="Button_Click" />
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom" Margin="0,12,0,0">
+            <ComboBox ItemsSource="{Binding SlotItems}" SelectedIndex="{Binding SelectedSlotItemIndex}" DisplayMemberPath="DisplayName" />
+            <Button x:Name="addOutputSlot" Content="Add +" Click="AddOutputSlot_Click" Margin="8,0,0,0" />
+            <Button x:Name="removeOutputSlot" Content="Remove -" Click="RemoveOutputSlot_Click" IsEnabled="{Binding HasMultipleSlots}" Margin="8,0,0,0" />
+            <Button x:Name="unboundBtn" Content="Unbound" Click="UnboundBtn_Click" Margin="8,0,0,0">
+                <Button.Style>
+                    <Style TargetType="Button" BasedOn="{StaticResource ButtonDefault}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding UnboundActive}" Value="True">
+                                <DataTrigger.Setters>
+                                    <Setter Property="Background" Value="{StaticResource AccentBrush}" />
+                                </DataTrigger.Setters>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
+        </StackPanel>
+
+        <ScrollViewer DockPanel.Dock="Top">
+            <StackPanel>
+                <StackPanel Orientation="Horizontal" Height="40" DockPanel.Dock="Top">
+                    <Label Content="Gamepad" VerticalAlignment="Top" />
+                    <ComboBox ItemsSource="{Binding GamepadComboItems}" SelectedIndex="{Binding SelectedIndex, FallbackValue='0'}" DisplayMemberPath="DisplayName" Height="40" MinWidth="100" VerticalAlignment="Top" Margin="8,0,0,0">
+                    </ComboBox>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Height="40" DockPanel.Dock="Top"  Margin="0,12,0,0">
+                    <Label Content="Keyboard" VerticalAlignment="Top" />
+                    <ComboBox ItemsSource="{Binding KeyboardComboItems}" SelectedIndex="{Binding SelectedKeyboardIndex, FallbackValue='0'}" DisplayMemberPath="DisplayName" Height="40" MinWidth="100" VerticalAlignment="Top" Margin="8,0,0,0">
+                    </ComboBox>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Height="40" DockPanel.Dock="Top" Margin="0,12,0,0">
+                    <Label Content="Mouse Buttons" VerticalAlignment="Top" />
+                    <ComboBox ItemsSource="{Binding MouseButtonComboItems}" SelectedIndex="{Binding SelectedMouseButtonIndex, FallbackValue='0'}" DisplayMemberPath="DisplayName" Height="40" MinWidth="100" VerticalAlignment="Top" Margin="8,0,0,0">
+                    </ComboBox>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" MinHeight="40" Margin="0,12,0,0">
+                    <Label Content="Mouse Wheel Btns" VerticalAlignment="Top" />
+                    <ComboBox ItemsSource="{Binding MouseWheelButtonComboItems}" SelectedIndex="{Binding SelectedMouseWheelButtonIndex, FallbackValue='0'}" DisplayMemberPath="DisplayName" Height="40" MinWidth="100" VerticalAlignment="Top" Margin="8,0,0,0">
+                    </ComboBox>
+
+                    <Expander ExpandDirection="Right" Margin="8,0,0,0" Visibility="{Binding ShowWheelTickOptions, Mode=OneWay, Converter={StaticResource boolVisConv}}">
+                        <StackPanel Orientation="Vertical">
+                            <StackPanel Orientation="Horizontal">
+                                <Label Content="Tick Time Enabled" />
+                                <CheckBox IsChecked="{Binding TickTimeEnabled}" MinWidth="30" Margin="8,0,0,0" />
+                            </StackPanel>
+
+                            <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                                <Label Content="Tick Time" />
+                                <hc:NumericUpDown Minimum="0.0" Maximum="1000.0" DecimalPlaces="1" Increment="10"
+                                  Value="{Binding TickTime,FallbackValue='100.0'}" ValueFormat="0 ms" Margin="8,0,0,0">
+                                </hc:NumericUpDown>
+                            </StackPanel>
+
+                        </StackPanel>
+                    </Expander>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" MinHeight="40" Margin="0,12,0,0">
+                    <Label Content="Mouse Move Dir" VerticalAlignment="Top" />
+                    <ComboBox ItemsSource="{Binding MouseDirComboItems}" SelectedIndex="{Binding SelectedMouseDirIndex, FallbackValue='0'}" DisplayMemberPath="DisplayName" Height="40" MinWidth="100" VerticalAlignment="Top" Margin="8,0,0,0">
+                    </ComboBox>
+
+                    <Expander ExpandDirection="Right" Margin="8,0,0,0" Visibility="{Binding ShowMouseDirOptions, Mode=OneWay, Converter={StaticResource boolVisConv}}">
+                        <StackPanel Orientation="Vertical" Margin="8,0,0,0">
+                            <StackPanel Orientation="Horizontal">
+                                <Label Content="Mouse X" />
+                                <hc:NumericUpDown Minimum="0.0" Maximum="1000.0" DecimalPlaces="0" Increment="10"
+                                  Value="{Binding MouseXSpeed,FallbackValue='50'}" Margin="8,0,0,0">
+                                </hc:NumericUpDown>
+
+                                <TextBlock Text="{Binding MouseXSpeedOutput, Mode=OneWay, StringFormat='{}{0} pps'}" Width="50" Margin="8,0,0,0" Foreground="{StaticResource DefaultBrush}" VerticalAlignment="Center" />
+                            </StackPanel>
+
+                            <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                                <Label Content="Mouse Y" />
+                                <hc:NumericUpDown Minimum="0.0" Maximum="1000.0" DecimalPlaces="0" Increment="10"
+                                  Value="{Binding MouseYSpeed,FallbackValue='50'}" Margin="8,0,0,0">
+                                </hc:NumericUpDown>
+
+                                <TextBlock Text="{Binding MouseYSpeedOutput, Mode=OneWay, StringFormat='{}{0} pps'}" Width="50" Margin="8,0,0,0" Foreground="{StaticResource DefaultBrush}" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </StackPanel>
+                    </Expander>
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" Margin="0,12,0,0">
+                    <Label Content="Layer Ops" VerticalAlignment="Top" />
+                    <ComboBox ItemsSource="{Binding LayerOperationsComboItems}" SelectedIndex="{Binding SelectedLayerOpsIndex, FallbackValue='0'}" DisplayMemberPath="DisplayName" Height="40" MinWidth="100" VerticalAlignment="Top" Margin="8,0,0,0">
+                    </ComboBox>
+
+                    <ComboBox ItemsSource="{Binding AvailableLayerComboItems}" SelectedIndex="{Binding SelectedLayerChoiceIndex, FallbackValue='0'}" DisplayMemberPath="DisplayName" Height="40" MinWidth="100" VerticalAlignment="Top" Visibility="{Binding ShowAvailableLayers, Mode=OneWay, Converter={StaticResource boolVisConv}}" Margin="8,0,0,0">
+                    </ComboBox>
+
+                    <ComboBox SelectedIndex="{Binding SelectedLayerChangeConditionIndex, FallbackValue='0'}" Height="40" MinWidth="100" VerticalAlignment="Top" Visibility="{Binding ShowLayerChangeConditions, Mode=OneWay, Converter={StaticResource boolVisConv}}" Margin="8,0,0,0">
+                        <ComboBoxItem>None</ComboBoxItem>
+                        <ComboBoxItem>Pressed</ComboBoxItem>
+                        <ComboBoxItem>Released</ComboBoxItem>
+                    </ComboBox>
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" Margin="0,12,0,0">
+                    <Label Content="Switch Sets" VerticalAlignment="Top" />
+                    <ComboBox ItemsSource="{Binding AvailableSetsComboItems}" SelectedIndex="{Binding SelectedSetChoiceIndex, FallbackValue='0'}" DisplayMemberPath="DisplayName" Height="40" MinWidth="100" VerticalAlignment="Top" Margin="8,0,0,0">
+                    </ComboBox>
+
+                    <ComboBox SelectedIndex="{Binding SelectedSetChangeConditionIndex, FallbackValue='0'}" Height="40" MinWidth="100" VerticalAlignment="Top" Visibility="{Binding ShowAvailableSets, Mode=OneWay, Converter={StaticResource boolVisConv}}" Margin="8,0,0,0">
+                        <ComboBoxItem>None</ComboBoxItem>
+                        <ComboBoxItem>Pressed</ComboBoxItem>
+                        <ComboBoxItem>Released</ComboBoxItem>
+                    </ComboBox>
+                </StackPanel>
+            </StackPanel>
+        </ScrollViewer>
+
+    </DockPanel>
+</UserControl>

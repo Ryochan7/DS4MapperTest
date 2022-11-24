@@ -1,0 +1,302 @@
+﻿<Window x:Class="DS4MapperTest.ProfileEditorTest"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:DS4MapperTest"
+        mc:Ignorable="d"
+        Title="ProfileEditorTest" Height="450" Width="800">
+    <Window.Background>
+        <SolidColorBrush Color="{DynamicResource RegionColor}"/>
+    </Window.Background>
+    <DockPanel Margin="8">
+        <StackPanel DockPanel.Dock="Top">
+            <DockPanel LastChildFill="False">
+                <StackPanel Orientation="Horizontal">
+                    <Label Content="Profile Name" />
+                    <TextBox Text="{Binding ProfileName, UpdateSourceTrigger=LostFocus}" Width="200" DockPanel.Dock="Left" Margin="8,0,0,0" />
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal" DockPanel.Dock="Right" Visibility="Collapsed">
+                    <CheckBox IsChecked="{Binding OverwriteFile}" Content="Overwrite" DockPanel.Dock="Right" VerticalAlignment="Center" />
+                    <Button Content="Test Out JSON" Click="Button_Click_4" Margin="8,0,0,0" />
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal" DockPanel.Dock="Right">
+                    <Button Content="Save" Click="SaveProfileButton_Click" Margin="8,0,0,0" />
+                    <Button Content="Save &amp; Close" Click="SaveProfileAndCloseButton_Click" Margin="8,0,0,0" />
+                </StackPanel>
+
+            </DockPanel>
+
+        </StackPanel>
+
+        <StackPanel DockPanel.Dock="Top">
+            <WrapPanel>
+                <ItemsControl x:Name="actionSetItemsControl" ItemsSource="{Binding ActionSetItems}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Button Content="{Binding DisplayName}" Click="Button_Click_2" Tag="{Binding SetIndex}">
+                                <Button.Style>
+                                    <Style TargetType="Button" BasedOn="{StaticResource ButtonDefault}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding ItemActive}" Value="True">
+                                                <DataTrigger.Setters>
+                                                    <Setter Property="Background" Value="{StaticResource AccentBrush}" />
+                                                </DataTrigger.Setters>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+                <Button x:Name="addSetBtn" Content="Add Set +" Click="AddSetBtn_Click" Margin="20,0,0,0" />
+                <Button x:Name="removeSetBtn" Content="Remove Set -" Click="RemoveSetBtn_Click" />
+            </WrapPanel>
+
+            <WrapPanel>
+                <ItemsControl ItemsSource="{Binding LayerItems}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Button Content="{Binding DisplayName}" Tag="{Binding LayerIndex}"  Click="Button_Click_3">
+                                <Button.Style>
+                                    <Style TargetType="Button" BasedOn="{StaticResource ButtonDefault}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding ItemActive}" Value="True">
+                                                <DataTrigger.Setters>
+                                                    <Setter Property="Background" Value="{StaticResource AccentBrush}" />
+                                                </DataTrigger.Setters>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+                <Button x:Name="addLayerBtn" Content="Add Layer +" Click="AddLayerBtn_Click" Margin="20,0,0,0" />
+                <Button x:Name="removeLayerBtn" Content="Remove Layer -" Click="RemoveLayerBtn_Click" />
+            </WrapPanel>
+
+            <StackPanel Orientation="Horizontal">
+                <Label Content="Set Name" />
+                <TextBox Text="{Binding CurrentSetName, UpdateSourceTrigger=LostFocus}" Width="100" HorizontalAlignment="Left" Margin="8,0,0,0" />
+
+                <Label Content="Layer Name" Margin="8,0,0,0" />
+                <TextBox Text="{Binding CurrentLayerName, UpdateSourceTrigger=LostFocus}" Width="100" HorizontalAlignment="Left" Margin="8,0,0,0" />
+            </StackPanel>
+        </StackPanel>
+
+        <TabControl>
+            <TabItem Header="Buttons">
+                <ScrollViewer>
+                    <ItemsControl x:Name="bindingsItemsControl" ItemsSource="{Binding ButtonBindings}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <!--<TextBlock Text="JOE BIDEN. WAKE UP" />-->
+                                    <TextBlock Text="{Binding DisplayInputMapString}" Margin="10,0,0,0" />
+                                    <TextBlock Text="{Binding MappedActionType}" Margin="10,0,0,0" />
+                                    <Button Content="{Binding DisplayBind,Mode=OneWay,FallbackValue='Test'}" Click="ButtonActionEditButton_Click" Tag="{Binding BindingName}" MinWidth="60" Margin="10,0,0,0" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+
+            </TabItem>
+            <TabItem Header="Touchpads">
+                <ListView ItemsSource="{Binding TouchpadBindings}" SelectedIndex="{Binding SelectTouchBindIndex}">
+                    <ListView.View>
+                        <GridView>
+                            <GridView.Columns>
+                                <GridViewColumn Header="Name" Width="100">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding DisplayInputMapString}" />
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                                <GridViewColumn Width="160">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding MappedActionType}" />
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                                <GridViewColumn Width="300">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Button Content="Edit" Click="Button_Click_1" Tag="{Binding}" />
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                            </GridView.Columns>
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+            </TabItem>
+            <TabItem Header="Triggers">
+                <ListView ItemsSource="{Binding TriggerBindings}" SelectedIndex="{Binding SelectTriggerBindIndex}">
+                    <ListView.View>
+                        <GridView>
+                            <GridView.Columns>
+                                <GridViewColumn Header="Name" Width="100">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding DisplayInputMapString}" />
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                                <GridViewColumn Width="160">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding MappedActionType}" />
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                                <GridViewColumn Width="300">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Button Content="Edit" Click="TiggerActionEdit_Button_Click" Tag="{Binding}" />
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                            </GridView.Columns>
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+            </TabItem>
+            <TabItem Header="Sticks">
+                <ListView ItemsSource="{Binding StickBindings}" SelectedIndex="{Binding SelectStickBindIndex}">
+                    <ListView.View>
+                        <GridView>
+                            <GridView.Columns>
+                                <GridViewColumn Header="Name" Width="100">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding DisplayInputMapString}" />
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                                <GridViewColumn Width="160">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding MappedActionType}" />
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                                <GridViewColumn Width="300">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Button Content="Edit" Click="StickActionEdit_Button_Click" Tag="{Binding}" />
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                            </GridView.Columns>
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+            </TabItem>
+            <TabItem Header="DPads">
+                <ListView ItemsSource="{Binding DPadBindings}" SelectedIndex="{Binding SelectDPadBindIndex}">
+                    <ListView.View>
+                        <GridView>
+                            <GridView.Columns>
+                                <GridViewColumn Header="Name" Width="100">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding DisplayInputMapString}" />
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                                <GridViewColumn Width="160">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding MappedActionType}" />
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                                <GridViewColumn Width="300">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Button Content="Edit" Click="DPadActionEdit_Button_Click" Tag="{Binding}" />
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                            </GridView.Columns>
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+            </TabItem>
+            <TabItem Header="Gyros">
+                <ListView ItemsSource="{Binding GyroBindings}" SelectedIndex="{Binding SelectGyroBindIndex}">
+                    <ListView.View>
+                        <GridView>
+                            <GridView.Columns>
+                                <GridViewColumn Header="Name" Width="100">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding DisplayInputMapString}" />
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                                <GridViewColumn Width="160">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding MappedActionType}" />
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                                <GridViewColumn Width="300">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Button Content="Edit" Click="GyroActionEdit_Button_Click" Tag="{Binding}" />
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                            </GridView.Columns>
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+            </TabItem>
+            <TabItem Header="Other">
+                <ScrollViewer VerticalAlignment="Top">
+                    <StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <Label Content="Output Controller" />
+                            <CheckBox IsChecked="{Binding OutControllerEnabled,FallbackValue=False}" VerticalAlignment="Stretch" Margin="8,0,0,0" VerticalContentAlignment="Center" ToolTip="Expose a virtual X360 when loading this profile" />
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal" IsEnabled="{Binding OutControllerEnabled}" Margin="0,8,0,0">
+                            <Label Content="Controller Type" />
+                            <ComboBox SelectedIndex="{Binding OutputControllerTypeIdx,FallbackValue='-1'}" Margin="8,0,0,0">
+                                <ComboBoxItem>Xbox 360</ComboBoxItem>
+                                <ComboBoxItem>DualShock 4</ComboBoxItem>
+                            </ComboBox>
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                            <Label Content="Force Feedback" />
+                            <CheckBox IsChecked="{Binding ForceFeedbackEnabled,FallbackValue=False}" VerticalAlignment="Stretch" Margin="8,0,0,0" VerticalContentAlignment="Center"
+                                      ToolTip="Enable vibration from output controller" />
+                        </StackPanel>
+                    </StackPanel>
+                    
+                </ScrollViewer>
+            </TabItem>
+        </TabControl>
+    </DockPanel>
+</Window>

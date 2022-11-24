@@ -1,0 +1,43 @@
+﻿<UserControl x:Class="DS4MapperTest.Views.FuncBindingControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:DS4MapperTest.Views"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <DockPanel Margin="8">
+        <WrapPanel DockPanel.Dock="Top">
+            <ItemsControl ItemsSource="{Binding FuncList}" IsEnabled="{Binding IsRealAction}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Button Content="{Binding DisplayName}" Tag="{Binding Index}" Click="Button_Click" Margin="8,0,0,0">
+                            <Button.Style>
+                                <Style TargetType="Button" BasedOn="{StaticResource ButtonDefault}">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding ItemActive}" Value="True">
+                                            <DataTrigger.Setters>
+                                                <Setter Property="Background" Value="{StaticResource AccentBrush}" />
+                                            </DataTrigger.Setters>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                        </Button>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+            <Button x:Name="addFuncButton" Content="Add +" Click="AddFuncButton_Click" IsEnabled="{Binding IsRealAction}" Margin="10,0,0,0" />
+            <Button Name="copyFuncButton" Content="Copy" Click="CopyFuncButton_Click" IsEnabled="{Binding IsNotRealAction}" Margin="8,0,0,0" />
+        </WrapPanel>
+
+        <Button Content="Close" Click="Button_Click_1" DockPanel.Dock="Bottom" HorizontalAlignment="Right" MinWidth="60" />
+        <ContentControl x:Name="funcEditPropControl" Content="{Binding DisplayPropControl}" DockPanel.Dock="Bottom" IsEnabled="{Binding IsRealAction}" />
+        
+    </DockPanel>
+</UserControl>

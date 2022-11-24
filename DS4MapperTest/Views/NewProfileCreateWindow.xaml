@@ -1,0 +1,71 @@
+﻿<Window x:Class="DS4MapperTest.Views.NewProfileCreateWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:DS4MapperTest.Views"
+        mc:Ignorable="d"
+        Title="NewProfileCreateWindow" Height="450" Width="600">
+    <Window.Background>
+        <SolidColorBrush Color="{DynamicResource RegionColor}"/>
+    </Window.Background>
+    <Window.Resources>
+        <ControlTemplate x:Key="ValidationErrorTemplate">
+            <StackPanel>
+                <Border BorderBrush="{StaticResource DangerBrush}" BorderThickness="1">
+                    <AdornedElementPlaceholder x:Name="AdornedElement" />
+                </Border>
+
+                <!--<Border BorderBrush="{StaticResource DangerBrush}" BorderThickness="1,0,1,1" Padding="4" HorizontalAlignment="Left">
+                    <ItemsControl ItemsSource="{Binding}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding ErrorContent}" Foreground="{StaticResource DangerBrush}" />
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </Border>
+                -->
+
+            </StackPanel>
+        </ControlTemplate>
+
+        <BooleanToVisibilityConverter x:Key="boolVisConverter" />
+    </Window.Resources>
+    <DockPanel Margin="8">
+        <StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom" HorizontalAlignment="Right">
+            <Button x:Name="cancelBtn" Content="Cancel" Click="CancelButton_Click" />
+            <Button x:Name="createBtn" Content="Create" Click="CreateBtn_Click" Margin="8,0,0,0" />
+        </StackPanel>
+
+        <Grid Height="140" DockPanel.Dock="Top">
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="377*" />
+                <ColumnDefinition Width="423*" />
+            </Grid.ColumnDefinitions>
+
+            <Label Content="Profile Path" Grid.Column="0" />
+            <DockPanel Grid.Column="1">
+                <TextBlock Text="{Binding ProfilePathErrors}" Foreground="{StaticResource DangerBrush}" Height="20" Margin="0,4,0,0"
+                            Visibility="{Binding HasProfilePathError,Converter={StaticResource boolVisConverter}}" DockPanel.Dock="Bottom" />
+
+                <DockPanel DockPanel.Dock="Top">
+                    <Button x:Name="browseBtn" Content="Browse" DockPanel.Dock="Right" Click="BrowseBtn_Click" Margin="8,0,0,0" />
+                    <TextBox Text="{Binding ProfilePath, ValidatesOnNotifyDataErrors=True}" Validation.ErrorTemplate="{StaticResource ValidationErrorTemplate}" />
+                </DockPanel>
+            </DockPanel>
+
+            <Label Content="Creator" Grid.Row="1" Grid.Column="0" Margin="0,8,0,0" />
+            <DockPanel Grid.Row="1" Grid.Column="1" Margin="0,8,0,0">
+                <TextBlock Text="{Binding CreatorErrors}" Foreground="{StaticResource DangerBrush}" Height="20"
+                            Margin="0,4,0,0" Visibility="{Binding HasCreatorError,Converter={StaticResource boolVisConverter}}" DockPanel.Dock="Bottom" />
+
+                <TextBox Text="{Binding Creator, ValidatesOnNotifyDataErrors=True}" Validation.ErrorTemplate="{StaticResource ValidationErrorTemplate}" />
+            </DockPanel>
+        </Grid>
+    </DockPanel>
+</Window>

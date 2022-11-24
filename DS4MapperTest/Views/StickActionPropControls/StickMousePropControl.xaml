@@ -1,0 +1,190 @@
+﻿<UserControl x:Class="DS4MapperTest.Views.StickActionPropControls.StickMousePropControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:hc="https://handyorg.github.io/handycontrol"
+             xmlns:local="clr-namespace:DS4MapperTest.Views.StickActionPropControls"
+             xmlns:local1="clr-namespace:DS4MapperTest.Views"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="boolVisConv" />
+    </UserControl.Resources>
+    
+    <DockPanel>
+        <StackPanel DockPanel.Dock="Top">
+            <local1:StickActionSelectControl x:Name="stickSelectControl" DockPanel.Dock="Top" />
+
+            <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                <Label Content="Name" />
+                <TextBox Text="{Binding Name,UpdateSourceTrigger=LostFocus}" Width="200" Margin="8,0,0,0">
+                    <TextBox.Style>
+                        <Style TargetType="TextBox" BasedOn="{StaticResource TextBoxBaseStyle}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding HighlightName}" Value="False">
+                                    <Setter Property="Opacity" Value="0.7" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBox.Style>
+                </TextBox>
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                <Label Content="Dead Zone" />
+                <hc:NumericUpDown Minimum="0.0" Maximum="1.0" Value="{Binding DeadZone}" DecimalPlaces="2"
+                                  Increment="0.05" Width="100" Margin="8,0,0,0">
+                    <hc:NumericUpDown.Style>
+                        <Style TargetType="hc:NumericUpDown" BasedOn="{StaticResource NumericUpDownBaseStyle}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding HighlightDeadZone}" Value="False">
+                                    <Setter Property="Opacity" Value="0.7" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </hc:NumericUpDown.Style>
+                </hc:NumericUpDown>
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                <Label Content="Mouse Speed" />
+                <hc:NumericUpDown Minimum="0" Maximum="1000" Value="{Binding MouseSpeed}" DecimalPlaces="0"
+                                  Increment="5" Width="100" Margin="8,0,0,0">
+                    <hc:NumericUpDown.Style>
+                        <Style TargetType="hc:NumericUpDown" BasedOn="{StaticResource NumericUpDownBaseStyle}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding HighlightMouseSpeed}" Value="False">
+                                    <Setter Property="Opacity" Value="0.7" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </hc:NumericUpDown.Style>
+                </hc:NumericUpDown>
+
+                <TextBlock Text="{Binding MouseSpeedOutput, Mode=OneWay, StringFormat='{}{0} pps'}" Width="50" Margin="8,0,0,0" Foreground="{StaticResource DefaultBrush}" VerticalAlignment="Center" />
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                <Label Content="Output Curve" />
+                <ComboBox ItemsSource="{Binding OutputCurveChoiceItems}" DisplayMemberPath="DisplayName" SelectedValuePath="ChoiceValue"
+                          SelectedValue="{Binding OutputCurveChoice}" MinWidth="200" Margin="8,0,0,0">
+                    <ComboBox.Style>
+                        <Style TargetType="ComboBox" BasedOn="{StaticResource ComboBoxBaseStyle}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding HighlightOutputCurveChoice}" Value="False">
+                                    <Setter Property="Opacity" Value="0.7" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ComboBox.Style>
+                </ComboBox>
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                <Expander ExpandDirection="Down" Header="Delta Mouse" IsExpanded="False">
+                    <StackPanel Orientation="Vertical">
+                        <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                            <Label Content="Enabled" />
+                            <CheckBox IsChecked="{Binding DeltaEnabled}" VerticalAlignment="Center" Margin="8,0,0,0">
+                                <CheckBox.Style>
+                                    <Style TargetType="CheckBox" BasedOn="{StaticResource CheckBoxBaseStyle}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding HighlightDelta}" Value="False">
+                                                <Setter Property="Opacity" Value="0.7" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </CheckBox.Style>
+                            </CheckBox>
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                            <Label Content="Multiplier" />
+                            <hc:NumericUpDown Minimum="1.0" Maximum="20.0" Value="{Binding DeltaMultiplier}" DecimalPlaces="2"
+                                  Increment="1.0" Width="100" Margin="8,0,0,0">
+                                <hc:NumericUpDown.Style>
+                                    <Style TargetType="hc:NumericUpDown" BasedOn="{StaticResource NumericUpDownBaseStyle}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding HighlightDelta}" Value="False">
+                                                <Setter Property="Opacity" Value="0.7" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </hc:NumericUpDown.Style>
+                            </hc:NumericUpDown>
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                            <Label Content="Min Travel" />
+                            <hc:NumericUpDown Minimum="0.01" Maximum="1.0" Value="{Binding DeltaMinTravel}" DecimalPlaces="2"
+                                  Increment="0.1" Width="100" Margin="8,0,0,0">
+                                <hc:NumericUpDown.Style>
+                                    <Style TargetType="hc:NumericUpDown" BasedOn="{StaticResource NumericUpDownBaseStyle}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding HighlightDelta}" Value="False">
+                                                <Setter Property="Opacity" Value="0.7" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </hc:NumericUpDown.Style>
+                            </hc:NumericUpDown>
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                            <Label Content="Max Travel" />
+                            <hc:NumericUpDown Minimum="0.01" Maximum="1.0" Value="{Binding DeltaMaxTravel}" DecimalPlaces="2"
+                                  Increment="0.1" Width="100" Margin="8,0,0,0">
+                                <hc:NumericUpDown.Style>
+                                    <Style TargetType="hc:NumericUpDown" BasedOn="{StaticResource NumericUpDownBaseStyle}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding HighlightDelta}" Value="False">
+                                                <Setter Property="Opacity" Value="0.7" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </hc:NumericUpDown.Style>
+                            </hc:NumericUpDown>
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                            <Label Content="Easing Duration" />
+                            <hc:NumericUpDown Minimum="0.01" Maximum="10.0" Value="{Binding DeltaEasingDuration}" DecimalPlaces="2"
+                                  Increment="0.1" Width="100" Margin="8,0,0,0">
+                                <hc:NumericUpDown.Style>
+                                    <Style TargetType="hc:NumericUpDown" BasedOn="{StaticResource NumericUpDownBaseStyle}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding HighlightDelta}" Value="False">
+                                                <Setter Property="Opacity" Value="0.7" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </hc:NumericUpDown.Style>
+                            </hc:NumericUpDown>
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                            <Label Content="Min Factor" />
+                            <hc:NumericUpDown Minimum="0.01" Maximum="10.0" Value="{Binding DeltaMinFactor}" DecimalPlaces="2"
+                                  Increment="0.1" Width="100" Margin="8,0,0,0">
+                                <hc:NumericUpDown.Style>
+                                    <Style TargetType="hc:NumericUpDown" BasedOn="{StaticResource NumericUpDownBaseStyle}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding HighlightDelta}" Value="False">
+                                                <Setter Property="Opacity" Value="0.7" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </hc:NumericUpDown.Style>
+                            </hc:NumericUpDown>
+                        </StackPanel>
+
+                    </StackPanel>
+
+                </Expander>
+            </StackPanel>
+            
+
+        </StackPanel>
+    </DockPanel>
+</UserControl>
