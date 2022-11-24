@@ -11,6 +11,7 @@ namespace DS4MapperTest.DS4Library
     public class DS4Enumerator : DeviceEnumeratorBase
     {
         private const int SONY_VID = 0x054C;
+        private const int SONY_DS4_V1_PID = 0x05C4;
         private const int SONY_DS4_V2_PID = 0x09CC;
 
         private Dictionary<string, DS4Device> foundDevices;
@@ -26,7 +27,7 @@ namespace DS4MapperTest.DS4Library
         public override void FindControllers()
         {
             IEnumerable<HidDevice> hDevices = HidDevices.Enumerate(SONY_VID,
-                SONY_DS4_V2_PID);
+                SONY_DS4_V2_PID, SONY_DS4_V1_PID);
             List<HidDevice> tempList = hDevices.ToList();
             using (WriteLocker locker = new WriteLocker(_foundDevlocker))
             {
