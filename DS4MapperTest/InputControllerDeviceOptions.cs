@@ -51,6 +51,22 @@ namespace DS4MapperTest
         public abstract void LoadSettings(JObject controllerJObj);
     }
 
+    public class DS4ControllerOptions : ControllerOptionsStore
+    {
+        public DS4ControllerOptions(InputDeviceType deviceType) :
+            base(deviceType)
+        {
+        }
+
+        public override void LoadSettings(JObject controllerJObj)
+        {
+        }
+
+        public override void PersistSettings(JObject controllerJObj)
+        {
+        }
+    }
+
     public class SteamControllerControllerOptions : ControllerOptionsStore
     {
         public const string SETTINGS_PROP_NAME = "SteamControllerSettings";

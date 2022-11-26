@@ -173,6 +173,8 @@ namespace DS4MapperTest
         protected bool quit = false;
         public bool Quit { get => quit; set => quit = value; }
 
+        public event EventHandler<string> ProfileChanged;
+
         protected FakerInputHandler fakerInputHandler;
 
         protected ViGEmClient vigemTestClient = null;
@@ -950,11 +952,13 @@ namespace DS4MapperTest
                 try
                 {
                     ReadFromProfile();
+                    ProfileChanged?.Invoke(this, profileFile);
                 }
                 catch (JsonException e)
                 {
                     UseBlankProfile();
                     profileFile = string.Empty;
+                    ProfileChanged?.Invoke(this, profileFile);
                     throw e;
                 }
 

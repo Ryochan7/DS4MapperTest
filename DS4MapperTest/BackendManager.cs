@@ -161,14 +161,26 @@ namespace DS4MapperTest
                 //{
                 //    testMapper.ProfileFile = _argParser.ProfilePath;
                 //}
+
+                appGlobal.LoadControllerDeviceSettings(device, device.DeviceOptions);
+
                 string tempProfilePath = string.Empty;
-                if (deviceProfileListDict[device.DeviceType].ProfileListCol.Count > 0)
+                if (appGlobal.activeProfiles.TryGetValue(ind, out tempProfilePath))
+                {
+                    testMapper.ProfileFile = tempProfilePath;
+                }
+                else if (deviceProfileListDict[device.DeviceType].ProfileListCol.Count > 0)
                 {
                     tempProfilePath = deviceProfileListDict[device.DeviceType].ProfileListCol[0].ProfilePath;
                     testMapper.ProfileFile = tempProfilePath;
                 }
 
+                int tempInd = ind;
                 testMapper.Start(vigemTestClient, fakerInputHandler);
+                testMapper.ProfileChanged += (object sender, string e) => {
+                    appGlobal.activeProfiles[tempInd] = e;
+                    appGlobal.SaveControllerDeviceSettings(device, device.DeviceOptions);
+                };
 
                 mapperDict.Add(ind, testMapper);
                 deviceReadersMap.Add(device, reader);
@@ -339,7 +351,7 @@ namespace DS4MapperTest
             //    device.SyncedChanged += Device_SyncedChanged;
             //}
 
-            //appGlobal.LoadControllerDeviceSettings(device, device.DeviceOptions);
+            appGlobal.LoadControllerDeviceSettings(device, device.DeviceOptions);
 
             //string tempProfilePath = profileFile;
             //if (string.IsNullOrEmpty(profileFile) &&
@@ -360,13 +372,23 @@ namespace DS4MapperTest
             //testMapper.RequestOSD += TestMapper_RequestOSD;
 
             string tempProfilePath = string.Empty;
-            if (deviceProfileListDict[device.DeviceType].ProfileListCol.Count > 0)
+            if (appGlobal.activeProfiles.TryGetValue(ind, out tempProfilePath))
+            {
+                mapper.ProfileFile = tempProfilePath;
+            }
+            else if (deviceProfileListDict[device.DeviceType].ProfileListCol.Count > 0)
             {
                 tempProfilePath = deviceProfileListDict[device.DeviceType].ProfileListCol[0].ProfilePath;
                 mapper.ProfileFile = tempProfilePath;
             }
 
+            int tempInd = ind;
             mapper.Start(vigemTestClient, fakerInputHandler);
+            mapper.ProfileChanged += (object sender, string e) => {
+                appGlobal.activeProfiles[tempInd] = e;
+                appGlobal.SaveControllerDeviceSettings(device, device.DeviceOptions);
+            };
+
             DeviceReaderBase reader = mapper.BaseReader;
             mapperDict.Add(ind, mapper);
             deviceReadersMap.Add(device, reader);

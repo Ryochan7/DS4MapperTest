@@ -76,6 +76,7 @@ namespace DS4MapperTest
         //public Rect absDisplayBounds = new Rect(800, 0, 1024, 768);
         //public Rect fullDesktopBounds = new Rect(0, 0, 3840, 2160);
         public bool absUseAllMonitors = true;
+        public Dictionary<int, string> activeProfiles = new Dictionary<int, string>();
 
         public AppGlobalData()
         {
@@ -440,6 +441,16 @@ namespace DS4MapperTest
                     JObject controllerObj = token.ToObject<JObject>();
                     string macAddr = testDev.Serial;
                     string devType = store.DeviceType.ToString();
+                    if (controllerObj.TryGetValue("LastProfile", out JToken tempToken) &&
+                        tempToken.Type == JTokenType.String)
+                    //if (activeProfiles.TryGetValue(testDev.Index, out string currentProfile))
+                    {
+                        string lastProfile = tempToken.Value<string>();
+                        if (!string.IsNullOrEmpty(lastProfile) && File.Exists(lastProfile))
+                        {
+                            activeProfiles.Add(testDev.Index, lastProfile);
+                        }
+                    }
                     //string settings = controllerObj["Settings"].ToString();
                     store.LoadSettings(controllerObj);
                 }
@@ -494,6 +505,12 @@ namespace DS4MapperTest
 
                             controllerObj["Mac"] = macAddr;
                             controllerObj["Type"] = devType;
+                            if (activeProfiles.TryGetValue(testDev.Index, out string currentProfile) &&
+                                !string.IsNullOrEmpty(currentProfile))
+                            {
+                                controllerObj["LastProfile"] = currentProfile;
+                            }
+
                             store.PersistSettings(controllerObj);
                             token.Replace(controllerObj);
                         }

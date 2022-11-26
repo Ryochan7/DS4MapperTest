@@ -97,6 +97,7 @@ namespace DS4MapperTest.DS4Library
             RefreshCalibration();
 
             baseElapsedReference = 250.0;
+            deviceOptions = new DS4ControllerOptions(deviceType);
             synced = true;
         }
 

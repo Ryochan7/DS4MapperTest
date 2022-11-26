@@ -14,6 +14,12 @@ namespace DS4MapperTest
             get => deviceType;
         }
 
+        protected ControllerOptionsStore deviceOptions;
+        public ControllerOptionsStore DeviceOptions
+        {
+            get => deviceOptions;
+        }
+
         protected string devTypeStr;
         public string DevTypeStr
         {
