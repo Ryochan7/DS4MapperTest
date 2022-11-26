@@ -15,27 +15,27 @@ namespace DS4MapperTest
 {
     public class ProfileSerializer
     {
-        public class ProfileSettings
-        {
-            private Profile tempProfile;
+        //public class ProfileSettings
+        //{
+        //    private Profile tempProfile;
 
-            public int LeftStickRotation
-            {
-                get => tempProfile.LeftStickRotation;
-                set => tempProfile.LeftStickRotation = Math.Clamp(-180, value, 180);
-            }
+        //    public int LeftStickRotation
+        //    {
+        //        get => tempProfile.LeftStickRotation;
+        //        set => tempProfile.LeftStickRotation = Math.Clamp(-180, value, 180);
+        //    }
 
-            public int RightStickRotation
-            {
-                get => tempProfile.RightStickRotation;
-                set => tempProfile.RightStickRotation = Math.Clamp(-180, value, 180);
-            }
+        //    public int RightStickRotation
+        //    {
+        //        get => tempProfile.RightStickRotation;
+        //        set => tempProfile.RightStickRotation = Math.Clamp(-180, value, 180);
+        //    }
 
-            public ProfileSettings(Profile tempProfile)
-            {
-                this.tempProfile = tempProfile;
-            }
-        }
+        //    public ProfileSettings(Profile tempProfile)
+        //    {
+        //        this.tempProfile = tempProfile;
+        //    }
+        //}
 
         private static FakerInputMapping fakerInputMapper = new FakerInputMapping();
         private static bool mapperPopulated;
@@ -99,7 +99,8 @@ namespace DS4MapperTest
         [JsonProperty("Mappings")]
         public List<ProfileActionsMapping> ActionMappings { get => actionMappings; set => actionMappings = value; }
 
-        private ProfileSettings settings;
+        //private ProfileDeviceSettings settings;
+        //private ProfileSettings settings;
         //public ProfileSettings Settings
         //{
         //    get => settings;
@@ -109,7 +110,8 @@ namespace DS4MapperTest
         public ProfileSerializer(Profile tempProfile)
         {
             this.tempProfile = tempProfile;
-            settings = new ProfileSettings(tempProfile);
+            //settings = new DS4ProfileDeviceSettings(tempProfile);
+            //settings = new ProfileSettings(tempProfile);
 
             foreach (CycleButton cycleBtn in tempProfile.CycleBindings.Values)
             {
