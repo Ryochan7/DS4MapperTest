@@ -417,144 +417,146 @@ namespace DS4MapperTest
             }
         }
 
-        //public void LoadControllerDeviceSettings(SteamControllerDevice testDev,
-        //    ControllerOptionsStore store)
-        //{
-        //    using (StreamReader sreader = new StreamReader(controllerConfigsPath))
-        //    {
-        //        string json = sreader.ReadToEnd();
+        public void LoadControllerDeviceSettings(InputDeviceBase testDev,
+            ControllerOptionsStore store)
+        {
+            using (StreamReader sreader = new StreamReader(controllerConfigsPath))
+            {
+                string json = sreader.ReadToEnd();
 
-        //        try
-        //        {
-        //            JObject tempJObj = JObject.Parse(json);
-        //            JToken token = (from controller in tempJObj.SelectToken($@"$.Controllers")
-        //                 where controller.Type == JTokenType.Object && controller.Value<string>("Mac") == testDev.Serial &&
-        //                 controller.Value<string>("Type") == store.DeviceType.ToString()
-        //                 select controller).FirstOrDefault();
+                try
+                {
+                    JObject tempJObj = JObject.Parse(json);
+                    JToken token = (from controller in tempJObj.SelectToken($@"$.Controllers")
+                                    where controller.Type == JTokenType.Object && controller.Value<string>("Mac") == testDev.Serial &&
+                                    controller.Value<string>("Type") == store.DeviceType.ToString()
+                                    select controller).FirstOrDefault();
 
-        //            if (token == null)
-        //            {
-        //                return;
-        //            }
+                    if (token == null)
+                    {
+                        return;
+                    }
 
-        //            JObject controllerObj = token.ToObject<JObject>();
-        //            string macAddr = testDev.Serial;
-        //            string devType = store.DeviceType.ToString();
-        //            //string settings = controllerObj["Settings"].ToString();
-        //            store.LoadSettings(controllerObj);
-        //        }
-        //        catch (JsonReaderException)
-        //        {
-        //        }
-        //        catch (JsonSerializationException)
-        //        {
-        //        }
-        //    }
-        //}
+                    JObject controllerObj = token.ToObject<JObject>();
+                    string macAddr = testDev.Serial;
+                    string devType = store.DeviceType.ToString();
+                    //string settings = controllerObj["Settings"].ToString();
+                    store.LoadSettings(controllerObj);
+                }
+                catch (JsonReaderException)
+                {
+                }
+                catch (JsonSerializationException)
+                {
+                }
+            }
+        }
 
-        //public void SaveControllerDeviceSettings(SteamControllerDevice testDev,
-        //    ControllerOptionsStore store)
-        //{
-        //    JObject tempRootJObj = null;
-        //    using (FileStream fs = new FileStream(controllerConfigsPath,
-        //        FileMode.Open, FileAccess.Read))
-        //    {
-        //        using (StreamReader sreader = new StreamReader(fs))
-        //        {
-        //            string json = sreader.ReadToEnd();
+        public void SaveControllerDeviceSettings(InputDeviceBase testDev,
+            ControllerOptionsStore store)
+        {
+            JObject tempRootJObj = null;
+            using (FileStream fs = new FileStream(controllerConfigsPath,
+                FileMode.Open, FileAccess.Read))
+            {
+                using (StreamReader sreader = new StreamReader(fs))
+                {
+                    string json = sreader.ReadToEnd();
 
-        //            try
-        //            {
-        //                JToken token = null;
-        //                if (!string.IsNullOrWhiteSpace(json))
-        //                {
-        //                    tempRootJObj = JObject.Parse(json);
-        //                    token = (from controller in tempRootJObj.SelectToken($"$.Controllers")
-        //                             where controller.Type == JTokenType.Object && controller.Value<string>("Mac") == testDev.Serial &&
-        //                             controller.Value<string>("Type") == store.DeviceType.ToString()
-        //                             select controller).FirstOrDefault();
-        //                }
-        //                else
-        //                {
-        //                    string newJson = @"{
-        //                        ""Controllers"": [
-        //                        ]
-        //                    }";
+                    try
+                    {
+                        JToken token = null;
+                        if (!string.IsNullOrWhiteSpace(json))
+                        {
+                            tempRootJObj = JObject.Parse(json);
+                            token = (from controller in tempRootJObj.SelectToken($"$.Controllers")
+                                     where controller.Type == JTokenType.Object && controller.Value<string>("Mac") == testDev.Serial &&
+                                     controller.Value<string>("Type") == store.DeviceType.ToString()
+                                     select controller).FirstOrDefault();
+                        }
+                        else
+                        {
+                            string newJson = @"{
+                                ""Controllers"": [
+                                ]
+                            }";
 
-        //                    tempRootJObj = JObject.Parse(newJson);
-        //                }
+                            tempRootJObj = JObject.Parse(newJson);
+                        }
 
-        //                if (token != null)
-        //                {
-        //                    // Found existing item. Update properties and replace object
-        //                    JObject controllerObj = token.ToObject<JObject>();
-        //                    string macAddr = testDev.Serial;
-        //                    string devType = InputDeviceType.SteamController.ToString();
+                        if (token != null)
+                        {
+                            // Found existing item. Update properties and replace object
+                            JObject controllerObj = token.ToObject<JObject>();
+                            string macAddr = testDev.Serial;
+                            //string devType = InputDeviceType.SteamController.ToString();
+                            string devType = testDev.DeviceType.ToString();
 
-        //                    controllerObj["Mac"] = macAddr;
-        //                    controllerObj["Type"] = devType;
-        //                    store.PersistSettings(controllerObj);
-        //                    token.Replace(controllerObj);
-        //                }
-        //                else
-        //                {
-        //                    JToken controllersToken = tempRootJObj.SelectToken("Controllers");
-        //                    if (controllersToken == null)
-        //                    {
-        //                        tempRootJObj.Add(new JProperty("Controllers", new JArray()));
-        //                    }
-        //                    else if (controllersToken != null && controllersToken.Type != JTokenType.Array)
-        //                    {
-        //                        tempRootJObj.Remove("Controllers");
-        //                        tempRootJObj.Add(new JProperty("Controllers", new JArray()));
-        //                    }
+                            controllerObj["Mac"] = macAddr;
+                            controllerObj["Type"] = devType;
+                            store.PersistSettings(controllerObj);
+                            token.Replace(controllerObj);
+                        }
+                        else
+                        {
+                            JToken controllersToken = tempRootJObj.SelectToken("Controllers");
+                            if (controllersToken == null)
+                            {
+                                tempRootJObj.Add(new JProperty("Controllers", new JArray()));
+                            }
+                            else if (controllersToken != null && controllersToken.Type != JTokenType.Array)
+                            {
+                                tempRootJObj.Remove("Controllers");
+                                tempRootJObj.Add(new JProperty("Controllers", new JArray()));
+                            }
 
-        //                    // No current object found. Create a new object and add it to JArray
-        //                    string controllerJson = @"{
-        //                        ""Mac"": """",
-        //                        ""Type"": """"
-        //                    }";
+                            // No current object found. Create a new object and add it to JArray
+                            string controllerJson = @"{
+                                ""Mac"": """",
+                                ""Type"": """"
+                            }";
 
-        //                    JObject controllerObj = JObject.Parse(controllerJson);
-        //                    //JObject controllerObj = new JObject();
-        //                    string macAddr = testDev.Serial;
-        //                    string devType = InputDeviceType.SteamController.ToString();
-        //                    controllerObj["Mac"] = testDev.Serial;
-        //                    controllerObj["Type"] = devType;
+                            JObject controllerObj = JObject.Parse(controllerJson);
+                            //JObject controllerObj = new JObject();
+                            string macAddr = testDev.Serial;
+                            //string devType = InputDeviceType.SteamController.ToString();
+                            string devType = testDev.DeviceType.ToString();
+                            controllerObj["Mac"] = testDev.Serial;
+                            controllerObj["Type"] = devType;
 
-        //                    store.PersistSettings(controllerObj);
+                            store.PersistSettings(controllerObj);
 
-        //                    JArray controllersJArray = tempRootJObj["Controllers"].ToObject<JArray>();
-        //                    controllersJArray.Add(controllerObj);
-        //                    tempRootJObj["Controllers"].Replace(controllersJArray);
-        //                }
-        //            }
-        //            catch (JsonReaderException)
-        //            {
-        //            }
-        //            catch (JsonSerializationException)
-        //            {
-        //            }
-        //        }
-        //    }
+                            JArray controllersJArray = tempRootJObj["Controllers"].ToObject<JArray>();
+                            controllersJArray.Add(controllerObj);
+                            tempRootJObj["Controllers"].Replace(controllersJArray);
+                        }
+                    }
+                    catch (JsonReaderException)
+                    {
+                    }
+                    catch (JsonSerializationException)
+                    {
+                    }
+                }
+            }
 
-        //    using (FileStream fs = new FileStream(controllerConfigsPath,
-        //       FileMode.Truncate, FileAccess.Write))
-        //    {
-        //        if (tempRootJObj != null)
-        //        {
-        //            using (StreamWriter swriter = new StreamWriter(fs))
-        //            using (JsonTextWriter jwriter = new JsonTextWriter(swriter))
-        //            {
-        //                jwriter.Formatting = Formatting.Indented;
-        //                jwriter.Indentation = 2;
-        //                string temp = tempRootJObj.ToString();
-        //                //Trace.WriteLine(temp);
-        //                tempRootJObj.WriteTo(jwriter);
-        //            }
-        //        }
-        //    }
-        //}
+            using (FileStream fs = new FileStream(controllerConfigsPath,
+               FileMode.Truncate, FileAccess.Write))
+            {
+                if (tempRootJObj != null)
+                {
+                    using (StreamWriter swriter = new StreamWriter(fs))
+                    using (JsonTextWriter jwriter = new JsonTextWriter(swriter))
+                    {
+                        jwriter.Formatting = Formatting.Indented;
+                        jwriter.Indentation = 2;
+                        string temp = tempRootJObj.ToString();
+                        //Trace.WriteLine(temp);
+                        tempRootJObj.WriteTo(jwriter);
+                    }
+                }
+            }
+        }
 
         public void CreateBlankProfile(string blankProfilePath, Profile tempProfile)
         {
