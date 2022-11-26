@@ -13,6 +13,7 @@ using static DS4MapperTest.Util;
 using System.Runtime.InteropServices;
 using WpfScreenHelper;
 using System.Windows;
+using System.Threading;
 
 namespace DS4MapperTest
 {
@@ -77,6 +78,7 @@ namespace DS4MapperTest
         //public Rect fullDesktopBounds = new Rect(0, 0, 3840, 2160);
         public bool absUseAllMonitors = true;
         public Dictionary<int, string> activeProfiles = new Dictionary<int, string>();
+        private ReaderWriterLockSlim _controllerStoreLocker = new ReaderWriterLockSlim();
 
         public AppGlobalData()
         {
@@ -421,6 +423,8 @@ namespace DS4MapperTest
         public void LoadControllerDeviceSettings(InputDeviceBase testDev,
             ControllerOptionsStore store)
         {
+            using ReadLocker locker = new ReadLocker(_controllerStoreLocker);
+
             using (StreamReader sreader = new StreamReader(controllerConfigsPath))
             {
                 string json = sreader.ReadToEnd();
@@ -472,6 +476,8 @@ namespace DS4MapperTest
         public void SaveControllerDeviceSettings(InputDeviceBase testDev,
             ControllerOptionsStore store)
         {
+            using WriteLocker locker = new WriteLocker(_controllerStoreLocker);
+
             JObject tempRootJObj = null;
             using (FileStream fs = new FileStream(controllerConfigsPath,
                 FileMode.Open, FileAccess.Read))
@@ -583,6 +589,8 @@ namespace DS4MapperTest
 
         public void CreateBlankProfile(string blankProfilePath, Profile tempProfile)
         {
+            using WriteLocker locker = new WriteLocker(_controllerStoreLocker);
+
             ProfileSerializer profileSerializer = new ProfileSerializer(tempProfile);
             string tempOutJson = JsonConvert.SerializeObject(profileSerializer, Formatting.Indented,
                 new JsonSerializerSettings()
