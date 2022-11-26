@@ -178,6 +178,7 @@ namespace DS4MapperTest.DS4Library
             }
 
             WriteReport(outputReportBuffer);
+            hidDevice.CloseDevice();
         }
 
         public void PurgeRemoval()

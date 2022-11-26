@@ -61,7 +61,8 @@ namespace DS4MapperTest
         }
 
         private AppGlobalData appGlobal;
-        private DS4Enumerator enumerator;
+        //private DS4Enumerator enumerator;
+        private DeviceEnumerator testEnumerator;
         //private List<DeviceEnumeratorBase> enumeratorList;
 
         private ViGEmClient vigemTestClient = null;
@@ -87,7 +88,8 @@ namespace DS4MapperTest
             //    new DS4Enumerator(),
             //};
 
-            enumerator = new DS4Enumerator();
+            //enumerator = new DS4Enumerator();
+            testEnumerator = new DeviceEnumerator();
 
             // Initialize Crc32 table for app
             Crc32Algorithm.InitializeTable(Crc32Algorithm.DefaultPolynomial);
@@ -128,7 +130,8 @@ namespace DS4MapperTest
 
             Thread temper = new Thread(() =>
             {
-                enumerator.FindControllers();
+                //enumerator.FindControllers();
+                testEnumerator.FindControllers();
             });
             temper.IsBackground = true;
             temper.Priority = ThreadPriority.Normal;
@@ -137,7 +140,8 @@ namespace DS4MapperTest
             temper.Join();
 
             int ind = 0;
-            foreach (InputDeviceBase device in enumerator.GetFoundDevices())
+            //foreach (InputDeviceBase device in enumerator.GetFoundDevices())
+            foreach (InputDeviceBase device in testEnumerator.GetKnownDevices())
             {
                 if (ind >= CONTROLLER_LIMIT)
                 {
@@ -147,7 +151,7 @@ namespace DS4MapperTest
                 device.Index = ind;
                 device.Removal += Device_Removal;
 
-                Mapper testMapper = enumerator.PrepareDeviceMapper(device,
+                Mapper testMapper = testEnumerator.PrepareDeviceMapper(device,
                     appGlobal);
                 DeviceReaderBase reader = testMapper.BaseReader;
                 //DeviceReaderBase reader = enumerator.PrepareDeviceReader(device as DS4Device);
@@ -194,10 +198,12 @@ namespace DS4MapperTest
                     });
                     //tempTask.Wait();
 
+                    //tempMapper.BaseReader.StopUpdate();
                     mapperDict.Remove(device.Index);
                 }
 
-                enumerator.RemoveDevice(device as DS4Device);
+                testEnumerator.RemoveDevice(device);
+                //enumerator.RemoveDevice(device as DS4Device);
                 //UnplugController?.Invoke(device, device.Index);
                 eventDispatcher.Invoke(() =>
                 {
@@ -228,7 +234,8 @@ namespace DS4MapperTest
 
             mapperDict.Clear();
             deviceReadersMap.Clear();
-            enumerator.StopControllers();
+            testEnumerator.StopControllers();
+            //enumerator.StopControllers();
             Array.Clear(controllerList, 0, CONTROLLER_LIMIT);
 
             vigemTestClient?.Dispose();
@@ -258,12 +265,15 @@ namespace DS4MapperTest
             {
                 Task temp = Task.Run(() =>
                 {
-                    enumerator.FindControllers();
+                    //enumerator.FindControllers();
+                    testEnumerator.FindControllers();
                 });
                 temp.Wait();
 
+                //IEnumerable<InputDeviceBase> devices =
+                //    enumerator.GetFoundDevices();
                 IEnumerable<InputDeviceBase> devices =
-                    enumerator.GetFoundDevices();
+                    testEnumerator.GetNewKnownDevices();
 
                 for (var devEnum = devices.GetEnumerator(); devEnum.MoveNext();)
                 {
@@ -299,7 +309,7 @@ namespace DS4MapperTest
                         // device in slot
                         if (controllerList[ind] == null)
                         {
-                            Mapper mapper = enumerator.PrepareDeviceMapper(device, appGlobal);
+                            Mapper mapper = testEnumerator.PrepareDeviceMapper(device, appGlobal);
                             PrepareAddInputDevice(device, mapper, ind);
                             HotplugController?.Invoke(device, ind);
                             break;
