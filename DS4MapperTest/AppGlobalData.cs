@@ -446,6 +446,12 @@ namespace DS4MapperTest
                     //if (activeProfiles.TryGetValue(testDev.Index, out string currentProfile))
                     {
                         string lastProfile = tempToken.Value<string>();
+                        if (!string.IsNullOrEmpty(lastProfile))
+                        {
+                            lastProfile = Path.Combine(GetDeviceProfileFolderLocation(testDev.DeviceType),
+                                $"{lastProfile}.json");
+                        }
+
                         if (!string.IsNullOrEmpty(lastProfile) && File.Exists(lastProfile))
                         {
                             activeProfiles.Add(testDev.Index, lastProfile);
@@ -508,7 +514,7 @@ namespace DS4MapperTest
                             if (activeProfiles.TryGetValue(testDev.Index, out string currentProfile) &&
                                 !string.IsNullOrEmpty(currentProfile))
                             {
-                                controllerObj["LastProfile"] = currentProfile;
+                                controllerObj["LastProfile"] = Path.GetFileNameWithoutExtension(currentProfile);
                             }
 
                             store.PersistSettings(controllerObj);
