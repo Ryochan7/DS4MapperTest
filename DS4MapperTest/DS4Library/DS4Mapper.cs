@@ -551,6 +551,12 @@ namespace DS4MapperTest.DS4Library
                 case JoypadActionCodes.BtnDPadRight:
                     result = currentMapperState.DpadRight;
                     break;
+                case JoypadActionCodes.LPadClick:
+                    result = currentMapperState.TouchClickButton;
+                    break;
+                case JoypadActionCodes.LPadTouch:
+                    result = currentMapperState.NumTouches > 0;
+                    break;
 
                 default: break;
             }
@@ -610,6 +616,12 @@ namespace DS4MapperTest.DS4Library
                         break;
                     case JoypadActionCodes.BtnDPadRight:
                         result = currentMapperState.DpadRight;
+                        break;
+                    case JoypadActionCodes.LPadClick:
+                        result = currentMapperState.TouchClickButton;
+                        break;
+                    case JoypadActionCodes.LPadTouch:
+                        result = currentMapperState.NumTouches > 0;
                         break;
 
                     default: break;
