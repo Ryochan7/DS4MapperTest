@@ -60,7 +60,7 @@ namespace DS4MapperTest.DS4Library
                 new InputBindingMeta("Share", "Share", InputBindingMeta.InputControlType.Button),
                 new InputBindingMeta("Options", "Options", InputBindingMeta.InputControlType.Button),
                 new InputBindingMeta("PS", "PS", InputBindingMeta.InputControlType.Button),
-                new InputBindingMeta("Touch Click", "Touch Click", InputBindingMeta.InputControlType.Button),
+                new InputBindingMeta("TouchClick", "Touch Click", InputBindingMeta.InputControlType.Button),
                 new InputBindingMeta("LS", "Left Stick", InputBindingMeta.InputControlType.Stick),
                 new InputBindingMeta("RS", "Right Stick", InputBindingMeta.InputControlType.Stick),
                 new InputBindingMeta("DPad", "DPad", InputBindingMeta.InputControlType.DPad),
@@ -349,7 +349,7 @@ namespace DS4MapperTest.DS4Library
 
                 if (tempBtnAct.active) tempBtnAct.Event(this);
 
-                tempBtnAct = currentLayer.buttonActionDict["Touch Click"];
+                tempBtnAct = currentLayer.buttonActionDict["TouchClick"];
                 if (currentMapperState.TouchClickButton || currentMapperState.TouchClickButton != previousMapperState.TouchClickButton)
                 {
                     tempBtnAct.Prepare(this, currentMapperState.TouchClickButton);
