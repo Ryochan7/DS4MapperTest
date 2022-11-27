@@ -103,9 +103,9 @@ namespace DS4MapperTest
             {
                 Directory.CreateDirectory(appdatapath);
                 Directory.CreateDirectory(Path.Combine(appdatapath, PROFILES_FOLDER_NAME));
-                Directory.CreateDirectory(Path.Combine(appdatapath, PROFILES_FOLDER_NAME, "SteamController"));
-                Directory.CreateDirectory(Path.Combine(appdatapath, PROFILES_FOLDER_NAME, AppGlobalData.DS4_PROFILE_DIR));
-                Directory.CreateDirectory(Path.Combine(appdatapath, PROFILES_FOLDER_NAME, "SwitchPro"));
+                Directory.CreateDirectory(Path.Combine(appdatapath, PROFILES_FOLDER_NAME, STEAM_CONTROLLER_PROFILE_DIR));
+                Directory.CreateDirectory(Path.Combine(appdatapath, PROFILES_FOLDER_NAME, DS4_PROFILE_DIR));
+                Directory.CreateDirectory(Path.Combine(appdatapath, PROFILES_FOLDER_NAME, SWITCH_PRO_PROFILE_DIR));
                 Directory.CreateDirectory(Path.Combine(appdatapath, LOGS_FOLDER_NAME));
             }
             catch (UnauthorizedAccessException)
@@ -120,20 +120,28 @@ namespace DS4MapperTest
         public bool CheckAndCopyExampleProfiles()
         {
             bool result = true;
+            List<string> checkFolders = new List<string>()
+            {
+                STEAM_CONTROLLER_PROFILE_DIR,
+                DS4_PROFILE_DIR,
+                SWITCH_PRO_PROFILE_DIR,
+            };
             try
             {
-                string exampleSCProfilesPath = Path.Combine(exedirpath, TEMPLATE_PROFILES_DIRNAME, "SteamController");
-                string destSCProfilePath = Path.Combine(appdatapath, PROFILES_FOLDER_NAME, "SteamController");
-                //if (!Directory.Exists(destSCProfilePath))
-                // Check if profiles dir is empty
-                if (Directory.Exists(exampleSCProfilesPath) && Directory.Exists(destSCProfilePath) &&
-                    !Directory.EnumerateFileSystemEntries(destSCProfilePath).Any())
+                foreach(string devTemplateFolder in checkFolders)
                 {
-                    foreach (string file in Directory.EnumerateFiles(exampleSCProfilesPath))
+                    string exampleDevProfilesPath = Path.Combine(exedirpath, TEMPLATE_PROFILES_DIRNAME, devTemplateFolder);
+                    string destDevProfilePath = Path.Combine(appdatapath, PROFILES_FOLDER_NAME, devTemplateFolder);
+                    //if (!Directory.Exists(destSCProfilePath))
+                    // Check if profiles dir is empty
+                    if (Directory.Exists(exampleDevProfilesPath) && Directory.Exists(destDevProfilePath) &&
+                        !Directory.EnumerateFileSystemEntries(destDevProfilePath).Any())
                     {
-                        string destFilePath = Path.Combine(appdatapath, PROFILES_FOLDER_NAME,
-                            "SteamController", Path.GetFileName(file));
-                        File.Copy(file, destFilePath);
+                        foreach (string file in Directory.EnumerateFiles(exampleDevProfilesPath))
+                        {
+                            string destFilePath = Path.Combine(destDevProfilePath, Path.GetFileName(file));
+                            File.Copy(file, destFilePath);
+                        }
                     }
                 }
             }
