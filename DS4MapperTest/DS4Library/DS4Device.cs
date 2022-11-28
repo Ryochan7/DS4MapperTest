@@ -178,6 +178,20 @@ namespace DS4MapperTest.DS4Library
             {
                 outputReportBuffer[6] = outputReportBuffer[7] = outputReportBuffer[8] = 0;
             }
+            else if (conType == ConnectionType.Bluetooth)
+            {
+                outputReportBuffer[8] = outputReportBuffer[9] = outputReportBuffer[10] = 0;
+
+                // Need to calculate and populate CRC-32 data so controller will accept the report
+                //int len = outputReport.Length;
+                int len = btOutputPayloadLen;
+                uint calcCrc32 = ~Crc32Algorithm.Compute(outputBTCrc32Head);
+                calcCrc32 = ~Crc32Algorithm.CalculateBasicHash(ref calcCrc32, ref outputReportBuffer, 0, len - 4);
+                outputReportBuffer[len - 4] = (byte)calcCrc32;
+                outputReportBuffer[len - 3] = (byte)(calcCrc32 >> 8);
+                outputReportBuffer[len - 2] = (byte)(calcCrc32 >> 16);
+                outputReportBuffer[len - 1] = (byte)(calcCrc32 >> 24);
+            }
 
             WriteReport(outputReportBuffer);
             hidDevice.CloseDevice();

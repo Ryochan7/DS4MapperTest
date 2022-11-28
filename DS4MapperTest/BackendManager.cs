@@ -254,6 +254,8 @@ namespace DS4MapperTest
             //enumerator.StopControllers();
             Array.Clear(controllerList, 0, CONTROLLER_LIMIT);
 
+            appGlobal.activeProfiles.Clear();
+
             vigemTestClient?.Dispose();
             vigemTestClient = null;
 
