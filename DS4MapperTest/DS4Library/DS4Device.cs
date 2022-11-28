@@ -38,6 +38,7 @@ namespace DS4MapperTest.DS4Library
         public const int BATTERY_MAX = 8;
         public const int BATTERY_MAX_USB = 11;
         private const string DEVICE_TYPE_STRING = "DualShock4";
+        private byte[] outputBTCrc32Head = new byte[] { 0xA2 };
 
         private HidDevice hidDevice;
         public HidDevice HidDevice => hidDevice;
@@ -81,13 +82,13 @@ namespace DS4MapperTest.DS4Library
             {
                 inputReportLen = BT_INPUT_REPORT_LENGTH;
                 outputReportLen = BT_OUTPUT_REPORT_LENGTH;
+                // Buffer len and output report payload len will differ
+                btOutputPayloadLen = BT_OUTPUT_REPORT_0x11_LENGTH;
             }
             else if (conType == ConnectionType.USB)
             {
                 inputReportLen = USB_INPUT_REPORT_LENGTH;
                 outputReportLen = hidDevice.Capabilities.OutputReportByteLength;
-                // Buffer len and output report payload len will differ
-                btOutputPayloadLen = BT_OUTPUT_REPORT_0x11_LENGTH;
             }
 
             // Read device serial number. Also sets input mode to DS4 mode
@@ -196,6 +197,34 @@ namespace DS4MapperTest.DS4Library
         {
             if (conType == ConnectionType.Bluetooth)
             {
+                outReportBuffer[0] = 0x11;
+                //outReportBuffer[0] = 0x15;
+                //outReportBuffer[1] = (byte)(0x80 | btPollRate); // input report rate
+                outReportBuffer[1] = (byte)(0xC0 | 0x04); // input report rate
+                //outReportBuffer[2] = 0xA0;
+
+                // Headphone volume L (0x10), Headphone volume R (0x20), Mic volume (0x40), Speaker volume (0x80)
+                // enable rumble (0x01), lightbar (0x02), flash (0x04). Default: 0x07
+                outReportBuffer[3] = 0x07;
+                outReportBuffer[4] = 0x04;
+
+                outReportBuffer[6] = feedbackState.RightLight; // fast motor
+                outReportBuffer[7] = feedbackState.LeftHeavy; // slow motor
+                outReportBuffer[8] = 0; // red
+                outReportBuffer[9] = 0; // green
+                outReportBuffer[10] = 255; // blue
+                outReportBuffer[11] = 0; // flash on duration
+                outReportBuffer[12] = 0; // flash off duration
+
+                // Need to calculate and populate CRC-32 data so controller will accept the report
+                //int len = outputReport.Length;
+                int len = btOutputPayloadLen;
+                uint calcCrc32 = ~Crc32Algorithm.Compute(outputBTCrc32Head);
+                calcCrc32 = ~Crc32Algorithm.CalculateBasicHash(ref calcCrc32, ref outReportBuffer, 0, len - 4);
+                outReportBuffer[len - 4] = (byte)calcCrc32;
+                outReportBuffer[len - 3] = (byte)(calcCrc32 >> 8);
+                outReportBuffer[len - 2] = (byte)(calcCrc32 >> 16);
+                outReportBuffer[len - 1] = (byte)(calcCrc32 >> 24);
 
             }
             else
