@@ -27,19 +27,6 @@ namespace DS4MapperTest.ViewModels.TriggerActionPropViewModels
             new List<OutputTriggerItem>();
         public List<OutputTriggerItem> OutputTriggerItems => outputTriggerItems;
 
-        private int outputTriggerIndex = -1;
-        public int OutputTriggerIndex
-        {
-            get => outputTriggerIndex;
-            set
-            {
-                outputTriggerIndex = value;
-                OutputTriggerIndexChanged?.Invoke(this, EventArgs.Empty);
-                ActionPropertyChanged?.Invoke(this, EventArgs.Empty);
-            }
-        }
-        public event EventHandler OutputTriggerIndexChanged;
-
         public string Name
         {
             get => action.Name;
@@ -187,10 +174,21 @@ namespace DS4MapperTest.ViewModels.TriggerActionPropViewModels
             PrepareModel();
 
             NameChanged += TriggerTranslatePropViewModel_NameChanged;
-            OutputTriggerIndexChanged += TriggerTranslatePropViewModel_OutputTriggerIndexChanged;
+            OutputTriggerChanged += TriggerTranslatePropViewModel_OutputTriggerChanged;
             DeadZoneChanged += TriggerTranslatePropViewModel_DeadZoneChanged;
             AntiDeadZoneChanged += TriggerTranslatePropViewModel_AntiDeadZoneChanged;
             MaxZoneChanged += TriggerTranslatePropViewModel_MaxZoneChanged;
+        }
+
+        private void TriggerTranslatePropViewModel_OutputTriggerChanged(object sender, EventArgs e)
+        {
+            if (!action.ChangedProperties.Contains(TriggerTranslate.PropertyKeyStrings.OUTPUT_TRIGGER))
+            {
+                action.ChangedProperties.Add(TriggerTranslate.PropertyKeyStrings.OUTPUT_TRIGGER);
+            }
+
+            action.RaiseNotifyPropertyChange(mapper, TriggerTranslate.PropertyKeyStrings.OUTPUT_TRIGGER);
+            HighlightTriggerChanged?.Invoke(this, EventArgs.Empty);
         }
 
         private void ReplaceExistingLayerAction(object sender, EventArgs e)
@@ -259,17 +257,6 @@ namespace DS4MapperTest.ViewModels.TriggerActionPropViewModels
             HighlightDeadZoneChanged?.Invoke(this, EventArgs.Empty);
         }
 
-        private void TriggerTranslatePropViewModel_OutputTriggerIndexChanged(object sender, EventArgs e)
-        {
-            if (!action.ChangedProperties.Contains(TriggerTranslate.PropertyKeyStrings.OUTPUT_TRIGGER))
-            {
-                action.ChangedProperties.Add(TriggerTranslate.PropertyKeyStrings.OUTPUT_TRIGGER);
-            }
-
-            action.RaiseNotifyPropertyChange(mapper, TriggerTranslate.PropertyKeyStrings.OUTPUT_TRIGGER);
-            HighlightTriggerChanged?.Invoke(this, EventArgs.Empty);
-        }
-
         private void TriggerTranslatePropViewModel_NameChanged(object sender, EventArgs e)
         {
             if (!action.ChangedProperties.Contains(TriggerTranslate.PropertyKeyStrings.NAME))
@@ -283,20 +270,6 @@ namespace DS4MapperTest.ViewModels.TriggerActionPropViewModels
 
         private void PrepareModel()
         {
-            switch (action.OutputData.JoypadCode)
-            {
-                case JoypadActionCodes.Empty:
-                    outputTriggerIndex = 0;
-                    break;
-                case JoypadActionCodes.X360_LT:
-                    outputTriggerIndex = 1;
-                    break;
-                case JoypadActionCodes.X360_RT:
-                    outputTriggerIndex = 2;
-                    break;
-                default:
-                    break;
-            }
         }
     }
 

@@ -26,7 +26,7 @@
             </StackPanel>
             <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
                 <Label Content="Output Trigger" />
-                <ComboBox ItemsSource="{Binding OutputTriggerItems}" SelectedIndex="{Binding OutputTriggerIndex}" DisplayMemberPath="DisplayName" Width="200">
+                <ComboBox ItemsSource="{Binding OutputTriggerItems}" SelectedValuePath="Code" SelectedValue="{Binding OutputTrigger}" DisplayMemberPath="DisplayName" Width="200">
                     <ComboBox.Style>
                         <Style TargetType="ComboBox" BasedOn="{StaticResource ComboBoxBaseStyle}">
                             <Style.Triggers>
