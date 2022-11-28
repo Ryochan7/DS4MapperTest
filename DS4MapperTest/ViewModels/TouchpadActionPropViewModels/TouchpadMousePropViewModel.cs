@@ -324,9 +324,9 @@ namespace DS4MapperTest.ViewModels.TouchpadActionPropViewModels
 
         private void TouchpadMousePropViewModel_DeadZoneChanged(object sender, EventArgs e)
         {
-            if (!this.action.ChangedProperties.Contains(TouchpadMouse.PropertyKeyStrings.NAME))
+            if (!this.action.ChangedProperties.Contains(TouchpadMouse.PropertyKeyStrings.DEAD_ZONE))
             {
-                this.action.ChangedProperties.Add(TouchpadMouse.PropertyKeyStrings.NAME);
+                this.action.ChangedProperties.Add(TouchpadMouse.PropertyKeyStrings.DEAD_ZONE);
             }
 
             action.RaiseNotifyPropertyChange(mapper, TouchpadMouse.PropertyKeyStrings.DEAD_ZONE);
