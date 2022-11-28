@@ -132,6 +132,7 @@ namespace DS4MapperTest
             {
                 //enumerator.FindControllers();
                 testEnumerator.FindControllers();
+                testEnumerator.ClearRemovedDevicesReferences();
             });
             temper.IsBackground = true;
             temper.Priority = ThreadPriority.Normal;
@@ -292,6 +293,7 @@ namespace DS4MapperTest
                 //    enumerator.GetFoundDevices();
                 IEnumerable<InputDeviceBase> devices =
                     testEnumerator.GetNewKnownDevices();
+                testEnumerator.ClearRemovedDevicesReferences();
 
                 for (var devEnum = devices.GetEnumerator(); devEnum.MoveNext();)
                 {

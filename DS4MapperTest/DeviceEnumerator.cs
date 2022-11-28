@@ -44,16 +44,45 @@ namespace DS4MapperTest
         {
             using WriteLocker locker = new WriteLocker(_foundDevlocker);
 
+            //Dictionary<string, InputDeviceBase> previousKnownDevices =
+            //    new Dictionary<string, InputDeviceBase>(foundKnownDevices);
+            HashSet<string> previousDevicePaths = new HashSet<string>(foundDevicePaths);
+            HashSet<string> currentDevicePaths = new HashSet<string>();
             newKnownDevices.Clear();
             removedKnownDevices.Clear();
 
             IEnumerable<HidDevice> hidDevs = HidDevices.Enumerate();
             foreach(HidDevice hidDev in hidDevs)
             {
-                if (foundDevicePaths.Contains(hidDev.DevicePath))
+                currentDevicePaths.Add(hidDev.DevicePath);
+            }
+
+            IEnumerable<string> addedHidDevices = currentDevicePaths.Except(previousDevicePaths);
+            IEnumerable<string> removedHidDevices = previousDevicePaths.Except(currentDevicePaths);
+
+            foreach (string devicePath in removedHidDevices)
+            {
+                if (foundKnownDevices.Remove(devicePath, out InputDeviceBase tempDevice))
                 {
-                    continue;
+                    revFoundKnownDevices.Remove(tempDevice);
+                    foundDevicePaths.Remove(devicePath);
+
+                    //removedKnownDevices.Add(devicePath, tempDevice);
                 }
+            }
+
+            // Filter out devices already scanned in previous sessions
+            hidDevs = hidDevs.Where((hidDevice) =>
+            {
+                return !foundDevicePaths.Contains(hidDevice.DevicePath);
+            });
+
+            foreach (HidDevice hidDev in hidDevs)
+            {
+                //if (foundDevicePaths.Contains(hidDev.DevicePath))
+                //{
+                //    continue;
+                //}
 
                 if (vidPidDelDict.TryGetValue($"VID_{hidDev.Attributes.VendorId}&PID_{hidDev.Attributes.ProductId}", out HidDeviceCheckHandler value))
                 {
@@ -75,14 +104,14 @@ namespace DS4MapperTest
                 foundDevicePaths.Add(hidDev.DevicePath);
             }
 
-            foreach(KeyValuePair<string, InputDeviceBase> pair in
-                foundKnownDevices.Except(newKnownDevices))
-            {
-                removedKnownDevices.Add(pair.Key, pair.Value);
-                foundKnownDevices.Remove(pair.Key);
-                revFoundKnownDevices.Remove(pair.Value);
-                foundDevicePaths.Remove(pair.Key);
-            }
+            //foreach(KeyValuePair<string, InputDeviceBase> pair in
+            //    foundKnownDevices.Except(newKnownDevices))
+            //{
+            //    removedKnownDevices.Add(pair.Key, pair.Value);
+            //    foundKnownDevices.Remove(pair.Key);
+            //    revFoundKnownDevices.Remove(pair.Value);
+            //    foundDevicePaths.Remove(pair.Key);
+            //}
 
             //IEnumerable<HidDevice> hDevices = HidDevices.Enumerate(SONY_VID,
             //    SONY_DS4_V2_PID, SONY_DS4_V1_PID);
@@ -127,6 +156,12 @@ namespace DS4MapperTest
         {
             using WriteLocker locker = new WriteLocker(_foundDevlocker);
             return removedKnownDevices.Values.ToList();
+        }
+
+        public void ClearRemovedDevicesReferences()
+        {
+            using WriteLocker locker = new WriteLocker(_foundDevlocker);
+            removedKnownDevices.Clear();
         }
 
         public void RemoveDevice(InputDeviceBase inputDevice)
