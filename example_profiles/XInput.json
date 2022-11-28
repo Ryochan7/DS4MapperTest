@@ -187,7 +187,7 @@
               "ActionMode": "TriggerTranslateAction",
               "Settings": {
                 "OutputTrigger": "X360_LT",
-                "DeadZone": 0.1,
+                "DeadZone": 0.0,
                 "MaxZone": 1.0,
                 "AntiDeadZone": 0.0
               }
@@ -197,7 +197,7 @@
               "ActionMode": "TriggerTranslateAction",
               "Settings": {
                 "OutputTrigger": "X360_RT",
-                "DeadZone": 0.1,
+                "DeadZone": 0.0,
                 "MaxZone": 1.0,
                 "AntiDeadZone": 0.0
               }
