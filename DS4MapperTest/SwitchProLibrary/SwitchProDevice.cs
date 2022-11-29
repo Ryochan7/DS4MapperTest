@@ -247,7 +247,7 @@ namespace DS4MapperTest.SwitchProLibrary
             rightStickYData.max = SAMPLE_STICK_MAX; rightStickYData.min = SAMPLE_STICK_MIN;
             rightStickYData.mid = SAMPLE_STICK_MID;
             //Console.WriteLine(compiledRumbleTabe[0]);
-            CalibrationData();
+            //CalibrationData();
 
             if (connectionType == ConnectionType.USB)
             {

@@ -63,6 +63,8 @@ namespace DS4MapperTest.SwitchProLibrary
             // Populate Input Binding dictionary
             bindingList.ForEach((item) => bindingDict.Add(item.id, item));
 
+            device.SetOperational();
+
             StickDefinition.StickAxisData lxAxis = new StickDefinition.StickAxisData
             {
                 min = (short)device.leftStickXData.min,
