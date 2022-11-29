@@ -67,12 +67,13 @@ namespace DS4MapperTest.DS4Library
 
         public override event EventHandler Removal;
 
-        public DS4Device(HidDevice device)
+        public DS4Device(HidDevice device, string displayName)
         {
             this.hidDevice = device;
             conType = DetermineConnectionType(device);
             deviceType = InputDeviceType.DS4;
-            devTypeStr = DEVICE_TYPE_STRING;
+            //devTypeStr = DEVICE_TYPE_STRING;
+            devTypeStr = displayName;
             PostInit();
         }
 

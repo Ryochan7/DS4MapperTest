@@ -6,16 +6,54 @@ using System.Threading;
 using System.Threading.Tasks;
 using HidLibrary;
 using DS4MapperTest.DS4Library;
+using System.Runtime.InteropServices;
+using static DS4MapperTest.VidPidMeta;
 
 namespace DS4MapperTest
 {
+    internal class VidPidMeta
+    {
+        [StructLayout(LayoutKind.Explicit)]
+        public struct DelegateUnion
+        {
+            [FieldOffset(0)]
+            public DeviceEnumerator.HidDeviceCheckHandler hidHandler;
+            [FieldOffset(0)]
+            public DeviceEnumerator.HidDeviceCheckHandler hidHandler2;
+        }
+
+        public enum UsedConnectionBus : ushort
+        {
+            HID,
+            USB,
+        }
+
+        public int vid;
+        public int pid;
+        public string displayName;
+        public InputDeviceType inputDevType;
+        public UsedConnectionBus connectBus;
+        public DelegateUnion testDelUnion;
+
+        internal VidPidMeta(int vid, int pid, string displayName, InputDeviceType inputDevType,
+            UsedConnectionBus connectBus)
+        {
+            this.vid = vid;
+            this.pid = pid;
+            this.displayName = displayName;
+            this.inputDevType = inputDevType;
+            this.connectBus = connectBus;
+            this.testDelUnion = new DelegateUnion();
+        }
+    }
+
     public class DeviceEnumerator
     {
         private const int SONY_VID = 0x054C;
         private const int SONY_DS4_V1_PID = 0x05C4;
         private const int SONY_DS4_V2_PID = 0x09CC;
 
-        private delegate bool HidDeviceCheckHandler(HidDevice device);
+        internal delegate bool HidDeviceCheckHandler(HidDevice device, VidPidMeta meta);
 
         private HashSet<string> foundDevicePaths;
         private ReaderWriterLockSlim _foundDevlocker = new ReaderWriterLockSlim();
@@ -24,7 +62,16 @@ namespace DS4MapperTest
         private Dictionary<InputDeviceBase, string> revFoundKnownDevices;
         private Dictionary<string, InputDeviceBase> newKnownDevices;
         private Dictionary<string, InputDeviceBase> removedKnownDevices;
-        private Dictionary<string, HidDeviceCheckHandler> vidPidDelDict;
+        //private Dictionary<string, HidDeviceCheckHandler> vidPidDelDict;
+        private Dictionary<string, VidPidMeta> vidPidMetaDict;
+
+        private VidPidMeta[] knownDevicesMeta = new VidPidMeta[]
+        {
+            new VidPidMeta(SONY_VID, SONY_DS4_V1_PID, "DS4 v.1", InputDeviceType.DS4,
+                VidPidMeta.UsedConnectionBus.HID),
+            new VidPidMeta(SONY_VID, SONY_DS4_V2_PID, "DS4 v.2", InputDeviceType.DS4,
+                VidPidMeta.UsedConnectionBus.HID),
+        };
 
         public DeviceEnumerator()
         {
@@ -33,11 +80,23 @@ namespace DS4MapperTest
             revFoundKnownDevices = new Dictionary<InputDeviceBase, string>();
             newKnownDevices = new Dictionary<string, InputDeviceBase>();
             removedKnownDevices = new Dictionary<string, InputDeviceBase>();
-            vidPidDelDict = new Dictionary<string, HidDeviceCheckHandler>()
+            //vidPidDelDict = new Dictionary<string, HidDeviceCheckHandler>();
+            vidPidMetaDict = new Dictionary<string, VidPidMeta>();
+            foreach (VidPidMeta meta in knownDevicesMeta)
             {
-                [$"VID_{SONY_VID}&PID_{SONY_DS4_V1_PID}"] = DS4DeviceCheckHandler,
-                [$"VID_{SONY_VID}&PID_{SONY_DS4_V2_PID}"] = DS4DeviceCheckHandler,
-            };
+                if (meta.inputDevType == InputDeviceType.DS4)
+                {
+                    meta.testDelUnion.hidHandler = DS4DeviceCheckHandler;
+                    vidPidMetaDict.Add($"VID_{meta.vid}&PID_{meta.pid}", meta);
+                    //vidPidDelDict.Add($"VID_{meta.vid}&PID_{meta.pid}", meta.testDelUnion.hidHandler);
+                }
+            }
+
+            //vidPidDelDict = new Dictionary<string, HidDeviceCheckHandler>()
+            //{
+            //    [$"VID_{SONY_VID}&PID_{SONY_DS4_V1_PID}"] = DS4DeviceCheckHandler,
+            //    [$"VID_{SONY_VID}&PID_{SONY_DS4_V2_PID}"] = DS4DeviceCheckHandler,
+            //};
         }
 
         public void FindControllers()
@@ -84,7 +143,8 @@ namespace DS4MapperTest
                 //    continue;
                 //}
 
-                if (vidPidDelDict.TryGetValue($"VID_{hidDev.Attributes.VendorId}&PID_{hidDev.Attributes.ProductId}", out HidDeviceCheckHandler value))
+                if (vidPidMetaDict.TryGetValue($"VID_{hidDev.Attributes.VendorId}&PID_{hidDev.Attributes.ProductId}",
+                    out VidPidMeta value))
                 {
                     if (!hidDev.IsOpen)
                     {
@@ -93,7 +153,10 @@ namespace DS4MapperTest
 
                     if (hidDev.IsOpen)
                     {
-                        value?.Invoke(hidDev);
+                        if (value.inputDevType == InputDeviceType.DS4)
+                        {
+                            value.testDelUnion.hidHandler?.Invoke(hidDev, value);
+                        }
                     }
 
                     //DS4Device tempDev = new DS4Device(hidDev);
@@ -194,13 +257,20 @@ namespace DS4MapperTest
             }
         }
 
-        private bool DS4DeviceCheckHandler(HidDevice hidDev)
+        internal bool DS4DeviceCheckHandler(HidDevice hidDev, VidPidMeta meta)
         {
-            DS4Device tempDev = new DS4Device(hidDev);
-            foundKnownDevices.Add(hidDev.DevicePath, tempDev);
-            revFoundKnownDevices.Add(tempDev, hidDev.DevicePath);
-            newKnownDevices.Add(hidDev.DevicePath, tempDev);
-            return true;
+            bool result = false;
+
+            if (meta != null)
+            {
+                DS4Device tempDev = new DS4Device(hidDev, meta.displayName);
+                foundKnownDevices.Add(hidDev.DevicePath, tempDev);
+                revFoundKnownDevices.Add(tempDev, hidDev.DevicePath);
+                newKnownDevices.Add(hidDev.DevicePath, tempDev);
+                result = true;
+            }
+
+            return result;
         }
 
         public Mapper PrepareDeviceMapper(InputDeviceBase device, AppGlobalData appGlobal)

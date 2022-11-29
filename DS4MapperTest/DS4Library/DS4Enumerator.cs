@@ -46,7 +46,7 @@ namespace DS4MapperTest.DS4Library
 
                     if (hDevice.IsOpen)
                     {
-                        DS4Device tempDev = new DS4Device(hDevice);
+                        DS4Device tempDev = new DS4Device(hDevice, "DualShock4");
                         foundDevices.Add(hDevice.DevicePath, tempDev);
                     }
                 }
