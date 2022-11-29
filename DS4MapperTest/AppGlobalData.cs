@@ -656,6 +656,9 @@ namespace DS4MapperTest
                 case InputDeviceType.DS4:
                     result = Path.Combine(baseProfilesPath, DS4_PROFILE_DIR);
                     break;
+                case InputDeviceType.SwitchPro:
+                    result = Path.Combine(baseProfilesPath, SWITCH_PRO_PROFILE_DIR);
+                    break;
                 default:
                     break;
             }

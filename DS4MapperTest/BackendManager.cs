@@ -83,6 +83,10 @@ namespace DS4MapperTest
             ProfileList deviceProfileList = new ProfileList(InputDeviceType.DS4);
             deviceProfileList.Refresh();
             deviceProfileListDict.Add(InputDeviceType.DS4, deviceProfileList);
+
+            ProfileList switchDeviceProfileList = new ProfileList(InputDeviceType.SwitchPro);
+            switchDeviceProfileList.Refresh();
+            deviceProfileListDict.Add(InputDeviceType.SwitchPro, switchDeviceProfileList);
             //enumeratorList = new List<DeviceEnumeratorBase>()
             //{
             //    new DS4Enumerator(),

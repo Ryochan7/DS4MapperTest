@@ -8,6 +8,7 @@ using HidLibrary;
 using DS4MapperTest.DS4Library;
 using System.Runtime.InteropServices;
 using static DS4MapperTest.VidPidMeta;
+using DS4MapperTest.SwitchProLibrary;
 
 namespace DS4MapperTest
 {
@@ -53,6 +54,9 @@ namespace DS4MapperTest
         private const int SONY_DS4_V1_PID = 0x05C4;
         private const int SONY_DS4_V2_PID = 0x09CC;
 
+        private const int NINTENDO_VENDOR_ID = 0x57e;
+        private const int SWITCH_PRO_PRODUCT_ID = 0x2009;
+
         internal delegate bool HidDeviceCheckHandler(HidDevice device, VidPidMeta meta);
 
         private HashSet<string> foundDevicePaths;
@@ -71,6 +75,8 @@ namespace DS4MapperTest
                 VidPidMeta.UsedConnectionBus.HID),
             new VidPidMeta(SONY_VID, SONY_DS4_V2_PID, "DS4 v.2", InputDeviceType.DS4,
                 VidPidMeta.UsedConnectionBus.HID),
+            new VidPidMeta(NINTENDO_VENDOR_ID, SWITCH_PRO_PRODUCT_ID, "Switch Pro", InputDeviceType.SwitchPro,
+                VidPidMeta.UsedConnectionBus.HID),
         };
 
         public DeviceEnumerator()
@@ -87,6 +93,12 @@ namespace DS4MapperTest
                 if (meta.inputDevType == InputDeviceType.DS4)
                 {
                     meta.testDelUnion.hidHandler = DS4DeviceCheckHandler;
+                    vidPidMetaDict.Add($"VID_{meta.vid}&PID_{meta.pid}", meta);
+                    //vidPidDelDict.Add($"VID_{meta.vid}&PID_{meta.pid}", meta.testDelUnion.hidHandler);
+                }
+                else if (meta.inputDevType == InputDeviceType.SwitchPro)
+                {
+                    meta.testDelUnion.hidHandler = SwitchProDeviceCheckHandler;
                     vidPidMetaDict.Add($"VID_{meta.vid}&PID_{meta.pid}", meta);
                     //vidPidDelDict.Add($"VID_{meta.vid}&PID_{meta.pid}", meta.testDelUnion.hidHandler);
                 }
@@ -154,6 +166,10 @@ namespace DS4MapperTest
                     if (hidDev.IsOpen)
                     {
                         if (value.inputDevType == InputDeviceType.DS4)
+                        {
+                            value.testDelUnion.hidHandler?.Invoke(hidDev, value);
+                        }
+                        else if (value.inputDevType == InputDeviceType.SwitchPro)
                         {
                             value.testDelUnion.hidHandler?.Invoke(hidDev, value);
                         }
@@ -273,6 +289,22 @@ namespace DS4MapperTest
             return result;
         }
 
+        internal bool SwitchProDeviceCheckHandler(HidDevice hidDev, VidPidMeta meta)
+        {
+            bool result = false;
+
+            if (meta != null)
+            {
+                SwitchProDevice tempDev = new SwitchProDevice(hidDev, meta.displayName);
+                foundKnownDevices.Add(hidDev.DevicePath, tempDev);
+                revFoundKnownDevices.Add(tempDev, hidDev.DevicePath);
+                newKnownDevices.Add(hidDev.DevicePath, tempDev);
+                result = true;
+            }
+
+            return result;
+        }
+
         public Mapper PrepareDeviceMapper(InputDeviceBase device, AppGlobalData appGlobal)
         {
             Mapper result = null;
@@ -283,6 +315,14 @@ namespace DS4MapperTest
                         DS4Device ds4Device = device as DS4Device;
                         DS4Reader reader = new DS4Reader(ds4Device);
                         result = new DS4Mapper(ds4Device, reader, appGlobal);
+                    }
+
+                    break;
+                case SwitchProDevice:
+                    {
+                        SwitchProDevice switchDevice = device as SwitchProDevice;
+                        SwitchProReader reader = new SwitchProReader(switchDevice);
+                        result = new SwitchProMapper(switchDevice, reader, appGlobal);
                     }
 
                     break;
