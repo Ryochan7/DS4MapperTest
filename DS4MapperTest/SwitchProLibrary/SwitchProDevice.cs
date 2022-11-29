@@ -259,6 +259,8 @@ namespace DS4MapperTest.SwitchProLibrary
             {
                 baseElapsedReference = BT_ELAPSED_REFERENCE;
             }
+
+            synced = true;
         }
 
         private void DetermineConnectionType()
