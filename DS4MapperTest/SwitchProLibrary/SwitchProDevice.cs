@@ -224,6 +224,8 @@ namespace DS4MapperTest.SwitchProLibrary
         public double[] gyroSensMulti = new double[3];
         public double[] gyroCoeff = new double[3];
 
+        public override event EventHandler Removal;
+
         public SwitchProDevice(HidDevice hidDevice, string displayName)
         {
             this.hidDevice = hidDevice;
@@ -760,6 +762,16 @@ namespace DS4MapperTest.SwitchProLibrary
         public void SyncStates()
         {
             previousState = currentState;
+        }
+
+        public void PurgeRemoval()
+        {
+            Removal = null;
+        }
+
+        public void RaiseRemoval()
+        {
+            Removal?.Invoke(this, EventArgs.Empty);
         }
     }
 }

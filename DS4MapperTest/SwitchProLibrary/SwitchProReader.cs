@@ -65,6 +65,8 @@ namespace DS4MapperTest.SwitchProLibrary
         {
             activeInputLoop = false;
             Report = null;
+            device.PurgeRemoval();
+            device.HidDevice.CancelIO();
             //inputThread.Interrupt();
             if (inputThread != null && inputThread.IsAlive)
             {
@@ -307,6 +309,7 @@ namespace DS4MapperTest.SwitchProLibrary
                     else
                     {
                         activeInputLoop = false;
+                        device.RaiseRemoval();
                     }
 
                     //Thread.Sleep(16);
