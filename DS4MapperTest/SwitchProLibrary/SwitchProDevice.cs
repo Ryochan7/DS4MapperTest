@@ -38,7 +38,7 @@ namespace DS4MapperTest.SwitchProLibrary
     {
         private const int AMP_REAL_MIN = 0;
         //private const int AMP_REAL_MAX = 1003;
-        private const int AMP_LIMIT_MAX = 404;
+        private const int AMP_LIMIT_MAX = 800;
 
         private static RumbleTableData[] fixedRumbleTable = new RumbleTableData[]
         {

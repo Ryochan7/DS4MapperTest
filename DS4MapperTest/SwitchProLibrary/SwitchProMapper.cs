@@ -351,15 +351,15 @@ namespace DS4MapperTest.SwitchProLibrary
 
         public override void EstablishForceFeedback()
         {
-            //if (outputControlType == OutputContType.Xbox360)
-            //{
-            //    outputForceFeedbackDel = (sender, e) =>
-            //    {
-            //        device.FeedbackStateRef.LeftHeavy = e.LargeMotor;
-            //        device.FeedbackStateRef.RightLight = e.SmallMotor;
-            //        reader.WriteRumbleReport();
-            //    };
-            //}
+            if (outputControlType == OutputContType.Xbox360)
+            {
+                outputForceFeedbackDel = (sender, e) =>
+                {
+                    device.currentLeftAmpRatio = e.LargeMotor / 255.0;
+                    device.currentRightAmpRatio = e.SmallMotor / 255.0;
+                    reader.WriteRumbleReport();
+                };
+            }
         }
 
         public override bool IsButtonActive(JoypadActionCodes code)
