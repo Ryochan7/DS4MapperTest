@@ -13,6 +13,20 @@ namespace DS4MapperTest.DS4Library
         public byte RightLight;
     }
 
+    public struct DS4Color
+    {
+        public byte red;
+        public byte green;
+        public byte blue;
+
+        public DS4Color()
+        {
+            red = 0;
+            green = 0;
+            blue = 255;
+        }
+    }
+
     public class DS4Device : InputDeviceBase
     {
         public enum ConnectionType : ushort
@@ -57,6 +71,10 @@ namespace DS4MapperTest.DS4Library
         private DS4ForceFeedbackState feedbackState = new DS4ForceFeedbackState();
         public DS4ForceFeedbackState FeedbackState { get => feedbackState; }
         public ref DS4ForceFeedbackState FeedbackStateRef { get => ref feedbackState; }
+
+        private DS4Color lightbarColor = new DS4Color();
+        public DS4Color LightbarColor { get => lightbarColor; }
+        public ref DS4Color LightbarColorRef { get => ref lightbarColor; }
 
         private int inputReportLen;
         private int outputReportLen;
@@ -174,26 +192,9 @@ namespace DS4MapperTest.DS4Library
         public override void Detach()
         {
             byte[] outputReportBuffer = new byte[outputReportLen];
+            lightbarColor.red = lightbarColor.green = lightbarColor.blue = 0;
+
             PrepareOutputReport(outputReportBuffer);
-            if (conType == ConnectionType.USB)
-            {
-                outputReportBuffer[6] = outputReportBuffer[7] = outputReportBuffer[8] = 0;
-            }
-            else if (conType == ConnectionType.Bluetooth)
-            {
-                outputReportBuffer[8] = outputReportBuffer[9] = outputReportBuffer[10] = 0;
-
-                // Need to calculate and populate CRC-32 data so controller will accept the report
-                //int len = outputReport.Length;
-                int len = btOutputPayloadLen;
-                uint calcCrc32 = ~Crc32Algorithm.Compute(outputBTCrc32Head);
-                calcCrc32 = ~Crc32Algorithm.CalculateBasicHash(ref calcCrc32, ref outputReportBuffer, 0, len - 4);
-                outputReportBuffer[len - 4] = (byte)calcCrc32;
-                outputReportBuffer[len - 3] = (byte)(calcCrc32 >> 8);
-                outputReportBuffer[len - 2] = (byte)(calcCrc32 >> 16);
-                outputReportBuffer[len - 1] = (byte)(calcCrc32 >> 24);
-            }
-
             WriteReport(outputReportBuffer);
             hidDevice.CloseDevice();
         }
@@ -225,9 +226,9 @@ namespace DS4MapperTest.DS4Library
 
                 outReportBuffer[6] = feedbackState.RightLight; // fast motor
                 outReportBuffer[7] = feedbackState.LeftHeavy; // slow motor
-                outReportBuffer[8] = 0; // red
-                outReportBuffer[9] = 0; // green
-                outReportBuffer[10] = 255; // blue
+                outReportBuffer[8] = lightbarColor.red; // red
+                outReportBuffer[9] = lightbarColor.green; // green
+                outReportBuffer[10] = lightbarColor.blue; // blue
                 outReportBuffer[11] = 0; // flash on duration
                 outReportBuffer[12] = 0; // flash off duration
 
@@ -251,9 +252,9 @@ namespace DS4MapperTest.DS4Library
                 outReportBuffer[2] = 0x04;
                 outReportBuffer[4] = feedbackState.RightLight; // fast motor
                 outReportBuffer[5] = feedbackState.LeftHeavy; // slow  motor
-                outReportBuffer[6] = 0; // red
-                outReportBuffer[7] = 0; // green
-                outReportBuffer[8] = 255; // blue
+                outReportBuffer[6] = lightbarColor.red; // red
+                outReportBuffer[7] = lightbarColor.green; // green
+                outReportBuffer[8] = lightbarColor.blue; // blue
                 //outReportBuffer[6] = currentHap.lightbarState.LightBarColor.red; // red
                 //outReportBuffer[7] = currentHap.lightbarState.LightBarColor.green; // green
                 //outReportBuffer[8] = currentHap.lightbarState.LightBarColor.blue; // blue
