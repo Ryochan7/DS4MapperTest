@@ -62,5 +62,15 @@ namespace DS4MapperTest.StickActions
             this.yAxis = other.yAxis;
             this.stickCode = other.stickCode;
         }
+
+        public static short AxisScale(int value, bool flip, StickDefinition.StickAxisData axisData)
+        {
+            unchecked
+            {
+                double temp = (value - axisData.min) * axisData.reciprocalInputResolution;
+                if (flip) temp = (temp - 0.5f) * -1.0f + 0.5f;
+                return (short)((axisData.max - axisData.min) * temp + axisData.min);
+            }
+        }
     }
 }

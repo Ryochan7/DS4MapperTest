@@ -13,7 +13,8 @@ namespace DS4MapperTest.StickActions
             int axisXVal, int axisYVal, StickDefinition stickDefinition,
             out int outXVal, out int outYVal)
         {
-            double radians = (Math.PI * rotation) / 180.0;
+            // + => Clockwise, - => Counter-clockwise. Invert initial rotation value
+            double radians = (Math.PI * -rotation) / 180.0;
             double sinAngle = Math.Sin(radians), cosAngle = Math.Cos(radians);
 
             int tempX = axisXVal - stickDefinition.xAxis.mid;
