@@ -1,7 +1,8 @@
 ﻿<UserControl x:Class="DS4MapperTest.Views.StickActionPropControls.StickTranslatePropControl"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:hc="https://handyorg.github.io/handycontrol"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:DS4MapperTest.Views.StickActionPropControls"
              xmlns:local1="clr-namespace:DS4MapperTest.Views"
@@ -84,6 +85,22 @@
                         </Style>
                     </TextBox.Style>
                 </TextBox>
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                <Label Content="Rotation" />
+                <hc:NumericUpDown Minimum="-180.0" Maximum="180.0" DecimalPlaces="0" Increment="1"
+                                  Value="{Binding Rotation,FallbackValue='0'}" ValueFormat="0 &#xb0;" Margin="8,0,0,0">
+                    <hc:NumericUpDown.Style>
+                        <Style TargetType="hc:NumericUpDown" BasedOn="{StaticResource NumericUpDownBaseStyle}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding HighlightRotation}" Value="False">
+                                    <Setter Property="Opacity" Value="0.7" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </hc:NumericUpDown.Style>
+                </hc:NumericUpDown>
             </StackPanel>
 
         </StackPanel>

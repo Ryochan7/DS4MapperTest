@@ -97,6 +97,19 @@ namespace DS4MapperTest.ViewModels.StickActionPropViewModels
         }
         public event EventHandler MaxZoneChanged;
 
+        public int Rotation
+        {
+            get => action.Rotation;
+            set
+            {
+                if (value == action.Rotation) return;
+                action.Rotation = value;
+                RotationChanged?.Invoke(this, EventArgs.Empty);
+                ActionPropertyChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        public event EventHandler RotationChanged;
+
         public bool HighlightName
         {
             get => action.ParentAction == null ||
@@ -131,6 +144,13 @@ namespace DS4MapperTest.ViewModels.StickActionPropViewModels
                 action.ChangedProperties.Contains(StickTranslate.PropertyKeyStrings.MAX_ZONE);
         }
         public event EventHandler HighlightMaxZoneChanged;
+
+        public bool HighlightRotation
+        {
+            get => action.ParentAction == null ||
+                action.ChangedProperties.Contains(StickTranslate.PropertyKeyStrings.ROTATION);
+        }
+        public event EventHandler HighlightRotationChanged;
 
         public event EventHandler ActionPropertyChanged;
         public event EventHandler<StickMapAction> ActionChanged;
@@ -170,6 +190,18 @@ namespace DS4MapperTest.ViewModels.StickActionPropViewModels
             DeadZoneChanged += StickTranslatePropViewModel_DeadZoneChanged;
             AntiDeadZoneChanged += StickTranslatePropViewModel_AntiDeadZoneChanged;
             MaxZoneChanged += StickTranslatePropViewModel_MaxZoneChanged;
+            RotationChanged += StickTranslatePropViewModel_RotationChanged;
+        }
+
+        private void StickTranslatePropViewModel_RotationChanged(object sender, EventArgs e)
+        {
+            if (!action.ChangedProperties.Contains(StickTranslate.PropertyKeyStrings.ROTATION))
+            {
+                action.ChangedProperties.Add(StickTranslate.PropertyKeyStrings.ROTATION);
+            }
+
+            action.RaiseNotifyPropertyChange(mapper, StickTranslate.PropertyKeyStrings.ROTATION);
+            HighlightRotationChanged?.Invoke(this, EventArgs.Empty);
         }
 
         private void ChangeOutputStickMode(object sender, EventArgs e)
