@@ -78,6 +78,23 @@
                     </TextBox.Style>
                 </TextBox>
             </StackPanel>
+
+            <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                <Label Content="Dead Zone Type" />
+                <ComboBox ItemsSource="{Binding DeadZoneModesChoices}" DisplayMemberPath="DisplayName" SelectedValuePath="ChoiceValue"
+                          SelectedValue="{Binding DeadZoneType}" MinWidth="200" Margin="8,0,0,0">
+                    <ComboBox.Style>
+                        <Style TargetType="ComboBox" BasedOn="{StaticResource ComboBoxBaseStyle}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding HighlightDeadZoneType}" Value="False">
+                                    <Setter Property="Opacity" Value="0.7" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ComboBox.Style>
+                </ComboBox>
+            </StackPanel>
+
         </StackPanel>
     </DockPanel>
 </UserControl>

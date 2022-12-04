@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using DS4MapperTest.StickActions;
+using DS4MapperTest.StickModifiers;
 using DS4MapperTest.ViewModels.Common;
 
 namespace DS4MapperTest.ViewModels.StickActionPropViewModels
@@ -110,6 +111,28 @@ namespace DS4MapperTest.ViewModels.StickActionPropViewModels
         }
         public event EventHandler RotationChanged;
 
+        private List<EnumChoiceSelection<StickDeadZone.DeadZoneTypes>> deadZoneModesChoices =
+            new List<EnumChoiceSelection<StickDeadZone.DeadZoneTypes>>()
+            {
+                new EnumChoiceSelection<StickDeadZone.DeadZoneTypes>("Radial", StickDeadZone.DeadZoneTypes.Radial),
+                new EnumChoiceSelection<StickDeadZone.DeadZoneTypes>("Bowtie", StickDeadZone.DeadZoneTypes.Bowtie),
+            };
+
+        public List<EnumChoiceSelection<StickDeadZone.DeadZoneTypes>> DeadZoneModesChoices => deadZoneModesChoices;
+
+        public StickDeadZone.DeadZoneTypes DeadZoneType
+        {
+            get => action.DeadMod.DeadZoneType;
+            set
+            {
+                if (value == action.DeadMod.DeadZoneType) return;
+                action.DeadMod.DeadZoneType = value;
+                DeadZoneTypeChanged?.Invoke(this, EventArgs.Empty);
+                ActionPropertyChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        public event EventHandler DeadZoneTypeChanged;
+
         public bool HighlightName
         {
             get => action.ParentAction == null ||
@@ -152,6 +175,13 @@ namespace DS4MapperTest.ViewModels.StickActionPropViewModels
         }
         public event EventHandler HighlightRotationChanged;
 
+        public bool HighlightDeadZoneType
+        {
+            get => action.ParentAction == null ||
+                action.ChangedProperties.Contains(StickTranslate.PropertyKeyStrings.DEAD_ZONE_TYPE);
+        }
+        public event EventHandler HighlightDeadZoneTypeChanged;
+
         public event EventHandler ActionPropertyChanged;
         public event EventHandler<StickMapAction> ActionChanged;
 
@@ -191,6 +221,18 @@ namespace DS4MapperTest.ViewModels.StickActionPropViewModels
             AntiDeadZoneChanged += StickTranslatePropViewModel_AntiDeadZoneChanged;
             MaxZoneChanged += StickTranslatePropViewModel_MaxZoneChanged;
             RotationChanged += StickTranslatePropViewModel_RotationChanged;
+            DeadZoneTypeChanged += StickTranslatePropViewModel_DeadZoneTypeChanged;
+        }
+
+        private void StickTranslatePropViewModel_DeadZoneTypeChanged(object sender, EventArgs e)
+        {
+            if (!action.ChangedProperties.Contains(StickTranslate.PropertyKeyStrings.DEAD_ZONE_TYPE))
+            {
+                action.ChangedProperties.Add(StickTranslate.PropertyKeyStrings.DEAD_ZONE_TYPE);
+            }
+
+            action.RaiseNotifyPropertyChange(mapper, StickTranslate.PropertyKeyStrings.DEAD_ZONE_TYPE);
+            HighlightDeadZoneTypeChanged?.Invoke(this, EventArgs.Empty);
         }
 
         private void StickTranslatePropViewModel_RotationChanged(object sender, EventArgs e)

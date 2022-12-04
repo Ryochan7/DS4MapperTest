@@ -2542,6 +2542,22 @@ namespace DS4MapperTest
                 return touchStickAction.ChangedProperties.Contains(TouchpadStickAction.PropertyKeyStrings.ANTIDEAD_ZONE);
             }
 
+            [JsonConverter(typeof(StringEnumConverter))]
+            public StickDeadZone.DeadZoneTypes DeadZoneType
+            {
+                get => touchStickAction.DeadMod.DeadZoneType;
+                set
+                {
+                    touchStickAction.DeadMod.DeadZoneType = value;
+                    DeadZoneTypeChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler DeadZoneTypeChanged;
+            public bool ShouldSerializeDeadZoneType()
+            {
+                return touchStickAction.ChangedProperties.Contains(TouchpadStickAction.PropertyKeyStrings.DEAD_ZONE_TYPE);
+            }
+
             public int Rotation
             {
                 get => touchStickAction.Rotation;
@@ -2696,6 +2712,12 @@ namespace DS4MapperTest
             settings.MaxOutputChanged += Settings_MaxOutputChanged;
             settings.SquareStickEnabledChanged += Settings_SquareStickEnabledChanged;
             settings.SquareStickRoundnessChanged += Settings_SquareStickRoundnessChanged;
+            settings.DeadZoneTypeChanged += Settings_DeadZoneTypeChanged;
+        }
+
+        private void Settings_DeadZoneTypeChanged(object sender, EventArgs e)
+        {
+            touchStickAction.ChangedProperties.Add(TouchpadStickAction.PropertyKeyStrings.DEAD_ZONE_TYPE);
         }
 
         private void Settings_SquareStickRoundnessChanged(object sender, EventArgs e)
@@ -4354,6 +4376,22 @@ namespace DS4MapperTest
             }
 
             [JsonConverter(typeof(StringEnumConverter))]
+            public StickDeadZone.DeadZoneTypes DeadZoneType
+            {
+                get => stickTransAct.DeadMod.DeadZoneType;
+                set
+                {
+                    stickTransAct.DeadMod.DeadZoneType = value;
+                    DeadZoneTypeChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler DeadZoneTypeChanged;
+            public bool ShouldSerializeDeadZoneType()
+            {
+                return stickTransAct.ChangedProperties.Contains(StickTranslate.PropertyKeyStrings.DEAD_ZONE_TYPE);
+            }
+
+            [JsonConverter(typeof(StringEnumConverter))]
             public StickOutCurve.Curve OutputCurve
             {
                 get => stickTransAct.OutputCurve;
@@ -4529,6 +4567,12 @@ namespace DS4MapperTest
             settings.MaxOutputChanged += Settings_MaxOutputChanged;
             settings.SquareStickEnabledChanged += Settings_SquareStickEnabledChanged;
             settings.SquareStickRoundnessChanged += Settings_SquareStickRoundnessChanged;
+            settings.DeadZoneTypeChanged += Settings_DeadZoneTypeChanged;
+        }
+
+        private void Settings_DeadZoneTypeChanged(object sender, EventArgs e)
+        {
+            stickTransAct.ChangedProperties.Add(StickTranslate.PropertyKeyStrings.DEAD_ZONE_TYPE);
         }
 
         private void Settings_SquareStickRoundnessChanged(object sender, EventArgs e)

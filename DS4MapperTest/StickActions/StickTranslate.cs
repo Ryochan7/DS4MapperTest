@@ -15,6 +15,7 @@ namespace DS4MapperTest.StickActions
         {
             public const string NAME = "Name";
             public const string DEAD_ZONE = "DeadZone";
+            public const string DEAD_ZONE_TYPE = "DeadZoneType";
             public const string MAX_ZONE = "MaxZone";
             public const string ANTIDEAD_ZONE = "AntiDeadZone";
             public const string OUTPUT_CURVE = "OutputCurve";
@@ -33,6 +34,7 @@ namespace DS4MapperTest.StickActions
         {
             PropertyKeyStrings.NAME,
             PropertyKeyStrings.DEAD_ZONE,
+            PropertyKeyStrings.DEAD_ZONE_TYPE,
             PropertyKeyStrings.MAX_ZONE,
             PropertyKeyStrings.ANTIDEAD_ZONE,
             PropertyKeyStrings.OUTPUT_CURVE,
@@ -132,6 +134,7 @@ namespace DS4MapperTest.StickActions
             actionTypeName = ACTION_TYPE_NAME;
             this.outputAction = new OutputActionData(OutputActionData.ActionType.GamepadControl, StickActionCodes.Empty);
             deadMod = new StickDeadZone(0.30, 1.0, 0.0);
+            deadMod.DeadZoneType = StickDeadZone.DeadZoneTypes.Radial;
         }
 
         public StickTranslate(StickDefinition stickDefinition,
@@ -141,6 +144,7 @@ namespace DS4MapperTest.StickActions
             this.stickDefinition = stickDefinition;
             deadMod = new StickDeadZone(0.30, 1.0, 0.0);
             deadMod.CircleDead = true;
+            deadMod.DeadZoneType = StickDeadZone.DeadZoneTypes.Radial;
             this.outputAction = outputAction;
         }
 
@@ -365,6 +369,9 @@ namespace DS4MapperTest.StickActions
                         case PropertyKeyStrings.SQUARE_STICK_ROUNDNESS:
                             squareStickRoundness = tempStickAction.squareStickRoundness;
                             break;
+                        case PropertyKeyStrings.DEAD_ZONE_TYPE:
+                            deadMod.DeadZoneType = tempStickAction.deadMod.DeadZoneType;
+                            break;
                         default:
                             break;
                     }
@@ -435,6 +442,9 @@ namespace DS4MapperTest.StickActions
                     break;
                 case PropertyKeyStrings.SQUARE_STICK_ROUNDNESS:
                     squareStickRoundness = tempStickAction.squareStickRoundness;
+                    break;
+                case PropertyKeyStrings.DEAD_ZONE_TYPE:
+                    deadMod.DeadZoneType = tempStickAction.deadMod.DeadZoneType;
                     break;
                 default:
                     break;

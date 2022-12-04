@@ -14,6 +14,7 @@ namespace DS4MapperTest.TouchpadActions
         {
             public const string NAME = "Name";
             public const string DEAD_ZONE = "DeadZone";
+            public const string DEAD_ZONE_TYPE = "DeadZoneType";
             public const string MAX_ZONE = "MaxZone";
             public const string ANTIDEAD_ZONE = "AntiDeadZone";
             public const string OUTPUT_CURVE = "OutputCurve";
@@ -32,6 +33,7 @@ namespace DS4MapperTest.TouchpadActions
         {
             PropertyKeyStrings.NAME,
             PropertyKeyStrings.DEAD_ZONE,
+            PropertyKeyStrings.DEAD_ZONE_TYPE,
             PropertyKeyStrings.MAX_ZONE,
             PropertyKeyStrings.ANTIDEAD_ZONE,
             PropertyKeyStrings.OUTPUT_CURVE,
@@ -132,6 +134,7 @@ namespace DS4MapperTest.TouchpadActions
         {
             this.outputAction = new OutputActionData(OutputActionData.ActionType.GamepadControl, StickActionCodes.X360_LS);
             this.deadMod = new StickDeadZone(0.00, 1.00, 0.00);
+            deadMod.DeadZoneType = StickDeadZone.DeadZoneTypes.Radial;
             actionTypeName = ACTION_TYPE_NAME;
         }
 
@@ -325,6 +328,9 @@ namespace DS4MapperTest.TouchpadActions
                         case PropertyKeyStrings.SQUARE_STICK_ROUNDNESS:
                             squareStickRoundness = tempStickAction.squareStickRoundness;
                             break;
+                        case PropertyKeyStrings.DEAD_ZONE_TYPE:
+                            deadMod.DeadZoneType = tempStickAction.deadMod.DeadZoneType;
+                            break;
                         default:
                             break;
                     }
@@ -395,6 +401,9 @@ namespace DS4MapperTest.TouchpadActions
                     break;
                 case PropertyKeyStrings.SQUARE_STICK_ROUNDNESS:
                     squareStickRoundness = tempStickAction.squareStickRoundness;
+                    break;
+                case PropertyKeyStrings.DEAD_ZONE_TYPE:
+                    deadMod.DeadZoneType = tempStickAction.deadMod.DeadZoneType;
                     break;
                 default:
                     break;
