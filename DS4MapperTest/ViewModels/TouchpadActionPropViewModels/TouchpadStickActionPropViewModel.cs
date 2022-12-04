@@ -212,13 +212,13 @@ namespace DS4MapperTest.ViewModels.TouchpadActionPropViewModels
             AntiDeadZoneChanged += TouchpadStickActionPropViewModel_AntiDeadZoneChanged;
             MaxZoneChanged += TouchpadStickActionPropViewModel_MaxZoneChanged;
             OutputStickIndexChanged += MarkOutputStickChanged;
-            DeadZoneChanged += TouchpadStickActionPropViewModel_DeadZoneChanged1;
+            DeadZoneTypeChanged += TouchpadStickActionPropViewModel_DeadZoneTypeChanged;
             ActionPropertyChanged += SetProfileDirty;
 
             OutputStickIndexChanged += TouchpadStickActionPropViewModel_OutputStickIndexChanged;
         }
 
-        private void TouchpadStickActionPropViewModel_DeadZoneChanged1(object sender, EventArgs e)
+        private void TouchpadStickActionPropViewModel_DeadZoneTypeChanged(object sender, EventArgs e)
         {
             if (!this.action.ChangedProperties.Contains(TouchpadStickAction.PropertyKeyStrings.DEAD_ZONE_TYPE))
             {
