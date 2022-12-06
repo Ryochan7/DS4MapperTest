@@ -98,6 +98,32 @@ namespace DS4MapperTest.ViewModels.StickActionPropViewModels
         }
         public event EventHandler MaxZoneChanged;
 
+        public bool MaxOutputEnabled
+        {
+            get => action.MaxOutputEnabled;
+            set
+            {
+                if (action.MaxOutputEnabled == value) return;
+                action.MaxOutputEnabled = value;
+                MaxOutputEnabledChanged?.Invoke(this, EventArgs.Empty);
+                ActionPropertyChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        public event EventHandler MaxOutputEnabledChanged;
+
+        public double MaxOutput
+        {
+            get => action.MaxOutput;
+            set
+            {
+                if (action.MaxOutput == value) return;
+                action.MaxOutput = value;
+                MaxOutputChanged?.Invoke(this, EventArgs.Empty);
+                ActionPropertyChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        public event EventHandler MaxOutputChanged;
+
         public int Rotation
         {
             get => action.Rotation;
@@ -132,6 +158,114 @@ namespace DS4MapperTest.ViewModels.StickActionPropViewModels
             }
         }
         public event EventHandler DeadZoneTypeChanged;
+
+        private List<EnumChoiceSelection<StickOutCurve.Curve>> outputCurveChoices = new List<EnumChoiceSelection<StickOutCurve.Curve>>()
+        {
+            new EnumChoiceSelection<StickOutCurve.Curve>("Linear", StickOutCurve.Curve.Linear),
+            new EnumChoiceSelection<StickOutCurve.Curve>("Enhanced Precision", StickOutCurve.Curve.EnhancedPrecision),
+            new EnumChoiceSelection<StickOutCurve.Curve>("Quadratic", StickOutCurve.Curve.Quadratic),
+            new EnumChoiceSelection<StickOutCurve.Curve>("Cubic", StickOutCurve.Curve.Cubic),
+            new EnumChoiceSelection<StickOutCurve.Curve>("Easeout Quad", StickOutCurve.Curve.EaseoutQuad),
+            new EnumChoiceSelection<StickOutCurve.Curve>("Easeout Cubic", StickOutCurve.Curve.EaseoutCubic),
+        };
+        public List<EnumChoiceSelection<StickOutCurve.Curve>> OutputCurveChoices => outputCurveChoices;
+
+        public StickOutCurve.Curve OutputCurve
+        {
+            get => action.OutputCurve;
+            set
+            {
+                if (action.OutputCurve == value) return;
+                OutputCurveChanged?.Invoke(this, EventArgs.Empty);
+                ActionPropertyChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        public event EventHandler OutputCurveChanged;
+
+        public double VerticalScale
+        {
+            get => action.VerticalScale;
+            set
+            {
+                action.VerticalScale = Math.Clamp(value, 0.0, 10.0);
+                VerticalScaleChanged?.Invoke(this, EventArgs.Empty);
+                ActionPropertyChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        public event EventHandler VerticalScaleChanged;
+
+        private List<EnumChoiceSelection<InvertChoices>> invertItems = new List<EnumChoiceSelection<InvertChoices>>()
+        {
+            new EnumChoiceSelection<InvertChoices>("None", Common.InvertChoices.None),
+            new EnumChoiceSelection<InvertChoices>("X", Common.InvertChoices.InvertX),
+            new EnumChoiceSelection<InvertChoices>("Y", Common.InvertChoices.InvertY),
+            new EnumChoiceSelection<InvertChoices>("X+Y", Common.InvertChoices.InvertXY),
+        };
+        public List<EnumChoiceSelection<InvertChoices>> InvertItems => invertItems;
+
+        public InvertChoices Invert
+        {
+            get
+            {
+                InvertChoices result = InvertChoices.None;
+                if (action.InvertX && action.InvertY)
+                {
+                    result = InvertChoices.InvertXY;
+                }
+                else if (action.InvertX || action.InvertY)
+                {
+                    if (action.InvertX)
+                    {
+                        result = InvertChoices.InvertX;
+                    }
+                    else
+                    {
+                        result = InvertChoices.InvertY;
+                    }
+                }
+
+                return result;
+            }
+            set
+            {
+                InvertChoices temp = InvertChoices.None;
+                if (action.InvertX || action.InvertY)
+                {
+                    if (action.InvertX && action.InvertY)
+                    {
+                        temp = InvertChoices.InvertXY;
+                    }
+                    else if (action.InvertX)
+                    {
+                        temp = InvertChoices.InvertX;
+                    }
+                    else
+                    {
+                        temp = InvertChoices.InvertY;
+                    }
+                }
+
+                if (temp == value) return;
+
+                switch(value)
+                {
+                    case InvertChoices.None:
+                        action.InvertX = action.InvertY = false;
+                        break;
+                    case InvertChoices.InvertX:
+                        action.InvertX = true; action.InvertY = false;
+                        break;
+                    case InvertChoices.InvertY:
+                        action.InvertX = false; action.InvertY = true;
+                        break;
+                    default: break;
+                }
+
+                InvertChanged?.Invoke(this, EventArgs.Empty);
+                ActionPropertyChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        public event EventHandler InvertChanged;
 
         public bool HighlightName
         {
@@ -168,6 +302,20 @@ namespace DS4MapperTest.ViewModels.StickActionPropViewModels
         }
         public event EventHandler HighlightMaxZoneChanged;
 
+        public bool HighlightMaxOutputEnabled
+        {
+            get => action.ParentAction == null ||
+                action.ChangedProperties.Contains(StickTranslate.PropertyKeyStrings.MAX_OUTPUT_ENABLED);
+        }
+        public event EventHandler HighlightMaxOutputEnabledChanged;
+
+        public bool HighlightMaxOutput
+        {
+            get => action.ParentAction == null ||
+                action.ChangedProperties.Contains(StickTranslate.PropertyKeyStrings.MAX_OUTPUT);
+        }
+        public event EventHandler HighlightMaxOutputChanged;
+
         public bool HighlightRotation
         {
             get => action.ParentAction == null ||
@@ -181,6 +329,28 @@ namespace DS4MapperTest.ViewModels.StickActionPropViewModels
                 action.ChangedProperties.Contains(StickTranslate.PropertyKeyStrings.DEAD_ZONE_TYPE);
         }
         public event EventHandler HighlightDeadZoneTypeChanged;
+
+        public bool HighlightOutputCurve
+        {
+            get => action.ParentAction == null ||
+                action.ChangedProperties.Contains(StickTranslate.PropertyKeyStrings.OUTPUT_CURVE);
+        }
+        public event EventHandler HighlightOutputCurveChanged;
+
+        public bool HighlightVerticalScale
+        {
+            get => action.ParentAction == null ||
+                action.ChangedProperties.Contains(StickTranslate.PropertyKeyStrings.VERTICAL_SCALE);
+        }
+        public event EventHandler HighlightVerticalScaleChanged;
+
+        public bool HighlightInvert
+        {
+            get => action.ParentAction == null ||
+                action.ChangedProperties.Contains(StickTranslate.PropertyKeyStrings.INVERT_X) ||
+                action.ChangedProperties.Contains(StickTranslate.PropertyKeyStrings.INVERT_Y);
+        }
+        public event EventHandler HighlightInvertChanged;
 
         public event EventHandler ActionPropertyChanged;
         public event EventHandler<StickMapAction> ActionChanged;
@@ -222,6 +392,80 @@ namespace DS4MapperTest.ViewModels.StickActionPropViewModels
             MaxZoneChanged += StickTranslatePropViewModel_MaxZoneChanged;
             RotationChanged += StickTranslatePropViewModel_RotationChanged;
             DeadZoneTypeChanged += StickTranslatePropViewModel_DeadZoneTypeChanged;
+            MaxOutputChanged += StickTranslatePropViewModel_MaxOutputChanged;
+            MaxOutputEnabledChanged += StickTranslatePropViewModel_MaxOutputEnabledChanged;
+            InvertChanged += StickTranslatePropViewModel_InvertChanged;
+            VerticalScaleChanged += StickTranslatePropViewModel_VerticalScaleChanged;
+            OutputCurveChanged += StickTranslatePropViewModel_OutputCurveChanged;
+        }
+
+        private void StickTranslatePropViewModel_OutputCurveChanged(object sender, EventArgs e)
+        {
+            if (!action.ChangedProperties.Contains(StickTranslate.PropertyKeyStrings.OUTPUT_CURVE))
+            {
+                action.ChangedProperties.Add(StickTranslate.PropertyKeyStrings.OUTPUT_CURVE);
+            }
+
+            action.RaiseNotifyPropertyChange(mapper, StickTranslate.PropertyKeyStrings.OUTPUT_CURVE);
+            HighlightOutputCurveChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void StickTranslatePropViewModel_VerticalScaleChanged(object sender, EventArgs e)
+        {
+            if (!action.ChangedProperties.Contains(StickTranslate.PropertyKeyStrings.VERTICAL_SCALE))
+            {
+                action.ChangedProperties.Add(StickTranslate.PropertyKeyStrings.VERTICAL_SCALE);
+            }
+
+            action.RaiseNotifyPropertyChange(mapper, StickTranslate.PropertyKeyStrings.VERTICAL_SCALE);
+            HighlightVerticalScaleChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void StickTranslatePropViewModel_InvertChanged(object sender, EventArgs e)
+        {
+            if (action.InvertX)
+            {
+                if (!action.ChangedProperties.Contains(StickTranslate.PropertyKeyStrings.INVERT_X))
+                {
+                    action.ChangedProperties.Add(StickTranslate.PropertyKeyStrings.INVERT_X);
+                }
+
+                action.RaiseNotifyPropertyChange(mapper, StickTranslate.PropertyKeyStrings.INVERT_X);
+            }
+
+            if (action.InvertY)
+            {
+                if (!action.ChangedProperties.Contains(StickTranslate.PropertyKeyStrings.INVERT_Y))
+                {
+                    action.ChangedProperties.Add(StickTranslate.PropertyKeyStrings.INVERT_Y);
+                }
+
+                action.RaiseNotifyPropertyChange(mapper, StickTranslate.PropertyKeyStrings.INVERT_Y);
+            }
+
+            HighlightInvertChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void StickTranslatePropViewModel_MaxOutputEnabledChanged(object sender, EventArgs e)
+        {
+            if (!action.ChangedProperties.Contains(StickTranslate.PropertyKeyStrings.MAX_OUTPUT_ENABLED))
+            {
+                action.ChangedProperties.Add(StickTranslate.PropertyKeyStrings.MAX_OUTPUT_ENABLED);
+            }
+
+            action.RaiseNotifyPropertyChange(mapper, StickTranslate.PropertyKeyStrings.MAX_OUTPUT_ENABLED);
+            HighlightMaxOutputEnabledChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void StickTranslatePropViewModel_MaxOutputChanged(object sender, EventArgs e)
+        {
+            if (!action.ChangedProperties.Contains(StickTranslate.PropertyKeyStrings.MAX_OUTPUT))
+            {
+                action.ChangedProperties.Add(StickTranslate.PropertyKeyStrings.MAX_OUTPUT);
+            }
+
+            action.RaiseNotifyPropertyChange(mapper, StickTranslate.PropertyKeyStrings.MAX_OUTPUT);
+            HighlightMaxOutputChanged?.Invoke(this, EventArgs.Empty);
         }
 
         private void StickTranslatePropViewModel_DeadZoneTypeChanged(object sender, EventArgs e)

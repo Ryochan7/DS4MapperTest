@@ -9,116 +9,198 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <DockPanel>
-        <StackPanel>
-            <local1:StickActionSelectControl x:Name="stickSelectControl" DockPanel.Dock="Top" />
+        <ScrollViewer DockPanel.Dock="Top">
+            <StackPanel>
+                <local1:StickActionSelectControl x:Name="stickSelectControl" DockPanel.Dock="Top" />
 
-            <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
-                <Label Content="Name" />
-                <TextBox Text="{Binding Name,UpdateSourceTrigger=LostFocus}" Width="200" Margin="8,0,0,0">
-                    <TextBox.Style>
-                        <Style TargetType="TextBox" BasedOn="{StaticResource TextBoxBaseStyle}">
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding HighlightName}" Value="False">
-                                    <Setter Property="Opacity" Value="0.7" />
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </TextBox.Style>
-                </TextBox>
-            </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                    <Label Content="Name" />
+                    <TextBox Text="{Binding Name,UpdateSourceTrigger=LostFocus}" Width="200" Margin="8,0,0,0">
+                        <TextBox.Style>
+                            <Style TargetType="TextBox" BasedOn="{StaticResource TextBoxBaseStyle}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding HighlightName}" Value="False">
+                                        <Setter Property="Opacity" Value="0.7" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBox.Style>
+                    </TextBox>
+                </StackPanel>
 
-            <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
-                <Label Content="Output Stick" />
-                <ComboBox ItemsSource="{Binding OutputStickHolder.OutputStickItems}" SelectedIndex="{Binding OutputStickIndex}" DisplayMemberPath="DisplayName" Width="200" Margin="8,0,0,0">
-                    <ComboBox.Style>
-                        <Style TargetType="ComboBox" BasedOn="{StaticResource ComboBoxBaseStyle}">
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding HighlightOutputStick}" Value="False">
-                                    <Setter Property="Opacity" Value="0.7" />
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </ComboBox.Style>
-                </ComboBox>
-            </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                    <Label Content="Output Stick" />
+                    <ComboBox ItemsSource="{Binding OutputStickHolder.OutputStickItems}" SelectedIndex="{Binding OutputStickIndex}" DisplayMemberPath="DisplayName" Width="200" Margin="8,0,0,0">
+                        <ComboBox.Style>
+                            <Style TargetType="ComboBox" BasedOn="{StaticResource ComboBoxBaseStyle}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding HighlightOutputStick}" Value="False">
+                                        <Setter Property="Opacity" Value="0.7" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </ComboBox.Style>
+                    </ComboBox>
+                </StackPanel>
 
-            <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
-                <Label Content="_Dead Zone" />
-                <TextBox Text="{Binding DeadZone, UpdateSourceTrigger=LostFocus}" Width="100" Margin="8,0,0,0">
-                    <TextBox.Style>
-                        <Style TargetType="TextBox" BasedOn="{StaticResource TextBoxBaseStyle}">
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding HighlightDeadZone}" Value="False">
-                                    <Setter Property="Opacity" Value="0.7" />
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </TextBox.Style>
-                </TextBox>
-            </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                    <Label Content="_Dead Zone" />
+                    <TextBox Text="{Binding DeadZone, UpdateSourceTrigger=LostFocus}" Width="100" Margin="8,0,0,0">
+                        <TextBox.Style>
+                            <Style TargetType="TextBox" BasedOn="{StaticResource TextBoxBaseStyle}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding HighlightDeadZone}" Value="False">
+                                        <Setter Property="Opacity" Value="0.7" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBox.Style>
+                    </TextBox>
+                </StackPanel>
 
-            <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
-                <Label Content="_AntiDead Zone" />
-                <TextBox Text="{Binding AntiDeadZone, UpdateSourceTrigger=LostFocus}" Width="100" Margin="8,0,0,0">
-                    <TextBox.Style>
-                        <Style TargetType="TextBox" BasedOn="{StaticResource TextBoxBaseStyle}">
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding HighlightAntiDeadZone}" Value="False">
-                                    <Setter Property="Opacity" Value="0.7" />
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </TextBox.Style>
-                </TextBox>
-            </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                    <Label Content="_AntiDead Zone" />
+                    <TextBox Text="{Binding AntiDeadZone, UpdateSourceTrigger=LostFocus}" Width="100" Margin="8,0,0,0">
+                        <TextBox.Style>
+                            <Style TargetType="TextBox" BasedOn="{StaticResource TextBoxBaseStyle}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding HighlightAntiDeadZone}" Value="False">
+                                        <Setter Property="Opacity" Value="0.7" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBox.Style>
+                    </TextBox>
+                </StackPanel>
 
-            <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
-                <Label Content="_Max Zone" />
-                <TextBox Text="{Binding MaxZone, UpdateSourceTrigger=LostFocus}" Width="100" Margin="8,0,0,0">
-                    <TextBox.Style>
-                        <Style TargetType="TextBox" BasedOn="{StaticResource TextBoxBaseStyle}">
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding HighlightMaxZone}" Value="False">
-                                    <Setter Property="Opacity" Value="0.7" />
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </TextBox.Style>
-                </TextBox>
-            </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                    <Label Content="_Max Zone" />
+                    <TextBox Text="{Binding MaxZone, UpdateSourceTrigger=LostFocus}" Width="100" Margin="8,0,0,0">
+                        <TextBox.Style>
+                            <Style TargetType="TextBox" BasedOn="{StaticResource TextBoxBaseStyle}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding HighlightMaxZone}" Value="False">
+                                        <Setter Property="Opacity" Value="0.7" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBox.Style>
+                    </TextBox>
+                </StackPanel>
 
-            <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
-                <Label Content="Rotation" />
-                <hc:NumericUpDown Minimum="-180.0" Maximum="180.0" DecimalPlaces="0" Increment="1"
+                <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                    <Label Content="Max Output" />
+                    <CheckBox IsChecked="{Binding MaxOutputEnabled}" Content="Enable" VerticalAlignment="Center" Margin="8,0,0,0">
+                        <CheckBox.Style>
+                            <Style TargetType="CheckBox" BasedOn="{StaticResource CheckBoxBaseStyle}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding HighlightMaxOutputEnabled}" Value="False">
+                                        <Setter Property="Opacity" Value="0.7" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </CheckBox.Style>
+                    </CheckBox>
+
+                    <hc:NumericUpDown Minimum="0.0" Maximum="1.0" Value="{Binding MaxOutput}" DecimalPlaces="2"
+                                      IsEnabled="{Binding MaxOutputEnabled}" Width="100" Margin="8,0,0,0">
+                        <hc:NumericUpDown.Style>
+                            <Style TargetType="hc:NumericUpDown" BasedOn="{StaticResource NumericUpDownBaseStyle}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding HighlightMaxOutput}" Value="False">
+                                        <Setter Property="Opacity" Value="0.7" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </hc:NumericUpDown.Style>
+                    </hc:NumericUpDown>
+
+                </StackPanel>
+
+                
+
+                <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                    <Label Content="Rotation" />
+                    <hc:NumericUpDown Minimum="-180.0" Maximum="180.0" DecimalPlaces="0" Increment="1"
                                   Value="{Binding Rotation,FallbackValue='0'}" ValueFormat="0 &#xb0;" Margin="8,0,0,0">
-                    <hc:NumericUpDown.Style>
-                        <Style TargetType="hc:NumericUpDown" BasedOn="{StaticResource NumericUpDownBaseStyle}">
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding HighlightRotation}" Value="False">
-                                    <Setter Property="Opacity" Value="0.7" />
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </hc:NumericUpDown.Style>
-                </hc:NumericUpDown>
-            </StackPanel>
+                        <hc:NumericUpDown.Style>
+                            <Style TargetType="hc:NumericUpDown" BasedOn="{StaticResource NumericUpDownBaseStyle}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding HighlightRotation}" Value="False">
+                                        <Setter Property="Opacity" Value="0.7" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </hc:NumericUpDown.Style>
+                    </hc:NumericUpDown>
+                </StackPanel>
 
-            <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
-                <Label Content="Dead Zone Type" />
-                <ComboBox ItemsSource="{Binding DeadZoneModesChoices}" DisplayMemberPath="DisplayName" SelectedValuePath="ChoiceValue"
+                <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                    <Label Content="Dead Zone Type" />
+                    <ComboBox ItemsSource="{Binding DeadZoneModesChoices}" DisplayMemberPath="DisplayName" SelectedValuePath="ChoiceValue"
                           SelectedValue="{Binding DeadZoneType}" MinWidth="200" Margin="8,0,0,0">
-                    <ComboBox.Style>
-                        <Style TargetType="ComboBox" BasedOn="{StaticResource ComboBoxBaseStyle}">
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding HighlightDeadZoneType}" Value="False">
-                                    <Setter Property="Opacity" Value="0.7" />
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </ComboBox.Style>
-                </ComboBox>
-            </StackPanel>
+                        <ComboBox.Style>
+                            <Style TargetType="ComboBox" BasedOn="{StaticResource ComboBoxBaseStyle}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding HighlightDeadZoneType}" Value="False">
+                                        <Setter Property="Opacity" Value="0.7" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </ComboBox.Style>
+                    </ComboBox>
+                </StackPanel>
 
-        </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                    <Label Content="Output Curve" />
+                    <ComboBox ItemsSource="{Binding OutputCurveChoices}" DisplayMemberPath="DisplayName" SelectedValuePath="ChoiceValue"
+                          SelectedValue="{Binding OutputCurve}" MinWidth="200" Margin="8,0,0,0">
+                        <ComboBox.Style>
+                            <Style TargetType="ComboBox" BasedOn="{StaticResource ComboBoxBaseStyle}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding HighlightOutputCurve}" Value="False">
+                                        <Setter Property="Opacity" Value="0.7" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </ComboBox.Style>
+                    </ComboBox>
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                    <Label Content="Vertical Scale" />
+                    <hc:NumericUpDown Minimum="0.0" Maximum="10.0" DecimalPlaces="1" Increment="0.1"
+                                  Value="{Binding VerticalScale,FallbackValue='1.0'}" Margin="8,0,0,0">
+                        <hc:NumericUpDown.Style>
+                            <Style TargetType="hc:NumericUpDown" BasedOn="{StaticResource NumericUpDownBaseStyle}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding HighlightVerticalScale}" Value="False">
+                                        <Setter Property="Opacity" Value="0.7" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </hc:NumericUpDown.Style>
+                    </hc:NumericUpDown>
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                    <Label Content="Invert" />
+                    <ComboBox ItemsSource="{Binding InvertItems}" DisplayMemberPath="DisplayName" SelectedValuePath="ChoiceValue"
+                          SelectedValue="{Binding Invert}" MinWidth="200" Margin="8,0,0,0">
+                        <ComboBox.Style>
+                            <Style TargetType="ComboBox" BasedOn="{StaticResource ComboBoxBaseStyle}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding HighlightInvert}" Value="False">
+                                        <Setter Property="Opacity" Value="0.7" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </ComboBox.Style>
+                    </ComboBox>
+                </StackPanel>
+
+            </StackPanel>
+        </ScrollViewer>
+        
     </DockPanel>
 </UserControl>
