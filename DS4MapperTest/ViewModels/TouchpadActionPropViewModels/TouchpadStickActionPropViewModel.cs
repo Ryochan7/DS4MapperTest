@@ -102,6 +102,32 @@ namespace DS4MapperTest.ViewModels.TouchpadActionPropViewModels
         }
         public event EventHandler MaxZoneChanged;
 
+        public bool MaxOutputEnabled
+        {
+            get => action.MaxOutputEnabled;
+            set
+            {
+                if (action.MaxOutputEnabled == value) return;
+                action.MaxOutputEnabled = value;
+                MaxOutputEnabledChanged?.Invoke(this, EventArgs.Empty);
+                ActionPropertyChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        public event EventHandler MaxOutputEnabledChanged;
+
+        public double MaxOutput
+        {
+            get => action.MaxOutput;
+            set
+            {
+                if (action.MaxOutput == value) return;
+                action.MaxOutput = value;
+                MaxOutputChanged?.Invoke(this, EventArgs.Empty);
+                ActionPropertyChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        public event EventHandler MaxOutputChanged;
+
         private List<EnumChoiceSelection<StickDeadZone.DeadZoneTypes>> deadZoneModesChoices =
             new List<EnumChoiceSelection<StickDeadZone.DeadZoneTypes>>()
             {
@@ -122,6 +148,114 @@ namespace DS4MapperTest.ViewModels.TouchpadActionPropViewModels
             }
         }
         public event EventHandler DeadZoneTypeChanged;
+
+        private List<EnumChoiceSelection<StickOutCurve.Curve>> outputCurveChoices = new List<EnumChoiceSelection<StickOutCurve.Curve>>()
+        {
+            new EnumChoiceSelection<StickOutCurve.Curve>("Linear", StickOutCurve.Curve.Linear),
+            new EnumChoiceSelection<StickOutCurve.Curve>("Enhanced Precision", StickOutCurve.Curve.EnhancedPrecision),
+            new EnumChoiceSelection<StickOutCurve.Curve>("Quadratic", StickOutCurve.Curve.Quadratic),
+            new EnumChoiceSelection<StickOutCurve.Curve>("Cubic", StickOutCurve.Curve.Cubic),
+            new EnumChoiceSelection<StickOutCurve.Curve>("Easeout Quad", StickOutCurve.Curve.EaseoutQuad),
+            new EnumChoiceSelection<StickOutCurve.Curve>("Easeout Cubic", StickOutCurve.Curve.EaseoutCubic),
+        };
+        public List<EnumChoiceSelection<StickOutCurve.Curve>> OutputCurveChoices => outputCurveChoices;
+
+        public StickOutCurve.Curve OutputCurve
+        {
+            get => action.OutputCurve;
+            set
+            {
+                if (action.OutputCurve == value) return;
+                OutputCurveChanged?.Invoke(this, EventArgs.Empty);
+                ActionPropertyChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        public event EventHandler OutputCurveChanged;
+
+        public double VerticalScale
+        {
+            get => action.VerticalScale;
+            set
+            {
+                action.VerticalScale = Math.Clamp(value, 0.0, 10.0);
+                VerticalScaleChanged?.Invoke(this, EventArgs.Empty);
+                ActionPropertyChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        public event EventHandler VerticalScaleChanged;
+
+        private List<EnumChoiceSelection<InvertChoices>> invertItems = new List<EnumChoiceSelection<InvertChoices>>()
+        {
+            new EnumChoiceSelection<InvertChoices>("None", Common.InvertChoices.None),
+            new EnumChoiceSelection<InvertChoices>("X", Common.InvertChoices.InvertX),
+            new EnumChoiceSelection<InvertChoices>("Y", Common.InvertChoices.InvertY),
+            new EnumChoiceSelection<InvertChoices>("X+Y", Common.InvertChoices.InvertXY),
+        };
+        public List<EnumChoiceSelection<InvertChoices>> InvertItems => invertItems;
+
+        public InvertChoices Invert
+        {
+            get
+            {
+                InvertChoices result = InvertChoices.None;
+                if (action.InvertX && action.InvertY)
+                {
+                    result = InvertChoices.InvertXY;
+                }
+                else if (action.InvertX || action.InvertY)
+                {
+                    if (action.InvertX)
+                    {
+                        result = InvertChoices.InvertX;
+                    }
+                    else
+                    {
+                        result = InvertChoices.InvertY;
+                    }
+                }
+
+                return result;
+            }
+            set
+            {
+                InvertChoices temp = InvertChoices.None;
+                if (action.InvertX || action.InvertY)
+                {
+                    if (action.InvertX && action.InvertY)
+                    {
+                        temp = InvertChoices.InvertXY;
+                    }
+                    else if (action.InvertX)
+                    {
+                        temp = InvertChoices.InvertX;
+                    }
+                    else
+                    {
+                        temp = InvertChoices.InvertY;
+                    }
+                }
+
+                if (temp == value) return;
+
+                switch (value)
+                {
+                    case InvertChoices.None:
+                        action.InvertX = action.InvertY = false;
+                        break;
+                    case InvertChoices.InvertX:
+                        action.InvertX = true; action.InvertY = false;
+                        break;
+                    case InvertChoices.InvertY:
+                        action.InvertX = false; action.InvertY = true;
+                        break;
+                    default: break;
+                }
+
+                InvertChanged?.Invoke(this, EventArgs.Empty);
+                ActionPropertyChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        public event EventHandler InvertChanged;
 
 
         public event EventHandler ActionPropertyChanged;
@@ -163,12 +297,48 @@ namespace DS4MapperTest.ViewModels.TouchpadActionPropViewModels
         }
         public event EventHandler HighlightMaxZoneChanged;
 
+        public bool HighlightMaxOutputEnabled
+        {
+            get => action.ParentAction == null ||
+                action.ChangedProperties.Contains(TouchpadStickAction.PropertyKeyStrings.MAX_OUTPUT_ENABLED);
+        }
+        public event EventHandler HighlightMaxOutputEnabledChanged;
+
+        public bool HighlightMaxOutput
+        {
+            get => action.ParentAction == null ||
+                action.ChangedProperties.Contains(TouchpadStickAction.PropertyKeyStrings.MAX_OUTPUT);
+        }
+        public event EventHandler HighlightMaxOutputChanged;
+
         public bool HighlightDeadZoneType
         {
             get => action.ParentAction == null ||
                 action.ChangedProperties.Contains(TouchpadStickAction.PropertyKeyStrings.DEAD_ZONE_TYPE);
         }
         public event EventHandler HighlightDeadZoneTypeChanged;
+
+        public bool HighlightOutputCurve
+        {
+            get => action.ParentAction == null ||
+                action.ChangedProperties.Contains(TouchpadStickAction.PropertyKeyStrings.OUTPUT_CURVE);
+        }
+        public event EventHandler HighlightOutputCurveChanged;
+
+        public bool HighlightVerticalScale
+        {
+            get => action.ParentAction == null ||
+                action.ChangedProperties.Contains(TouchpadStickAction.PropertyKeyStrings.VERTICAL_SCALE);
+        }
+        public event EventHandler HighlightVerticalScaleChanged;
+
+        public bool HighlightInvert
+        {
+            get => action.ParentAction == null ||
+                action.ChangedProperties.Contains(TouchpadStickAction.PropertyKeyStrings.INVERT_X) ||
+                action.ChangedProperties.Contains(TouchpadStickAction.PropertyKeyStrings.INVERT_Y);
+        }
+        public event EventHandler HighlightInvertChanged;
 
         public TouchpadStickActionPropViewModel(Mapper mapper,
             TouchpadMapAction action)
@@ -216,6 +386,80 @@ namespace DS4MapperTest.ViewModels.TouchpadActionPropViewModels
             ActionPropertyChanged += SetProfileDirty;
 
             OutputStickIndexChanged += TouchpadStickActionPropViewModel_OutputStickIndexChanged;
+            MaxOutputChanged += TouchpadStickActionPropViewModel_MaxOutputChanged;
+            MaxOutputEnabledChanged += TouchpadStickActionPropViewModel_MaxOutputEnabledChanged;
+            InvertChanged += TouchpadStickActionPropViewModel_InvertChanged;
+            VerticalScaleChanged += TouchpadStickActionPropViewModel_VerticalScaleChanged;
+            OutputCurveChanged += TouchpadStickActionPropViewModel_OutputCurveChanged;
+        }
+
+        private void TouchpadStickActionPropViewModel_OutputCurveChanged(object sender, EventArgs e)
+        {
+            if (!this.action.ChangedProperties.Contains(TouchpadStickAction.PropertyKeyStrings.OUTPUT_CURVE))
+            {
+                this.action.ChangedProperties.Add(TouchpadStickAction.PropertyKeyStrings.OUTPUT_CURVE);
+            }
+
+            action.RaiseNotifyPropertyChange(mapper, TouchpadStickAction.PropertyKeyStrings.OUTPUT_CURVE);
+            HighlightOutputCurveChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void TouchpadStickActionPropViewModel_VerticalScaleChanged(object sender, EventArgs e)
+        {
+            if (!this.action.ChangedProperties.Contains(TouchpadStickAction.PropertyKeyStrings.VERTICAL_SCALE))
+            {
+                this.action.ChangedProperties.Add(TouchpadStickAction.PropertyKeyStrings.VERTICAL_SCALE);
+            }
+
+            action.RaiseNotifyPropertyChange(mapper, TouchpadStickAction.PropertyKeyStrings.VERTICAL_SCALE);
+            HighlightVerticalScaleChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void TouchpadStickActionPropViewModel_InvertChanged(object sender, EventArgs e)
+        {
+            if (action.InvertX)
+            {
+                if (!this.action.ChangedProperties.Contains(TouchpadStickAction.PropertyKeyStrings.INVERT_X))
+                {
+                    this.action.ChangedProperties.Add(TouchpadStickAction.PropertyKeyStrings.INVERT_X);
+                }
+
+                action.RaiseNotifyPropertyChange(mapper, TouchpadStickAction.PropertyKeyStrings.INVERT_X);
+            }
+
+            if (action.InvertY)
+            {
+                if (!this.action.ChangedProperties.Contains(TouchpadStickAction.PropertyKeyStrings.INVERT_Y))
+                {
+                    this.action.ChangedProperties.Add(TouchpadStickAction.PropertyKeyStrings.INVERT_Y);
+                }
+
+                action.RaiseNotifyPropertyChange(mapper, TouchpadStickAction.PropertyKeyStrings.INVERT_Y);
+            }
+
+            HighlightInvertChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void TouchpadStickActionPropViewModel_MaxOutputEnabledChanged(object sender, EventArgs e)
+        {
+            if (!this.action.ChangedProperties.Contains(TouchpadStickAction.PropertyKeyStrings.MAX_OUTPUT_ENABLED))
+            {
+                this.action.ChangedProperties.Add(TouchpadStickAction.PropertyKeyStrings.MAX_OUTPUT_ENABLED);
+            }
+
+            action.RaiseNotifyPropertyChange(mapper, TouchpadStickAction.PropertyKeyStrings.MAX_OUTPUT_ENABLED);
+            HighlightMaxOutputEnabledChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void TouchpadStickActionPropViewModel_MaxOutputChanged(object sender, EventArgs e)
+        {
+            if (!this.action.ChangedProperties.Contains(TouchpadStickAction.PropertyKeyStrings.MAX_OUTPUT))
+            {
+                this.action.ChangedProperties.Add(TouchpadStickAction.PropertyKeyStrings.MAX_OUTPUT);
+            }
+
+            action.RaiseNotifyPropertyChange(mapper, TouchpadStickAction.PropertyKeyStrings.MAX_OUTPUT);
+            HighlightMaxOutputChanged?.Invoke(this, EventArgs.Empty);
         }
 
         private void TouchpadStickActionPropViewModel_DeadZoneTypeChanged(object sender, EventArgs e)
