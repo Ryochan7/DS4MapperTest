@@ -3593,6 +3593,26 @@ namespace DS4MapperTest
         }
     }
 
+    public class TouchpadNoActionSerializer : MapActionSerializer
+    {
+        private TouchpadNoAction touchNoAction = new TouchpadNoAction();
+
+        public TouchpadNoActionSerializer() : base()
+        {
+            mapAction = touchNoAction;
+        }
+
+        public TouchpadNoActionSerializer(ActionLayer tempLayer, MapAction action) :
+            base(tempLayer, action)
+        {
+            if (action is TouchpadNoAction temp)
+            {
+                touchNoAction = temp;
+                mapAction = touchNoAction;
+            }
+        }
+    }
+
     public class AxisDirButtonSerializer : MapActionSerializer
     {
         private ButtonActions.AxisDirButton axisDirButton =

@@ -8,6 +8,13 @@ namespace DS4MapperTest.TouchpadActions
 {
     public class TouchpadNoAction : TouchpadMapAction
     {
+        public const string ACTION_TYPE_NAME = "TouchNoAction";
+
+        public TouchpadNoAction()
+        {
+            actionTypeName = ACTION_TYPE_NAME;
+        }
+
         public override void Prepare(Mapper mapper, ref TouchEventFrame touchFrame, bool alterState = true)
         {
         }
