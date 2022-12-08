@@ -18,6 +18,7 @@ using DS4MapperTest.ViewModels;
 using HidLibrary;
 using System.Windows.Interop;
 using System.Diagnostics;
+using System.Threading;
 
 namespace DS4MapperTest
 {
@@ -31,6 +32,10 @@ namespace DS4MapperTest
 
         private ControllerListViewModel controlListVM;
         public ControllerListViewModel ControlListVM => controlListVM;
+
+        private bool inHotPlug = false;
+        private int hotplugCounter = 0;
+        private ReaderWriterLockSlim hotplugCounterLock = new ReaderWriterLockSlim();
 
         private IntPtr regHandle = new IntPtr();
         private const int DBT_DEVICEARRIVAL = 0x8000;
@@ -284,10 +289,20 @@ namespace DS4MapperTest
                             Type == DBT_DEVICEREMOVECOMPLETE)
                         {
                             Trace.WriteLine($"IN THIS {System.Threading.Thread.CurrentThread.ManagedThreadId.ToString()}");
-                            Task.Run(() =>
+
+                            using (WriteLocker locker = new WriteLocker(hotplugCounterLock))
                             {
-                                InnerHotplug(manager);
-                            });
+                                hotplugCounter++;
+                            }
+
+                            if (!inHotPlug)
+                            {
+                                inHotPlug = true;
+                                Task.Run(() =>
+                                {
+                                    InnerHotplug(manager);
+                                });
+                            }
                         }
                     }
 
@@ -305,11 +320,30 @@ namespace DS4MapperTest
             Task.Delay(5000).Wait();
             Trace.WriteLine("EXITING INNER HOTPLUG");
             */
-            System.Threading.Thread.Sleep(HOTPLUG_CHECK_DELAY);
-            manager.EventDispatcher.BeginInvoke((Action)(() =>
+            bool loopHotplug = false;
+
+            using (WriteLocker locker = new WriteLocker(hotplugCounterLock))
             {
-                manager.Hotplug();
-            }));
+                loopHotplug = hotplugCounter > 0;
+                hotplugCounter = 0;
+            }
+
+            while (loopHotplug == true)
+            {
+                System.Threading.Thread.Sleep(HOTPLUG_CHECK_DELAY);
+                manager.EventDispatcher.Invoke((Action)(() =>
+                {
+                    manager.Hotplug();
+                }));
+
+                using (WriteLocker locker = new WriteLocker(hotplugCounterLock))
+                {
+                    loopHotplug = hotplugCounter > 0;
+                    hotplugCounter = 0;
+                }
+            }
+
+            inHotPlug = false;
         }
     }
 }
