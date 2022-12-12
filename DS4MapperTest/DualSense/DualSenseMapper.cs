@@ -5,7 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using DS4MapperTest.ButtonActions;
 using DS4MapperTest.DPadActions;
-using DS4MapperTest.DS4Library;
 using DS4MapperTest.GyroActions;
 using DS4MapperTest.MapperUtil;
 using DS4MapperTest.StickActions;
@@ -418,12 +417,12 @@ namespace DS4MapperTest.DualSense
                     //Trace.WriteLine($"{currentMapperState.LeftPad.X} {currentMapperState.LeftPad.Y}");
                     TouchEventFrame eventFrame = new TouchEventFrame
                     {
-                        X = Math.Clamp(currentMapperState.Touch1.X, (short)0, (short)DS4State.TouchInfo.TOUCHPAD_MAX_X),
-                        X2 = Math.Clamp(currentMapperState.Touch2.X, (short)0, (short)DS4State.TouchInfo.TOUCHPAD_MAX_X),
+                        X = Math.Clamp(currentMapperState.Touch1.X, (short)0, (short)DualSenseState.TouchInfo.TOUCHPAD_MAX_X),
+                        X2 = Math.Clamp(currentMapperState.Touch2.X, (short)0, (short)DualSenseState.TouchInfo.TOUCHPAD_MAX_X),
                         Y = Math.Clamp(TouchpadAxisScale(currentMapperState.Touch1.Y, true, cpadDefinition.yAxis),
-                            (short)0, (short)DS4State.TouchInfo.TOUCHPAD_MAX_Y),
+                            (short)0, (short)DualSenseState.TouchInfo.TOUCHPAD_MAX_Y),
                         Y2 = Math.Clamp(TouchpadAxisScale(currentMapperState.Touch2.Y, true, cpadDefinition.yAxis),
-                            (short)0, (short)DS4State.TouchInfo.TOUCHPAD_MAX_Y),
+                            (short)0, (short)DualSenseState.TouchInfo.TOUCHPAD_MAX_Y),
                         Touch = currentMapperState.Touch1.Touch,
                         numTouches = currentMapperState.NumTouches,
                         timeElapsed = currentMapperState.timeElapsed,
