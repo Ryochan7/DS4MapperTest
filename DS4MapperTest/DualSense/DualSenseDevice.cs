@@ -73,7 +73,6 @@ namespace DS4MapperTest.DualSense
             }
             else
             {
-
                 inputReportLen = BT_INPUT_REPORT_LENGTH;
                 outputReportLen = BT_OUTPUT_REPORT_LENGTH;
             }
@@ -81,6 +80,7 @@ namespace DS4MapperTest.DualSense
             // Read device serial number. Also sets input mode to DS4 mode
             serial = hidDevice.ReadSerial(SERIAL_FEATURE_ID);
 
+            baseElapsedReference = 250.0;
             deviceOptions = new DualSenseControllerOptions(deviceType);
             synced = true;
         }
