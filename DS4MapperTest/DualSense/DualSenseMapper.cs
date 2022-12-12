@@ -144,8 +144,8 @@ namespace DS4MapperTest.DualSense
             {
                 //elapsedReference = 250.0,
                 elapsedReference = device.BaseElapsedReference,
-                mouseCoefficient = 0.012,
-                mouseOffset = 0.2,
+                mouseCoefficient = 0.009,
+                mouseOffset = 0.15,
 
                 accelMinLeanX = -8192,
                 accelMaxLeanX = 8192,
