@@ -71,6 +71,11 @@ namespace DS4MapperTest
                 // was just created
                 appGlobal.CheckAndCopyExampleProfiles();
             }
+            else
+            {
+                // Create dirs for new devices if necessary
+                appGlobal.CreateDeviceProfilesSkeleton();
+            }
 
             appGlobal.RefreshBaseDriverInfo();
             appGlobal.StartupLoadAppSettings();

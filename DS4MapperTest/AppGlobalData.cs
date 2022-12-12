@@ -80,6 +80,13 @@ namespace DS4MapperTest
         public bool absUseAllMonitors = true;
         public Dictionary<int, string> activeProfiles = new Dictionary<int, string>();
         private ReaderWriterLockSlim _controllerStoreLocker = new ReaderWriterLockSlim();
+        private List<string> checkFoldersList = new List<string>()
+            {
+                STEAM_CONTROLLER_PROFILE_DIR,
+                DS4_PROFILE_DIR,
+                DUALSENSE_PROFILE_DIR,
+                SWITCH_PRO_PROFILE_DIR,
+            };
 
         public AppGlobalData()
         {
@@ -104,10 +111,8 @@ namespace DS4MapperTest
             {
                 Directory.CreateDirectory(appdatapath);
                 Directory.CreateDirectory(Path.Combine(appdatapath, PROFILES_FOLDER_NAME));
-                Directory.CreateDirectory(Path.Combine(appdatapath, PROFILES_FOLDER_NAME, STEAM_CONTROLLER_PROFILE_DIR));
-                Directory.CreateDirectory(Path.Combine(appdatapath, PROFILES_FOLDER_NAME, DS4_PROFILE_DIR));
-                Directory.CreateDirectory(Path.Combine(appdatapath, PROFILES_FOLDER_NAME, DUALSENSE_PROFILE_DIR));
-                Directory.CreateDirectory(Path.Combine(appdatapath, PROFILES_FOLDER_NAME, SWITCH_PRO_PROFILE_DIR));
+                CreateDeviceProfilesSkeleton();
+
                 Directory.CreateDirectory(Path.Combine(appdatapath, LOGS_FOLDER_NAME));
             }
             catch (UnauthorizedAccessException)
@@ -119,19 +124,35 @@ namespace DS4MapperTest
             return result;
         }
 
+        public bool CreateDeviceProfilesSkeleton()
+        {
+            bool result = true;
+
+            try
+            {
+                foreach(string deviceProfFolder in checkFoldersList)
+                {
+                    string tempDirPath = Path.Combine(appdatapath, PROFILES_FOLDER_NAME, deviceProfFolder);
+                    if (!Directory.Exists(tempDirPath))
+                    {
+                        Directory.CreateDirectory(tempDirPath);
+                    }
+                }
+            }
+            catch(UnauthorizedAccessException)
+            {
+                result = false;
+            }
+
+            return result;
+        }
+
         public bool CheckAndCopyExampleProfiles()
         {
             bool result = true;
-            List<string> checkFolders = new List<string>()
-            {
-                STEAM_CONTROLLER_PROFILE_DIR,
-                DS4_PROFILE_DIR,
-                DUALSENSE_PROFILE_DIR,
-                SWITCH_PRO_PROFILE_DIR,
-            };
             try
             {
-                foreach(string devTemplateFolder in checkFolders)
+                foreach(string devTemplateFolder in checkFoldersList)
                 {
                     string exampleDevProfilesPath = Path.Combine(exedirpath, TEMPLATE_PROFILES_DIRNAME, devTemplateFolder);
                     string destDevProfilePath = Path.Combine(appdatapath, PROFILES_FOLDER_NAME, devTemplateFolder);
