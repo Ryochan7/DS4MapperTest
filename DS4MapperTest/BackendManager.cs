@@ -84,6 +84,10 @@ namespace DS4MapperTest
             deviceProfileList.Refresh();
             deviceProfileListDict.Add(InputDeviceType.DS4, deviceProfileList);
 
+            ProfileList dsDeviceProfileList = new ProfileList(InputDeviceType.DualSense);
+            dsDeviceProfileList.Refresh();
+            deviceProfileListDict.Add(InputDeviceType.DualSense, dsDeviceProfileList);
+
             ProfileList switchDeviceProfileList = new ProfileList(InputDeviceType.SwitchPro);
             switchDeviceProfileList.Refresh();
             deviceProfileListDict.Add(InputDeviceType.SwitchPro, switchDeviceProfileList);

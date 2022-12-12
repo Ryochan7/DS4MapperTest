@@ -31,18 +31,21 @@ namespace DS4MapperTest
         public void Refresh()
         {
             profileListCol.Clear();
-            string[] profiles =
-                Directory.GetFiles(AppGlobalDataSingleton.Instance.GetDeviceProfileFolderLocation(inputDeviceType));
-            foreach (string s in profiles)
+            string tempDirPath = AppGlobalDataSingleton.Instance.GetDeviceProfileFolderLocation(inputDeviceType);
+            if (Directory.Exists(tempDirPath))
             {
-                if (s.EndsWith(".json"))
+                string[] profiles = Directory.GetFiles(tempDirPath);
+                foreach (string s in profiles)
                 {
-                    string json = File.ReadAllText(s);
+                    if (s.EndsWith(".json"))
+                    {
+                        string json = File.ReadAllText(s);
 
-                    ProfilePreview tempPreview =
-                        JsonConvert.DeserializeObject<ProfilePreview>(json);
-                    ProfileEntity item = new ProfileEntity(path: s, name: tempPreview.Name, inputDeviceType);
-                    profileListCol.Add(item);
+                        ProfilePreview tempPreview =
+                            JsonConvert.DeserializeObject<ProfilePreview>(json);
+                        ProfileEntity item = new ProfileEntity(path: s, name: tempPreview.Name, inputDeviceType);
+                        profileListCol.Add(item);
+                    }
                 }
             }
         }

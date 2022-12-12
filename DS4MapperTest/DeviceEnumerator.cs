@@ -9,6 +9,7 @@ using DS4MapperTest.DS4Library;
 using System.Runtime.InteropServices;
 using static DS4MapperTest.VidPidMeta;
 using DS4MapperTest.SwitchProLibrary;
+using DS4MapperTest.DualSense;
 
 namespace DS4MapperTest
 {
@@ -53,6 +54,7 @@ namespace DS4MapperTest
         private const int SONY_VID = 0x054C;
         private const int SONY_DS4_V1_PID = 0x05C4;
         private const int SONY_DS4_V2_PID = 0x09CC;
+        private const int SONY_DUALSENSE_PID = 0x0CE6;
 
         private const int NINTENDO_VENDOR_ID = 0x57e;
         private const int SWITCH_PRO_PRODUCT_ID = 0x2009;
@@ -75,6 +77,8 @@ namespace DS4MapperTest
                 VidPidMeta.UsedConnectionBus.HID),
             new VidPidMeta(SONY_VID, SONY_DS4_V2_PID, "DS4 v.2", InputDeviceType.DS4,
                 VidPidMeta.UsedConnectionBus.HID),
+            new VidPidMeta(SONY_VID, SONY_DUALSENSE_PID, "DualSense", InputDeviceType.DualSense,
+                VidPidMeta.UsedConnectionBus.HID),
             new VidPidMeta(NINTENDO_VENDOR_ID, SWITCH_PRO_PRODUCT_ID, "Switch Pro", InputDeviceType.SwitchPro,
                 VidPidMeta.UsedConnectionBus.HID),
         };
@@ -93,6 +97,12 @@ namespace DS4MapperTest
                 if (meta.inputDevType == InputDeviceType.DS4)
                 {
                     meta.testDelUnion.hidHandler = DS4DeviceCheckHandler;
+                    vidPidMetaDict.Add($"VID_{meta.vid}&PID_{meta.pid}", meta);
+                    //vidPidDelDict.Add($"VID_{meta.vid}&PID_{meta.pid}", meta.testDelUnion.hidHandler);
+                }
+                else if (meta.inputDevType == InputDeviceType.DualSense)
+                {
+                    meta.testDelUnion.hidHandler = DualSenseDeviceCheckHandler;
                     vidPidMetaDict.Add($"VID_{meta.vid}&PID_{meta.pid}", meta);
                     //vidPidDelDict.Add($"VID_{meta.vid}&PID_{meta.pid}", meta.testDelUnion.hidHandler);
                 }
@@ -165,7 +175,8 @@ namespace DS4MapperTest
 
                     if (hidDev.IsOpen)
                     {
-                        if (value.inputDevType == InputDeviceType.DS4)
+                        if (value.inputDevType == InputDeviceType.DS4 ||
+                            value.inputDevType == InputDeviceType.DualSense)
                         {
                             value.testDelUnion.hidHandler?.Invoke(hidDev, value);
                         }
@@ -289,6 +300,22 @@ namespace DS4MapperTest
             return result;
         }
 
+        private bool DualSenseDeviceCheckHandler(HidDevice hidDev, VidPidMeta meta)
+        {
+            bool result = false;
+
+            if (meta != null)
+            {
+                DualSenseDevice tempDev = new DualSenseDevice(hidDev, meta.displayName);
+                foundKnownDevices.Add(hidDev.DevicePath, tempDev);
+                revFoundKnownDevices.Add(tempDev, hidDev.DevicePath);
+                newKnownDevices.Add(hidDev.DevicePath, tempDev);
+                result = true;
+            }
+
+            return result;
+        }
+
         internal bool SwitchProDeviceCheckHandler(HidDevice hidDev, VidPidMeta meta)
         {
             bool result = false;
@@ -315,6 +342,14 @@ namespace DS4MapperTest
                         DS4Device ds4Device = device as DS4Device;
                         DS4Reader reader = new DS4Reader(ds4Device);
                         result = new DS4Mapper(ds4Device, reader, appGlobal);
+                    }
+
+                    break;
+                case DualSenseDevice:
+                    {
+                        DualSenseDevice dsDevice = device as DualSenseDevice;
+                        DualSenseReader reader = new DualSenseReader(dsDevice);
+                        result = new DualSenseMapper(dsDevice, reader, appGlobal);
                     }
 
                     break;

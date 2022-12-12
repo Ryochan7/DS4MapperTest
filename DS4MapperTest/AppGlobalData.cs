@@ -26,6 +26,7 @@ namespace DS4MapperTest
         public const string LOGS_FOLDER_NAME = "Logs";
         public const string STEAM_CONTROLLER_PROFILE_DIR = "SteamController";
         public const string DS4_PROFILE_DIR = "DualShock4";
+        public const string DUALSENSE_PROFILE_DIR = "DualSense";
         public const string SWITCH_PRO_PROFILE_DIR = "SwitchPro";
         public const string TEMPLATE_PROFILES_DIRNAME = "template_profiles";
 
@@ -105,6 +106,7 @@ namespace DS4MapperTest
                 Directory.CreateDirectory(Path.Combine(appdatapath, PROFILES_FOLDER_NAME));
                 Directory.CreateDirectory(Path.Combine(appdatapath, PROFILES_FOLDER_NAME, STEAM_CONTROLLER_PROFILE_DIR));
                 Directory.CreateDirectory(Path.Combine(appdatapath, PROFILES_FOLDER_NAME, DS4_PROFILE_DIR));
+                Directory.CreateDirectory(Path.Combine(appdatapath, PROFILES_FOLDER_NAME, DUALSENSE_PROFILE_DIR));
                 Directory.CreateDirectory(Path.Combine(appdatapath, PROFILES_FOLDER_NAME, SWITCH_PRO_PROFILE_DIR));
                 Directory.CreateDirectory(Path.Combine(appdatapath, LOGS_FOLDER_NAME));
             }
@@ -124,6 +126,7 @@ namespace DS4MapperTest
             {
                 STEAM_CONTROLLER_PROFILE_DIR,
                 DS4_PROFILE_DIR,
+                DUALSENSE_PROFILE_DIR,
                 SWITCH_PRO_PROFILE_DIR,
             };
             try
@@ -656,6 +659,9 @@ namespace DS4MapperTest
                 case InputDeviceType.DS4:
                     result = Path.Combine(baseProfilesPath, DS4_PROFILE_DIR);
                     break;
+                case InputDeviceType.DualSense:
+                    result = Path.Combine(baseProfilesPath, DUALSENSE_PROFILE_DIR);
+                    break;
                 case InputDeviceType.SwitchPro:
                     result = Path.Combine(baseProfilesPath, SWITCH_PRO_PROFILE_DIR);
                     break;
@@ -780,6 +786,7 @@ namespace DS4MapperTest
         SteamController,
         SwitchPro,
         DS4,
+        DualSense,
     }
 
     public static class AppGlobalDataSingleton
