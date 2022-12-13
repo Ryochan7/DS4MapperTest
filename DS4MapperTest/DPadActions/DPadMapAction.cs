@@ -14,6 +14,8 @@ namespace DS4MapperTest.DPadActions
         protected DpadDirections previousDir = DpadDirections.Centered;
         protected DpadDirections currentDir = DpadDirections.Centered;
 
+        protected event EventHandler<NotifyPropertyChangeArgs> NotifyPropertyChanged;
+
         public abstract void Prepare(Mapper mapper, DpadDirections value, bool alterState = true);
 
         public abstract DPadMapAction DuplicateAction();
@@ -32,6 +34,8 @@ namespace DS4MapperTest.DPadActions
 
         public virtual void RaiseNotifyPropertyChange(Mapper mapper, string propertyName)
         {
+            NotifyPropertyChanged?.Invoke(this,
+                new NotifyPropertyChangeArgs(mapper, propertyName));
         }
     }
 }

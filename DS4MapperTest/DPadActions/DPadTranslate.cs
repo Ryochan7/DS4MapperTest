@@ -113,6 +113,8 @@ namespace DS4MapperTest.DPadActions
                 tempTranslateAction.hasLayeredAction = true;
                 mappingId = tempTranslateAction.mappingId;
 
+                tempTranslateAction.NotifyPropertyChanged += TempTranslateAction_NotifyPropertyChanged;
+
                 // Determine the set with properties that should inherit
                 // from the parent action
                 IEnumerable<string> useParentProList =
@@ -141,6 +143,38 @@ namespace DS4MapperTest.DPadActions
                 //{
                 //    outputAction.DpadCode = tempTranslateAction.outputAction.DpadCode;
                 //}
+            }
+        }
+
+        private void TempTranslateAction_NotifyPropertyChanged(object sender, NotifyPropertyChangeArgs e)
+        {
+            CascadePropertyChange(e.Mapper, e.PropertyName);
+        }
+
+        protected override void CascadePropertyChange(Mapper mapper, string propertyName)
+        {
+            if (changedProperties.Contains(propertyName))
+            {
+                // Property already overrridden in action. Leave
+                return;
+            }
+            else if (parentAction == null)
+            {
+                // No parent action. Leave
+                return;
+            }
+
+            DPadTranslate tempTranslateAction = parentAction as DPadTranslate;
+            switch (propertyName)
+            {
+                case PropertyKeyStrings.NAME:
+                    name = tempTranslateAction.name;
+                    break;
+                case PropertyKeyStrings.OUTPUT_PAD:
+                    outputAction.DpadCode = tempTranslateAction.outputAction.DpadCode;
+                    break;
+                default:
+                    break;
             }
         }
     }

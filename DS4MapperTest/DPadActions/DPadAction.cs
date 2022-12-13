@@ -1084,6 +1084,8 @@ namespace DS4MapperTest.DPadActions
                 tempDpadAction.hasLayeredAction = true;
                 mappingId = tempDpadAction.mappingId;
 
+                tempDpadAction.NotifyPropertyChanged += TempDpadAction_NotifyPropertyChanged;
+
                 // Determine the set with properties that should inherit
                 // from the parent action
                 IEnumerable<string> useParentProList =
@@ -1102,7 +1104,7 @@ namespace DS4MapperTest.DPadActions
                         case PropertyKeyStrings.PAD_DIR_UP:
                             {
                                 int tempDir = (int)DpadDirections.Up;
-                                usedEventButtonsList[tempDir] = tempDpadAction.eventCodes4[tempDir];
+                                eventCodes4[tempDir] = tempDpadAction.eventCodes4[tempDir];
                                 useParentDataDraft2[tempDir] = true;
                             }
 
@@ -1110,7 +1112,7 @@ namespace DS4MapperTest.DPadActions
                         case PropertyKeyStrings.PAD_DIR_DOWN:
                             {
                                 int tempDir = (int)DpadDirections.Down;
-                                usedEventButtonsList[tempDir] = tempDpadAction.eventCodes4[tempDir];
+                                eventCodes4[tempDir] = tempDpadAction.eventCodes4[tempDir];
                                 useParentDataDraft2[tempDir] = true;
                             }
 
@@ -1118,7 +1120,7 @@ namespace DS4MapperTest.DPadActions
                         case PropertyKeyStrings.PAD_DIR_LEFT:
                             {
                                 int tempDir = (int)DpadDirections.Left;
-                                usedEventButtonsList[tempDir] = tempDpadAction.eventCodes4[tempDir];
+                                eventCodes4[tempDir] = tempDpadAction.eventCodes4[tempDir];
                                 useParentDataDraft2[tempDir] = true;
                             }
 
@@ -1126,7 +1128,7 @@ namespace DS4MapperTest.DPadActions
                         case PropertyKeyStrings.PAD_DIR_RIGHT:
                             {
                                 int tempDir = (int)DpadDirections.Right;
-                                usedEventButtonsList[tempDir] = tempDpadAction.eventCodes4[tempDir];
+                                eventCodes4[tempDir] = tempDpadAction.eventCodes4[tempDir];
                                 useParentDataDraft2[tempDir] = true;
                             }
 
@@ -1134,7 +1136,7 @@ namespace DS4MapperTest.DPadActions
                         case PropertyKeyStrings.PAD_DIR_UPLEFT:
                             {
                                 int tempDir = (int)DpadDirections.UpLeft;
-                                usedEventButtonsList[tempDir] = tempDpadAction.eventCodes4[tempDir];
+                                eventCodes4[tempDir] = tempDpadAction.eventCodes4[tempDir];
                                 useParentDataDraft2[tempDir] = true;
                             }
 
@@ -1142,7 +1144,7 @@ namespace DS4MapperTest.DPadActions
                         case PropertyKeyStrings.PAD_DIR_UPRIGHT:
                             {
                                 int tempDir = (int)DpadDirections.UpRight;
-                                usedEventButtonsList[tempDir] = tempDpadAction.eventCodes4[tempDir];
+                                eventCodes4[tempDir] = tempDpadAction.eventCodes4[tempDir];
                                 useParentDataDraft2[tempDir] = true;
                             }
 
@@ -1150,7 +1152,7 @@ namespace DS4MapperTest.DPadActions
                         case PropertyKeyStrings.PAD_DIR_DOWNLEFT:
                             {
                                 int tempDir = (int)DpadDirections.DownLeft;
-                                usedEventButtonsList[tempDir] = tempDpadAction.eventCodes4[tempDir];
+                                eventCodes4[tempDir] = tempDpadAction.eventCodes4[tempDir];
                                 useParentDataDraft2[tempDir] = true;
                             }
 
@@ -1158,7 +1160,7 @@ namespace DS4MapperTest.DPadActions
                         case PropertyKeyStrings.PAD_DIR_DOWNRIGHT:
                             {
                                 int tempDir = (int)DpadDirections.DownRight;
-                                usedEventButtonsList[tempDir] = tempDpadAction.eventCodes4[tempDir];
+                                eventCodes4[tempDir] = tempDpadAction.eventCodes4[tempDir];
                                 useParentDataDraft2[tempDir] = true;
                             }
 
@@ -1234,6 +1236,111 @@ namespace DS4MapperTest.DPadActions
                 //    int tempDir = (int)DpadDirections.DownRight;
                 //    usedEventButtonsList[tempDir] = tempDpadAction.eventCodes4[tempDir];
                 //}
+            }
+        }
+
+        private void TempDpadAction_NotifyPropertyChanged(object sender, NotifyPropertyChangeArgs e)
+        {
+            CascadePropertyChange(e.Mapper, e.PropertyName);
+        }
+
+        protected override void CascadePropertyChange(Mapper mapper, string propertyName)
+        {
+            if (changedProperties.Contains(propertyName))
+            {
+                // Property already overrridden in action. Leave
+                return;
+            }
+            else if (parentAction == null)
+            {
+                // No parent action. Leave
+                return;
+            }
+
+            DPadAction tempDpadAction = parentAction as DPadAction;
+            switch (propertyName)
+            {
+                case PropertyKeyStrings.NAME:
+                    name = tempDpadAction.name;
+                    break;
+                case PropertyKeyStrings.PAD_MODE:
+                    currentMode = tempDpadAction.CurrentMode;
+                    break;
+                case PropertyKeyStrings.PAD_DIR_UP:
+                    {
+                        int tempDir = (int)DpadDirections.Up;
+                        eventCodes4[tempDir] = tempDpadAction.eventCodes4[tempDir];
+                        useParentDataDraft2[tempDir] = true;
+                    }
+
+                    break;
+                case PropertyKeyStrings.PAD_DIR_DOWN:
+                    {
+                        int tempDir = (int)DpadDirections.Down;
+                        eventCodes4[tempDir] = tempDpadAction.eventCodes4[tempDir];
+                        useParentDataDraft2[tempDir] = true;
+                    }
+
+                    break;
+                case PropertyKeyStrings.PAD_DIR_LEFT:
+                    {
+                        int tempDir = (int)DpadDirections.Left;
+                        eventCodes4[tempDir] = tempDpadAction.eventCodes4[tempDir];
+                        useParentDataDraft2[tempDir] = true;
+                    }
+
+                    break;
+                case PropertyKeyStrings.PAD_DIR_RIGHT:
+                    {
+                        int tempDir = (int)DpadDirections.Right;
+                        eventCodes4[tempDir] = tempDpadAction.eventCodes4[tempDir];
+                        useParentDataDraft2[tempDir] = true;
+                    }
+
+                    break;
+                case PropertyKeyStrings.PAD_DIR_UPLEFT:
+                    {
+                        int tempDir = (int)DpadDirections.UpLeft;
+                        eventCodes4[tempDir] = tempDpadAction.eventCodes4[tempDir];
+                        useParentDataDraft2[tempDir] = true;
+                    }
+
+                    break;
+                case PropertyKeyStrings.PAD_DIR_UPRIGHT:
+                    {
+                        int tempDir = (int)DpadDirections.UpRight;
+                        eventCodes4[tempDir] = tempDpadAction.eventCodes4[tempDir];
+                        useParentDataDraft2[tempDir] = true;
+                    }
+
+                    break;
+                case PropertyKeyStrings.PAD_DIR_DOWNLEFT:
+                    {
+                        int tempDir = (int)DpadDirections.DownLeft;
+                        eventCodes4[tempDir] = tempDpadAction.eventCodes4[tempDir];
+                        useParentDataDraft2[tempDir] = true;
+                    }
+
+                    break;
+                case PropertyKeyStrings.PAD_DIR_DOWNRIGHT:
+                    {
+                        int tempDir = (int)DpadDirections.DownRight;
+                        eventCodes4[tempDir] = tempDpadAction.eventCodes4[tempDir];
+                        useParentDataDraft2[tempDir] = true;
+                    }
+
+                    break;
+                case PropertyKeyStrings.DELAY_TIME:
+                    {
+                        delayTime = tempDpadAction.delayTime;
+                        // Copy ref to parent action Stopwatch
+                        delayStopWatch = tempDpadAction.delayStopWatch;
+                        useParentDelay = true;
+                    }
+
+                    break;
+                default:
+                    break;
             }
         }
     }
