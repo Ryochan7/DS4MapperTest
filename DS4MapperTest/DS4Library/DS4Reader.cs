@@ -290,6 +290,10 @@ namespace DS4MapperTest.DS4Library
                     tempBattery = Math.Clamp(tempBattery, 0, 100);
 
                     current.Battery = (byte)tempBattery;
+                    if (previous.Battery != tempBattery)
+                    {
+                        device.Battery = (uint)tempBattery;
+                    }
 
                     Report?.Invoke(this, device);
                     device.SyncStates();

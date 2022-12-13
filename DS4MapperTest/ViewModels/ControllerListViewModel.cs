@@ -248,6 +248,12 @@ namespace DS4MapperTest.ViewModels
             get => itemIndex;
         }
 
+        public string Battery
+        {
+            get => $"{device.Battery}%";
+        }
+        public event EventHandler BatteryChanged;
+
         public int ProfileIndex
         {
             get => profileIndex;
@@ -278,11 +284,17 @@ namespace DS4MapperTest.ViewModels
             this.device = device;
             this.itemIndex = itemIndex;
             this.profileListHolder = profileListHolder;
+            device.BatteryChanged += Device_BatteryChanged;
 
             editProfCommand = new BasicActionCommand((parameter) =>
             {
                 EditProfileRequested?.Invoke(this, EventArgs.Empty);
             });
+        }
+
+        private void Device_BatteryChanged(object sender, EventArgs e)
+        {
+            BatteryChanged?.Invoke(this, EventArgs.Empty);
         }
 
         public void PostInit(string profilePath)

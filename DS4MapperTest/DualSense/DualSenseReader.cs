@@ -282,6 +282,10 @@ namespace DS4MapperTest.DualSense
                     }
 
                     current.Battery = (byte)tempBattery;
+                    if (previous.Battery != tempBattery)
+                    {
+                        device.Battery = (uint)tempBattery;
+                    }
 
                     Report?.Invoke(this, device);
                     device.SyncStates();

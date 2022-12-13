@@ -58,6 +58,19 @@ namespace DS4MapperTest
         }
         public virtual event EventHandler SyncedChanged;
 
+        protected uint battery;
+        public uint Battery
+        {
+            get => battery;
+            set
+            {
+                if (value == battery) return;
+                battery = value;
+                BatteryChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        public event EventHandler BatteryChanged;
+
         public abstract void SetOperational();
         public abstract void Detach();
     }

@@ -120,6 +120,7 @@ namespace DS4MapperTest.SwitchProLibrary
 
                         //Console.WriteLine("GOT INPUT REPORT {0} 0x{1:X2}", res, inputReportBuffer[0]);
                         ref SwitchProState current = ref device.ClothOff;
+                        ref SwitchProState previous = ref device.ClothOff2;
                         byte tmpByte;
 
                         // Obtain stats for last accepted poll time
@@ -299,6 +300,11 @@ namespace DS4MapperTest.SwitchProLibrary
                         //    current.Motion.AccelX, current.Motion.AccelY, current.Motion.AccelZ);
                         //Console.WriteLine("Final Gyro: Yaw({0}), Pitch({1}), Roll({2})",
                         //    current.Motion.GyroYaw, current.Motion.GyroPitch, current.Motion.GyroRoll);
+
+                        if (previous.Battery != current.Battery)
+                        {
+                            device.Battery = (uint)current.Battery;
+                        }
 
                         Report?.Invoke(this, device);
                         //WriteReport();
