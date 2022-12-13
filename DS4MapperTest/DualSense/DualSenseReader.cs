@@ -158,7 +158,7 @@ namespace DS4MapperTest.DualSense
                     current.R3 = (tempByte & (1 << 7)) != 0;
                     current.L3 = (tempByte & (1 << 6)) != 0;
                     current.Options = (tempByte & (1 << 5)) != 0;
-                    current.Share = (tempByte & (1 << 4)) != 0;
+                    current.Create = (tempByte & (1 << 4)) != 0;
                     current.R2Btn = (tempByte & (1 << 3)) != 0;
                     current.L2Btn = (tempByte & (1 << 2)) != 0;
                     current.R1 = (tempByte & (1 << 1)) != 0;

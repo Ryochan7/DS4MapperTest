@@ -62,7 +62,7 @@ namespace DS4MapperTest.DualSense
         public bool Cross;
         public bool Square;
         public bool Triangle;
-        public bool Share;
+        public bool Create;
         public bool Options;
         public bool PS;
         public bool Mute;

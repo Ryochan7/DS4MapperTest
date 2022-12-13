@@ -55,7 +55,7 @@ namespace DS4MapperTest.DualSense
                 new InputBindingMeta("R2", "R2", InputBindingMeta.InputControlType.Trigger),
                 new InputBindingMeta("L3", "L3", InputBindingMeta.InputControlType.Button),
                 new InputBindingMeta("R3", "R3", InputBindingMeta.InputControlType.Button),
-                new InputBindingMeta("Share", "Share", InputBindingMeta.InputControlType.Button),
+                new InputBindingMeta("Create", "Create", InputBindingMeta.InputControlType.Button),
                 new InputBindingMeta("Options", "Options", InputBindingMeta.InputControlType.Button),
                 new InputBindingMeta("PS", "PS", InputBindingMeta.InputControlType.Button),
                 new InputBindingMeta("Mute", "Mute", InputBindingMeta.InputControlType.Button),
@@ -321,10 +321,10 @@ namespace DS4MapperTest.DualSense
 
                 if (tempBtnAct.active) tempBtnAct.Event(this);
 
-                tempBtnAct = currentLayer.buttonActionDict["Share"];
-                if (currentMapperState.Share || currentMapperState.Share != previousMapperState.Share)
+                tempBtnAct = currentLayer.buttonActionDict["Create"];
+                if (currentMapperState.Create || currentMapperState.Create != previousMapperState.Create)
                 {
-                    tempBtnAct.Prepare(this, currentMapperState.Share);
+                    tempBtnAct.Prepare(this, currentMapperState.Create);
                 }
 
                 if (tempBtnAct.active) tempBtnAct.Event(this);
@@ -518,7 +518,7 @@ namespace DS4MapperTest.DualSense
                     result = currentMapperState.R3;
                     break;
                 case JoypadActionCodes.BtnSelect:
-                    result = currentMapperState.Share;
+                    result = currentMapperState.Create;
                     break;
                 case JoypadActionCodes.BtnStart:
                     result = currentMapperState.Options;
@@ -583,7 +583,7 @@ namespace DS4MapperTest.DualSense
                         result = currentMapperState.R3;
                         break;
                     case JoypadActionCodes.BtnSelect:
-                        result = currentMapperState.Share;
+                        result = currentMapperState.Create;
                         break;
                     case JoypadActionCodes.BtnStart:
                         result = currentMapperState.Options;
