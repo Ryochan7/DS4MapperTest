@@ -61,7 +61,8 @@ namespace DS4MapperTest.TouchpadActions
         private double TRACKBALL_SCALE = 0.000023;
         private const int TRACKBALL_BUFFER_LEN = 8;
 
-        private const int DEFAULT_DEADZONE = 8;
+        //private const int DEFAULT_DEADZONE = 8;
+        private const int DEFAULT_DEADZONE = 0;
         private const double DEFAULT_SENSITIVITY = 1.0;
         private const double DEFAULT_VERTICAL_SCALE = 1.0;
         private const bool DEFAULT_SMOOTHING_ENABLED = true;
