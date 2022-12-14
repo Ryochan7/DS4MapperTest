@@ -31,6 +31,7 @@ namespace DS4MapperTest.Views
         public event EventHandler<ButtonAction> ActionChanged;
         public event EventHandler RequestClose;
 
+        // Repurpose to use for only action switch
         public delegate void PreActionSwitchHandler(ButtonAction oldAction, ButtonAction newAction);
         public event PreActionSwitchHandler PreActionSwitch;
 
@@ -254,7 +255,7 @@ namespace DS4MapperTest.Views
 
             PreActionSwitch?.Invoke(oldAction, newAction);
             funcBindVM.SwitchAction(oldAction, newAction);
-            ActionChanged?.Invoke(this, newAction);
+            //ActionChanged?.Invoke(this, newAction);
 
             funcBindVM = new FuncBindingControlViewModel(mapper, newAction, defaultPropControl);
             funcBindVM.IsRealAction = true;

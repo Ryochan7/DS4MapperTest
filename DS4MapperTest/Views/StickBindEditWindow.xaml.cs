@@ -95,10 +95,10 @@ namespace DS4MapperTest.Views
             {
                 e.UpdateActHandler?.Invoke(oldAction, newAction);
             };
-            //tempControl.ActionChanged += (sender, action) =>
-            //{
-            //    e.UpdateActHandler?.Invoke(null, action);
-            //};
+            tempControl.ActionChanged += (sender, action) =>
+            {
+                e.UpdateActHandler?.Invoke(null, action);
+            };
 
             UserControl oldControl = stickBindEditVM.DisplayControl;
             tempControl.RequestClose += (sender, args) =>
