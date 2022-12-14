@@ -4205,7 +4205,54 @@ namespace DS4MapperTest
     {
         public class StickMouseSettings
         {
+            public class DeltaAccelSettingsSerializer
+            {
+                private StickMouse stickMouseAction;
+
+                public bool Enabled
+                {
+                    get => stickMouseAction.MouseDeltaSettings.Enabled;
+                    set => stickMouseAction.MouseDeltaSettings.Enabled = value;
+                }
+
+                public double Multiplier
+                {
+                    get => stickMouseAction.MouseDeltaSettings.Multiplier;
+                    set => stickMouseAction.MouseDeltaSettings.Multiplier = value;
+                }
+
+                public double MaxTravel
+                {
+                    get => stickMouseAction.MouseDeltaSettings.MaxTravel;
+                    set => stickMouseAction.MouseDeltaSettings.MaxTravel = value;
+                }
+
+                public double MinTravel
+                {
+                    get => stickMouseAction.MouseDeltaSettings.MinTravel;
+                    set => stickMouseAction.MouseDeltaSettings.MinTravel = value;
+                }
+
+                public double EasingDuration
+                {
+                    get => stickMouseAction.MouseDeltaSettings.EasingDuration;
+                    set => stickMouseAction.MouseDeltaSettings.EasingDuration = value;
+                }
+
+                public double MinFactor
+                {
+                    get => stickMouseAction.MouseDeltaSettings.MinFactor;
+                    set => stickMouseAction.MouseDeltaSettings.MinFactor = value;
+                }
+
+                public DeltaAccelSettingsSerializer(StickMouse mouseAction)
+                {
+                    this.stickMouseAction = mouseAction;
+                }
+            }
+
             private StickMouse stickMouseAction;
+            private DeltaAccelSettingsSerializer mouseDeltaSettingsSerializer;
 
             public int MouseSpeed
             {
@@ -4254,12 +4301,12 @@ namespace DS4MapperTest
             }
             public event EventHandler OutputCurveChanged;
 
-            public StickMouse.DeltaAccelSettings DeltaSettings
+            public DeltaAccelSettingsSerializer DeltaSettings
             {
-                get => stickMouseAction.MouseDeltaSettings;
+                get => mouseDeltaSettingsSerializer;
                 set
                 {
-                    stickMouseAction.MouseDeltaSettings = value;
+                    mouseDeltaSettingsSerializer = value;
                     DeltaSettingsChanged?.Invoke(this, EventArgs.Empty);
                 }
             }
@@ -4268,6 +4315,7 @@ namespace DS4MapperTest
             public StickMouseSettings(StickMouse mouseAction)
             {
                 stickMouseAction = mouseAction;
+                mouseDeltaSettingsSerializer = new DeltaAccelSettingsSerializer(mouseAction);
             }
         }
 
