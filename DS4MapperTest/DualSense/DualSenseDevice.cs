@@ -112,6 +112,11 @@ namespace DS4MapperTest.DualSense
 
         public override void Detach()
         {
+            byte[] outputReportBuffer = new byte[outputReportLen];
+            lightbarColor.red = lightbarColor.green = lightbarColor.blue = 0xFF;
+
+            PrepareOutputReport(outputReportBuffer);
+            WriteReport(outputReportBuffer);
             hidDevice.CloseDevice();
         }
 
