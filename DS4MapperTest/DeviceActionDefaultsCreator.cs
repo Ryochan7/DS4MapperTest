@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DS4MapperTest.StickActions;
 using DS4MapperTest.TouchpadActions;
 
 namespace DS4MapperTest
@@ -75,15 +76,73 @@ namespace DS4MapperTest
             }
         }
 
+        public struct StickTranslateActionValues
+        {
+            public double deadZone;
+
+            public void Process(StickTranslate action)
+            {
+                action.DeadMod.DeadZone = deadZone;
+
+                action.ChangedProperties.Add(StickTranslate.PropertyKeyStrings.DEAD_ZONE);
+            }
+        }
+
+        public struct StickMouseActionValues
+        {
+            public double deadZone;
+
+            public void Process(StickMouse action)
+            {
+                action.DeadMod.DeadZone = deadZone;
+
+                action.ChangedProperties.Add(StickMouse.PropertyKeyStrings.DEAD_ZONE);
+            }
+        }
+
+        public struct StickPadActionActionValues
+        {
+            public double deadZone;
+
+            public void Process(StickPadAction action)
+            {
+                action.DeadMod.DeadZone = deadZone;
+
+                action.ChangedProperties.Add(StickPadAction.PropertyKeyStrings.DEAD_ZONE);
+            }
+        }
+
         public abstract TouchJoystickActionValues GrabTouchJoystickDefaults();
         public abstract TouchMouseActionValues GrabTouchMouseDefaults();
         public abstract TouchMouseJoystickActionValues GrabTouchMouseJoystickDefaults();
         public abstract TouchActionPadActionValues GrabTouchActionPadDefaults();
         public abstract TouchCircularActionValues GrabTouchCircularActionDefaults();
+
+        public abstract StickTranslateActionValues GrabStickTranslateActionDefaults();
+        public abstract StickMouseActionValues GrabStickMouseActionDefaults();
+        public abstract StickPadActionActionValues GrabStickPadActionActionDefaults();
     }
 
     public class DummyActionDefaultsCreator : DeviceActionDefaultsCreator
     {
+        public override StickMouseActionValues GrabStickMouseActionDefaults()
+        {
+            StickMouseActionValues result = new StickMouseActionValues();
+            return result;
+        }
+
+        public override StickPadActionActionValues GrabStickPadActionActionDefaults()
+        {
+            StickPadActionActionValues result = new StickPadActionActionValues();
+            return result;
+        }
+
+        public override StickTranslateActionValues GrabStickTranslateActionDefaults()
+        {
+            StickTranslateActionValues result = new StickTranslateActionValues();
+            return result;
+        }
+
         public override TouchActionPadActionValues GrabTouchActionPadDefaults()
         {
             TouchActionPadActionValues result = new TouchActionPadActionValues();
@@ -118,6 +177,36 @@ namespace DS4MapperTest
 
     public class DS4ActionDefaultsCreator : DeviceActionDefaultsCreator
     {
+        public override StickMouseActionValues GrabStickMouseActionDefaults()
+        {
+            StickMouseActionValues result = new StickMouseActionValues()
+            {
+                deadZone = 0.05,
+            };
+
+            return result;
+        }
+
+        public override StickPadActionActionValues GrabStickPadActionActionDefaults()
+        {
+            StickPadActionActionValues result = new StickPadActionActionValues()
+            {
+                deadZone = 0.10,
+            };
+
+            return result;
+        }
+
+        public override StickTranslateActionValues GrabStickTranslateActionDefaults()
+        {
+            StickTranslateActionValues result = new StickTranslateActionValues()
+            {
+                deadZone = 0.10,
+            };
+
+            return result;
+        }
+
         public override TouchActionPadActionValues GrabTouchActionPadDefaults()
         {
             TouchActionPadActionValues result = new TouchActionPadActionValues()

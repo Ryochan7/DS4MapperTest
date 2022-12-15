@@ -67,8 +67,8 @@ namespace DS4MapperTest.ViewModels
                 case 1:
                     {
                         StickTranslate tempAction = new StickTranslate();
-                        //var joyDefaults = mapper.DeviceActionDefaults.GrabTouchJoystickDefaults();
-                        //joyDefaults.Process(tempAction);
+                        var joyDefaults = mapper.DeviceActionDefaults.GrabStickTranslateActionDefaults();
+                        joyDefaults.Process(tempAction);
                         result = tempAction;
                     }
 
@@ -76,8 +76,8 @@ namespace DS4MapperTest.ViewModels
                 case 2:
                     {
                         StickPadAction tempAction = new StickPadAction();
-                        //var joyDefaults = mapper.DeviceActionDefaults.GrabTouchActionPadDefaults();
-                        //joyDefaults.Process(tempAction);
+                        var joyDefaults = mapper.DeviceActionDefaults.GrabStickPadActionActionDefaults();
+                        joyDefaults.Process(tempAction);
                         result = tempAction;
                     }
 
@@ -85,8 +85,8 @@ namespace DS4MapperTest.ViewModels
                 case 3:
                     {
                         StickMouse tempAction = new StickMouse();
-                        //var joyDefaults = mapper.DeviceActionDefaults.GrabTouchActionPadDefaults();
-                        //joyDefaults.Process(tempAction);
+                        var joyDefaults = mapper.DeviceActionDefaults.GrabStickMouseActionDefaults();
+                        joyDefaults.Process(tempAction);
                         result = tempAction;
                     }
 
@@ -94,6 +94,7 @@ namespace DS4MapperTest.ViewModels
                 default:
                     break;
             }
+
             return result;
         }
 
