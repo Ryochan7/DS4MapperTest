@@ -43,6 +43,8 @@ namespace DS4MapperTest.DualSense
             this.device = device;
             this.reader = reader;
 
+            deviceActionDefaults = new DS4ActionDefaultsCreator();
+
             bindingList = new List<InputBindingMeta>()
             {
                 new InputBindingMeta("Cross", "Cross", InputBindingMeta.InputControlType.Button),

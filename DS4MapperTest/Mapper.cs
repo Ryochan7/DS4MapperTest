@@ -175,6 +175,10 @@ namespace DS4MapperTest
 
         public event EventHandler<string> ProfileChanged;
 
+        protected DeviceActionDefaultsCreator deviceActionDefaults =
+            new DummyActionDefaultsCreator();
+        public DeviceActionDefaultsCreator DeviceActionDefaults => deviceActionDefaults;
+
         protected FakerInputHandler fakerInputHandler;
 
         protected ViGEmClient vigemTestClient = null;

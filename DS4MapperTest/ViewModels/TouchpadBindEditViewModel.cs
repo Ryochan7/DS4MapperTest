@@ -81,8 +81,8 @@ namespace DS4MapperTest.ViewModels
                     {
                         TouchpadStickAction tempAction = new TouchpadStickAction();
                         // TODO: Fix
-                        //var joyDefaults = mapper.DeviceActionDefaults.GrabTouchJoystickDefaults();
-                        //joyDefaults.Process(tempAction);
+                        var joyDefaults = mapper.DeviceActionDefaults.GrabTouchJoystickDefaults();
+                        joyDefaults.Process(tempAction);
                         result = tempAction;
                     }
 
@@ -91,8 +91,8 @@ namespace DS4MapperTest.ViewModels
                     {
                         TouchpadActionPad tempAction = new TouchpadActionPad();
                         // TODO: Fix
-                        //var joyDefaults = mapper.DeviceActionDefaults.GrabTouchActionPadDefaults();
-                        //joyDefaults.Process(tempAction);
+                        var joyDefaults = mapper.DeviceActionDefaults.GrabTouchActionPadDefaults();
+                        joyDefaults.Process(tempAction);
                         result = tempAction;
                     }
 
@@ -101,8 +101,8 @@ namespace DS4MapperTest.ViewModels
                     {
                         TouchpadMouseJoystick tempAction = new TouchpadMouseJoystick();
                         // TODO: Fix
-                        //var joyDefaults = mapper.DeviceActionDefaults.GrabTouchMouseJoystickDefaults();
-                        //joyDefaults.Process(tempAction);
+                        var joyDefaults = mapper.DeviceActionDefaults.GrabTouchMouseJoystickDefaults();
+                        joyDefaults.Process(tempAction);
                         result = tempAction;
                     }
 
@@ -111,8 +111,8 @@ namespace DS4MapperTest.ViewModels
                     {
                         TouchpadMouse tempAction = new TouchpadMouse();
                         // TODO: Fix
-                        //var joyDefaults = mapper.DeviceActionDefaults.GrabTouchMouseDefaults();
-                        //joyDefaults.Process(tempAction);
+                        var joyDefaults = mapper.DeviceActionDefaults.GrabTouchMouseDefaults();
+                        joyDefaults.Process(tempAction);
                         result = tempAction;
                     }
 
@@ -121,8 +121,8 @@ namespace DS4MapperTest.ViewModels
                     {
                         TouchpadCircular tempAction = new TouchpadCircular();
                         // TODO: Fix
-                        //var joyDefaults = mapper.DeviceActionDefaults.GrabTouchCircularActionDefaults();
-                        //joyDefaults.Process(tempAction);
+                        var joyDefaults = mapper.DeviceActionDefaults.GrabTouchCircularActionDefaults();
+                        joyDefaults.Process(tempAction);
                         result = tempAction;
                     }
 
