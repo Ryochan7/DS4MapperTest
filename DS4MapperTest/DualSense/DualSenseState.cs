@@ -11,7 +11,7 @@ namespace DS4MapperTest.DualSense
         public struct TouchInfo
         {
             public const int TOUCHPAD_MAX_X = 1920;
-            public const int TOUCHPAD_MAX_Y = 942;
+            public const int TOUCHPAD_MAX_Y = 1079;
 
             public short X;
             public short Y;

@@ -129,11 +129,11 @@ namespace DS4MapperTest.DualSense
             TouchpadDefinition.TouchAxisData cpadYAxis = new TouchpadDefinition.TouchAxisData
             {
                 min = 0,
-                max = 942,
-                mid = 942 / 2,
+                max = 1079,
+                mid = 1079 / 2,
 
                 hard_min = 0,
-                hard_max = 942,
+                hard_max = 1079,
             };
             cpadYAxis.PostInit();
 
