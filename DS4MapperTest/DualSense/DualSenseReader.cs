@@ -230,8 +230,6 @@ namespace DS4MapperTest.DualSense
                     current.Motion.AccelYG = current.Motion.AccelY / DS4State.DS4Motion.F_ACC_RES_PER_G;
                     current.Motion.AccelZG = current.Motion.AccelZ / DS4State.DS4Motion.F_ACC_RES_PER_G;
 
-                    current.TouchPacketNum = (byte)(inputReportBuffer[32 + reportOffset]);
-                    //Trace.WriteLine($"{current.TouchPacketNum}");
                     current.Touch1.RawTrackingNum = (byte)(inputReportBuffer[33 + reportOffset]);
                     current.Touch1.Id = (byte)(inputReportBuffer[33 + reportOffset] & 0x7f);
                     current.Touch1.IsActive = (inputReportBuffer[33 + reportOffset] & 0x80) == 0;
@@ -246,6 +244,7 @@ namespace DS4MapperTest.DualSense
                     current.Touch2.X = (short)(((ushort)(inputReportBuffer[39 + reportOffset] & 0x0f) << 8) | (ushort)(inputReportBuffer[38 + reportOffset]));
                     current.Touch2.Y = (short)(((ushort)(inputReportBuffer[40 + reportOffset]) << 4) | ((ushort)(inputReportBuffer[39 + reportOffset] & 0xf0) >> 4));
                     current.TouchPacketNum = (byte)(inputReportBuffer[41 + reportOffset]);
+                    //Trace.WriteLine($"{current.TouchPacketNum}");
 
                     uint numTouches = 0;
                     if (current.Touch1.IsActive)
