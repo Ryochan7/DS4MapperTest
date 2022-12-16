@@ -245,6 +245,7 @@ namespace DS4MapperTest.DualSense
                     current.Touch2.Touch = current.Touch2.IsActive;
                     current.Touch2.X = (short)(((ushort)(inputReportBuffer[39 + reportOffset] & 0x0f) << 8) | (ushort)(inputReportBuffer[38 + reportOffset]));
                     current.Touch2.Y = (short)(((ushort)(inputReportBuffer[40 + reportOffset]) << 4) | ((ushort)(inputReportBuffer[39 + reportOffset] & 0xf0) >> 4));
+                    current.TouchPacketNum = (byte)(inputReportBuffer[41 + reportOffset]);
 
                     uint numTouches = 0;
                     if (current.Touch1.IsActive)
