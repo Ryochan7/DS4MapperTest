@@ -198,9 +198,11 @@ namespace DS4MapperTest.TouchpadActions
             double previousXMotion = xMotion;
             double previousYMotion = yMotion;
 
-            if (touchFrame.passDelta)
+            if (touchFrame.Touch && touchFrame.passDelta)
             {
                 active = activeEvent = false;
+                // Need a better way to tell mapper to not reset remainders
+                mapper.MouseEventFired = true;
                 return;
             }
 
@@ -456,7 +458,8 @@ namespace DS4MapperTest.TouchpadActions
             //double offset = TOUCHPAD_MOUSE_OFFSET;
             double offset = touchpadDefinition.mouseOffset;
             // Base speed 8 ms
-            double tempDouble = timeElapsed * touchpadDefinition.elapsedReference;
+            //double tempDouble = timeElapsed * touchpadDefinition.elapsedReference;
+            double tempDouble = 1.0;
 
             int deadzoneX = (int)Math.Abs(normX * deadZone);
             int deadzoneY = (int)Math.Abs(normY * deadZone);
