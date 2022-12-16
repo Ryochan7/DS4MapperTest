@@ -198,6 +198,12 @@ namespace DS4MapperTest.TouchpadActions
             double previousXMotion = xMotion;
             double previousYMotion = yMotion;
 
+            if (touchFrame.passDelta)
+            {
+                active = activeEvent = false;
+                return;
+            }
+
             if (trackballEnabled)
             {
                 TrackballMouseProcess(mapper, ref touchFrame);
