@@ -14,7 +14,7 @@
     <FileVersion>0.0.3</FileVersion>
     <Version>0.0.3</Version>
     <Configuration Condition="'$(Configuration)' == ''">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">x64</Platform>
+    <Platform Condition="'$(Platform)' == ''">x64</Platform>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
