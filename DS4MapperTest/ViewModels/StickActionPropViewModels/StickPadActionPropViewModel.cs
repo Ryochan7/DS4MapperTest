@@ -204,6 +204,7 @@ namespace DS4MapperTest.ViewModels.StickActionPropViewModels
             this.mapper = mapper;
             this.action = action as StickPadAction;
             padModeItems = new List<PadModeItem>();
+            usingRealAction = true;
 
             // Check if base ActionLayer action from composite layer
             if (action.ParentAction == null &&
@@ -221,6 +222,7 @@ namespace DS4MapperTest.ViewModels.StickActionPropViewModels
                 //tempAction.MappingId = this.action.MappingId;
 
                 this.action = tempAction;
+                usingRealAction = false;
 
                 ActionPropertyChanged += ReplaceExistingLayerAction;
             }
@@ -345,7 +347,7 @@ namespace DS4MapperTest.ViewModels.StickActionPropViewModels
 
             ExecuteInMapperThread(() =>
             {
-                oldAction.Release(mapper, ignoreReleaseActions: true);
+                oldAction?.Release(mapper, ignoreReleaseActions: true);
 
                 action.EventCodes4[(int)StickPadAction.DpadDirections.Up] = newAction as AxisDirButton;
                 action.ChangedProperties.Add(StickPadAction.PropertyKeyStrings.PAD_DIR_UP);
@@ -363,7 +365,7 @@ namespace DS4MapperTest.ViewModels.StickActionPropViewModels
 
             ExecuteInMapperThread(() =>
             {
-                oldAction.Release(mapper, ignoreReleaseActions: true);
+                oldAction?.Release(mapper, ignoreReleaseActions: true);
 
                 action.EventCodes4[(int)StickPadAction.DpadDirections.Down] = newAction as AxisDirButton;
                 action.ChangedProperties.Add(StickPadAction.PropertyKeyStrings.PAD_DIR_DOWN);
@@ -381,7 +383,7 @@ namespace DS4MapperTest.ViewModels.StickActionPropViewModels
 
             ExecuteInMapperThread(() =>
             {
-                oldAction.Release(mapper, ignoreReleaseActions: true);
+                oldAction?.Release(mapper, ignoreReleaseActions: true);
 
                 action.EventCodes4[(int)StickPadAction.DpadDirections.Left] = newAction as AxisDirButton;
                 action.ChangedProperties.Add(StickPadAction.PropertyKeyStrings.PAD_DIR_LEFT);
@@ -399,7 +401,7 @@ namespace DS4MapperTest.ViewModels.StickActionPropViewModels
 
             ExecuteInMapperThread(() =>
             {
-                oldAction.Release(mapper, ignoreReleaseActions: true);
+                oldAction?.Release(mapper, ignoreReleaseActions: true);
 
                 action.EventCodes4[(int)StickPadAction.DpadDirections.Right] = newAction as AxisDirButton;
                 action.ChangedProperties.Add(StickPadAction.PropertyKeyStrings.PAD_DIR_RIGHT);
@@ -417,7 +419,7 @@ namespace DS4MapperTest.ViewModels.StickActionPropViewModels
 
             ExecuteInMapperThread(() =>
             {
-                oldAction.Release(mapper, ignoreReleaseActions: true);
+                oldAction?.Release(mapper, ignoreReleaseActions: true);
 
                 action.EventCodes4[(int)StickPadAction.DpadDirections.UpLeft] = newAction as AxisDirButton;
                 action.ChangedProperties.Add(StickPadAction.PropertyKeyStrings.PAD_DIR_UPLEFT);
@@ -435,7 +437,7 @@ namespace DS4MapperTest.ViewModels.StickActionPropViewModels
 
             ExecuteInMapperThread(() =>
             {
-                oldAction.Release(mapper, ignoreReleaseActions: true);
+                oldAction?.Release(mapper, ignoreReleaseActions: true);
 
                 action.EventCodes4[(int)StickPadAction.DpadDirections.UpRight] = newAction as AxisDirButton;
                 action.ChangedProperties.Add(StickPadAction.PropertyKeyStrings.PAD_DIR_UPRIGHT);
@@ -453,7 +455,7 @@ namespace DS4MapperTest.ViewModels.StickActionPropViewModels
 
             ExecuteInMapperThread(() =>
             {
-                oldAction.Release(mapper, ignoreReleaseActions: true);
+                oldAction?.Release(mapper, ignoreReleaseActions: true);
 
                 action.EventCodes4[(int)StickPadAction.DpadDirections.DownLeft] = newAction as AxisDirButton;
                 action.ChangedProperties.Add(StickPadAction.PropertyKeyStrings.PAD_DIR_DOWNLEFT);
