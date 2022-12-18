@@ -56,6 +56,8 @@ namespace DS4MapperTest.TouchpadActions
             PropertyKeyStrings.PAD_DIR_RIGHT,
         };
 
+        public const string ACTION_TYPE_NAME = "TouchDirSwipeAction";
+
         private ButtonAction[] usedEventsButtonsX =
            new ButtonAction[3];
 
@@ -110,6 +112,8 @@ namespace DS4MapperTest.TouchpadActions
             };
 
             FillDirectionalButtons();
+
+            actionTypeName = ACTION_TYPE_NAME;
         }
 
         private void FillDirectionalButtons()
@@ -142,11 +146,16 @@ namespace DS4MapperTest.TouchpadActions
 
                 return;
             }
+            //else if (touchFrame.passDelta)
+            //{
+            //    // Just keep current state info
+            //    return;
+            //}
 
             ref TouchEventFrame previousTouchFrame =
                 ref mapper.GetPreviousTouchEventFrame(touchpadDefinition.touchCode);
 
-            int dx = previousTouchFrame.X - touchFrame.X;
+            int dx = touchFrame.X - previousTouchFrame.X;
             if (Math.Abs(dx) > swipeParams.deadzoneX)
             {
                 if (dx > 0)
@@ -175,7 +184,7 @@ namespace DS4MapperTest.TouchpadActions
                 }
             }
 
-            int dy = previousTouchFrame.Y - touchFrame.Y;
+            int dy = touchFrame.Y - previousTouchFrame.Y;
             if (Math.Abs(dy) > swipeParams.deadzoneY)
             {
                 if (dy > 0)
@@ -264,7 +273,7 @@ namespace DS4MapperTest.TouchpadActions
                         data.Prepare(mapper, true);
                         data.Event(mapper);
 
-                        if (dirXChange && !tmpActiveBtnsX.ContainsKey(data))
+                        if (!tmpActiveBtnsX.ContainsKey(data))
                         {
                             tmpActiveBtnsX.Add(data, currentXDir);
                         }
@@ -315,7 +324,7 @@ namespace DS4MapperTest.TouchpadActions
                         data.Prepare(mapper, true);
                         data.Event(mapper);
 
-                        if (dirYChange && !tmpActiveBtnsY.ContainsKey(data))
+                        if (!tmpActiveBtnsY.ContainsKey(data))
                         {
                             tmpActiveBtnsY.Add(data, currentYDir);
                         }

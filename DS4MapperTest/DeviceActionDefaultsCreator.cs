@@ -76,6 +76,20 @@ namespace DS4MapperTest
             }
         }
 
+        public struct TouchDirectionalSwipeActionValues
+        {
+            public int deadZoneX;
+            public int deadZoneY;
+            public int delayTime;
+
+            public void Process(TouchpadDirectionalSwipe action)
+            {
+                action.swipeParams.deadzoneX = deadZoneX;
+                action.swipeParams.deadzoneY = deadZoneY;
+                action.swipeParams.delayTime = delayTime;
+            }
+        }
+
         public struct StickTranslateActionValues
         {
             public double deadZone;
@@ -117,6 +131,7 @@ namespace DS4MapperTest
         public abstract TouchMouseJoystickActionValues GrabTouchMouseJoystickDefaults();
         public abstract TouchActionPadActionValues GrabTouchActionPadDefaults();
         public abstract TouchCircularActionValues GrabTouchCircularActionDefaults();
+        public abstract TouchDirectionalSwipeActionValues GetTouchDirectionSwipeActionDefaults();
 
         public abstract StickTranslateActionValues GrabStickTranslateActionDefaults();
         public abstract StickMouseActionValues GrabStickMouseActionDefaults();
@@ -125,6 +140,12 @@ namespace DS4MapperTest
 
     public class DummyActionDefaultsCreator : DeviceActionDefaultsCreator
     {
+        public override TouchDirectionalSwipeActionValues GetTouchDirectionSwipeActionDefaults()
+        {
+            TouchDirectionalSwipeActionValues result = new TouchDirectionalSwipeActionValues();
+            return result;
+        }
+
         public override StickMouseActionValues GrabStickMouseActionDefaults()
         {
             StickMouseActionValues result = new StickMouseActionValues();
@@ -177,6 +198,18 @@ namespace DS4MapperTest
 
     public class DS4ActionDefaultsCreator : DeviceActionDefaultsCreator
     {
+        public override TouchDirectionalSwipeActionValues GetTouchDirectionSwipeActionDefaults()
+        {
+            TouchDirectionalSwipeActionValues result = new TouchDirectionalSwipeActionValues()
+            {
+                deadZoneX = 16,
+                deadZoneY = 16,
+                delayTime = 10,
+            };
+
+            return result;
+        }
+
         public override StickMouseActionValues GrabStickMouseActionDefaults()
         {
             StickMouseActionValues result = new StickMouseActionValues()

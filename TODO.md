@@ -1,7 +1,7 @@
 ## TODO
 
 * ~~Abstract device enumeartion~~
-* Abstract TouchpadDirectionalSwipe action
+* ~~Abstract TouchpadDirectionalSwipe action~~
 * Possibly allow virtual Touchpad buttons in Touchpad actions
 * ~~Add Switch Pro controller reader and mapper from old project~~
 * Add JoyCon reader and mapper

@@ -139,8 +139,8 @@ namespace DS4MapperTest.ViewModels
                 case 7:
                     {
                         TouchpadDirectionalSwipe tempAction = new TouchpadDirectionalSwipe();
-                        //var joyDefaults = mapper.DeviceActionDefaults.GrabTouchCircularActionDefaults();
-                        //joyDefaults.Process(tempAction);
+                        var joyDefaults = mapper.DeviceActionDefaults.GetTouchDirectionSwipeActionDefaults();
+                        joyDefaults.Process(tempAction);
                         result = tempAction;
                     }
 
