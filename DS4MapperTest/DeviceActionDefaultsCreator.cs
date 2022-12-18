@@ -87,6 +87,10 @@ namespace DS4MapperTest
                 action.swipeParams.deadzoneX = deadZoneX;
                 action.swipeParams.deadzoneY = deadZoneY;
                 action.swipeParams.delayTime = delayTime;
+
+                action.ChangedProperties.Add(TouchpadDirectionalSwipe.PropertyKeyStrings.DEAD_ZONE_X);
+                action.ChangedProperties.Add(TouchpadDirectionalSwipe.PropertyKeyStrings.DEAD_ZONE_Y);
+                action.ChangedProperties.Add(TouchpadDirectionalSwipe.PropertyKeyStrings.DELAY_TIME);
             }
         }
 
