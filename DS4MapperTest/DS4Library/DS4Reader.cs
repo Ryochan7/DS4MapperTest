@@ -239,6 +239,12 @@ namespace DS4MapperTest.DS4Library
                     int AccelY = (short)((ushort)(inputReportBuffer[22 + reportOffset] << 8) | inputReportBuffer[21 + reportOffset]);
                     int AccelZ = (short)((ushort)(inputReportBuffer[24 + reportOffset] << 8) | inputReportBuffer[23 + reportOffset]);
 
+                    if (device.CalibrationDone)
+                    {
+                        device.ApplyCalibs(ref currentYaw, ref currentPitch, ref currentRoll,
+                            ref AccelX, ref AccelY, ref AccelZ);
+                    }
+
                     current.Motion.GyroYaw = (short)-currentYaw;
                     current.Motion.GyroPitch = (short)currentPitch;
                     current.Motion.GyroRoll = (short)-currentRoll;

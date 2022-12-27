@@ -216,6 +216,12 @@ namespace DS4MapperTest.DualSense
                     int AccelY = (short)((ushort)(inputReportBuffer[25 + reportOffset] << 8) | inputReportBuffer[24 + reportOffset]);
                     int AccelZ = (short)((ushort)(inputReportBuffer[27 + reportOffset] << 8) | inputReportBuffer[26 + reportOffset]);
 
+                    if (device.CalibrationDone)
+                    {
+                        device.ApplyCalibs(ref currentYaw, ref currentPitch, ref currentRoll,
+                            ref AccelX, ref AccelY, ref AccelZ);
+                    }
+
                     current.Motion.GyroYaw = (short)-currentYaw;
                     current.Motion.GyroPitch = (short)currentPitch;
                     current.Motion.GyroRoll = (short)-currentRoll;
