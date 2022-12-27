@@ -214,7 +214,7 @@ namespace DS4MapperTest
                 {
                     Task tempTask = Task.Run(() =>
                     {
-                        tempMapper.Stop();
+                        tempMapper.Stop(true);
                         tempMapper = null;
                     });
                     //tempTask.Wait();

@@ -931,6 +931,7 @@ namespace DS4MapperTest
                 // Relay changes to event systems
                 SyncKeyboard();
                 SyncMouseButtons();
+                fakerInputHandler.Sync();
 
                 // Might use this info later. Output controller device switch?
                 EmulatedControllerSettings oldEmuControlSettings =
@@ -2674,14 +2675,19 @@ namespace DS4MapperTest
             }
         }
 
-        public virtual void Stop()
+        public virtual void Stop(bool finalSync = false)
         {
             quit = true;
 
             actionProfile.CurrentActionSet.ReleaseActions(this, true);
 
+            // Relay changes to event systems
             SyncKeyboard();
             SyncMouseButtons();
+            if (finalSync)
+            {
+                fakerInputHandler.Sync();
+            }
 
             outputController?.Disconnect();
             outputController = null;
