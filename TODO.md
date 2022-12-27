@@ -1,5 +1,7 @@
 ## TODO
 
+* Implement device gyro calibration
+* Implement lightbar color changing
 * ~~Abstract device enumeartion~~
 * ~~Abstract TouchpadDirectionalSwipe action~~
 * Possibly allow virtual Touchpad buttons in Touchpad actions
