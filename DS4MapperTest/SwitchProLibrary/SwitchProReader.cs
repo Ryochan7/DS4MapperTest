@@ -1,11 +1,12 @@
-﻿using HidLibrary;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using DS4MapperTest.Common;
+using HidLibrary;
 
 namespace DS4MapperTest.SwitchProLibrary
 {
@@ -25,6 +26,7 @@ namespace DS4MapperTest.SwitchProLibrary
         private byte[] outputReportBuffer;
         private byte[] rumbleReportBuffer;
         //private byte frameCount = 0x00;
+        private GyroCalibration gyroCalibrationUtil = new GyroCalibration();
 
         private double combLatency;
         public double CombLatency { get => combLatency; set => combLatency = value; }
@@ -98,6 +100,9 @@ namespace DS4MapperTest.SwitchProLibrary
             double tempTimeElapsed;
             double lastCheckTimeElapsed;
             bool firstReport = true;
+
+            // Run continuous calibration on Gyro when starting input loop
+            gyroCalibrationUtil.ResetContinuousCalibration();
 
             unchecked
             {
@@ -290,6 +295,20 @@ namespace DS4MapperTest.SwitchProLibrary
                         short gyroYaw = (short)(-1 * (gyro_out[6 + IMU_YAW_IDX] - device.gyroBias[IMU_YAW_IDX] + device.gyroCalibOffsets[IMU_YAW_IDX]));
                         short gyroPitch = (short)(gyro_out[6 + IMU_PITCH_IDX] - device.gyroBias[IMU_PITCH_IDX] - device.gyroCalibOffsets[IMU_PITCH_IDX]);
                         short gyroRoll = (short)(gyro_out[6 + IMU_ROLL_IDX] - device.gyroBias[IMU_ROLL_IDX] - device.gyroCalibOffsets[IMU_ROLL_IDX]);
+
+
+                        if (gyroCalibrationUtil.gyroAverageTimer.IsRunning)
+                        {
+                            int currentYaw = gyroYaw, currentPitch = gyroPitch, currentRoll = gyroRoll;
+                            int AccelX = accelX, AccelY = accelY, AccelZ = accelZ;
+                            gyroCalibrationUtil.CalcSensorCamples(ref currentYaw, ref currentPitch, ref currentRoll,
+                                ref AccelX, ref AccelY, ref AccelZ);
+                        }
+
+                        gyroYaw -= (short)gyroCalibrationUtil.gyro_offset_x;
+                        gyroPitch -= (short)gyroCalibrationUtil.gyro_offset_y;
+                        gyroRoll -= (short)gyroCalibrationUtil.gyro_offset_z;
+
                         current.Motion.Populate(accelX, accelY, accelZ,
                             gyroYaw, gyroPitch, gyroRoll, device.accelCoeff, device.gyroCoeff);
                         //current.Motion.GyroYaw = gyro_out[IMU_YAW_IDX] + gyro_out[3 + IMU_YAW_IDX] + gyro_out[6 + IMU_YAW_IDX];
