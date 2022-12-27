@@ -6,6 +6,7 @@ using System.Net.NetworkInformation;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using DS4MapperTest.Common;
 using HidLibrary;
 
 namespace DS4MapperTest.DS4Library
@@ -20,6 +21,7 @@ namespace DS4MapperTest.DS4Library
         private byte[] inputReportBuffer;
         private byte[] outputReportBuffer;
         //private byte[] rumbleReportBuffer;
+        private GyroCalibration gyroCalibrationUtil = new GyroCalibration();
         private bool started;
 
         public delegate void DS4DeviceReportDelegate(DS4Reader sender,
@@ -108,6 +110,9 @@ namespace DS4MapperTest.DS4Library
 
             int reportOffset =
                 device.DevConnectionType == DS4Device.ConnectionType.Bluetooth ? 2 : 0;
+
+            // Run continuous calibration on Gyro when starting input loop
+            gyroCalibrationUtil.ResetContinuousCalibration();
 
             unchecked
             {
@@ -244,6 +249,16 @@ namespace DS4MapperTest.DS4Library
                         device.ApplyCalibs(ref currentYaw, ref currentPitch, ref currentRoll,
                             ref AccelX, ref AccelY, ref AccelZ);
                     }
+
+                    if (gyroCalibrationUtil.gyroAverageTimer.IsRunning)
+                    {
+                        gyroCalibrationUtil.CalcSensorCamples(ref currentYaw, ref currentPitch, ref currentRoll,
+                            ref AccelX, ref AccelY, ref AccelZ);
+                    }
+
+                    currentYaw -= gyroCalibrationUtil.gyro_offset_x;
+                    currentPitch -= gyroCalibrationUtil.gyro_offset_y;
+                    currentRoll -= gyroCalibrationUtil.gyro_offset_z;
 
                     current.Motion.GyroYaw = (short)-currentYaw;
                     current.Motion.GyroPitch = (short)currentPitch;

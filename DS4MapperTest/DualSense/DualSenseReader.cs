@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using HidLibrary;
 using DS4MapperTest.DS4Library;
+using DS4MapperTest.Common;
 
 namespace DS4MapperTest.DualSense
 {
@@ -21,6 +22,7 @@ namespace DS4MapperTest.DualSense
         private byte[] inputReportBuffer;
         private byte[] outputReportBuffer;
         //private byte[] rumbleReportBuffer;
+        private GyroCalibration gyroCalibrationUtil = new GyroCalibration();
         private bool started;
 
         public delegate void DualSenseDeviceReportDelegate(DualSenseReader sender,
@@ -83,6 +85,9 @@ namespace DS4MapperTest.DualSense
 
             int reportOffset =
                 device.DevConnectionType == DualSenseDevice.ConnectionType.Bluetooth ? 1 : 0;
+
+            // Run continuous calibration on Gyro when starting input loop
+            gyroCalibrationUtil.ResetContinuousCalibration();
 
             unchecked
             {
@@ -221,6 +226,16 @@ namespace DS4MapperTest.DualSense
                         device.ApplyCalibs(ref currentYaw, ref currentPitch, ref currentRoll,
                             ref AccelX, ref AccelY, ref AccelZ);
                     }
+
+                    if (gyroCalibrationUtil.gyroAverageTimer.IsRunning)
+                    {
+                        gyroCalibrationUtil.CalcSensorCamples(ref currentYaw, ref currentPitch, ref currentRoll,
+                            ref AccelX, ref AccelY, ref AccelZ);
+                    }
+
+                    currentYaw -= gyroCalibrationUtil.gyro_offset_x;
+                    currentPitch -= gyroCalibrationUtil.gyro_offset_y;
+                    currentRoll -= gyroCalibrationUtil.gyro_offset_z;
 
                     current.Motion.GyroYaw = (short)-currentYaw;
                     current.Motion.GyroPitch = (short)currentPitch;
