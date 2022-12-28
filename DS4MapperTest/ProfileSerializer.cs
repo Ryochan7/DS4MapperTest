@@ -13,6 +13,42 @@ using DS4MapperTest.MapperUtil;
 
 namespace DS4MapperTest
 {
+    public class LightbarSettingsSerializer
+    {
+        private LightbarSettings settings;
+
+        public LightbarMode Mode
+        {
+            get => settings.Mode;
+            set => settings.Mode = value;
+        }
+
+        public DS4Library.DS4Color SolidColor
+        {
+            get => settings.SolidColor;
+            set => settings.SolidColor = value;
+        }
+        public bool ShouldSerializeSolidColor()
+        {
+            return settings.Mode == LightbarMode.SolidColor;
+        }
+
+        public DS4Library.DS4Color FlashColor
+        {
+            get => settings.FlashColor;
+            set => settings.FlashColor = value;
+        }
+        public bool ShouldSerializeFlashColor()
+        {
+            return settings.Mode == LightbarMode.Flashing;
+        }
+
+        public LightbarSettingsSerializer(LightbarSettings settings)
+        {
+            this.settings = settings;
+        }
+    }
+
     public class ProfileSerializer
     {
         //public class ProfileSettings
@@ -78,7 +114,18 @@ namespace DS4MapperTest
             return !string.IsNullOrEmpty(tempProfile.ControllerType);
         }
 
-        public EmulatedControllerSettings OutputGamepadSettings { get => tempProfile.OutputGamepadSettings; set => tempProfile.OutputGamepadSettings = value; }
+        public EmulatedControllerSettings OutputGamepadSettings
+        {
+            get => tempProfile.OutputGamepadSettings;
+            set => tempProfile.OutputGamepadSettings = value;
+        }
+
+        private LightbarSettingsSerializer lightbarSerializer;
+        public LightbarSettingsSerializer LightbarSettings
+        {
+            get => lightbarSerializer;
+            set => lightbarSerializer = value;
+        }
 
 
         private List<CycleButtonBindingSerializer> cycleSerializers = new List<CycleButtonBindingSerializer>();
@@ -110,6 +157,7 @@ namespace DS4MapperTest
         public ProfileSerializer(Profile tempProfile)
         {
             this.tempProfile = tempProfile;
+            this.lightbarSerializer = new LightbarSettingsSerializer(tempProfile.LightbarSettings);
             //settings = new DS4ProfileDeviceSettings(tempProfile);
             //settings = new ProfileSettings(tempProfile);
 

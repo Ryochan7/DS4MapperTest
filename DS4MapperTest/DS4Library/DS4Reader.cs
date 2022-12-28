@@ -317,6 +317,13 @@ namespace DS4MapperTest.DS4Library
                     }
 
                     Report?.Invoke(this, device);
+
+                    if (device.HapticsDirty)
+                    {
+                        WriteRumbleReport();
+                        device.HapticsDirty = false;
+                    }
+
                     device.SyncStates();
 
                     firstReport = false;

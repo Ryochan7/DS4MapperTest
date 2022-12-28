@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using DS4MapperTest.ButtonActions;
 using DS4MapperTest.DPadActions;
+using DS4MapperTest.DS4Library;
 using DS4MapperTest.GyroActions;
 using DS4MapperTest.MapperUtil;
 using DS4MapperTest.StickActions;
@@ -18,6 +19,7 @@ namespace DS4MapperTest.DualSense
     {
         private DualSenseDevice device;
         private DualSenseReader reader;
+        private LightbarProcessor lightProcess = new LightbarProcessor();
         public override InputDeviceType DeviceType => InputDeviceType.DualSense;
 
         public override DeviceReaderBase BaseReader
@@ -166,10 +168,21 @@ namespace DS4MapperTest.DualSense
 
         public override void Start(ViGEmClient vigemTestClient, FakerInputHandler fakerInputHandler)
         {
+            PostProfileChange += DualSenseMapper_PostProfileChange;
+
             base.Start(vigemTestClient, fakerInputHandler);
 
             reader.Report += Reader_Report;
             reader.StartUpdate();
+        }
+
+        private void DualSenseMapper_PostProfileChange(object sender, EventArgs e)
+        {
+            if (actionProfile.LightbarSettings.Mode == LightbarMode.SolidColor)
+            {
+                DS4Color tempColor = actionProfile.LightbarSettings.SolidColor;
+                device.SetLightbarColor(ref tempColor);
+            }
         }
 
         private void Reader_Report(DualSenseReader sender, DualSenseDevice device)
@@ -441,6 +454,8 @@ namespace DS4MapperTest.DualSense
                 }
             }
 
+            //lightProcess.UpdateLightbarDS(device, actionProfile);
+
             ProcessSyncEvents();
 
             ProcessActionSetLayerChecks();
@@ -624,7 +639,8 @@ namespace DS4MapperTest.DualSense
                 {
                     device.FeedbackStateRef.LeftHeavy = e.LargeMotor;
                     device.FeedbackStateRef.RightLight = e.SmallMotor;
-                    reader.WriteRumbleReport();
+                    device.HapticsDirty = true;
+                    //reader.WriteRumbleReport();
                 };
             }
         }

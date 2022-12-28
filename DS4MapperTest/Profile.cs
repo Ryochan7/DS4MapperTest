@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using DS4MapperTest.ButtonActions;
 using static DS4MapperTest.Mapper;
+using DS4MapperTest.DS4Library;
 
 namespace DS4MapperTest
 {
@@ -66,6 +67,13 @@ namespace DS4MapperTest
         {
             get => outputGamepadSettings;
             set => outputGamepadSettings = value;
+        }
+
+        private LightbarSettings lightbarSettings = new LightbarSettings();
+        public LightbarSettings LightbarSettings
+        {
+            get => lightbarSettings;
+            set => lightbarSettings = value;
         }
 
         public bool dirty;

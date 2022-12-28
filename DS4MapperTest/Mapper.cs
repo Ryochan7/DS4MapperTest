@@ -174,6 +174,7 @@ namespace DS4MapperTest
         public bool Quit { get => quit; set => quit = value; }
 
         public event EventHandler<string> ProfileChanged;
+        public event EventHandler PostProfileChange;
 
         protected DeviceActionDefaultsCreator deviceActionDefaults =
             new DummyActionDefaultsCreator();
@@ -1038,6 +1039,8 @@ namespace DS4MapperTest
                         outputForceFeedbackDel = null;
                     }
                 }
+
+                PostProfileChange?.Invoke(this, EventArgs.Empty);
 
                 //if (outputController != null)
                 //{

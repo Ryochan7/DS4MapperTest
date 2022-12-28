@@ -20,6 +20,7 @@ namespace DS4MapperTest.DS4Library
     {
         private DS4Device device;
         private DS4Reader reader;
+        private LightbarProcessor lightProcess = new LightbarProcessor();
 
         public override InputDeviceType DeviceType => InputDeviceType.DS4;
         public override DeviceReaderBase BaseReader
@@ -170,10 +171,21 @@ namespace DS4MapperTest.DS4Library
         {
             //profileFile = "C:\\Users\\ryoch\\source\\repos\\DS4MapperTest\\DS4MapperTest\\bin\\x64\\Debug\\net6.0-windows\\Profiles\\XInput.json";
 
+            PostProfileChange += DS4Mapper_PostProfileChange;
+
             base.Start(vigemTestClient, fakerInputHandler);
 
             reader.Report += Reader_Report;
             reader.StartUpdate();
+        }
+
+        private void DS4Mapper_PostProfileChange(object sender, EventArgs e)
+        {
+            if (actionProfile.LightbarSettings.Mode == LightbarMode.SolidColor)
+            {
+                DS4Color tempColor = actionProfile.LightbarSettings.SolidColor;
+                device.SetLightbarColor(ref tempColor);
+            }
         }
 
         private void Reader_Report(DS4Reader sender, DS4Device device)
@@ -437,6 +449,8 @@ namespace DS4MapperTest.DS4Library
                 }
             }
 
+            //lightProcess.UpdateLightbarDS4(device, actionProfile);
+
             ProcessSyncEvents();
 
             ProcessActionSetLayerChecks();
@@ -641,7 +655,8 @@ namespace DS4MapperTest.DS4Library
                 {
                     device.FeedbackStateRef.LeftHeavy = e.LargeMotor;
                     device.FeedbackStateRef.RightLight = e.SmallMotor;
-                    reader.WriteRumbleReport();
+                    device.HapticsDirty = true;
+                    //reader.WriteRumbleReport();
                 };
             }
         }

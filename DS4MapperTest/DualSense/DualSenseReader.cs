@@ -309,6 +309,12 @@ namespace DS4MapperTest.DualSense
                     }
 
                     Report?.Invoke(this, device);
+                    if (device.HapticsDirty)
+                    {
+                        WriteRumbleReport();
+                        device.HapticsDirty = false;
+                    }
+
                     device.SyncStates();
 
                     firstReport = false;

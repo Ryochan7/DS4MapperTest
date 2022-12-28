@@ -13,7 +13,7 @@ namespace DS4MapperTest.DS4Library
         public byte RightLight;
     }
 
-    public struct DS4Color
+    public struct DS4Color : IEquatable<DS4Color>
     {
         public byte red;
         public byte green;
@@ -25,6 +25,28 @@ namespace DS4MapperTest.DS4Library
             green = 0;
             blue = 255;
         }
+
+        public DS4Color(byte red, byte green, byte blue)
+        {
+            this.red = red;
+            this.green = green;
+            this.blue = blue;
+        }
+
+        public bool Equals(DS4Color other)
+        {
+            return this.red == other.red && this.green == other.green && this.blue == other.blue;
+        }
+
+        public override string ToString()
+        {
+            return $"Red: {red} Green: {green} Blue: {blue}";
+        }
+    }
+
+    public struct DS4HapticState
+    {
+        public bool dirty;
     }
 
     internal class CalibData
@@ -101,6 +123,13 @@ namespace DS4MapperTest.DS4Library
         private DS4Color lightbarColor = new DS4Color();
         public DS4Color LightbarColor { get => lightbarColor; }
         public ref DS4Color LightbarColorRef { get => ref lightbarColor; }
+
+        private bool hapticsDirty = false;
+        public bool HapticsDirty
+        {
+            get => hapticsDirty;
+            set => hapticsDirty = value;
+        }
 
         private int inputReportLen;
         private int outputReportLen;
@@ -398,6 +427,18 @@ namespace DS4MapperTest.DS4Library
         public void WriteReport(byte[] outReportBuffer)
         {
             hidDevice.WriteOutputReportViaInterrupt(outReportBuffer, READ_STREAM_TIMEOUT);
+        }
+
+        public void SetLightbarColor(ref DS4Color color)
+        {
+            lightbarColor = color;
+            hapticsDirty = true;
+        }
+
+        public void SetForceFeedbackState(ref DS4ForceFeedbackState state)
+        {
+            feedbackState = state;
+            hapticsDirty = true;
         }
     }
 }

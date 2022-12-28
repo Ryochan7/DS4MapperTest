@@ -75,6 +75,13 @@ namespace DS4MapperTest.DualSense
         public DS4Color LightbarColor { get => lightbarColor; }
         public ref DS4Color LightbarColorRef { get => ref lightbarColor; }
 
+        private bool hapticsDirty = false;
+        public bool HapticsDirty
+        {
+            get => hapticsDirty;
+            set => hapticsDirty = value;
+        }
+
         private int inputReportLen;
         private int outputReportLen;
         public int InputReportLen { get => inputReportLen; }
@@ -389,6 +396,18 @@ namespace DS4MapperTest.DualSense
 
             //Console.WriteLine("STAUTS: {0}", result);
             return result;
+        }
+
+        public void SetLightbarColor(ref DS4Color color)
+        {
+            lightbarColor = color;
+            hapticsDirty = true;
+        }
+
+        public void SetForceFeedbackState(ref DS4ForceFeedbackState state)
+        {
+            feedbackState = state;
+            hapticsDirty = true;
         }
 
         public void SyncStates()
