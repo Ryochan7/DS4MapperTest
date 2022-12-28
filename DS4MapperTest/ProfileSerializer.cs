@@ -17,6 +17,7 @@ namespace DS4MapperTest
     {
         private LightbarSettings settings;
 
+        [JsonConverter(typeof(StringEnumConverter))]
         public LightbarMode Mode
         {
             get => settings.Mode;

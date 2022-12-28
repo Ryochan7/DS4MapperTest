@@ -449,7 +449,7 @@ namespace DS4MapperTest.DS4Library
                 }
             }
 
-            //lightProcess.UpdateLightbarDS4(device, actionProfile);
+            lightProcess.UpdateLightbarDS4(device, actionProfile);
 
             ProcessSyncEvents();
 

@@ -56,6 +56,7 @@ namespace DS4MapperTest
         public void UpdateLightbarDS4(DS4Device device, Profile profile)
         {
             DS4Color useColor = new DS4Color();
+            bool updateColor = false;
 
             switch (profile.LightbarSettings.Mode)
             {
@@ -66,11 +67,13 @@ namespace DS4MapperTest
                             if (!device.LightbarColor.Equals(overrideColor))
                             {
                                 useColor = overrideColor;
+                                updateColor = true;
                             }
                         }
                         else if (!device.LightbarColor.Equals(profile.LightbarSettings.SolidColor))
                         {
                             useColor = profile.LightbarSettings.SolidColor;
+                            updateColor = true;
                         }
                     }
 
@@ -78,7 +81,7 @@ namespace DS4MapperTest
                 default: break;
             }
 
-            if (!device.LightbarColorRef.Equals(useColor))
+            if (updateColor)
             {
                 device.SetLightbarColor(ref useColor);
                 device.HapticsDirty = true;
@@ -88,6 +91,7 @@ namespace DS4MapperTest
         public void UpdateLightbarDS(DualSense.DualSenseDevice device, Profile profile)
         {
             DS4Color useColor = new DS4Color();
+            bool updateColor = false;
 
             switch (profile.LightbarSettings.Mode)
             {
@@ -98,11 +102,13 @@ namespace DS4MapperTest
                             if (!device.LightbarColor.Equals(overrideColor))
                             {
                                 useColor = overrideColor;
+                                updateColor = true;
                             }
                         }
                         else if (!device.LightbarColor.Equals(profile.LightbarSettings.SolidColor))
                         {
                             useColor = profile.LightbarSettings.SolidColor;
+                            updateColor = true;
                         }
                     }
 
@@ -110,7 +116,7 @@ namespace DS4MapperTest
                 default: break;
             }
 
-            if (!device.LightbarColorRef.Equals(useColor))
+            if (updateColor)
             {
                 device.SetLightbarColor(ref useColor);
                 device.HapticsDirty = true;

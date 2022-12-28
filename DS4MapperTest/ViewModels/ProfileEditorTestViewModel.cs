@@ -15,6 +15,7 @@ using DS4MapperTest.TouchpadActions;
 using DS4MapperTest.StickActions;
 using DS4MapperTest.GyroActions;
 using DS4MapperTest.DPadActions;
+using System.Windows.Media;
 
 namespace DS4MapperTest.ViewModels
 {
@@ -228,7 +229,7 @@ namespace DS4MapperTest.ViewModels
             }
             set
             {
-                switch(value)
+                switch (value)
                 {
                     case 0:
                         tempProfile.OutputGamepadSettings.OutputGamepad = Mapper.OutputContType.Xbox360;
@@ -251,6 +252,20 @@ namespace DS4MapperTest.ViewModels
             }
         }
 
+        public System.Windows.Media.Color LightbarColor
+        {
+            get => System.Windows.Media.Color.FromArgb(255,
+                tempProfile.LightbarSettings.SolidColor.red,
+                tempProfile.LightbarSettings.SolidColor.green,
+                tempProfile.LightbarSettings.SolidColor.blue);
+            //set
+            //{
+            //    tempProfile.LightbarSettings.SolidColor.red = value.R;
+            //    tempProfile.LightbarSettings.SolidColor.green = value.G;
+            //    tempProfile.LightbarSettings.SolidColor.blue = value.B;
+            //}
+        }
+
         public ProfileEditorTestViewModel(Mapper mapper, ProfileEntity profileEnt, Profile currentProfile)
         {
             this.mapper = mapper;
@@ -263,6 +278,13 @@ namespace DS4MapperTest.ViewModels
         private void TempProfile_DirtyChanged(object sender, EventArgs e)
         {
             //throw new NotImplementedException();
+        }
+
+        public void UpdateSelectedColor(byte red, byte green, byte blue)
+        {
+            tempProfile.LightbarSettings.SolidColor.red = red;
+            tempProfile.LightbarSettings.SolidColor.green = green;
+            tempProfile.LightbarSettings.SolidColor.blue = blue;
         }
 
         public void Test()

@@ -317,5 +317,12 @@ namespace DS4MapperTest
 
             Close();
         }
+
+        private void ColorPicker_SelectedColorChanged(object sender, HandyControl.Data.FunctionEventArgs<Color> e)
+        {
+            editorTestVM?.UpdateSelectedColor(ColorPicker.SelectedBrush.Color.R,
+                ColorPicker.SelectedBrush.Color.G,
+                ColorPicker.SelectedBrush.Color.B);
+        }
     }
 }

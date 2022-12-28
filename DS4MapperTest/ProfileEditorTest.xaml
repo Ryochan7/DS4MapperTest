@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:hc="https://handyorg.github.io/handycontrol"
         xmlns:local="clr-namespace:DS4MapperTest"
         mc:Ignorable="d"
         Title="ProfileEditorTest" Height="450" Width="800">
@@ -293,8 +294,19 @@
                             <CheckBox IsChecked="{Binding ForceFeedbackEnabled,FallbackValue=False}" VerticalAlignment="Stretch" Margin="8,0,0,0" VerticalContentAlignment="Center"
                                       ToolTip="Enable vibration from output controller" />
                         </StackPanel>
+
+                        <StackPanel Orientation="Horizontal">
+                            <Label Content="Lightbar" HorizontalAlignment="Left" VerticalAlignment="Top" />
+                            <hc:ColorPicker Name="ColorPicker" Margin="8,8,0,0" HorizontalAlignment="Left" SelectedColorChanged="ColorPicker_SelectedColorChanged">
+                                <hc:ColorPicker.SelectedBrush>
+                                    <SolidColorBrush Color="{Binding LightbarColor, Mode=OneWay}">
+                                    </SolidColorBrush>
+                                </hc:ColorPicker.SelectedBrush>
+                                </hc:ColorPicker>
+                        </StackPanel>
+
                     </StackPanel>
-                    
+
                 </ScrollViewer>
             </TabItem>
         </TabControl>

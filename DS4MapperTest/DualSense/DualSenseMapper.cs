@@ -454,7 +454,7 @@ namespace DS4MapperTest.DualSense
                 }
             }
 
-            //lightProcess.UpdateLightbarDS(device, actionProfile);
+            lightProcess.UpdateLightbarDS(device, actionProfile);
 
             ProcessSyncEvents();
 
