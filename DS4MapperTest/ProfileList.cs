@@ -41,10 +41,17 @@ namespace DS4MapperTest
                     {
                         string json = File.ReadAllText(s);
 
-                        ProfilePreview tempPreview =
-                            JsonConvert.DeserializeObject<ProfilePreview>(json);
-                        ProfileEntity item = new ProfileEntity(path: s, name: tempPreview.Name, inputDeviceType);
-                        profileListCol.Add(item);
+                        try
+                        {
+                            ProfilePreview tempPreview =
+                                JsonConvert.DeserializeObject<ProfilePreview>(json);
+
+                            ProfileEntity item = new ProfileEntity(path: s, name: tempPreview.Name, inputDeviceType);
+                            profileListCol.Add(item);
+                        }
+                        catch (JsonReaderException)
+                        {
+                        }
                     }
                 }
             }

@@ -2060,7 +2060,14 @@ namespace DS4MapperTest
 
             if (!string.IsNullOrEmpty(profileFile))
             {
-                ChangeProfile(profileFile);
+                try
+                {
+                    ChangeProfile(profileFile);
+                }
+                catch (JsonException)
+                {
+                    // Place some log message here eventually
+                }
             }
             else
             {
