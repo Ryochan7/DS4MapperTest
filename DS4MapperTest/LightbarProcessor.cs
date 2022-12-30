@@ -46,6 +46,14 @@ namespace DS4MapperTest
         private double rainbowCounter;
         private DateTime oldCheckDateTime;
 
+        public void Reset()
+        {
+            useOverrideColor = false;
+            overrideColor = new DS4Color(0, 0, 0);
+            rainbowCounter = 0;
+            oldCheckDateTime = DateTime.UtcNow;
+        }
+
         public void UpdateLightbar(InputDeviceBase device, Profile profile)
         {
             switch(profile.LightbarSettings.Mode)

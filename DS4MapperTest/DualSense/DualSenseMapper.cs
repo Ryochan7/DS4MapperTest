@@ -169,6 +169,7 @@ namespace DS4MapperTest.DualSense
         public override void Start(ViGEmClient vigemTestClient, FakerInputHandler fakerInputHandler)
         {
             PostProfileChange += DualSenseMapper_PostProfileChange;
+            lightProcess.Reset();
 
             base.Start(vigemTestClient, fakerInputHandler);
 

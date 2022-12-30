@@ -172,6 +172,7 @@ namespace DS4MapperTest.DS4Library
             //profileFile = "C:\\Users\\ryoch\\source\\repos\\DS4MapperTest\\DS4MapperTest\\bin\\x64\\Debug\\net6.0-windows\\Profiles\\XInput.json";
 
             PostProfileChange += DS4Mapper_PostProfileChange;
+            lightProcess.Reset();
 
             base.Start(vigemTestClient, fakerInputHandler);
 
