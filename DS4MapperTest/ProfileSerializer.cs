@@ -47,7 +47,7 @@ namespace DS4MapperTest
         public int RainbowSecondsCycle
         {
             get => settings.rainbowSecondsCycle;
-            set => settings.rainbowSecondsCycle = Math.Clamp(value, 1, 100);
+            set => settings.rainbowSecondsCycle = Math.Clamp(value, 0, 100);
         }
         public bool ShouldSerializeRainbowCycles()
         {

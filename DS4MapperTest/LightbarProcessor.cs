@@ -20,13 +20,13 @@ namespace DS4MapperTest
 
     public class LightbarSettings
     {
+        public const int RAINBOW_SECONDS_CYCLE_DEFAULT = 5;
+
         public LightbarMode Mode = LightbarMode.SolidColor;
         public DS4Library.DS4Color SolidColor = new DS4Library.DS4Color();
         public DS4Library.DS4Color FlashColor = new DS4Library.DS4Color();
-        public int rainbowSecondsCycle = 1;
+        public int rainbowSecondsCycle = RAINBOW_SECONDS_CYCLE_DEFAULT;
     }
-
-
 
     public class LightbarProcessor
     {
@@ -88,16 +88,27 @@ namespace DS4MapperTest
                 case LightbarMode.Rainbow:
                     {
                         DateTime now = DateTime.UtcNow;
-                        double cycles = profile.LightbarSettings.rainbowSecondsCycle;
-                        if (now >= oldCheckDateTime + TimeSpan.FromMilliseconds(10.0))
+                        double secsCycle = profile.LightbarSettings.rainbowSecondsCycle;
+                        if (secsCycle > 0)
                         {
-                            int diffMs = now.Subtract(oldCheckDateTime).Milliseconds;
-                            oldCheckDateTime = now;
+                            if (now >= oldCheckDateTime + TimeSpan.FromMilliseconds(10.0))
+                            {
+                                int diffMs = now.Subtract(oldCheckDateTime).Milliseconds;
+                                oldCheckDateTime = now;
 
-                            rainbowCounter += 360.0 * (double)(diffMs / 1000.0 / cycles);
-                            rainbowCounter = rainbowCounter % 360.0;
-                            useColor = HSVToRGB((float)rainbowCounter, 1.0f, 1.0f);
-                            updateColor = true;
+                                rainbowCounter += 360.0 * (double)(diffMs / 1000.0 / secsCycle);
+                                rainbowCounter = rainbowCounter % 360.0;
+                                useColor = HSVToRGB((float)rainbowCounter, 1.0f, 1.0f);
+                                updateColor = true;
+                            }
+                        }
+                        else
+                        {
+                            if (!device.LightbarColor.Equals(profile.LightbarSettings.SolidColor))
+                            {
+                                useColor = profile.LightbarSettings.SolidColor;
+                                updateColor = true;
+                            }
                         }
                     }
 
@@ -140,16 +151,27 @@ namespace DS4MapperTest
                 case LightbarMode.Rainbow:
                     {
                         DateTime now = DateTime.UtcNow;
-                        double cycles = profile.LightbarSettings.rainbowSecondsCycle;
-                        if (now >= oldCheckDateTime + TimeSpan.FromMilliseconds(10.0))
+                        double secsCycle = profile.LightbarSettings.rainbowSecondsCycle;
+                        if (secsCycle > 0)
                         {
-                            int diffMs = now.Subtract(oldCheckDateTime).Milliseconds;
-                            oldCheckDateTime = now;
+                            if (now >= oldCheckDateTime + TimeSpan.FromMilliseconds(10.0))
+                            {
+                                int diffMs = now.Subtract(oldCheckDateTime).Milliseconds;
+                                oldCheckDateTime = now;
 
-                            rainbowCounter += 360.0 * (double)(diffMs / 1000.0 / cycles);
-                            rainbowCounter = rainbowCounter % 360.0;
-                            useColor = HSVToRGB((float)rainbowCounter, 1.0f, 1.0f);
-                            updateColor = true;
+                                rainbowCounter += 360.0 * (double)(diffMs / 1000.0 / secsCycle);
+                                rainbowCounter = rainbowCounter % 360.0;
+                                useColor = HSVToRGB((float)rainbowCounter, 1.0f, 1.0f);
+                                updateColor = true;
+                            }
+                        }
+                        else
+                        {
+                            if (!device.LightbarColor.Equals(profile.LightbarSettings.SolidColor))
+                            {
+                                useColor = profile.LightbarSettings.SolidColor;
+                                updateColor = true;
+                            }
                         }
                     }
 
