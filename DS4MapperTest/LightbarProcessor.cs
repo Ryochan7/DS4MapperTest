@@ -1,6 +1,9 @@
 ﻿using DS4MapperTest.DS4Library;
 using System;
 using System.Collections.Generic;
+#if DEBUG
+using System.Diagnostics;
+#endif
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,6 +23,7 @@ namespace DS4MapperTest
         public LightbarMode Mode = LightbarMode.SolidColor;
         public DS4Library.DS4Color SolidColor = new DS4Library.DS4Color();
         public DS4Library.DS4Color FlashColor = new DS4Library.DS4Color();
+        public int rainbowSecondsCycle = 1;
     }
 
 
@@ -38,6 +42,9 @@ namespace DS4MapperTest
         {
             get => ref overrideColor;
         }
+
+        private double rainbowCounter;
+        private DateTime oldCheckDateTime;
 
         public void UpdateLightbar(InputDeviceBase device, Profile profile)
         {
@@ -78,6 +85,23 @@ namespace DS4MapperTest
                     }
 
                     break;
+                case LightbarMode.Rainbow:
+                    {
+                        DateTime now = DateTime.UtcNow;
+                        double cycles = profile.LightbarSettings.rainbowSecondsCycle;
+                        if (now >= oldCheckDateTime + TimeSpan.FromMilliseconds(10.0))
+                        {
+                            int diffMs = now.Subtract(oldCheckDateTime).Milliseconds;
+                            oldCheckDateTime = now;
+
+                            rainbowCounter += 360.0 * (double)(diffMs / 1000.0 / cycles);
+                            rainbowCounter = rainbowCounter % 360.0;
+                            useColor = HSVToRGB((float)rainbowCounter, 1.0f, 1.0f);
+                            updateColor = true;
+                        }
+                    }
+
+                    break;
                 default: break;
             }
 
@@ -113,6 +137,23 @@ namespace DS4MapperTest
                     }
 
                     break;
+                case LightbarMode.Rainbow:
+                    {
+                        DateTime now = DateTime.UtcNow;
+                        double cycles = profile.LightbarSettings.rainbowSecondsCycle;
+                        if (now >= oldCheckDateTime + TimeSpan.FromMilliseconds(10.0))
+                        {
+                            int diffMs = now.Subtract(oldCheckDateTime).Milliseconds;
+                            oldCheckDateTime = now;
+
+                            rainbowCounter += 360.0 * (double)(diffMs / 1000.0 / cycles);
+                            rainbowCounter = rainbowCounter % 360.0;
+                            useColor = HSVToRGB((float)rainbowCounter, 1.0f, 1.0f);
+                            updateColor = true;
+                        }
+                    }
+
+                    break;
                 default: break;
             }
 
@@ -121,6 +162,49 @@ namespace DS4MapperTest
                 device.SetLightbarColor(ref useColor);
                 device.HapticsDirty = true;
             }
+        }
+
+        public DS4Color HSVToRGB(float hue, float sat, float val)
+        {
+            // Adapted from equation for HSV to RGB documented on
+            // https://www.rapidtables.com/convert/color/hsv-to-rgb.html
+            DS4Color result = new DS4Color();
+            double C = sat * val;
+            double hPrime = (hue / 60.0) % 6.0;
+            double X = C * (1 - (Math.Abs((hPrime) % 2 - 1)));
+            double m = val - C;
+            double rPrime = 0.0, gPrime = 0.0, bPrime = 0.0;
+#if DEBUG
+            Trace.WriteLine($"H {hue} H'{hPrime} C{C} X{X}");
+#endif
+
+            switch((int)hPrime)
+            {
+                case 0:
+                    rPrime = C; gPrime = X; bPrime = 0;
+                    break;
+                case 1:
+                    rPrime = X; gPrime = C; bPrime = 0;
+                    break;
+                case 2:
+                    rPrime = 0; gPrime = C; bPrime = X;
+                    break;
+                case 3:
+                    rPrime = 0; gPrime = X; bPrime = C;
+                    break;
+                case 4:
+                    rPrime = X; gPrime = 0; bPrime = C;
+                    break;
+                case 5:
+                    rPrime = C; gPrime = 0; bPrime = X;
+                    break;
+                default: break;
+            }
+
+            result.red = (byte)((rPrime + m) * 255);
+            result.green = (byte)((gPrime + m) * 255);
+            result.green = (byte)((bPrime + m) * 255);
+            return result;
         }
     }
 }

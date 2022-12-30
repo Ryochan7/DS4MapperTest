@@ -44,6 +44,16 @@ namespace DS4MapperTest
             return settings.Mode == LightbarMode.Flashing;
         }
 
+        public int RainbowSecondsCycle
+        {
+            get => settings.rainbowSecondsCycle;
+            set => settings.rainbowSecondsCycle = Math.Clamp(value, 1, 100);
+        }
+        public bool ShouldSerializeRainbowCycles()
+        {
+            return settings.Mode == LightbarMode.Rainbow;
+        }
+
         public LightbarSettingsSerializer(LightbarSettings settings)
         {
             this.settings = settings;
