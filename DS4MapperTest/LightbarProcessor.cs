@@ -308,7 +308,7 @@ namespace DS4MapperTest
         // return converted color as RGB DS4Color struct
         private DS4Color RatioColor(DS4Color color, double ratio)
         {
-            // Adapted from equation for HSV to RGB documented on
+            // Adapted from equation for RGB to HSV documented on
             // https://www.rapidtables.com/convert/color/rgb-to-hsv.html
             double rPrime = color.red / 255.0;
             double gPrime = color.green / 255.0;
