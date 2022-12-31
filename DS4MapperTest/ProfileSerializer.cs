@@ -54,6 +54,26 @@ namespace DS4MapperTest
             return settings.Mode == LightbarMode.Rainbow;
         }
 
+        public DS4Library.DS4Color BatteryFullColor
+        {
+            get => settings.BatteryFullColor;
+            set => settings.BatteryFullColor = value;
+        }
+        public bool ShouldSerializeBatteryFullColor()
+        {
+            return settings.Mode == LightbarMode.Battery;
+        }
+
+        public DS4Library.DS4Color PulseColor
+        {
+            get => settings.PulseColor;
+            set => settings.PulseColor = value;
+        }
+        public bool ShouldSerializePulseColor()
+        {
+            return settings.Mode == LightbarMode.Pulse;
+        }
+
         public LightbarSettingsSerializer(LightbarSettings settings)
         {
             this.settings = settings;
