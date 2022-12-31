@@ -295,14 +295,54 @@
                                       ToolTip="Enable vibration from output controller" />
                         </StackPanel>
 
-                        <StackPanel Orientation="Horizontal">
+                        <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
                             <Label Content="Lightbar" HorizontalAlignment="Left" VerticalAlignment="Top" />
-                            <hc:ColorPicker Name="ColorPicker" Margin="8,8,0,0" HorizontalAlignment="Left" SelectedColorChanged="ColorPicker_SelectedColorChanged">
-                                <hc:ColorPicker.SelectedBrush>
-                                    <SolidColorBrush Color="{Binding LightbarColor, Mode=OneWay}">
-                                    </SolidColorBrush>
-                                </hc:ColorPicker.SelectedBrush>
-                                </hc:ColorPicker>
+                            <StackPanel Orientation="Vertical">
+                                <StackPanel Orientation="Horizontal">
+                                    <Label Content="Mode:" />
+                                    <ComboBox ItemsSource="{Binding LightbarModeOptions}" DisplayMemberPath="DisplayName"
+                                              SelectedValuePath="ChoiceValue" SelectedValue="{Binding CurrentLightbarMode}" MinWidth="200" Margin="8,0,0,0" />
+                                </StackPanel>
+
+                                <TabControl SelectedIndex="{Binding LightbarOptionsTabIndex,Mode=OneWay}" BorderThickness="0,0,0,0">
+                                    <TabItem Header="Solid Color" Visibility="Collapsed">
+                                        <hc:ColorPicker Name="ColorPicker" Margin="8,8,0,0" HorizontalAlignment="Left" SelectedColorChanged="ColorPicker_SelectedColorChanged">
+                                            <hc:ColorPicker.SelectedBrush>
+                                                <SolidColorBrush Color="{Binding LightbarColor, Mode=OneWay}">
+                                                </SolidColorBrush>
+                                            </hc:ColorPicker.SelectedBrush>
+                                        </hc:ColorPicker>
+                                    </TabItem>
+
+                                    <TabItem Header="Rainbow" Visibility="Collapsed">
+                                        <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                                            <Label Content="Seconds/Cycle:" />
+                                            <hc:NumericUpDown Value="{Binding RainbowSecondsCycle}" Minimum="0" Maximum="10"
+                                                          DecimalPlaces="0" Increment="1" Margin="8,0,0,0" />
+                                        </StackPanel>
+                                    </TabItem>
+
+                                    <TabItem Header="Pulse" Visibility="Collapsed">
+                                        <hc:ColorPicker Name="ColorPickerPulse" Margin="8,8,0,0" HorizontalAlignment="Left" SelectedColorChanged="ColorPickerPulse_SelectedColorChanged">
+                                            <hc:ColorPicker.SelectedBrush>
+                                                <SolidColorBrush Color="{Binding LightbarPulseColor, Mode=OneWay}">
+                                                </SolidColorBrush>
+                                            </hc:ColorPicker.SelectedBrush>
+                                        </hc:ColorPicker>
+                                    </TabItem>
+
+                                    <TabItem Header="Battery" Visibility="Collapsed">
+                                        <hc:ColorPicker Name="ColorPickerBattery" Margin="8,8,0,0" HorizontalAlignment="Left" SelectedColorChanged="ColorPickerBattery_SelectedColorChanged">
+                                            <hc:ColorPicker.SelectedBrush>
+                                                <SolidColorBrush Color="{Binding LightbarBatteryColor, Mode=OneWay}">
+                                                </SolidColorBrush>
+                                            </hc:ColorPicker.SelectedBrush>
+                                        </hc:ColorPicker>
+                                    </TabItem>
+                                </TabControl>
+
+                            </StackPanel>
+
                         </StackPanel>
 
                     </StackPanel>

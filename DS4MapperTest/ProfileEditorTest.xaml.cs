@@ -320,9 +320,23 @@ namespace DS4MapperTest
 
         private void ColorPicker_SelectedColorChanged(object sender, HandyControl.Data.FunctionEventArgs<Color> e)
         {
-            editorTestVM?.UpdateSelectedColor(ColorPicker.SelectedBrush.Color.R,
+            editorTestVM?.UpdateSelectedSolidColor(ColorPicker.SelectedBrush.Color.R,
                 ColorPicker.SelectedBrush.Color.G,
                 ColorPicker.SelectedBrush.Color.B);
+        }
+
+        private void ColorPickerBattery_SelectedColorChanged(object sender, HandyControl.Data.FunctionEventArgs<Color> e)
+        {
+            editorTestVM?.UpdateSelectedBatteryColor(ColorPickerBattery.SelectedBrush.Color.R,
+                ColorPickerBattery.SelectedBrush.Color.G,
+                ColorPickerBattery.SelectedBrush.Color.B);
+        }
+
+        private void ColorPickerPulse_SelectedColorChanged(object sender, HandyControl.Data.FunctionEventArgs<Color> e)
+        {
+            editorTestVM?.UpdateSelectedPulseColor(ColorPickerPulse.SelectedBrush.Color.R,
+                ColorPickerPulse.SelectedBrush.Color.G,
+                ColorPickerPulse.SelectedBrush.Color.B);
         }
     }
 }

@@ -33,6 +33,13 @@ namespace DS4MapperTest
         public DS4Library.DS4Color BatteryFullColor = new DS4Library.DS4Color();
         public int rainbowSecondsCycle = RAINBOW_SECONDS_CYCLE_DEFAULT;
         public DS4Library.DS4Color PulseColor = new DS4Library.DS4Color();
+
+        public event EventHandler<LightbarMode> LightbarModeChanged;
+
+        public void RaiseModeChanged()
+        {
+            LightbarModeChanged?.Invoke(this, Mode);
+        }
     }
 
     public class LightbarProcessor

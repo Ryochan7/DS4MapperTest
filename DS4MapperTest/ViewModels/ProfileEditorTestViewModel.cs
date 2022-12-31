@@ -16,6 +16,7 @@ using DS4MapperTest.StickActions;
 using DS4MapperTest.GyroActions;
 using DS4MapperTest.DPadActions;
 using System.Windows.Media;
+using DS4MapperTest.ViewModels.Common;
 
 namespace DS4MapperTest.ViewModels
 {
@@ -266,6 +267,60 @@ namespace DS4MapperTest.ViewModels
             //}
         }
 
+        public System.Windows.Media.Color LightbarPulseColor
+        {
+            get => System.Windows.Media.Color.FromArgb(255,
+                tempProfile.LightbarSettings.PulseColor.red,
+                tempProfile.LightbarSettings.PulseColor.green,
+                tempProfile.LightbarSettings.PulseColor.blue);
+        }
+
+
+        public System.Windows.Media.Color LightbarBatteryColor
+        {
+            get => System.Windows.Media.Color.FromArgb(255,
+                tempProfile.LightbarSettings.BatteryFullColor.red,
+                tempProfile.LightbarSettings.BatteryFullColor.green,
+                tempProfile.LightbarSettings.BatteryFullColor.blue);
+        }
+
+        private List<EnumChoiceSelection<LightbarMode>> lightbarModeChoices = new List<EnumChoiceSelection<LightbarMode>>()
+        {
+            new EnumChoiceSelection<LightbarMode>("Solid Color", LightbarMode.SolidColor),
+            new EnumChoiceSelection<LightbarMode>("Rainbow", LightbarMode.Rainbow),
+            new EnumChoiceSelection<LightbarMode>("Pulse", LightbarMode.Pulse),
+            new EnumChoiceSelection<LightbarMode>("Battery", LightbarMode.Battery),
+        };
+        public List<EnumChoiceSelection<LightbarMode>> LightbarModeOptions => lightbarModeChoices;
+
+        public LightbarMode CurrentLightbarMode
+        {
+            get => tempProfile.LightbarSettings.Mode;
+            set
+            {
+                if (tempProfile.LightbarSettings.Mode == value) return;
+                tempProfile.LightbarSettings.Mode = value;
+                tempProfile.LightbarSettings.RaiseModeChanged();
+                CurrentLightbarModeChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        public event EventHandler CurrentLightbarModeChanged;
+
+        public int LightbarOptionsTabIndex
+        {
+            get => lightbarModeChoices.FindIndex(t => t.ChoiceValue == tempProfile.LightbarSettings.Mode);
+        }
+        public event EventHandler LightbarOptionsTabIndexChanged;
+
+        public int RainbowSecondsCycle
+        {
+            get => tempProfile.LightbarSettings.rainbowSecondsCycle;
+            set
+            {
+                tempProfile.LightbarSettings.rainbowSecondsCycle = value;
+            }
+        }
+
         public ProfileEditorTestViewModel(Mapper mapper, ProfileEntity profileEnt, Profile currentProfile)
         {
             this.mapper = mapper;
@@ -273,6 +328,12 @@ namespace DS4MapperTest.ViewModels
             this.tempProfile = currentProfile;
 
             tempProfile.DirtyChanged += TempProfile_DirtyChanged;
+            CurrentLightbarModeChanged += ProfileEditorTestViewModel_CurrentLightbarModeChanged;
+        }
+
+        private void ProfileEditorTestViewModel_CurrentLightbarModeChanged(object sender, EventArgs e)
+        {
+            LightbarOptionsTabIndexChanged?.Invoke(this, EventArgs.Empty);
         }
 
         private void TempProfile_DirtyChanged(object sender, EventArgs e)
@@ -280,11 +341,25 @@ namespace DS4MapperTest.ViewModels
             //throw new NotImplementedException();
         }
 
-        public void UpdateSelectedColor(byte red, byte green, byte blue)
+        public void UpdateSelectedSolidColor(byte red, byte green, byte blue)
         {
             tempProfile.LightbarSettings.SolidColor.red = red;
             tempProfile.LightbarSettings.SolidColor.green = green;
             tempProfile.LightbarSettings.SolidColor.blue = blue;
+        }
+
+        public void UpdateSelectedPulseColor(byte red, byte green, byte blue)
+        {
+            tempProfile.LightbarSettings.PulseColor.red = red;
+            tempProfile.LightbarSettings.PulseColor.green = green;
+            tempProfile.LightbarSettings.PulseColor.blue = blue;
+        }
+
+        public void UpdateSelectedBatteryColor(byte red, byte green, byte blue)
+        {
+            tempProfile.LightbarSettings.BatteryFullColor.red = red;
+            tempProfile.LightbarSettings.BatteryFullColor.green = green;
+            tempProfile.LightbarSettings.BatteryFullColor.blue = blue;
         }
 
         public void Test()
