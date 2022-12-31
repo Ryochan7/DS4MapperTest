@@ -281,6 +281,70 @@ namespace DS4MapperTest
                     }
 
                     break;
+                case LightbarMode.Pulse:
+                    {
+                        double ratio = 0.0;
+
+                        if (!fadewatch.IsRunning)
+                        {
+                            fadewatch.Restart();
+                            switch (fadedirection)
+                            {
+                                case FadeDirection.In:
+                                    fadedirection = FadeDirection.Out;
+                                    break;
+                                case FadeDirection.Out:
+                                    fadedirection = FadeDirection.In;
+                                    break;
+                                default: break;
+                            }
+
+                            ratio = fadedirection == FadeDirection.Out ? 100.0 : 0.0;
+                        }
+                        else
+                        {
+                            long elapsed = fadewatch.ElapsedMilliseconds;
+                            if (fadedirection == FadeDirection.In)
+                            {
+                                if (elapsed < PULSE_FLASH_DURATION)
+                                {
+                                    elapsed = elapsed / 40;
+                                    if (elapsed > PULSE_FLASH_SEGMENTS)
+                                        elapsed = (long)PULSE_FLASH_SEGMENTS;
+                                    ratio = 100.0 * (elapsed / PULSE_FLASH_SEGMENTS);
+                                }
+                                else
+                                {
+                                    ratio = 100.0;
+                                    fadewatch.Stop();
+                                }
+                            }
+                            else
+                            {
+                                if (elapsed < PULSE_FLASH_DURATION)
+                                {
+                                    elapsed = elapsed / 40;
+                                    if (elapsed > PULSE_FLASH_SEGMENTS)
+                                        elapsed = (long)PULSE_FLASH_SEGMENTS;
+                                    ratio = (0 - 100.0) * (elapsed / PULSE_FLASH_SEGMENTS) + 100.0;
+                                }
+                                else
+                                {
+                                    ratio = 0.0;
+                                    fadewatch.Stop();
+                                }
+                            }
+
+                            useColor = RatioColor(profile.LightbarSettings.PulseColor,
+                                ratio / 100.0);
+                            if (!device.LightbarColor.Equals(useColor))
+                            {
+                                updateColor = true;
+                            }
+                        }
+                    }
+
+                    break;
                 case LightbarMode.Battery:
                     {
                         useColor =
