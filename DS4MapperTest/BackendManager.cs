@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Nefarius.ViGEm.Client;
 using DS4MapperTest.DS4Library;
 using System.Windows.Threading;
+using System.Runtime.InteropServices;
 
 namespace DS4MapperTest
 {
@@ -269,7 +270,15 @@ namespace DS4MapperTest
             vigemTestClient = null;
 
             fakerInputHandler.Sync();
-            fakerInputHandler.Disconnect();
+            Thread.Sleep(100);
+            try
+            {
+                fakerInputHandler.Disconnect();
+            }
+            catch (SEHException)
+            {
+                // Ignore
+            }
 
             changingService = false;
 
