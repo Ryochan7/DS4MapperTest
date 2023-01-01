@@ -292,28 +292,10 @@ namespace DS4MapperTest.ViewModels.GyroActionPropViewModels
 
         private void PopulateModel()
         {
-            triggerButtonItems.AddRange(new GyroTriggerButtonItem[]
+            foreach (ActionTriggerItem item in mapper.ActionTriggerItems)
             {
-                new GyroTriggerButtonItem("Always On", JoypadActionCodes.AlwaysOn),
-                new GyroTriggerButtonItem("A", JoypadActionCodes.BtnSouth),
-                new GyroTriggerButtonItem("B", JoypadActionCodes.BtnEast),
-                new GyroTriggerButtonItem("X", JoypadActionCodes.BtnWest),
-                new GyroTriggerButtonItem("Y", JoypadActionCodes.BtnNorth),
-                new GyroTriggerButtonItem("Left Bumper", JoypadActionCodes.BtnLShoulder),
-                new GyroTriggerButtonItem("Right Bumper", JoypadActionCodes.BtnRShoulder),
-                new GyroTriggerButtonItem("Left Trigger", JoypadActionCodes.AxisLTrigger),
-                new GyroTriggerButtonItem("Right Trigger", JoypadActionCodes.AxisRTrigger),
-                new GyroTriggerButtonItem("Left Grip", JoypadActionCodes.BtnLGrip),
-                new GyroTriggerButtonItem("Right Grip", JoypadActionCodes.BtnRGrip),
-                new GyroTriggerButtonItem("Stick Click", JoypadActionCodes.BtnThumbL),
-                new GyroTriggerButtonItem("Left Touchpad Touch", JoypadActionCodes.LPadTouch),
-                new GyroTriggerButtonItem("Right Touchpad Touch", JoypadActionCodes.RPadTouch),
-                new GyroTriggerButtonItem("Left Touchpad Click", JoypadActionCodes.LPadClick),
-                new GyroTriggerButtonItem("Right Touchpad Click", JoypadActionCodes.RPadClick),
-                new GyroTriggerButtonItem("Back", JoypadActionCodes.BtnSelect),
-                new GyroTriggerButtonItem("Start", JoypadActionCodes.BtnStart),
-                new GyroTriggerButtonItem("Steam", JoypadActionCodes.BtnMode),
-            });
+                triggerButtonItems.Add(new GyroTriggerButtonItem(item.DisplayName, item.Code));
+            }
 
             foreach (JoypadActionCodes code in action.swipeParams.gyroTriggerButtons)
             {
