@@ -201,13 +201,13 @@ namespace DS4MapperTest
                                     fadewatch.Stop();
                                 }
                             }
+                        }
 
-                            useColor = RatioColor(profile.LightbarSettings.PulseColor,
+                        useColor = RatioColor(profile.LightbarSettings.PulseColor,
                                 ratio / 100.0);
-                            if (!device.LightbarColor.Equals(useColor))
-                            {
-                                updateColor = true;
-                            }
+                        if (!device.LightbarColor.Equals(useColor))
+                        {
+                            updateColor = true;
                         }
                     }
 
@@ -341,13 +341,13 @@ namespace DS4MapperTest
                                     fadewatch.Stop();
                                 }
                             }
+                        }
 
-                            useColor = RatioColor(profile.LightbarSettings.PulseColor,
+                        useColor = RatioColor(profile.LightbarSettings.PulseColor,
                                 ratio / 100.0);
-                            if (!device.LightbarColor.Equals(useColor))
-                            {
-                                updateColor = true;
-                            }
+                        if (!device.LightbarColor.Equals(useColor))
+                        {
+                            updateColor = true;
                         }
                     }
 
