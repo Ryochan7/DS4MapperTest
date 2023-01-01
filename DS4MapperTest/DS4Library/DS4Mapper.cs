@@ -175,6 +175,8 @@ namespace DS4MapperTest.DS4Library
             lightProcess.Reset();
 
             base.Start(vigemTestClient, fakerInputHandler);
+            // Update current lightbar status before sending first output packet
+            lightProcess.UpdateLightbarDS4(device, actionProfile);
 
             reader.Report += Reader_Report;
             reader.StartUpdate();
