@@ -24,6 +24,7 @@ using System.Reflection.PortableExecutable;
 using Nefarius.ViGEm.Client.Targets.Xbox360;
 using Nefarius.ViGEm.Client.Targets.DualShock4;
 using System.Runtime.CompilerServices;
+using DS4MapperTest.ViewModels.GyroActionPropViewModels;
 
 namespace DS4MapperTest
 {
@@ -179,6 +180,31 @@ namespace DS4MapperTest
         protected DeviceActionDefaultsCreator deviceActionDefaults =
             new DummyActionDefaultsCreator();
         public DeviceActionDefaultsCreator DeviceActionDefaults => deviceActionDefaults;
+
+        // Establish default items. Using old Steam Controller defaults
+        protected List<ActionTriggerItem> actionTriggerItems = new List<ActionTriggerItem>()
+        {
+            new ActionTriggerItem("Always On", JoypadActionCodes.AlwaysOn),
+            new ActionTriggerItem("A", JoypadActionCodes.BtnSouth),
+            new ActionTriggerItem("B", JoypadActionCodes.BtnEast),
+            new ActionTriggerItem("X", JoypadActionCodes.BtnWest),
+            new ActionTriggerItem("Y", JoypadActionCodes.BtnNorth),
+            new ActionTriggerItem("Left Bumper", JoypadActionCodes.BtnLShoulder),
+            new ActionTriggerItem("Right Bumper", JoypadActionCodes.BtnRShoulder),
+            new ActionTriggerItem("Left Trigger", JoypadActionCodes.AxisLTrigger),
+            new ActionTriggerItem("Right Trigger", JoypadActionCodes.AxisRTrigger),
+            new ActionTriggerItem("Left Grip", JoypadActionCodes.BtnLGrip),
+            new ActionTriggerItem("Right Grip", JoypadActionCodes.BtnRGrip),
+            new ActionTriggerItem("Stick Click", JoypadActionCodes.BtnThumbL),
+            new ActionTriggerItem("Left Touchpad Touch", JoypadActionCodes.LPadTouch),
+            new ActionTriggerItem("Right Touchpad Touch", JoypadActionCodes.RPadTouch),
+            new ActionTriggerItem("Left Touchpad Click", JoypadActionCodes.LPadClick),
+            new ActionTriggerItem("Right Touchpad Click", JoypadActionCodes.RPadClick),
+            new ActionTriggerItem("Back", JoypadActionCodes.BtnSelect),
+            new ActionTriggerItem("Start", JoypadActionCodes.BtnStart),
+            new ActionTriggerItem("Steam", JoypadActionCodes.BtnMode),
+        };
+        public List<ActionTriggerItem> ActionTriggerItems => actionTriggerItems;
 
         protected FakerInputHandler fakerInputHandler;
 

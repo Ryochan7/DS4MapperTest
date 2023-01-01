@@ -164,6 +164,32 @@ namespace DS4MapperTest.DualSense
             knownTriggerDefinitions.Add("R2", rightTriggerDefinition);
             knownTouchpadDefinitions.Add("Touchpad", cpadDefinition);
             knownGyroSensDefinitions.Add("Gyro", gyroSensDefinition);
+
+            actionTriggerItems.Clear();
+            actionTriggerItems = new List<ActionTriggerItem>()
+            {
+                new ActionTriggerItem("Always On", JoypadActionCodes.AlwaysOn),
+                new ActionTriggerItem("Cross", JoypadActionCodes.BtnSouth),
+                new ActionTriggerItem("Circle", JoypadActionCodes.BtnEast),
+                new ActionTriggerItem("Square", JoypadActionCodes.BtnWest),
+                new ActionTriggerItem("Triangle", JoypadActionCodes.BtnNorth),
+                new ActionTriggerItem("L1", JoypadActionCodes.BtnLShoulder),
+                new ActionTriggerItem("R2", JoypadActionCodes.BtnRShoulder),
+                new ActionTriggerItem("L2", JoypadActionCodes.AxisLTrigger),
+                new ActionTriggerItem("R2", JoypadActionCodes.AxisRTrigger),
+                new ActionTriggerItem("L3", JoypadActionCodes.BtnThumbL),
+                new ActionTriggerItem("R3", JoypadActionCodes.BtnThumbR),
+                new ActionTriggerItem("Touchpad Touch", JoypadActionCodes.LPadTouch),
+                new ActionTriggerItem("Touchpad Click", JoypadActionCodes.LPadClick),
+                new ActionTriggerItem("Create", JoypadActionCodes.BtnSelect),
+                new ActionTriggerItem("Options", JoypadActionCodes.BtnStart),
+                new ActionTriggerItem("PS", JoypadActionCodes.BtnHome),
+                new ActionTriggerItem("Mute", JoypadActionCodes.BtnMode),
+                new ActionTriggerItem("DPad Up", JoypadActionCodes.BtnDPadUp),
+                new ActionTriggerItem("DPad Down", JoypadActionCodes.BtnDPadDown),
+                new ActionTriggerItem("DPad Left", JoypadActionCodes.BtnDPadLeft),
+                new ActionTriggerItem("DPad Right", JoypadActionCodes.BtnDPadRight),
+            };
         }
 
         public override void Start(ViGEmClient vigemTestClient, FakerInputHandler fakerInputHandler)
@@ -607,6 +633,12 @@ namespace DS4MapperTest.DualSense
                         break;
                     case JoypadActionCodes.BtnStart:
                         result = currentMapperState.Options;
+                        break;
+                    case JoypadActionCodes.BtnHome:
+                        result = currentMapperState.PS;
+                        break;
+                    case JoypadActionCodes.BtnMode:
+                        result = currentMapperState.Mute;
                         break;
                     case JoypadActionCodes.BtnDPadUp:
                         result = currentMapperState.DpadUp;

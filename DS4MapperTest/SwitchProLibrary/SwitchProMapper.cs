@@ -116,6 +116,30 @@ namespace DS4MapperTest.SwitchProLibrary
             knownStickDefinitions.Add("LS", lsDefintion);
             knownStickDefinitions.Add("RS", rsDefintion);
             knownGyroSensDefinitions.Add("Gyro", gyroSensDefinition);
+
+            actionTriggerItems.Clear();
+            actionTriggerItems = new List<ActionTriggerItem>()
+            {
+                new ActionTriggerItem("Always On", JoypadActionCodes.AlwaysOn),
+                new ActionTriggerItem("A", JoypadActionCodes.BtnEast),
+                new ActionTriggerItem("B", JoypadActionCodes.BtnSouth),
+                new ActionTriggerItem("X", JoypadActionCodes.BtnNorth),
+                new ActionTriggerItem("Y", JoypadActionCodes.BtnWest),
+                new ActionTriggerItem("LShoulder", JoypadActionCodes.BtnLShoulder),
+                new ActionTriggerItem("RShoulder", JoypadActionCodes.BtnRShoulder),
+                new ActionTriggerItem("ZL", JoypadActionCodes.AxisLTrigger),
+                new ActionTriggerItem("ZR", JoypadActionCodes.AxisRTrigger),
+                new ActionTriggerItem("LSClick", JoypadActionCodes.BtnThumbL),
+                new ActionTriggerItem("RSClick", JoypadActionCodes.BtnThumbR),
+                new ActionTriggerItem("Minus", JoypadActionCodes.BtnSelect),
+                new ActionTriggerItem("Plus", JoypadActionCodes.BtnStart),
+                new ActionTriggerItem("Home", JoypadActionCodes.BtnHome),
+                new ActionTriggerItem("Capture", JoypadActionCodes.BtnCapture),
+                new ActionTriggerItem("DPad Up", JoypadActionCodes.BtnDPadUp),
+                new ActionTriggerItem("DPad Down", JoypadActionCodes.BtnDPadDown),
+                new ActionTriggerItem("DPad Left", JoypadActionCodes.BtnDPadLeft),
+                new ActionTriggerItem("DPad Right", JoypadActionCodes.BtnDPadRight),
+            };
         }
 
         public override void Start(ViGEmClient vigemTestClient, FakerInputHandler fakerInputHandler)
@@ -443,11 +467,14 @@ namespace DS4MapperTest.SwitchProLibrary
                     case JoypadActionCodes.BtnStart:
                         result = currentMapperState.Plus;
                         break;
-                    case JoypadActionCodes.BtnMode:
+                    case JoypadActionCodes.BtnSelect:
                         result = currentMapperState.Minus;
                         break;
                     case JoypadActionCodes.BtnHome:
                         result = currentMapperState.Home;
+                        break;
+                    case JoypadActionCodes.BtnCapture:
+                        result = currentMapperState.Capture;
                         break;
                     case JoypadActionCodes.AxisLTrigger:
                         result = currentMapperState.ZL;
