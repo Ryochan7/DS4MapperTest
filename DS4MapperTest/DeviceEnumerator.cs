@@ -10,6 +10,7 @@ using System.Runtime.InteropServices;
 using static DS4MapperTest.VidPidMeta;
 using DS4MapperTest.SwitchProLibrary;
 using DS4MapperTest.DualSense;
+using Nefarius.Utilities.DeviceManagement.PnP;
 
 namespace DS4MapperTest
 {
@@ -121,6 +122,25 @@ namespace DS4MapperTest
             //};
         }
 
+        private bool IsRealDev(HidDevice hDevice)
+        {
+            var device = PnPDevice.GetDeviceByInterfaceId(hDevice.DevicePath);
+
+            return !device.IsVirtual(pDevice =>
+            {
+                var hardwareIds = pDevice.GetProperty<string[]>(DevicePropertyKey.Device_HardwareIds).ToList();
+
+                // hardware IDs of root hubs/controllers that emit supported virtual devices as sources
+                var excludedIds = new[]
+                {
+                    @"ROOT\HIDGAMEMAP", // reWASD
+                    @"ROOT\VHUSB3HC", // VirtualHere
+                };
+
+                return hardwareIds.Any(id => excludedIds.Contains(id.ToUpper()));
+            });
+        }
+
         public void FindControllers()
         {
             using WriteLocker locker = new WriteLocker(_foundDevlocker);
@@ -157,6 +177,9 @@ namespace DS4MapperTest
             {
                 return !foundDevicePaths.Contains(hidDevice.DevicePath);
             });
+
+            // Attempt to filter out virtual devices
+            hidDevs = hidDevs.Where(IsRealDev);
 
             foreach (HidDevice hidDev in hidDevs)
             {

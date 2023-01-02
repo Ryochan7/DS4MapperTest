@@ -48,6 +48,9 @@
     <Reference Include="FakerInputWrapper">
       <HintPath>..\libs\$(Platform)\FakerInputWrapper\FakerInputWrapper.dll</HintPath>
     </Reference>
+    <Reference Include="Nefarius.Utilities.DeviceManagement">
+      <HintPath>..\libs\AnyCPU\Nefarius.Utilities.DeviceManagement.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
   <ItemGroup>
