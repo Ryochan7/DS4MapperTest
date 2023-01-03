@@ -288,7 +288,7 @@ namespace DS4MapperTest.ViewModels.DPadActionPropViewModels
 
             ExecuteInMapperThread(() =>
             {
-                oldAction.Release(mapper, ignoreReleaseActions: true);
+                oldAction?.Release(mapper, ignoreReleaseActions: true);
 
                 action.EventCodes4[(int)DpadDirections.Up] = newAction as ButtonAction;
                 action.ChangedProperties.Add(DPadAction.PropertyKeyStrings.PAD_DIR_UP);
@@ -306,7 +306,7 @@ namespace DS4MapperTest.ViewModels.DPadActionPropViewModels
 
             ExecuteInMapperThread(() =>
             {
-                oldAction.Release(mapper, ignoreReleaseActions: true);
+                oldAction?.Release(mapper, ignoreReleaseActions: true);
 
                 action.EventCodes4[(int)DpadDirections.Down] = newAction as ButtonAction;
                 action.ChangedProperties.Add(DPadAction.PropertyKeyStrings.PAD_DIR_DOWN);
@@ -324,7 +324,7 @@ namespace DS4MapperTest.ViewModels.DPadActionPropViewModels
 
             ExecuteInMapperThread(() =>
             {
-                oldAction.Release(mapper, ignoreReleaseActions: true);
+                oldAction?.Release(mapper, ignoreReleaseActions: true);
 
                 action.EventCodes4[(int)DpadDirections.Left] = newAction as ButtonAction;
                 action.ChangedProperties.Add(DPadAction.PropertyKeyStrings.PAD_DIR_LEFT);
@@ -342,7 +342,7 @@ namespace DS4MapperTest.ViewModels.DPadActionPropViewModels
 
             ExecuteInMapperThread(() =>
             {
-                oldAction.Release(mapper, ignoreReleaseActions: true);
+                oldAction?.Release(mapper, ignoreReleaseActions: true);
 
                 action.EventCodes4[(int)DpadDirections.Right] = newAction as ButtonAction;
                 action.ChangedProperties.Add(DPadAction.PropertyKeyStrings.PAD_DIR_RIGHT);
@@ -360,7 +360,7 @@ namespace DS4MapperTest.ViewModels.DPadActionPropViewModels
 
             ExecuteInMapperThread(() =>
             {
-                oldAction.Release(mapper, ignoreReleaseActions: true);
+                oldAction?.Release(mapper, ignoreReleaseActions: true);
 
                 action.EventCodes4[(int)DpadDirections.UpLeft] = newAction as ButtonAction;
                 action.ChangedProperties.Add(DPadAction.PropertyKeyStrings.PAD_DIR_UPLEFT);
@@ -378,7 +378,7 @@ namespace DS4MapperTest.ViewModels.DPadActionPropViewModels
 
             ExecuteInMapperThread(() =>
             {
-                oldAction.Release(mapper, ignoreReleaseActions: true);
+                oldAction?.Release(mapper, ignoreReleaseActions: true);
 
                 action.EventCodes4[(int)DpadDirections.UpRight] = newAction as ButtonAction;
                 action.ChangedProperties.Add(DPadAction.PropertyKeyStrings.PAD_DIR_UPRIGHT);
@@ -396,7 +396,7 @@ namespace DS4MapperTest.ViewModels.DPadActionPropViewModels
 
             ExecuteInMapperThread(() =>
             {
-                oldAction.Release(mapper, ignoreReleaseActions: true);
+                oldAction?.Release(mapper, ignoreReleaseActions: true);
 
                 action.EventCodes4[(int)DpadDirections.DownLeft] = newAction as ButtonAction;
                 action.ChangedProperties.Add(DPadAction.PropertyKeyStrings.PAD_DIR_DOWNLEFT);
