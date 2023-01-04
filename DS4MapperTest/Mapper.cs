@@ -137,6 +137,7 @@ namespace DS4MapperTest
         protected Profile actionProfile = new Profile();
         public Profile ActionProfile => actionProfile;
         protected IntermediateState intermediateState = new IntermediateState();
+        public ref IntermediateState IntermediateStateRef => ref intermediateState;
 
         protected List<OutputActionData> pendingReleaseActions =
             new List<OutputActionData>();
