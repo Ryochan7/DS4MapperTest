@@ -161,7 +161,7 @@ namespace DS4MapperTest
 
                         if (mapId.StartsWith(ACTION_SET_ACTION_PREFIX))
                         {
-                            activeCompositeLayer.actionSetActionDict[mapId] = currentMapAction as ButtonAction;
+                            activeCompositeLayer.actionSetActionDict[mapId] = currentMapAction as ButtonMapAction;
                         }
                         else
                         {
@@ -378,7 +378,7 @@ namespace DS4MapperTest
 
                             if (mapId.StartsWith(ACTION_SET_ACTION_PREFIX))
                             {
-                                activeCompositeLayer.actionSetActionDict[mapId] = currentMapAction as ButtonAction;
+                                activeCompositeLayer.actionSetActionDict[mapId] = currentMapAction as ButtonMapAction;
                             }
                             else
                             {
@@ -585,7 +585,7 @@ namespace DS4MapperTest
 
                     if (mapId.StartsWith(ACTION_SET_ACTION_PREFIX))
                     {
-                        activeCompositeLayer.actionSetActionDict[mapId] = currentMapAction as ButtonAction;
+                        activeCompositeLayer.actionSetActionDict[mapId] = currentMapAction as ButtonMapAction;
                     }
                     else
                     {

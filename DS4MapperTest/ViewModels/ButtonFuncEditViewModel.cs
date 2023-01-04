@@ -13,19 +13,19 @@ namespace DS4MapperTest.ViewModels
 {
     public class ButtonFuncEditViewModel
     {
-        private Mapper mapper;
+        protected Mapper mapper;
         public Mapper Mapper
         {
             get => mapper;
         }
 
-        private ButtonMapAction action;
+        protected ButtonMapAction action;
         public ButtonMapAction Action
         {
             get => action;
         }
 
-        private UserControl displayControl;
+        protected UserControl displayControl;
         public UserControl DisplayControl
         {
             get => displayControl;

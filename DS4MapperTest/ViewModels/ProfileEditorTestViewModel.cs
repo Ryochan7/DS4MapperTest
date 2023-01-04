@@ -133,6 +133,26 @@ namespace DS4MapperTest.ViewModels
         }
         public event EventHandler SelectGyroBindIndexChanged;
 
+
+
+        private List<BindingItemsTest> alwaysOnBindings = new List<BindingItemsTest>();
+        public List<BindingItemsTest> AlwaysOnBindings => alwaysOnBindings;
+
+        private int selectAlwaysOnBindIndex = -1;
+        public int SelectAlwaysOnBindIndex
+        {
+            get => selectAlwaysOnBindIndex;
+            set
+            {
+                if (selectAlwaysOnBindIndex == value) return;
+                selectAlwaysOnBindIndex = value;
+                SelectAlwaysOnBindIndexChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        public event EventHandler SelectAlwaysOnBindIndexChanged;
+
+
+
         private List<DPadBindingItemsTest> dpadBindings = new List<DPadBindingItemsTest>();
         public List<DPadBindingItemsTest> DPadBindings => dpadBindings;
 
@@ -407,6 +427,7 @@ namespace DS4MapperTest.ViewModels
             stickBindings.Clear();
             gyroBindings.Clear();
             dpadBindings.Clear();
+            alwaysOnBindings.Clear();
 
             PopulateCurrentLayerBindings();
         }
@@ -493,6 +514,19 @@ namespace DS4MapperTest.ViewModels
                 {
                     GyroBindingItemsTest tempItem = new GyroBindingItemsTest(meta.id, meta.displayName, tempTrigAct, mapper);
                     gyroBindings.Add(tempItem);
+                }
+            }
+
+            //foreach (InputBindingMeta meta in
+            //    mapper.BindingList.Where((item) => item.controlType == InputBindingMeta.InputControlType.Button))
+            {
+                if (tempProfile.CurrentActionSet.CurrentActionLayer.actionSetActionDict.
+                    TryGetValue($"{tempProfile.CurrentActionSet.ActionButtonId}", out ButtonMapAction tempBtnAct))
+                {
+                    BindingItemsTest tempItem = new BindingItemsTest(tempBtnAct.MappingId,
+                        "Always On",
+                        tempBtnAct, mapper);
+                    alwaysOnBindings.Add(tempItem);
                 }
             }
         }

@@ -273,6 +273,30 @@
                     </ListView.View>
                 </ListView>
             </TabItem>
+            <TabItem Header="Meta">
+                <ListView ItemsSource="{Binding AlwaysOnBindings}" SelectedIndex="{Binding SelectAlwaysOnBindIndex}">
+                    <ListView.View>
+                        <GridView>
+                            <GridView.Columns>
+                                <GridViewColumn Header="Name" Width="100">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding DisplayInputMapString}" />
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                                <GridViewColumn Width="300">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Button Content="{Binding DisplayBind,Mode=OneWay,FallbackValue='Test'}" Click="AlwaysOn_Button_Click" Tag="{Binding}" />
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                            </GridView.Columns>
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+            </TabItem>
             <TabItem Header="Other">
                 <ScrollViewer VerticalAlignment="Top">
                     <StackPanel>

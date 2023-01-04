@@ -1,0 +1,49 @@
+﻿<Window x:Class="DS4MapperTest.Views.AlwaysOnEditWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:DS4MapperTest.Views"
+        mc:Ignorable="d"
+        Height="450" Width="800" Closed="Window_Closed">
+    <Window.Title>
+        <MultiBinding StringFormat="{}Always On ({0})">
+            <Binding Path="InputControlName" FallbackValue="Button" />
+        </MultiBinding>
+    </Window.Title>
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="transformPanelVisConverter" />
+    </Window.Resources>
+    <Window.Background>
+        <SolidColorBrush Color="{StaticResource RegionColor}"/>
+    </Window.Background>
+    <DockPanel Margin="8">
+        <StackPanel x:Name="transformStackPanel" Orientation="Horizontal" DockPanel.Dock="Top" Margin="0,0,0,10" Visibility="{Binding TopTransformPanelVisible,Converter={StaticResource transformPanelVisConverter}}">
+            <StackPanel Orientation="Horizontal" Visibility="{Binding IsTransformOutputVisible,Converter={StaticResource transformPanelVisConverter}}" Margin="8,0,8,0">
+                <Label Content="Transform Type" />
+                <ComboBox SelectedIndex="{Binding SelectedTransformIndex}" MinWidth="150">
+                    <ComboBoxItem>Unbound</ComboBoxItem>
+                    <ComboBoxItem>Function Button</ComboBoxItem>
+                </ComboBox>
+            </StackPanel>
+            <Button MinWidth="20" Click="Button_Click">
+                <Button.Style>
+                    <Style TargetType="Button" BasedOn="{StaticResource ButtonDefault}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsTransformOutputVisible}" Value="False">
+                                <!--<Setter Property="Background" Value="Lime" />-->
+                                <Setter Property="Content" Value="&gt;" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding IsTransformOutputVisible}" Value="True">
+                                <Setter Property="Content" Value="&lt;" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
+        </StackPanel>
+
+        <ContentControl x:Name="innerViewControl" Content="{Binding DisplayControl}" DockPanel.Dock="Top" />
+    </DockPanel>
+
+</Window>

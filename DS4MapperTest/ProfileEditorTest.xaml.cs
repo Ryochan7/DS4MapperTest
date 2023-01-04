@@ -338,5 +338,25 @@ namespace DS4MapperTest
                 ColorPickerPulse.SelectedBrush.Color.G,
                 ColorPickerPulse.SelectedBrush.Color.B);
         }
+
+        private void AlwaysOn_Button_Click(object sender, RoutedEventArgs e)
+        {
+            //GyroActionEdit_Button_Click
+            //int selectedInd = editorTestVM.SelectGyroBindIndex;
+            Control tempControl = sender as Control;
+            BindingItemsTest tempItem = tempControl.Tag as BindingItemsTest;
+            int selectedInd = editorTestVM.AlwaysOnBindings.IndexOf(tempItem);
+            if (selectedInd >= 0)
+            {
+                editorTestVM.SelectAlwaysOnBindIndex = selectedInd;
+                ButtonMapAction tempAction = editorTestVM.AlwaysOnBindings[selectedInd].MappedAction;
+
+                AlwaysOnEditWindow btnFuncEditWin = new AlwaysOnEditWindow();
+                btnFuncEditWin.PostInit(editorTestVM.DeviceMapper, tempAction);
+                btnFuncEditWin.ShowDialog();
+
+                editorTestVM.AlwaysOnBindings[selectedInd].UpdateAction(btnFuncEditWin.BtnFuncEditVM.Action);
+            }
+        }
     }
 }

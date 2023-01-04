@@ -411,6 +411,53 @@ namespace DS4MapperTest
             reverseActionDict[action] = action.MappingId;
         }
 
+        public void ReplaceActionSetButtonAction(ButtonMapAction oldAction, ButtonMapAction action)
+        {
+            string mapId = oldAction.MappingId;
+            int ind = layerActions.FindIndex((item) => item == oldAction);
+            int mappedInd = -1;
+            if (ind >= 0)
+            {
+                ButtonMapAction tempAction = layerActions[ind] as ButtonMapAction;
+                layerActions.RemoveAt(ind);
+                layerActions.Insert(ind, action);
+
+                normalActionDict.Remove(mapId);
+                reverseActionDict.Remove(tempAction);
+
+                mappedInd = mappedActions.FindIndex((item) => (item == tempAction));
+                if (mappedInd != -1)
+                {
+                    mappedActions.RemoveAt(mappedInd);
+                    mappedActions.Insert(mappedInd, action);
+                }
+                else
+                {
+                    mappedActions.Add(action);
+                }
+            }
+            else
+            {
+                layerActions.Add(action);
+                mappedActions.Add(action);
+            }
+
+            actionSetActionDict[mapId] = action;
+
+            normalActionDict.Add(mapId, action);
+            reverseActionDict.Add(action, mapId);
+        }
+
+        public void AddActionSetButtonMapAction(ButtonMapAction action)
+        {
+            layerActions.Add(action);
+            //mappedActions.Add(action);
+            actionSetActionDict[action.MappingId] = action;
+
+            normalActionDict[action.MappingId] = action;
+            reverseActionDict[action] = action.MappingId;
+        }
+
         public void ReplaceTriggerAction(TriggerMapAction oldAction, TriggerMapAction action)
         {
             string mapId = oldAction.MappingId;

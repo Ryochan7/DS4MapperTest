@@ -1,6 +1,6 @@
 ## TODO
 
-* Expose ActionSet virtual button
+* ~~Expose ActionSet virtual button~~
 * ~~Implement device gyro calibration~~
 * ~~Implement lightbar color changing~~
 * ~~Abstract device enumeartion~~
