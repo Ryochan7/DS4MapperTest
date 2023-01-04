@@ -83,7 +83,7 @@ namespace DS4MapperTest
             ActionLayer actionLayer = new ActionLayer(0);
             actionLayers.Add(actionLayer);
             // Create default Action Set virtual action button
-            actionLayer.actionSetActionDict.Add($"{ACTION_SET_ACTION_PREFIX}{index}", new ButtonAction()
+            actionLayer.actionSetActionDict.Add($"{ACTION_SET_ACTION_PREFIX}{index}", new ButtonNoAction()
             {
                 MappingId = $"{ACTION_SET_ACTION_PREFIX}{index}",
             });

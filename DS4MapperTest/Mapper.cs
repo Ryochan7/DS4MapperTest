@@ -687,9 +687,12 @@ namespace DS4MapperTest
                             }
                         }
 
-                        ButtonNoAction btnNoActionSet = new ButtonNoAction();
-                        btnNoActionSet.MappingId = $"{ActionSet.ACTION_SET_ACTION_PREFIX}{set.Index}";
-                        layer.actionSetActionDict.Add(btnNoActionSet.MappingId, btnNoActionSet);
+                        if (!layer.actionSetActionDict.ContainsKey($"{ActionSet.ACTION_SET_ACTION_PREFIX}{set.Index}"))
+                        {
+                            ButtonNoAction btnNoActionSet = new ButtonNoAction();
+                            btnNoActionSet.MappingId = $"{ActionSet.ACTION_SET_ACTION_PREFIX}{set.Index}";
+                            layer.actionSetActionDict.Add(btnNoActionSet.MappingId, btnNoActionSet);
+                        }
                     }
 
                     layerIndex++;
