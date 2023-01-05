@@ -6496,6 +6496,11 @@ namespace DS4MapperTest
                     JsonConvert.PopulateObject(j.ToString(), touchSingleBtnActInstance);
                     resultInstance = touchSingleBtnActInstance;
                     break;
+                case "TouchNoAction":
+                    TouchpadNoActionSerializer touchNoActinstance = new TouchpadNoActionSerializer();
+                    JsonConvert.PopulateObject(j.ToString(), touchNoActinstance);
+                    resultInstance = touchNoActinstance;
+                    break;
                 case "DPadAction":
                     DpadActionSerializer dpadActSerializer = new DpadActionSerializer();
                     JsonConvert.PopulateObject(j.ToString(), dpadActSerializer);

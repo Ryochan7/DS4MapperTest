@@ -565,6 +565,11 @@ namespace DS4MapperTest.ViewModels.GyroActionPropViewModels
 
         private void GyroMouseJoystickPropViewModel_OutputStickIndexChanged(object sender, EventArgs e)
         {
+            if (outputStickIndex != -1 && outputStickHolder.OutputStickItems.Count > outputStickIndex)
+            {
+                action.mStickParams.OutputStick = outputStickHolder.OutputStickItems[outputStickIndex].Code;
+            }
+
             if (!action.ChangedProperties.Contains(GyroMouseJoystick.PropertyKeyStrings.OUTPUT_STICK))
             {
                 action.ChangedProperties.Add(GyroMouseJoystick.PropertyKeyStrings.OUTPUT_STICK);
