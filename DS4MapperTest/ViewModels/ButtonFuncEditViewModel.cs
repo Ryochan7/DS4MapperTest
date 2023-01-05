@@ -25,6 +25,13 @@ namespace DS4MapperTest.ViewModels
             get => action;
         }
 
+        protected ButtonMapAction tempAction;
+        public ButtonMapAction TempAction
+        {
+            get => tempAction;
+            set => tempAction = value;
+        }
+
         protected UserControl displayControl;
         public UserControl DisplayControl
         {
@@ -90,6 +97,13 @@ namespace DS4MapperTest.ViewModels
             }
         }
 
+        private bool usingRealAction = false;
+        public bool UsingRealAction
+        {
+            get => usingRealAction;
+            set => usingRealAction = value;
+        }
+
         public ButtonFuncEditViewModel(Mapper mapper, ButtonMapAction action)
         {
             this.mapper = mapper;
@@ -116,7 +130,7 @@ namespace DS4MapperTest.ViewModels
             return result;
         }
 
-        public void UpdateAction(ButtonMapAction action)
+        public void MigrationActionId(ButtonMapAction action)
         {
             if (this.action.Id == MapAction.DEFAULT_UNBOUND_ID)
             {
@@ -129,7 +143,10 @@ namespace DS4MapperTest.ViewModels
                 // Can re-use existing ID
                 action.Id = this.action.Id;
             }
+        }
 
+        public void UpdateAction(ButtonMapAction action)
+        {
             action.MappingId = this.action.MappingId;
             this.action = action;
         }
@@ -169,7 +186,7 @@ namespace DS4MapperTest.ViewModels
                             MapAction baseLayerAction = mapper.ActionProfile.CurrentActionSet.DefaultActionLayer.normalActionDict[oldAction.MappingId];
                             if (MapAction.IsSameType(baseLayerAction, newAction))
                             {
-                                newAction.SoftCopyFromParent(baseLayerAction as ButtonMapAction);
+                                newAction.SoftCopy(baseLayerAction as ButtonMapAction);
                             }
                         }
 
@@ -183,6 +200,7 @@ namespace DS4MapperTest.ViewModels
                     }
                 }
 
+                usingRealAction = true;
                 resetEvent.Set();
             });
 
@@ -211,10 +229,18 @@ namespace DS4MapperTest.ViewModels
 
         //public event EventHandler ActionPropertyChanged;
 
+        private bool usingRealAction = false;
+        public bool UsingRealAction
+        {
+            get => usingRealAction;
+            set => usingRealAction = value;
+        }
+
         public ButtonActionViewModel(Mapper mapper, ButtonMapAction action)
         {
             this.mapper = mapper;
             this.action = action as ButtonAction;
+            usingRealAction = true;
 
             // Check if base ActionLayer action from composite layer
             if (action.ParentAction == null &&
@@ -232,6 +258,7 @@ namespace DS4MapperTest.ViewModels
                 //tempAction.MappingId = this.action.MappingId;
 
                 this.action = tempAction;
+                usingRealAction = false;
 
                 //ActionPropertyChanged += ReplaceExistingLayerAction;
             }
@@ -257,10 +284,39 @@ namespace DS4MapperTest.ViewModels
         }
         public event EventHandler DisplayControlChanged;
 
+        private bool usingRealAction = false;
+        public bool UsingRealAction
+        {
+            get => usingRealAction;
+            set => usingRealAction = value;
+        }
+
         public ButtonNoActionViewModel(Mapper mapper, ButtonMapAction action)
         {
             this.mapper = mapper;
             this.action = action as ButtonNoAction;
+            usingRealAction = true;
+
+            // Check if base ActionLayer action from composite layer
+            if (action.ParentAction == null &&
+                mapper.ActionProfile.CurrentActionSet.UsingCompositeLayer &&
+                !mapper.ActionProfile.CurrentActionSet.RecentAppliedLayer.LayerActions.Contains(action) &&
+                MapAction.IsSameType(mapper.ActionProfile.CurrentActionSet.DefaultActionLayer.normalActionDict[action.MappingId], action))
+            {
+                // Test with temporary object
+                ButtonMapAction baseLayerAction = mapper.ActionProfile.CurrentActionSet.DefaultActionLayer.normalActionDict[action.MappingId] as ButtonMapAction;
+                ButtonNoAction tempAction = new ButtonNoAction();
+                tempAction.SoftCopyFromParent(baseLayerAction);
+                //int tempLayerId = mapper.ActionProfile.CurrentActionSet.CurrentActionLayer.Index;
+                int tempId = mapper.ActionProfile.CurrentActionSet.RecentAppliedLayer.FindNextAvailableId();
+                tempAction.Id = tempId;
+                //tempAction.MappingId = this.action.MappingId;
+
+                this.action = tempAction;
+                usingRealAction = false;
+
+                //ActionPropertyChanged += ReplaceExistingLayerAction;
+            }
         }
     }
 }

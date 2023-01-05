@@ -34,6 +34,10 @@ namespace DS4MapperTest.ButtonActions
         {
         }
 
+        public virtual void SoftCopy(ButtonMapAction parentAction)
+        {
+        }
+
         public virtual void ProcessAction(Mapper mapper, bool outputActive,
             OutputActionData action)
         {

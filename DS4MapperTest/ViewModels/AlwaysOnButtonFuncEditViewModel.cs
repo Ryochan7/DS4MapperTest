@@ -61,7 +61,7 @@ namespace DS4MapperTest.ViewModels
                             MapAction baseLayerAction = mapper.ActionProfile.CurrentActionSet.DefaultActionLayer.normalActionDict[oldAction.MappingId];
                             if (MapAction.IsSameType(baseLayerAction, newAction))
                             {
-                                newAction.SoftCopyFromParent(baseLayerAction as ButtonMapAction);
+                                newAction.SoftCopy(baseLayerAction as ButtonMapAction);
                             }
                         }
 

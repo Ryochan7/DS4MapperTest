@@ -67,11 +67,13 @@ namespace DS4MapperTest
                     innerViewControl.DataContext = null;
 
                     btnActionEditVM = new ButtonActionViewModel(btnFuncEditVM.Mapper, btnFuncEditVM.Action);
-                    if (btnActionEditVM.Action != btnFuncEditVM.Action)
-                    {
-                        btnFuncEditVM.UpdateAction(btnActionEditVM.Action);
-                    }
+                    //if (btnActionEditVM.Action != btnFuncEditVM.Action)
+                    //{
+                    //    btnFuncEditVM.UpdateAction(btnActionEditVM.Action);
+                    //}
 
+                    btnFuncEditVM.TempAction = btnActionEditVM.Action;
+                    btnFuncEditVM.UsingRealAction = btnActionEditVM.UsingRealAction;
                     bindControl = null;
                     bindControl = new FuncBindingControl();
                     bindControl.PostInit(btnFuncEditVM.Mapper, btnFuncEditVM.Action);
@@ -79,7 +81,7 @@ namespace DS4MapperTest
                     bindControl.PreActionSwitch += BindControl_PreActionSwitch;
                     bindControl.ActionChanged += BindControl_ActionChanged;
                     bindControl.RequestClose += BindControl_RequestClose;
-                    bindControl.FuncBindVM.IsRealAction = btnFuncEditVM.Action.ParentAction == null;
+                    bindControl.FuncBindVM.IsRealAction = btnActionEditVM.Action.ParentAction == null;
                     btnActionEditVM.DisplayControl = bindControl;
 
                     innerViewControl.DataContext = btnActionEditVM;
@@ -88,6 +90,9 @@ namespace DS4MapperTest
                     innerViewControl.DataContext = null;
 
                     btnNoActVM = new ButtonNoActionViewModel(btnFuncEditVM.Mapper, btnFuncEditVM.Action);
+                    btnFuncEditVM.TempAction = btnNoActVM.Action;
+                    btnFuncEditVM.UsingRealAction = btnNoActVM.UsingRealAction;
+
                     btnNoActVM.DisplayControl = noActionControl;
                     innerViewControl.DataContext = btnNoActVM;
                     break;
@@ -99,6 +104,7 @@ namespace DS4MapperTest
         private void BindControl_PreActionSwitch(ButtonAction oldAction, ButtonAction newAction)
         {
             btnFuncEditVM.SwitchLayerAction(oldAction, newAction, false);
+            btnFuncEditVM.MigrationActionId(newAction);
             btnFuncEditVM.UpdateAction(newAction);
         }
 
@@ -109,6 +115,7 @@ namespace DS4MapperTest
 
         private void BindControl_ActionChanged(object sender, ButtonAction action)
         {
+            btnFuncEditVM.MigrationActionId(action);
             btnFuncEditVM.UpdateAction(action);
         }
 
@@ -121,6 +128,15 @@ namespace DS4MapperTest
                 if (tempAct != null)
                 {
                     ButtonMapAction oldAction = btnFuncEditVM.Action;
+
+                    if (btnFuncEditVM.TempAction.Id != MapAction.DEFAULT_UNBOUND_ID)
+                    {
+                        tempAct.Id = btnFuncEditVM.TempAction.Id;
+                    }
+                    else
+                    {
+                        btnFuncEditVM.MigrationActionId(tempAct);
+                    }
 
                     btnFuncEditVM.UpdateAction(tempAct);
                     //tempAct.MappingId = oldAction.MappingId;

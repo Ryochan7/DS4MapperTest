@@ -146,11 +146,11 @@ namespace DS4MapperTest.ButtonActions
             {
                 if (status)
                 {
-                    if (useParentActions)
-                    {
-                        usedFuncList = parentButtonAct.actionFuncs;
-                    }
-                    else
+                    //if (useParentActions)
+                    //{
+                    //    usedFuncList = parentButtonAct.actionFuncs;
+                    //}
+                    //else
                     {
                         usedFuncList = actionFuncs;
                     }
@@ -1312,6 +1312,55 @@ namespace DS4MapperTest.ButtonActions
                 foreach (string parentPropType in useParentProList)
                 {
                     switch(parentPropType)
+                    {
+                        case PropertyKeyStrings.NAME:
+                            name = parentBtnAction.name;
+                            break;
+                        case PropertyKeyStrings.FUNCTIONS:
+                            actionFuncs.Clear();
+                            actionFuncs.AddRange(parentBtnAction.actionFuncs);
+                            useParentActions = true;
+                            break;
+                        default:
+                            break;
+                    }
+                }
+
+                //if (!changedProperties.Contains(PropertyKeyStrings.NAME))
+                //{
+                //    name = parentBtnAction.name;
+                //}
+
+                //if (!changedProperties.Contains(PropertyKeyStrings.FUNCTIONS))
+                //{
+                //    actionFuncs.AddRange(parentBtnAction.actionFuncs);
+                //    useParentActions = true;
+                //}
+
+                /*if (!changedProperties.Contains(""))
+                {
+
+                }
+                */
+            }
+        }
+
+        public override void SoftCopy(ButtonMapAction parentAction)
+        {
+            if (parentAction is ButtonAction parentBtnAction)
+            {
+                base.SoftCopy(parentAction);
+
+                parentBtnAction.NotifyPropertyChanged += ParentBtnAction_NotifyPropertyChanged;
+
+                // Determine the set with properties that should inherit
+                // from the parent action
+                IEnumerable<string> useParentProList =
+                    fullPropertySet.Except(changedProperties);
+
+                foreach (string parentPropType in useParentProList)
+                {
+                    switch (parentPropType)
                     {
                         case PropertyKeyStrings.NAME:
                             name = parentBtnAction.name;

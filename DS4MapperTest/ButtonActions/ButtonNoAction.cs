@@ -66,6 +66,16 @@ namespace DS4MapperTest.ButtonActions
             }
         }
 
+        public override void SoftCopy(ButtonMapAction parentAction)
+        {
+            if (parentAction is ButtonNoAction tempNoAction)
+            {
+                base.SoftCopy(parentAction);
+
+                mappingId = tempNoAction.mappingId;
+            }
+        }
+
         public override string DescribeActions(Mapper mapper)
         {
             return "None";
