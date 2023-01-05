@@ -1317,6 +1317,7 @@ namespace DS4MapperTest.ButtonActions
                             name = parentBtnAction.name;
                             break;
                         case PropertyKeyStrings.FUNCTIONS:
+                            actionFuncs.Clear();
                             actionFuncs.AddRange(parentBtnAction.actionFuncs);
                             useParentActions = true;
                             break;
