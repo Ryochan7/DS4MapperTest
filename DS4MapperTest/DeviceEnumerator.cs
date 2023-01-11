@@ -355,6 +355,8 @@ namespace DS4MapperTest
             return result;
         }
 
+        // TODO: Possibly move to BackendManager. Mainly to deal with possible Joined JoyCon
+        // Mapper type in the future
         public Mapper PrepareDeviceMapper(InputDeviceBase device, AppGlobalData appGlobal)
         {
             Mapper result = null;
