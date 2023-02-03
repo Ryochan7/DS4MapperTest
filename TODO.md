@@ -1,5 +1,6 @@
 ## TODO
 
+* Test adding Logging to project
 * ~~Expose ActionSet virtual button~~
 * ~~Implement device gyro calibration~~
 * ~~Implement lightbar color changing~~
