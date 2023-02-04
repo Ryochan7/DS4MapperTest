@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NLog;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
@@ -25,6 +26,7 @@ namespace DS4MapperTest
         private Thread testThread;
         private Timer collectTimer;
         private ArgumentParser _parser;
+        private LoggerHolder logHolder;
 
         private void Application_Startup(object sender, StartupEventArgs e)
         {
@@ -100,6 +102,10 @@ namespace DS4MapperTest
             testThread.Start();
             testThread.Join();
 
+            logHolder = new LoggerHolder(manager, appGlobal);
+            Logger logger = logHolder.Logger;
+            logger.Info($"SteamControllerTest v. {AppGlobalData.exeversion}");
+
             MainWindow window = new MainWindow();
             window.PostInit(appGlobal);
             window.Show();
@@ -126,6 +132,9 @@ namespace DS4MapperTest
 
                 manager.ShutDown();
             }
+
+            LogManager.Flush();
+            LogManager.Shutdown();
 
             //osdTestWindow.Close();
             //osdTestWindow = null;

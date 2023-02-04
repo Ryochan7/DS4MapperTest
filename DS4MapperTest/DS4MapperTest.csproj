@@ -38,6 +38,7 @@
   <ItemGroup>
     <PackageReference Include="HandyControl" Version="3.3.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="NLog" Version="5.1.1" />
     <PackageReference Include="WpfScreenHelper" Version="2.0.0" />
   </ItemGroup>
 
@@ -57,6 +58,9 @@
     <None Update="libs\$(Platform)\FakerInputWrapper\FakerInputDll.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Link>FakerInputDll.dll</Link>
+    </None>
+    <None Update="NLog.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 
