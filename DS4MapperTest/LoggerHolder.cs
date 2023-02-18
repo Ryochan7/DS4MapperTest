@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Text;
+using System.Threading;
 using NLog;
 using NLog.Targets.Wrappers;
 
@@ -10,6 +11,7 @@ namespace DS4MapperTest
     {
         private Logger logger;// = LogManager.GetCurrentClassLogger();
         public Logger Logger { get => logger; }
+        private ReaderWriterLockSlim logLock = new ReaderWriterLockSlim();
 
         public LoggerHolder(BackendManager service, AppGlobalData appGlobal)
         {
@@ -27,25 +29,21 @@ namespace DS4MapperTest
 
             logger = LogManager.GetCurrentClassLogger();
 
-            //service.Debug += WriteToLog;
+            service.Debug += WriteToLog;
             //DS4Windows.AppLogger.GuiLog += WriteToLog;
         }
 
-        //private void WriteToLog(object sender, DS4Windows.DebugEventArgs e)
-        //{
-        //    if (e.Temporary)
-        //    {
-        //        return;
-        //    }
-
-        //    if (!e.Warning)
-        //    {
-        //        logger.Info(e.Data);
-        //    }
-        //    else
-        //    {
-        //        logger.Warn(e.Data);
-        //    }
-        //}
+        private void WriteToLog(object sender, DebugEventArgs e)
+        {
+            using WriteLocker locker = new WriteLocker(logLock);
+            if (!e.Warning)
+            {
+                logger.Info(e.Message);
+            }
+            else
+            {
+                logger.Warn(e.Message);
+            }
+        }
     }
 }

@@ -8,9 +8,30 @@ using Nefarius.ViGEm.Client;
 using DS4MapperTest.DS4Library;
 using System.Windows.Threading;
 using System.Runtime.InteropServices;
+using System.Diagnostics;
 
 namespace DS4MapperTest
 {
+    public class DebugEventArgs : EventArgs
+    {
+        protected DateTime m_Time = DateTime.Now;
+        protected string message = string.Empty;
+        protected bool warning = false;
+        //protected bool temporary = false;
+        //public DebugEventArgs(string message, bool warn, bool temporary = false)
+        public DebugEventArgs(string message, bool warn)
+        {
+            this.message = message;
+            warning = warn;
+            //this.temporary = temporary;
+        }
+
+        public DateTime Time => m_Time;
+        public string Message => message;
+        public bool Warning => warning;
+        //public bool Temporary => temporary;
+    }
+
     public class BackendManager
     {
         public const int CONTROLLER_LIMIT = 8;
@@ -72,6 +93,7 @@ namespace DS4MapperTest
         public delegate void HotplugControllerHandler(InputDeviceBase device, int ind);
         public event HotplugControllerHandler HotplugController;
         public event HotplugControllerHandler UnplugController;
+        public event EventHandler<DebugEventArgs> Debug;
 
         public BackendManager(ArgumentParser argParse, AppGlobalData appGlobal)
         {
@@ -122,6 +144,8 @@ namespace DS4MapperTest
 
         public void Start()
         {
+            LogDebug("Starting service");
+
             changingService = true;
             bool checkConnect = fakerInputHandler.Connect();
 
@@ -196,6 +220,8 @@ namespace DS4MapperTest
                 deviceReadersMap.Add(device, reader);
 
                 controllerList[ind] = device;
+                LogDebug($"Plugged in controller #{ind + 1} ({device.Serial})");
+
                 ind++;
             }
 
@@ -203,6 +229,8 @@ namespace DS4MapperTest
             changingService = false;
 
             ServiceStarted?.Invoke(this, EventArgs.Empty);
+
+            LogDebug("Service started");
         }
 
         private void Device_Removal(object sender, EventArgs e)
@@ -235,6 +263,7 @@ namespace DS4MapperTest
                         if (appGlobal.activeProfiles.ContainsKey(device.Index))
                         {
                             appGlobal.activeProfiles.Remove(device.Index);
+                            LogDebug($"Desynced controller #{device.Index + 1} ({device.Serial})");
                         }
                     }
                 });
@@ -419,6 +448,13 @@ namespace DS4MapperTest
             deviceReadersMap.Add(device, reader);
 
             controllerList[ind] = device;
+            LogDebug($"Plugged in controller #{ind + 1} ({device.Serial})");
+        }
+
+        public void LogDebug(string message, bool warning = false)
+        {
+            DebugEventArgs args = new DebugEventArgs(message, warning);
+            Debug?.Invoke(this, args);
         }
     }
 }

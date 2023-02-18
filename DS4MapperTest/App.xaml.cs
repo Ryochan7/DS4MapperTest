@@ -123,6 +123,8 @@ namespace DS4MapperTest
         private void Application_Exit(object sender, ExitEventArgs e)
         {
             {
+                manager?.LogDebug($"Stopping manager");
+
                 Task tempTask = Task.Run(() =>
                 {
                     manager?.PreAppStopDown();
@@ -131,7 +133,11 @@ namespace DS4MapperTest
                 tempTask.Wait();
 
                 manager.ShutDown();
+
+                manager?.LogDebug($"Manager stopped");
             }
+
+            manager?.LogDebug($"Stopping program");
 
             LogManager.Flush();
             LogManager.Shutdown();
