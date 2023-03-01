@@ -56,6 +56,7 @@ namespace DS4MapperTest
         private const int SONY_DS4_V1_PID = 0x05C4;
         private const int SONY_DS4_V2_PID = 0x09CC;
         private const int SONY_DUALSENSE_PID = 0x0CE6;
+        private const int SONY_DUALSENSE_EDGE_PID = 0x0DF2;
 
         private const int NINTENDO_VENDOR_ID = 0x57e;
         private const int SWITCH_PRO_PRODUCT_ID = 0x2009;
@@ -79,6 +80,8 @@ namespace DS4MapperTest
             new VidPidMeta(SONY_VID, SONY_DS4_V2_PID, "DS4 v.2", InputDeviceType.DS4,
                 VidPidMeta.UsedConnectionBus.HID),
             new VidPidMeta(SONY_VID, SONY_DUALSENSE_PID, "DualSense", InputDeviceType.DualSense,
+                VidPidMeta.UsedConnectionBus.HID),
+            new VidPidMeta(SONY_VID, SONY_DUALSENSE_EDGE_PID, "DualSense Edge", InputDeviceType.DualSense,
                 VidPidMeta.UsedConnectionBus.HID),
             new VidPidMeta(NINTENDO_VENDOR_ID, SWITCH_PRO_PRODUCT_ID, "Switch Pro", InputDeviceType.SwitchPro,
                 VidPidMeta.UsedConnectionBus.HID),
