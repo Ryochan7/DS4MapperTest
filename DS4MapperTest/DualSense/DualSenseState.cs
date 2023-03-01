@@ -66,6 +66,13 @@ namespace DS4MapperTest.DualSense
         public bool Options;
         public bool PS;
         public bool Mute;
+
+        // Extra DualSense Edge buttons
+        public bool FnL;
+        public bool FnR;
+        public bool BLP;
+        public bool BRP;
+
         public bool DpadUp;
         public bool DpadDown;
         public bool DpadLeft;

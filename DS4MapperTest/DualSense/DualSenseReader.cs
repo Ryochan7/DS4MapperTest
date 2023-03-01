@@ -174,6 +174,12 @@ namespace DS4MapperTest.DualSense
                     current.TouchClickButton = (tempByte & 0x02) != 0;
                     current.Mute = (tempByte & (1 << 2)) != 0;
 
+                    // Extra DualSense Edge buttons
+                    current.FnL = (tempByte & (1 << 4)) != 0;
+                    current.FnR = (tempByte & (1 << 5)) != 0;
+                    current.BLP = (tempByte & (1 << 6)) != 0;
+                    current.BRP = (tempByte & (1 << 7)) != 0;
+
                     //tempStamp = (uint)((ushort)(inputReportBuffer[11 + reportOffset] << 8) | inputReportBuffer[10 + reportOffset]);
                     tempStamp = inputReportBuffer[28 + reportOffset] |
                                 (uint)(inputReportBuffer[29 + reportOffset] << 8) |

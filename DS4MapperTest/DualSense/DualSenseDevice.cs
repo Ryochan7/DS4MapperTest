@@ -25,6 +25,16 @@ namespace DS4MapperTest.DualSense
             USB,
         }
 
+        public enum DeviceSubType : ushort
+        {
+            DualSense,
+            DSEdge,
+        }
+
+        public const int SONY_VID = 0x054C;
+        public const int SONY_DUALSENSE_PID = 0x0CE6;
+        public const int SONY_DUALSENSE_EDGE_PID = 0x0DF2;
+
         private const int BT_OUTPUT_REPORT_LENGTH = 78;
         private const int BT_INPUT_REPORT_LENGTH = 78;
         private const int READ_STREAM_TIMEOUT = 100;
@@ -87,6 +97,9 @@ namespace DS4MapperTest.DualSense
         public int InputReportLen { get => inputReportLen; }
         public int OutputReportLen { get => outputReportLen; }
 
+        private DeviceSubType subType = DeviceSubType.DualSense;
+        public DeviceSubType SubType => subType;
+
         public override event EventHandler Removal;
 
         public DualSenseDevice(HidDevice device, string displayName)
@@ -117,9 +130,23 @@ namespace DS4MapperTest.DualSense
             // Grab calibration data from IMU
             RefreshCalibration();
 
+            // Check if using a normal DualSense or a DualSense Edge
+            DetermineSubType(hidDevice);
+
             baseElapsedReference = 250.0;
             deviceOptions = new DualSenseControllerOptions(deviceType);
             synced = true;
+        }
+
+        private void DetermineSubType(HidDevice device)
+        {
+            subType = DeviceSubType.DualSense;
+
+            if (device.Attributes.VendorId == SONY_VID &&
+                device.Attributes.ProductId == SONY_DUALSENSE_EDGE_PID)
+            {
+                subType = DeviceSubType.DSEdge;
+            }
         }
 
         public static ConnectionType DetermineConnectionType(HidDevice device)

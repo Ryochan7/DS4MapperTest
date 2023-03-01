@@ -39,6 +39,14 @@ namespace DS4MapperTest.MapperUtil
         Btn24, LTFullPull = Btn24,
         Btn25, RTFullPull = Btn25,
 
+        // Use for FnL and FnR for now
+        Btn26, BtnMode2 = Btn26,
+        Btn27, BtnMode3 = Btn27,
+
+        // Adding extra grip / paddle button aliases early
+        Btn28, BtnLGrip2 = Btn28,
+        Btn29, BtnRGrip2 = Btn29,
+
         BtnMax = 255,
 
         Axis1 = 1 << 8, AxisLX = Axis1, X360_LX = Axis1,

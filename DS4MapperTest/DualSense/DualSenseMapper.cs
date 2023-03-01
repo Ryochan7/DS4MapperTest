@@ -71,6 +71,16 @@ namespace DS4MapperTest.DualSense
                 new InputBindingMeta("Touchpad", "Touchpad", InputBindingMeta.InputControlType.Touchpad),
             };
 
+            if (device.SubType == DualSenseDevice.DeviceSubType.DSEdge)
+            {
+                bindingList.AddRange(new InputBindingMeta[] {
+                    new InputBindingMeta("FnL", "Function L", InputBindingMeta.InputControlType.Button),
+                    new InputBindingMeta("FnR", "Function R", InputBindingMeta.InputControlType.Button),
+                    new InputBindingMeta("BLP", "Paddle L", InputBindingMeta.InputControlType.Button),
+                    new InputBindingMeta("BRP", "Paddle R", InputBindingMeta.InputControlType.Button),
+                });
+            }
+
             // Populate Input Binding dictionary
             bindingList.ForEach((item) => bindingDict.Add(item.id, item));
 
@@ -190,6 +200,17 @@ namespace DS4MapperTest.DualSense
                 new ActionTriggerItem("DPad Left", JoypadActionCodes.BtnDPadLeft),
                 new ActionTriggerItem("DPad Right", JoypadActionCodes.BtnDPadRight),
             };
+
+            if (device.SubType == DualSenseDevice.DeviceSubType.DSEdge)
+            {
+                actionTriggerItems.AddRange(new ActionTriggerItem[]
+                {
+                    new ActionTriggerItem("FnL", JoypadActionCodes.BtnMode2),
+                    new ActionTriggerItem("FnR", JoypadActionCodes.BtnMode3),
+                    new ActionTriggerItem("BLP", JoypadActionCodes.BtnLGrip),
+                    new ActionTriggerItem("BLR", JoypadActionCodes.BtnRGrip),
+                });
+            }
         }
 
         public override void Start(ViGEmClient vigemTestClient, FakerInputHandler fakerInputHandler)
@@ -405,6 +426,42 @@ namespace DS4MapperTest.DualSense
 
                 if (tempBtnAct.active) tempBtnAct.Event(this);
 
+                // Check state of extra DualSense Edge buttons
+                if (device.SubType == DualSenseDevice.DeviceSubType.DSEdge)
+                {
+                    tempBtnAct = currentLayer.buttonActionDict["FnL"];
+                    if (currentMapperState.FnL || currentMapperState.FnL != previousMapperState.FnL)
+                    {
+                        tempBtnAct.Prepare(this, currentMapperState.FnL);
+                    }
+
+                    if (tempBtnAct.active) tempBtnAct.Event(this);
+
+                    tempBtnAct = currentLayer.buttonActionDict["FnR"];
+                    if (currentMapperState.FnR || currentMapperState.FnR != previousMapperState.FnR)
+                    {
+                        tempBtnAct.Prepare(this, currentMapperState.FnR);
+                    }
+
+                    if (tempBtnAct.active) tempBtnAct.Event(this);
+
+                    tempBtnAct = currentLayer.buttonActionDict["BLP"];
+                    if (currentMapperState.BLP || currentMapperState.BLP != previousMapperState.BLP)
+                    {
+                        tempBtnAct.Prepare(this, currentMapperState.BLP);
+                    }
+
+                    if (tempBtnAct.active) tempBtnAct.Event(this);
+
+                    tempBtnAct = currentLayer.buttonActionDict["BRP"];
+                    if (currentMapperState.BRP || currentMapperState.BRP != previousMapperState.BRP)
+                    {
+                        tempBtnAct.Prepare(this, currentMapperState.BRP);
+                    }
+
+                    if (tempBtnAct.active) tempBtnAct.Event(this);
+                }
+
                 DpadDirections currentDpad =
                     DpadDirections.Centered;
 
@@ -569,6 +626,21 @@ namespace DS4MapperTest.DualSense
                 case JoypadActionCodes.BtnStart:
                     result = currentMapperState.Options;
                     break;
+                case JoypadActionCodes.BtnMode:
+                    result = currentMapperState.Mute;
+                    break;
+                case JoypadActionCodes.BtnMode2:
+                    result = currentMapperState.FnL;
+                    break;
+                case JoypadActionCodes.BtnMode3:
+                    result = currentMapperState.FnR;
+                    break;
+                case JoypadActionCodes.BtnLGrip:
+                    result = currentMapperState.BLP;
+                    break;
+                case JoypadActionCodes.BtnRGrip:
+                    result = currentMapperState.BRP;
+                    break;
                 case JoypadActionCodes.BtnDPadUp:
                     result = currentMapperState.DpadUp;
                     break;
@@ -639,6 +711,18 @@ namespace DS4MapperTest.DualSense
                         break;
                     case JoypadActionCodes.BtnMode:
                         result = currentMapperState.Mute;
+                        break;
+                    case JoypadActionCodes.BtnMode2:
+                        result = currentMapperState.FnL;
+                        break;
+                    case JoypadActionCodes.BtnMode3:
+                        result = currentMapperState.FnR;
+                        break;
+                    case JoypadActionCodes.BtnLGrip:
+                        result = currentMapperState.BLP;
+                        break;
+                    case JoypadActionCodes.BtnRGrip:
+                        result = currentMapperState.BRP;
                         break;
                     case JoypadActionCodes.BtnDPadUp:
                         result = currentMapperState.DpadUp;
