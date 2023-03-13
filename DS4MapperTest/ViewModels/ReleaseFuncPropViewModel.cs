@@ -48,6 +48,20 @@ namespace DS4MapperTest.ViewModels
         }
         public event EventHandler DurationMsChanged;
 
+        public string DelayDurationMs
+        {
+            get => func.DelayDurationMs.ToString();
+            set
+            {
+                if (int.TryParse(value, out int temp))
+                {
+                    func.DelayDurationMs = temp;
+                    DelayDurationMsChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+        }
+        public event EventHandler DelayDurationMsChanged;
+
         public bool Interruptable
         {
             get => func.interruptable;
