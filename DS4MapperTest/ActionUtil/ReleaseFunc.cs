@@ -10,9 +10,11 @@ namespace DS4MapperTest.ActionUtil
 {
     public class ReleaseFunc : ActionFunc
     {
+        public const int DELAY_DURATION_DEFAULT = 100;
+
         private bool status;
 
-        private int delayDurationMs = 100;
+        private int delayDurationMs = DELAY_DURATION_DEFAULT;
         public int DelayDurationMs { get => delayDurationMs; set => delayDurationMs = value; }
 
         private int durationMs;

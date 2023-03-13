@@ -279,9 +279,20 @@ namespace DS4MapperTest
                 return releaseFuncInstance.interruptable == true;
             }
 
+            public int DelayDuration
+            {
+                get => releaseFuncInstance.DelayDurationMs;
+                set => releaseFuncInstance.DelayDurationMs = value;
+            }
+            public bool ShouldSerializeDelayDuration()
+            {
+                return releaseFuncInstance.DelayDurationMs != ReleaseFunc.DELAY_DURATION_DEFAULT;
+            }
+
             public bool IsDefault()
             {
                 return releaseFuncInstance.DurationMs == 0 &&
+                    releaseFuncInstance.DelayDurationMs == ReleaseFunc.DELAY_DURATION_DEFAULT &&
                     releaseFuncInstance.interruptable == false;
             }
 
