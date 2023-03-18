@@ -58,6 +58,8 @@ namespace DS4MapperTest.GyroActions
 
     public struct GyroMouseParams
     {
+        public const bool JITTER_COMPENSATION_DEFAULT = true;
+
         public int deadzone;
         public JoypadActionCodes[] gyroTriggerButtons;
         public bool andCond;
@@ -70,6 +72,7 @@ namespace DS4MapperTest.GyroActions
         public double minThreshold;
         public bool toggleAction;
         public bool smoothing;
+        public bool jitterCompensation;
         public SmoothingFilterSettings smoothingFilterSettings;
         //public double oneEuroMinCutoff;
         //public double oneEuroMinBeta;
@@ -93,6 +96,7 @@ namespace DS4MapperTest.GyroActions
             public const string TRIGGER_ACTIVATE = "TriggersActivate";
             public const string TRIGGER_EVAL_COND = "TriggersEvalCond";
             public const string TOGGLE_ACTION = "ToggleAction";
+            public const string JITTER_COMPENSATION = "JitterCompensation";
             public const string SMOOTHING_ENABLED = "SmoothingEnabled";
             public const string SMOOTHING_FILTER = "SmoothingFilter";
             //public const string SMOOTHING_MINCUTOFF = "SmoothingMinCutoff";
@@ -145,6 +149,7 @@ namespace DS4MapperTest.GyroActions
                 {
                     JoypadActionCodes.AlwaysOn,
                 },
+                jitterCompensation = GyroMouseParams.JITTER_COMPENSATION_DEFAULT,
                 smoothing = DEFAULT_SMOOTHING_ENABLED,
             };
 
@@ -277,6 +282,25 @@ namespace DS4MapperTest.GyroActions
             if (mouseParams.verticalScale != 1.0)
             {
                 yMotion = mouseParams.verticalScale * yMotion;
+            }
+
+            if (mouseParams.jitterCompensation)
+            {
+                // Possibly expose threshold later
+                const double threshold = 0.26;
+                const float thresholdF = (float)threshold;
+
+                double absX = Math.Abs(xMotion);
+                if (absX <= normX * threshold)
+                {
+                    xMotion = signX * Math.Pow(absX / thresholdF, 1.408) * threshold;
+                }
+
+                double absY = Math.Abs(yMotion);
+                if (absY <= normY * threshold)
+                {
+                    yMotion = signY * Math.Pow(absY / thresholdF, 1.408) * threshold;
+                }
             }
 
             if (xMotion != 0.0 || yMotion != 0.0)
@@ -465,6 +489,9 @@ namespace DS4MapperTest.GyroActions
                             mouseParams.toggleAction = tempMouseAction.mouseParams.toggleAction;
                             ResetToggleActiveState();
                             break;
+                        case PropertyKeyStrings.JITTER_COMPENSATION:
+                            mouseParams.jitterCompensation = tempMouseAction.mouseParams.jitterCompensation;
+                            break;
                         case PropertyKeyStrings.SMOOTHING_ENABLED:
                             mouseParams.smoothing = tempMouseAction.mouseParams.smoothing;
                             break;
@@ -551,6 +578,9 @@ namespace DS4MapperTest.GyroActions
                 case PropertyKeyStrings.TOGGLE_ACTION:
                     mouseParams.toggleAction = tempMouseAction.mouseParams.toggleAction;
                     ResetToggleActiveState();
+                    break;
+                case PropertyKeyStrings.JITTER_COMPENSATION:
+                    mouseParams.jitterCompensation = tempMouseAction.mouseParams.jitterCompensation;
                     break;
                 case PropertyKeyStrings.SMOOTHING_ENABLED:
                     mouseParams.smoothing = tempMouseAction.mouseParams.smoothing;

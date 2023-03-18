@@ -169,6 +169,19 @@ namespace DS4MapperTest.ViewModels.GyroActionPropViewModels
         }
         public event EventHandler InvertChoicesChanged;
 
+        public bool GyroJitterCompensation
+        {
+            get => action.mouseParams.jitterCompensation;
+            set
+            {
+                if (action.mouseParams.jitterCompensation == value) return;
+                action.mouseParams.jitterCompensation = value;
+                GyroJitterCompensationChanged?.Invoke(this, EventArgs.Empty);
+                ActionPropertyChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        public event EventHandler GyroJitterCompensationChanged;
+
         public bool SmoothingEnabled
         {
             get => action.mouseParams.smoothing;
@@ -257,6 +270,13 @@ namespace DS4MapperTest.ViewModels.GyroActionPropViewModels
         }
         public event EventHandler HighlightVerticalScaleChanged;
 
+        public bool HighlightGyroJitterCompensation
+        {
+            get => action.ParentAction == null ||
+                action.ChangedProperties.Contains(GyroMouse.PropertyKeyStrings.JITTER_COMPENSATION);
+        }
+        public event EventHandler HighlightGyroJitterCompensationChanged;
+
         public bool HighlightSmoothingEnabled
         {
             get => action.ParentAction == null ||
@@ -319,9 +339,21 @@ namespace DS4MapperTest.ViewModels.GyroActionPropViewModels
             SensitivityChanged += GyroMouseActionPropViewModel_SensitivityChanged;
             VerticalScaleChanged += GyroMouseActionPropViewModel_VerticalScaleChanged;
             InvertChoicesChanged += GyroMouseActionPropViewModel_InvertChoicesChanged;
+            GyroJitterCompensationChanged += GyroMouseActionPropViewModel_GyroJitterCompensationChanged;
             SmoothingEnabledChanged += GyroMouseActionPropViewModel_SmoothingEnabledChanged;
             SmoothingMinCutoffChanged += GyroMouseActionPropViewModel_SmoothingMinCutoffChanged;
             SmoothingBetaChanged += GyroMouseActionPropViewModel_SmoothingBetaChanged;
+        }
+
+        private void GyroMouseActionPropViewModel_GyroJitterCompensationChanged(object sender, EventArgs e)
+        {
+            if (!this.action.ChangedProperties.Contains(GyroMouse.PropertyKeyStrings.JITTER_COMPENSATION))
+            {
+                this.action.ChangedProperties.Add(GyroMouse.PropertyKeyStrings.JITTER_COMPENSATION);
+            }
+
+            action.RaiseNotifyPropertyChange(mapper, GyroMouse.PropertyKeyStrings.JITTER_COMPENSATION);
+            HighlightGyroJitterCompensationChanged?.Invoke(this, EventArgs.Empty);
         }
 
         private void GyroMouseActionPropViewModel_GyroTriggerCondChoiceChanged(object sender, EventArgs e)

@@ -5109,6 +5109,22 @@ namespace DS4MapperTest
             }
             public event EventHandler ToggleChanged;
 
+            public bool JitterCompensation
+            {
+                get => gyroMouseAction.mouseParams.jitterCompensation;
+                set
+                {
+                    gyroMouseAction.mouseParams.jitterCompensation = value;
+                    JitterCompensationChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler JitterCompensationChanged;
+
+            public bool ShouldSerializeJitterCompensation()
+            {
+                return gyroMouseAction.mouseParams.jitterCompensation != GyroMouseParams.JITTER_COMPENSATION_DEFAULT;
+            }
+
             public bool SmoothingEnabled
             {
                 get => gyroMouseAction.mouseParams.smoothing;
@@ -5188,9 +5204,15 @@ namespace DS4MapperTest
             settings.UseForXAxisChanged += Settings_UseForXAxisChanged;
             settings.MinThresholdChanged += Settings_MinThresholdChanged;
             settings.ToggleChanged += Settings_ToggleChanged;
+            settings.JitterCompensationChanged += Settings_JitterCompensationChanged;
             settings.SmoothingEnabledChanged += Settings_SmoothingEnabledChanged;
             settings.SmoothingMinCutoffChanged += Settings_SmoothingMinCutoffChanged;
             settings.SmoothingBetaChanged += Settings_SmoothingMinBetaChanged;
+        }
+
+        private void Settings_JitterCompensationChanged(object sender, EventArgs e)
+        {
+            gyroMouseAction.ChangedProperties.Add(GyroMouse.PropertyKeyStrings.JITTER_COMPENSATION);
         }
 
         private void Settings_EvalCondChanged(object sender, EventArgs e)
