@@ -157,6 +157,19 @@ namespace DS4MapperTest.ViewModels.GyroActionPropViewModels
         }
         public event EventHandler VerticalScaleChanged;
 
+        public bool GyroJitterCompensation
+        {
+            get => action.mStickParams.jitterCompensation;
+            set
+            {
+                if (action.mStickParams.jitterCompensation == value) return;
+                action.mStickParams.jitterCompensation = value;
+                GyroJitterCompensationChanged?.Invoke(this, EventArgs.Empty);
+                ActionPropertyChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        public event EventHandler GyroJitterCompensationChanged;
+
         private List<EnumChoiceSelection<GyroMouseJoystickOuputAxes>> outputAxesItems =
             new List<EnumChoiceSelection<GyroMouseJoystickOuputAxes>>()
         {
@@ -362,6 +375,13 @@ namespace DS4MapperTest.ViewModels.GyroActionPropViewModels
         }
         public event EventHandler HighlightVerticalScaleChanged;
 
+        public bool HighlightGyroJitterCompensation
+        {
+            get => action.ParentAction == null ||
+                action.ChangedProperties.Contains(GyroMouseJoystick.PropertyKeyStrings.JITTER_COMPENSATION);
+        }
+        public event EventHandler HighlightGyroJitterCompensationChanged;
+
         public bool HighlightOutputAxesChoice
         {
             get => action.ParentAction == null ||
@@ -443,10 +463,22 @@ namespace DS4MapperTest.ViewModels.GyroActionPropViewModels
             AntiDeadZoneYChanged += GyroMouseJoystickPropViewModel_AntiDeadZoneYChanged;
             VerticalScaleChanged += GyroMouseJoystickPropViewModel_VerticalScaleChanged;
             InvertChoicesChanged += GyroMouseJoystickPropViewModel_InvertChoicesChanged;
+            GyroJitterCompensationChanged += GyroMouseJoystickPropViewModel_GyroJitterCompensationChanged;
             OutputAxesChoiceChanged += GyroMouseJoystickPropViewModel_OutputAxesChoiceChanged;
             SmoothingEnabledChanged += GyroMouseJoystickPropViewModel_SmoothingEnabledChanged;
             SmoothingMinCutoffChanged += GyroMouseJoystickPropViewModel_SmoothingMinCutoffChanged;
             SmoothingBetaChanged += GyroMouseJoystickPropViewModel_SmoothingBetaChanged;
+        }
+
+        private void GyroMouseJoystickPropViewModel_GyroJitterCompensationChanged(object sender, EventArgs e)
+        {
+            if (!this.action.ChangedProperties.Contains(GyroMouseJoystick.PropertyKeyStrings.JITTER_COMPENSATION))
+            {
+                this.action.ChangedProperties.Add(GyroMouseJoystick.PropertyKeyStrings.JITTER_COMPENSATION);
+            }
+
+            action.RaiseNotifyPropertyChange(mapper, GyroMouseJoystick.PropertyKeyStrings.JITTER_COMPENSATION);
+            HighlightGyroJitterCompensationChanged?.Invoke(this, EventArgs.Empty);
         }
 
         private void GyroMouseJoystickPropViewModel_GyroTriggerCondChoiceChanged(object sender, EventArgs e)

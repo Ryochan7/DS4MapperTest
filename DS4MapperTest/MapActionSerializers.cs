@@ -5825,6 +5825,22 @@ namespace DS4MapperTest
             }
             public event EventHandler VerticalScaleChanged;
 
+            public bool JitterCompensation
+            {
+                get => gyroMouseStickAction.mStickParams.jitterCompensation;
+                set
+                {
+                    gyroMouseStickAction.mStickParams.jitterCompensation = value;
+                    JitterCompensationChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler JitterCompensationChanged;
+
+            public bool ShouldSerializeJitterCompensation()
+            {
+                return gyroMouseStickAction.mStickParams.jitterCompensation != GyroMouseJoystickParams.JITTER_COMPENSATION_DEFAULT;
+            }
+
             public GyroMouseJoystickOuputAxes OutputAxes
             {
                 get => gyroMouseStickAction.mStickParams.outputAxes;
@@ -5953,9 +5969,15 @@ namespace DS4MapperTest
             settings.MaxOutputEnabledChanged += Settings_MaxOutputEnabledChanged;
             settings.MaxOutputChanged += Settings_MaxOutputChanged;
             settings.ToggleChanged += Settings_ToggleChanged;
+            settings.JitterCompensationChanged += Settings_JitterCompensationChanged;
             settings.SmoothingEnabledChanged += Settings_SmoothingEnabledChanged;
             settings.SmoothingMinCutoffChanged += Settings_SmoothingMinCutoffChanged;
             settings.SmoothingBetaChanged += Settings_SmoothingBetaChanged;
+        }
+
+        private void Settings_JitterCompensationChanged(object sender, EventArgs e)
+        {
+            gyroMouseJoystickAction.ChangedProperties.Add(GyroMouseJoystick.PropertyKeyStrings.JITTER_COMPENSATION);
         }
 
         private void Settings_EvalCondChanged(object sender, EventArgs e)
