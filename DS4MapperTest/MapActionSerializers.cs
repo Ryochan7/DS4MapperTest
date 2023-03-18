@@ -1918,6 +1918,21 @@ namespace DS4MapperTest
                 return touchMouseJoyAction.ChangedProperties.Contains(TouchpadMouseJoystick.PropertyKeyStrings.ANTIDEAD_ZONE_Y);
             }
 
+            public bool JitterCompensation
+            {
+                get => touchMouseJoyAction.MStickParams.jitterCompensation;
+                set
+                {
+                    touchMouseJoyAction.MStickParams.jitterCompensation = value;
+                    JitterCompensationChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler JitterCompensationChanged;
+            public bool ShouldSerializeJitterCompensation()
+            {
+                return touchMouseJoyAction.ChangedProperties.Contains(TouchpadMouseJoystick.PropertyKeyStrings.JITTER_COMPENSATION);
+            }
+
             //public StickActionCodes OutputStick
             public string OutputStick
             {
@@ -2126,10 +2141,16 @@ namespace DS4MapperTest
             settings.TrackballFrictionChanged += Settings_TrackballFrictionChanged;
             settings.InvertXChanged += Settings_InvertXChanged;
             settings.InvertYChanged += Settings_InvertYChanged;
+            settings.JitterCompensationChanged += Settings_JitterCompensationChanged;
             settings.VerticalScaleChanged += Settings_VerticalScaleChanged;
             settings.SmoothingEnabledChanged += Settings_SmoothingEnabledChanged;
             settings.SmoothingMinCutoffChanged += Settings_SmoothingMinCutoffChanged;
             settings.SmoothingBetaChanged += Settings_SmoothingBetaChanged;
+        }
+
+        private void Settings_JitterCompensationChanged(object sender, EventArgs e)
+        {
+            touchMouseJoyAction.ChangedProperties.Add(TouchpadMouseJoystick.PropertyKeyStrings.JITTER_COMPENSATION);
         }
 
         private void Settings_SmoothingBetaChanged(object sender, EventArgs e)

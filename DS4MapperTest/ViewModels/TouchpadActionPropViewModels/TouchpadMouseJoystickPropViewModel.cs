@@ -113,6 +113,18 @@ namespace DS4MapperTest.ViewModels.TouchpadActionPropViewModels
         }
         public event EventHandler TrackballFrictionChanged;
 
+        public bool JitterCompensation
+        {
+            get => action.MStickParams.jitterCompensation;
+            set
+            {
+                action.MStickParams.jitterCompensation = value;
+                JitterCompensationChanged?.Invoke(this, EventArgs.Empty);
+                ActionPropertyChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        public event EventHandler JitterCompensationChanged;
+
         private List<EnumChoiceSelection<StickOutCurve.Curve>> outputCurveItems =
             new List<EnumChoiceSelection<StickOutCurve.Curve>>()
             {
@@ -234,6 +246,13 @@ namespace DS4MapperTest.ViewModels.TouchpadActionPropViewModels
         }
         public event EventHandler HighlightAntiDeadZoneYChanged;
 
+        public bool HighlightJitterCompensation
+        {
+            get => action.ParentAction == null ||
+                action.ChangedProperties.Contains(TouchpadMouseJoystick.PropertyKeyStrings.JITTER_COMPENSATION);
+        }
+        public event EventHandler HighlightJitterCompensationChanged;
+
         public bool HighlightOutputCurve
         {
             get => action.ParentAction == null ||
@@ -303,10 +322,22 @@ namespace DS4MapperTest.ViewModels.TouchpadActionPropViewModels
             AntiDeadZoneYChanged += TouchpadMouseJoystickPropViewModel_AntiDeadZoneYChanged;
             TrackballEnabledChanged += TouchpadMouseJoystickPropViewModel_TrackballEnabledChanged;
             TrackballFrictionChanged += TouchpadMouseJoystickPropViewModel_TrackballFrictionChanged;
+            JitterCompensationChanged += TouchpadMouseJoystickPropViewModel_JitterCompensationChanged;
             OutputCurveChanged += TouchpadMouseJoystickPropViewModel_OutputCurveChanged;
             SmoothingEnabledChanged += TouchpadMouseJoystickPropViewModel_SmoothingEnabledChanged;
             SmoothingMinCutoffChanged += TouchpadMouseJoystickPropViewModel_SmoothingMinCutoffChanged;
             SmoothingBetaChanged += TouchpadMouseJoystickPropViewModel_SmoothingBetaChanged;
+        }
+
+        private void TouchpadMouseJoystickPropViewModel_JitterCompensationChanged(object sender, EventArgs e)
+        {
+            if (!action.ChangedProperties.Contains(TouchpadMouseJoystick.PropertyKeyStrings.JITTER_COMPENSATION))
+            {
+                action.ChangedProperties.Add(TouchpadMouseJoystick.PropertyKeyStrings.JITTER_COMPENSATION);
+            }
+
+            action.RaiseNotifyPropertyChange(mapper, TouchpadMouseJoystick.PropertyKeyStrings.JITTER_COMPENSATION);
+            HighlightJitterCompensationChanged?.Invoke(this, EventArgs.Empty);
         }
 
         private void TouchpadMouseJoystickPropViewModel_DeadZoneChanged(object sender, EventArgs e)
