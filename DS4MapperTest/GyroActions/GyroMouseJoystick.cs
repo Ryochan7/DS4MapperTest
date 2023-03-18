@@ -284,7 +284,7 @@ namespace DS4MapperTest.GyroActions
                 deltaY = 0;
             }
 
-            if (false)
+            if (mStickParams.jitterCompensation)
             {
                 // Possibly expose threshold later
                 const double threshold = 2;
