@@ -5143,7 +5143,7 @@ namespace DS4MapperTest
 
             public bool ShouldSerializeJitterCompensation()
             {
-                return gyroMouseAction.mouseParams.jitterCompensation != GyroMouseParams.JITTER_COMPENSATION_DEFAULT;
+                return gyroMouseAction.ChangedProperties.Contains(GyroMouse.PropertyKeyStrings.JITTER_COMPENSATION);
             }
 
             public bool SmoothingEnabled
@@ -5859,7 +5859,7 @@ namespace DS4MapperTest
 
             public bool ShouldSerializeJitterCompensation()
             {
-                return gyroMouseStickAction.mStickParams.jitterCompensation != GyroMouseJoystickParams.JITTER_COMPENSATION_DEFAULT;
+                return gyroMouseStickAction.ChangedProperties.Contains(GyroMouseJoystick.PropertyKeyStrings.JITTER_COMPENSATION);
             }
 
             public GyroMouseJoystickOuputAxes OutputAxes
