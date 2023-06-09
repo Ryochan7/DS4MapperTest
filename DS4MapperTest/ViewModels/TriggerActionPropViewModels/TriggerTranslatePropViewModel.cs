@@ -145,16 +145,16 @@ namespace DS4MapperTest.ViewModels.TriggerActionPropViewModels
 
             // Check if base ActionLayer action from composite layer
             if (action.ParentAction == null &&
-                mapper.ActionProfile.CurrentActionSet.UsingCompositeLayer &&
-                !mapper.ActionProfile.CurrentActionSet.RecentAppliedLayer.LayerActions.Contains(action) &&
-                MapAction.IsSameType(mapper.ActionProfile.CurrentActionSet.DefaultActionLayer.normalActionDict[action.MappingId], action))
+                mapper.EditActionSet.UsingCompositeLayer &&
+                !mapper.EditLayer.LayerActions.Contains(action) &&
+                MapAction.IsSameType(mapper.EditActionSet.DefaultActionLayer.normalActionDict[action.MappingId], action))
             {
                 // Test with temporary object
-                TriggerTranslate baseLayerAction = mapper.ActionProfile.CurrentActionSet.DefaultActionLayer.normalActionDict[action.MappingId] as TriggerTranslate;
+                TriggerTranslate baseLayerAction = mapper.EditActionSet.DefaultActionLayer.normalActionDict[action.MappingId] as TriggerTranslate;
                 TriggerTranslate tempAction = new TriggerTranslate();
                 tempAction.SoftCopyFromParent(baseLayerAction);
                 //int tempLayerId = mapper.ActionProfile.CurrentActionSet.CurrentActionLayer.Index;
-                int tempId = mapper.ActionProfile.CurrentActionSet.RecentAppliedLayer.FindNextAvailableId();
+                int tempId = mapper.EditLayer.FindNextAvailableId();
                 tempAction.Id = tempId;
                 //tempAction.MappingId = this.action.MappingId;
 
@@ -201,16 +201,16 @@ namespace DS4MapperTest.ViewModels.TriggerActionPropViewModels
                 {
                     this.action.ParentAction?.Release(mapper, ignoreReleaseActions: true);
 
-                    mapper.ActionProfile.CurrentActionSet.RecentAppliedLayer.AddTriggerAction(this.action);
-                    if (mapper.ActionProfile.CurrentActionSet.UsingCompositeLayer)
+                    mapper.EditLayer.AddTriggerAction(this.action);
+                    if (mapper.EditActionSet.UsingCompositeLayer)
                     {
-                        mapper.ActionProfile.CurrentActionSet.RecompileCompositeLayer(mapper);
+                        mapper.EditActionSet.RecompileCompositeLayer(mapper);
                     }
                     else
                     {
-                        mapper.ActionProfile.CurrentActionSet.CurrentActionLayer.SyncActions();
-                        mapper.ActionProfile.CurrentActionSet.ClearCompositeLayerActions();
-                        mapper.ActionProfile.CurrentActionSet.PrepareCompositeLayer();
+                        mapper.EditLayer.SyncActions();
+                        mapper.EditActionSet.ClearCompositeLayerActions();
+                        mapper.EditActionSet.PrepareCompositeLayer();
                     }
 
                     resetEvent.Set();

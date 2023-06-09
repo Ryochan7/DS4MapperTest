@@ -51,6 +51,7 @@ namespace DS4MapperTest
             Debug.WriteLine(mapTag);
             
             ButtonMapAction tempAction = editorTestVM.ButtonBindings[ind].MappedAction;
+            editorTestVM.PopulateMapperEditActionRefs(editorTestVM.DeviceMapper);
             if (tempAction.GetType() == typeof(ButtonAction))
             {
                 Trace.WriteLine($"TYPE {tempAction.GetType()}");
@@ -73,6 +74,8 @@ namespace DS4MapperTest
 
                 editorTestVM.ButtonBindings[ind].UpdateAction(btnFuncEditWin.BtnFuncEditVM.Action);
             }
+
+            editorTestVM.ResetMapperEditActionRefs(editorTestVM.DeviceMapper);
         }
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
@@ -87,11 +90,15 @@ namespace DS4MapperTest
                 editorTestVM.SelectTouchBindIndex = selectedInd;
                 //TouchpadMapAction tempAction = editorTestVM.TouchpadBindings[selectedInd].MappedAction;
                 TouchpadMapAction tempAction = tempItem.MappedAction;
+                editorTestVM.PopulateMapperEditActionRefs(editorTestVM.DeviceMapper);
+
                 TouchpadBindEditWindow touchBindEditWin = new TouchpadBindEditWindow();
                 touchBindEditWin.PostInit(editorTestVM.DeviceMapper, tempAction);
                 touchBindEditWin.ShowDialog();
 
                 editorTestVM.TouchpadBindings[selectedInd].UpdateAction(touchBindEditWin.TouchBindEditVM.Action);
+
+                editorTestVM.ResetMapperEditActionRefs(editorTestVM.DeviceMapper);
             }
         }
 
@@ -229,11 +236,14 @@ namespace DS4MapperTest
             {
                 editorTestVM.SelectTriggerBindIndex = selectedInd;
                 TriggerMapAction tempAction = editorTestVM.TriggerBindings[selectedInd].MappedAction;
+                editorTestVM.PopulateMapperEditActionRefs(editorTestVM.DeviceMapper);
+
                 TriggerBindEditWindow trigBindEditWin = new TriggerBindEditWindow();
                 trigBindEditWin.PostInit(editorTestVM.DeviceMapper, tempAction);
                 trigBindEditWin.ShowDialog();
 
                 editorTestVM.TriggerBindings[selectedInd].UpdateAction(trigBindEditWin.TrigBindEditVM.Action);
+                editorTestVM.ResetMapperEditActionRefs(editorTestVM.DeviceMapper);
             }
         }
 
@@ -247,11 +257,15 @@ namespace DS4MapperTest
             {
                 editorTestVM.SelectStickBindIndex = selectedInd;
                 StickMapAction tempAction = editorTestVM.StickBindings[selectedInd].MappedAction;
+                editorTestVM.PopulateMapperEditActionRefs(editorTestVM.DeviceMapper);
+
                 StickBindEditWindow stickBindEditWin = new StickBindEditWindow();
                 stickBindEditWin.PostInit(editorTestVM.DeviceMapper, tempAction);
                 stickBindEditWin.ShowDialog();
 
                 editorTestVM.StickBindings[selectedInd].UpdateAction(stickBindEditWin.StickBindEditVM.Action);
+
+                editorTestVM.ResetMapperEditActionRefs(editorTestVM.DeviceMapper);
             }
         }
 
@@ -265,12 +279,16 @@ namespace DS4MapperTest
             {
                 editorTestVM.SelectStickBindIndex = selectedInd;
                 DPadMapAction tempAction = editorTestVM.DPadBindings[selectedInd].MappedAction;
+                editorTestVM.PopulateMapperEditActionRefs(editorTestVM.DeviceMapper);
+
                 // TODO: FIX
                 DPadBindEditWindow dpadBindEditWin = new DPadBindEditWindow();
                 dpadBindEditWin.PostInit(editorTestVM.DeviceMapper, tempAction);
                 dpadBindEditWin.ShowDialog();
 
                 editorTestVM.DPadBindings[selectedInd].UpdateAction(dpadBindEditWin.DPadBindEditVM.Action);
+
+                editorTestVM.ResetMapperEditActionRefs(editorTestVM.DeviceMapper);
             }
         }
 
@@ -284,11 +302,15 @@ namespace DS4MapperTest
             {
                 editorTestVM.SelectGyroBindIndex = selectedInd;
                 GyroMapAction tempAction = editorTestVM.GyroBindings[selectedInd].MappedAction;
+                editorTestVM.PopulateMapperEditActionRefs(editorTestVM.DeviceMapper);
+
                 GyroBindEditWindow gyroBindEditWin = new GyroBindEditWindow();
                 gyroBindEditWin.PostInit(editorTestVM.DeviceMapper, tempAction);
                 gyroBindEditWin.ShowDialog();
 
                 editorTestVM.GyroBindings[selectedInd].UpdateAction(gyroBindEditWin.GyroBindEditVM.Action);
+
+                editorTestVM.ResetMapperEditActionRefs(editorTestVM.DeviceMapper);
             }
         }
 
@@ -350,12 +372,15 @@ namespace DS4MapperTest
             {
                 editorTestVM.SelectAlwaysOnBindIndex = selectedInd;
                 ButtonMapAction tempAction = editorTestVM.AlwaysOnBindings[selectedInd].MappedAction;
+                editorTestVM.PopulateMapperEditActionRefs(editorTestVM.DeviceMapper);
 
                 AlwaysOnEditWindow btnFuncEditWin = new AlwaysOnEditWindow();
                 btnFuncEditWin.PostInit(editorTestVM.DeviceMapper, tempAction);
                 btnFuncEditWin.ShowDialog();
 
                 editorTestVM.AlwaysOnBindings[selectedInd].UpdateAction(btnFuncEditWin.BtnFuncEditVM.Action);
+
+                editorTestVM.ResetMapperEditActionRefs(editorTestVM.DeviceMapper);
             }
         }
     }

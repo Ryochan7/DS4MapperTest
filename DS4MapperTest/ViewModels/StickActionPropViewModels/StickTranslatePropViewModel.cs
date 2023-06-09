@@ -364,16 +364,16 @@ namespace DS4MapperTest.ViewModels.StickActionPropViewModels
 
             // Check if base ActionLayer action from composite layer
             if (action.ParentAction == null &&
-                mapper.ActionProfile.CurrentActionSet.UsingCompositeLayer &&
-                !mapper.ActionProfile.CurrentActionSet.RecentAppliedLayer.LayerActions.Contains(action) &&
-                MapAction.IsSameType(mapper.ActionProfile.CurrentActionSet.DefaultActionLayer.normalActionDict[action.MappingId], action))
+                mapper.EditActionSet.UsingCompositeLayer &&
+                !mapper.EditLayer.LayerActions.Contains(action) &&
+                MapAction.IsSameType(mapper.EditActionSet.DefaultActionLayer.normalActionDict[action.MappingId], action))
             {
                 // Test with temporary object
-                StickTranslate baseLayerAction = mapper.ActionProfile.CurrentActionSet.DefaultActionLayer.normalActionDict[action.MappingId] as StickTranslate;
+                StickTranslate baseLayerAction = mapper.EditActionSet.DefaultActionLayer.normalActionDict[action.MappingId] as StickTranslate;
                 StickTranslate tempAction = new StickTranslate();
                 tempAction.SoftCopyFromParent(baseLayerAction);
                 //int tempLayerId = mapper.ActionProfile.CurrentActionSet.CurrentActionLayer.Index;
-                int tempId = mapper.ActionProfile.CurrentActionSet.RecentAppliedLayer.FindNextAvailableId();
+                int tempId = mapper.EditLayer.FindNextAvailableId();
                 tempAction.Id = tempId;
                 //tempAction.MappingId = this.action.MappingId;
 
@@ -576,14 +576,14 @@ namespace DS4MapperTest.ViewModels.StickActionPropViewModels
                 {
                     this.action.ParentAction.Release(mapper, ignoreReleaseActions: true);
 
-                    mapper.ActionProfile.CurrentActionSet.RecentAppliedLayer.AddStickAction(this.action);
-                    if (mapper.ActionProfile.CurrentActionSet.UsingCompositeLayer)
+                    mapper.EditLayer.AddStickAction(this.action);
+                    if (mapper.EditActionSet.UsingCompositeLayer)
                     {
-                        mapper.ActionProfile.CurrentActionSet.RecompileCompositeLayer(mapper);
+                        mapper.EditActionSet.RecompileCompositeLayer(mapper);
                     }
                     else
                     {
-                        mapper.ActionProfile.CurrentActionSet.CurrentActionLayer.SyncActions();
+                        mapper.EditLayer.SyncActions();
                     }
 
                     resetEvent.Set();

@@ -223,6 +223,22 @@ namespace DS4MapperTest
             DualShock4,
         }
 
+        // Keep reference to current editing action set from GUI
+        // Allows different profile usage from mapper
+        private ActionSet editActionSet;
+        public ActionSet EditActionSet
+        {
+            get => editActionSet; set => editActionSet = value;
+        }
+
+        // Keep reference to current editing action layer from GUI
+        // Allows different profile usage from mapper
+        private ActionLayer editLayer;
+        public ActionLayer EditLayer
+        {
+            get => editLayer; set => editLayer = value;
+        }
+
         // VK, Count
         protected static Dictionary<uint, int> keyReferenceCountDict = new Dictionary<uint, int>();
         // VK
@@ -241,6 +257,9 @@ namespace DS4MapperTest
 
         private void ReadFromProfile()
         {
+            editActionSet = null;
+            editLayer = null;
+
             actionProfile = new Profile();
             Profile tempProfile = actionProfile;
 
@@ -2776,6 +2795,9 @@ namespace DS4MapperTest
             quit = true;
 
             actionProfile.CurrentActionSet.ReleaseActions(this, true);
+
+            editActionSet = null;
+            editLayer = null;
 
             // Relay changes to event systems
             SyncKeyboard();

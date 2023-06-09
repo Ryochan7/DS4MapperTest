@@ -136,7 +136,7 @@ namespace DS4MapperTest.ViewModels
             {
                 // Need to create new ID for action
                 action.Id =
-                    mapper.ActionProfile.CurrentActionSet.RecentAppliedLayer.FindNextAvailableId();
+                    mapper.EditLayer.FindNextAvailableId();
             }
             else
             {
@@ -169,34 +169,34 @@ namespace DS4MapperTest.ViewModels
                     //mapper.ActionProfile.CurrentActionSet.RecentAppliedLayer.AddTouchpadAction(this.action);
                     //newAction.MappingId = oldAction.MappingId;
                     //if (oldAction.Id != MapAction.DEFAULT_UNBOUND_ID)
-                    bool exists = mapper.ActionProfile.CurrentActionSet.RecentAppliedLayer.LayerActions.Contains(oldAction);
+                    bool exists = mapper.EditLayer.LayerActions.Contains(oldAction);
                     if (exists)
                     {
-                        mapper.ActionProfile.CurrentActionSet.RecentAppliedLayer.ReplaceButtonAction(oldAction, newAction);
+                        mapper.EditLayer.ReplaceButtonAction(oldAction, newAction);
                     }
                     else
                     {
-                        mapper.ActionProfile.CurrentActionSet.RecentAppliedLayer.AddButtonMapAction(newAction);
+                        mapper.EditLayer.AddButtonMapAction(newAction);
                     }
 
-                    if (mapper.ActionProfile.CurrentActionSet.UsingCompositeLayer)
+                    if (mapper.EditActionSet.UsingCompositeLayer)
                     {
                         if (copyProps)
                         {
-                            MapAction baseLayerAction = mapper.ActionProfile.CurrentActionSet.DefaultActionLayer.normalActionDict[oldAction.MappingId];
+                            MapAction baseLayerAction = mapper.EditActionSet.DefaultActionLayer.normalActionDict[oldAction.MappingId];
                             if (MapAction.IsSameType(baseLayerAction, newAction))
                             {
                                 newAction.SoftCopy(baseLayerAction as ButtonMapAction);
                             }
                         }
 
-                        mapper.ActionProfile.CurrentActionSet.RecompileCompositeLayer(mapper);
+                        mapper.EditActionSet.RecompileCompositeLayer(mapper);
                     }
                     else
                     {
-                        mapper.ActionProfile.CurrentActionSet.DefaultActionLayer.SyncActions();
-                        mapper.ActionProfile.CurrentActionSet.ClearCompositeLayerActions();
-                        mapper.ActionProfile.CurrentActionSet.PrepareCompositeLayer();
+                        mapper.EditLayer.SyncActions();
+                        mapper.EditActionSet.ClearCompositeLayerActions();
+                        mapper.EditActionSet.PrepareCompositeLayer();
                     }
                 }
 
@@ -244,16 +244,16 @@ namespace DS4MapperTest.ViewModels
 
             // Check if base ActionLayer action from composite layer
             if (action.ParentAction == null &&
-                mapper.ActionProfile.CurrentActionSet.UsingCompositeLayer &&
-                !mapper.ActionProfile.CurrentActionSet.RecentAppliedLayer.LayerActions.Contains(action) &&
-                MapAction.IsSameType(mapper.ActionProfile.CurrentActionSet.DefaultActionLayer.normalActionDict[action.MappingId], action))
+                mapper.EditActionSet.UsingCompositeLayer &&
+                !mapper.EditLayer.LayerActions.Contains(action) &&
+                MapAction.IsSameType(mapper.EditActionSet.DefaultActionLayer.normalActionDict[action.MappingId], action))
             {
                 // Test with temporary object
-                ButtonMapAction baseLayerAction = mapper.ActionProfile.CurrentActionSet.DefaultActionLayer.normalActionDict[action.MappingId] as ButtonMapAction;
+                ButtonMapAction baseLayerAction = mapper.EditActionSet.DefaultActionLayer.normalActionDict[action.MappingId] as ButtonMapAction;
                 ButtonAction tempAction = new ButtonAction();
                 tempAction.SoftCopyFromParent(baseLayerAction);
                 //int tempLayerId = mapper.ActionProfile.CurrentActionSet.CurrentActionLayer.Index;
-                int tempId = mapper.ActionProfile.CurrentActionSet.RecentAppliedLayer.FindNextAvailableId();
+                int tempId = mapper.EditLayer.FindNextAvailableId();
                 tempAction.Id = tempId;
                 //tempAction.MappingId = this.action.MappingId;
 
@@ -299,16 +299,16 @@ namespace DS4MapperTest.ViewModels
 
             // Check if base ActionLayer action from composite layer
             if (action.ParentAction == null &&
-                mapper.ActionProfile.CurrentActionSet.UsingCompositeLayer &&
-                !mapper.ActionProfile.CurrentActionSet.RecentAppliedLayer.LayerActions.Contains(action) &&
-                MapAction.IsSameType(mapper.ActionProfile.CurrentActionSet.DefaultActionLayer.normalActionDict[action.MappingId], action))
+                mapper.EditActionSet.UsingCompositeLayer &&
+                !mapper.EditLayer.LayerActions.Contains(action) &&
+                MapAction.IsSameType(mapper.EditActionSet.DefaultActionLayer.normalActionDict[action.MappingId], action))
             {
                 // Test with temporary object
-                ButtonMapAction baseLayerAction = mapper.ActionProfile.CurrentActionSet.DefaultActionLayer.normalActionDict[action.MappingId] as ButtonMapAction;
+                ButtonMapAction baseLayerAction = mapper.EditActionSet.DefaultActionLayer.normalActionDict[action.MappingId] as ButtonMapAction;
                 ButtonNoAction tempAction = new ButtonNoAction();
                 tempAction.SoftCopyFromParent(baseLayerAction);
                 //int tempLayerId = mapper.ActionProfile.CurrentActionSet.CurrentActionLayer.Index;
-                int tempId = mapper.ActionProfile.CurrentActionSet.RecentAppliedLayer.FindNextAvailableId();
+                int tempId = mapper.EditLayer.FindNextAvailableId();
                 tempAction.Id = tempId;
                 //tempAction.MappingId = this.action.MappingId;
 

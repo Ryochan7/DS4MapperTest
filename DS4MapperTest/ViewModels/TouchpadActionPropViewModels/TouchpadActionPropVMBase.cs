@@ -51,16 +51,16 @@ namespace DS4MapperTest.ViewModels.TouchpadActionPropViewModels
                     this.baseAction.ParentAction.Release(mapper, ignoreReleaseActions: true);
                     //this.baseAction.Release(mapper, ignoreReleaseActions: true);
 
-                    mapper.ActionProfile.CurrentActionSet.RecentAppliedLayer.AddTouchpadAction(this.baseAction);
-                    if (mapper.ActionProfile.CurrentActionSet.UsingCompositeLayer)
+                    mapper.EditLayer.AddTouchpadAction(this.baseAction);
+                    if (mapper.EditActionSet.UsingCompositeLayer)
                     {
-                        mapper.ActionProfile.CurrentActionSet.RecompileCompositeLayer(mapper);
+                        mapper.EditActionSet.RecompileCompositeLayer(mapper);
                     }
                     else
                     {
-                        mapper.ActionProfile.CurrentActionSet.DefaultActionLayer.SyncActions();
-                        mapper.ActionProfile.CurrentActionSet.ClearCompositeLayerActions();
-                        mapper.ActionProfile.CurrentActionSet.PrepareCompositeLayer();
+                        mapper.EditLayer.SyncActions();
+                        mapper.EditActionSet.ClearCompositeLayerActions();
+                        mapper.EditActionSet.PrepareCompositeLayer();
                     }
 
                     resetEvent.Set();

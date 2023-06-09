@@ -85,14 +85,14 @@ namespace DS4MapperTest.ViewModels.GyroActionPropViewModels
                 {
                     this.baseAction.ParentAction.Release(mapper, ignoreReleaseActions: true);
 
-                    mapper.ActionProfile.CurrentActionSet.RecentAppliedLayer.AddGyroAction(this.baseAction);
-                    if (mapper.ActionProfile.CurrentActionSet.UsingCompositeLayer)
+                    mapper.EditLayer.AddGyroAction(this.baseAction);
+                    if (mapper.EditActionSet.UsingCompositeLayer)
                     {
-                        mapper.ActionProfile.CurrentActionSet.RecompileCompositeLayer(mapper);
+                        mapper.EditActionSet.RecompileCompositeLayer(mapper);
                     }
                     else
                     {
-                        mapper.ActionProfile.CurrentActionSet.CurrentActionLayer.SyncActions();
+                        mapper.EditLayer.SyncActions();
                     }
 
                     resetEvent.Set();

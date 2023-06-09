@@ -733,6 +733,18 @@ namespace DS4MapperTest.ViewModels
             SelectedActionSetIndex = 0;
             resetEvent.Wait();
         }
+
+        public void PopulateMapperEditActionRefs(Mapper mapper)
+        {
+            mapper.EditActionSet = actionSetItems[selectedActionSetIndex].Set;
+            mapper.EditLayer = layerItems[selectedActionLayerIndex].Layer;
+        }
+
+        public void ResetMapperEditActionRefs(Mapper mapper)
+        {
+            mapper.EditActionSet = null;
+            mapper.EditLayer = null;
+        }
     }
 
     public class ActionLayerItemsTest

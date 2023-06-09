@@ -60,16 +60,16 @@ namespace DS4MapperTest.ViewModels.TouchpadActionPropViewModels
 
             // Check if base ActionLayer action from composite layer
             if (action.ParentAction == null &&
-                mapper.ActionProfile.CurrentActionSet.UsingCompositeLayer &&
-                !mapper.ActionProfile.CurrentActionSet.RecentAppliedLayer.LayerActions.Contains(action) &&
-                MapAction.IsSameType(mapper.ActionProfile.CurrentActionSet.DefaultActionLayer.normalActionDict[action.MappingId], action))
+                mapper.EditActionSet.UsingCompositeLayer &&
+                !mapper.EditLayer.LayerActions.Contains(action) &&
+                MapAction.IsSameType(mapper.EditActionSet.DefaultActionLayer.normalActionDict[action.MappingId], action))
             {
                 // Test with temporary object
-                TouchpadSingleButton baseLayerAction = mapper.ActionProfile.CurrentActionSet.DefaultActionLayer.normalActionDict[action.MappingId] as TouchpadSingleButton;
+                TouchpadSingleButton baseLayerAction = mapper.EditActionSet.DefaultActionLayer.normalActionDict[action.MappingId] as TouchpadSingleButton;
                 TouchpadSingleButton tempAction = new TouchpadSingleButton();
                 tempAction.SoftCopyFromParent(baseLayerAction);
                 //int tempLayerId = mapper.ActionProfile.CurrentActionSet.CurrentActionLayer.Index;
-                int tempId = mapper.ActionProfile.CurrentActionSet.RecentAppliedLayer.FindNextAvailableId();
+                int tempId = mapper.EditLayer.FindNextAvailableId();
                 tempAction.Id = tempId;
                 //tempAction.MappingId = this.action.MappingId;
 
