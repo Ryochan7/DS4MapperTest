@@ -226,6 +226,7 @@ namespace DS4MapperTest.GyroActions
             {
                 prevXNorm = xNorm; prevYNorm = yNorm;
                 xNorm = yNorm = 0.0;
+                mapper.IntermediateStateRef.Dirty = true;
 
                 mStickParams.smoothingFilterSettings.filterX.Filter(0.0, mapper.CurrentRate);
                 mStickParams.smoothingFilterSettings.filterY.Filter(0.0, mapper.CurrentRate);

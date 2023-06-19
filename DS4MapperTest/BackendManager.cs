@@ -9,6 +9,7 @@ using DS4MapperTest.DS4Library;
 using System.Windows.Threading;
 using System.Runtime.InteropServices;
 using System.Diagnostics;
+using DS4MapperTest.JoyConLibrary;
 
 namespace DS4MapperTest
 {
@@ -35,6 +36,7 @@ namespace DS4MapperTest
     public class BackendManager
     {
         public const int CONTROLLER_LIMIT = 8;
+        private const bool JOYCON_JOINED = true;
 
         private Thread vbusThr;
         private bool isRunning;
@@ -114,6 +116,10 @@ namespace DS4MapperTest
             ProfileList switchDeviceProfileList = new ProfileList(InputDeviceType.SwitchPro);
             switchDeviceProfileList.Refresh();
             deviceProfileListDict.Add(InputDeviceType.SwitchPro, switchDeviceProfileList);
+
+            ProfileList joyconDeviceProfileList = new ProfileList(InputDeviceType.JoyCon);
+            joyconDeviceProfileList.Refresh();
+            deviceProfileListDict.Add(InputDeviceType.JoyCon, joyconDeviceProfileList);
             //enumeratorList = new List<DeviceEnumeratorBase>()
             //{
             //    new DS4Enumerator(),
@@ -185,8 +191,25 @@ namespace DS4MapperTest
                 device.Index = ind;
                 device.Removal += Device_Removal;
 
-                Mapper testMapper = testEnumerator.PrepareDeviceMapper(device,
-                    appGlobal);
+                if (device.DeviceType == InputDeviceType.JoyCon &&
+                    JOYCON_JOINED)
+                {
+                    bool existingJoy = JoyConMapperCheck(device as JoyConDevice, out JoyConMapper joyMapper, out JoyConReader joyReader);
+                    if (existingJoy)
+                    {
+                        device.PrimaryDevice = false;
+                        appGlobal.LoadControllerDeviceSettings(device, device.DeviceOptions);
+                        mapperDict.Add(ind, joyMapper);
+                        deviceReadersMap.Add(device, joyReader);
+                        controllerList[ind] = device;
+                        LogDebug($"Plugged in controller #{ind + 1} ({device.Serial})");
+
+                        ind++;
+                        continue;
+                    }
+                }
+
+                Mapper testMapper = testEnumerator.PrepareDeviceMapper(device, appGlobal);
                 DeviceReaderBase reader = testMapper.BaseReader;
                 //DeviceReaderBase reader = enumerator.PrepareDeviceReader(device as DS4Device);
                 //Mapper testMapper = new DS4Mapper(device as DS4Device,
@@ -238,20 +261,33 @@ namespace DS4MapperTest
             InputDeviceBase device = sender as InputDeviceBase;
             if (device != null)
             {
+                DeviceReaderBase reader = deviceReadersMap[device];
                 deviceReadersMap.Remove(device);
                 if (mapperDict.TryGetValue(device.Index, out Mapper tempMapper))
                 {
-                    Task tempTask = Task.Run(() =>
+                    if (device.PrimaryDevice)
                     {
-                        tempMapper.Stop(true);
-                        tempMapper = null;
-                    });
-                    //tempTask.Wait();
+                        Task tempTask = Task.Run(() =>
+                        {
+                            tempMapper.Stop(true);
+                            tempMapper = null;
+                        });
 
+                        //tempTask.Wait();
+                    }
+                    //else
+                    //{
+                    //    eventDispatcher.Invoke(() =>
+                    //    {
+                    //        reader.StopUpdate();
+                    //    });
+                    //    //reader.StopUpdate();
+                    //}
                     //tempMapper.BaseReader.StopUpdate();
                     mapperDict.Remove(device.Index);
                 }
 
+                reader = null;
                 testEnumerator.RemoveDevice(device);
                 //enumerator.RemoveDevice(device as DS4Device);
                 //UnplugController?.Invoke(device, device.Index);
@@ -375,6 +411,19 @@ namespace DS4MapperTest
                         // device in slot
                         if (controllerList[ind] == null)
                         {
+                            if (device.DeviceType == InputDeviceType.JoyCon &&
+                                JOYCON_JOINED)
+                            {
+                                bool existingJoy = JoyConMapperCheck(device as JoyConDevice, out JoyConMapper joyMapper, out JoyConReader reader);
+                                if (existingJoy)
+                                {
+                                    device.PrimaryDevice = false;
+                                    PrepareAddInputDeviceMini(device, joyMapper, reader, ind);
+                                    HotplugController?.Invoke(device, ind);
+                                    break;
+                                }
+                            }
+
                             Mapper mapper = testEnumerator.PrepareDeviceMapper(device, appGlobal);
                             PrepareAddInputDevice(device, mapper, ind);
                             HotplugController?.Invoke(device, ind);
@@ -451,10 +500,67 @@ namespace DS4MapperTest
             LogDebug($"Plugged in controller #{ind + 1} ({device.Serial})");
         }
 
+        private void PrepareAddInputDeviceMini(InputDeviceBase device, Mapper mapper, DeviceReaderBase reader, int ind)
+        {
+            device.Index = ind;
+            //device.SetOperational();
+            device.Removal += Device_Removal;
+            //if (device.CheckForSyncChange)
+            //{
+            //    device.SyncedChanged += Device_SyncedChanged;
+            //}
+
+            appGlobal.LoadControllerDeviceSettings(device, device.DeviceOptions);
+
+            mapperDict.Add(ind, mapper);
+            deviceReadersMap.Add(device, reader);
+
+            controllerList[ind] = device;
+            LogDebug($"Plugged in controller #{ind + 1} ({device.Serial})");
+        }
+
         public void LogDebug(string message, bool warning = false)
         {
             DebugEventArgs args = new DebugEventArgs(message, warning);
             Debug?.Invoke(this, args);
+        }
+
+        public bool JoyConMapperCheck(JoyConDevice device, out JoyConMapper deviceMapper,
+            out JoyConReader reader)
+        {
+            bool result = false;
+            deviceMapper = null;
+            reader = null;
+
+            List<JoyConMapper> tempList = mapperDict.Where((t) => t.Value.DeviceType == InputDeviceType.JoyCon)
+                .Select(t => t.Value as JoyConMapper).ToList();
+            foreach(JoyConMapper mapper in tempList)
+            {
+                JoyConDevice otherDevice = mapper.JoyDevice;
+                if (mapper.SecondaryJoyDevice == null)
+                {
+                    if (device.SideType == JoyConSide.Left &&
+                        otherDevice.SideType == JoyConSide.Right)
+                    {
+                        reader = new JoyConReader(device);
+                        mapper.AssignSecondaryJoyCon(device, reader);
+                        deviceMapper = mapper;
+                        result = true;
+                        break;
+                    }
+                    else if (device.SideType == JoyConSide.Right &&
+                        otherDevice.SideType == JoyConSide.Left)
+                    {
+                        reader = new JoyConReader(device);
+                        mapper.AssignSecondaryJoyCon(device, reader);
+                        deviceMapper = mapper;
+                        result = true;
+                        break;
+                    }
+                }
+            }
+
+            return result;
         }
     }
 }

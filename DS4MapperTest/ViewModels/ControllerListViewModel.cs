@@ -106,19 +106,23 @@ namespace DS4MapperTest.ViewModels
                     {
                         DeviceListItem devItem = new DeviceListItem(device, i,
                             backendManager.DeviceProfileListDict[device.DeviceType]);
-                        Mapper map = backendManager.MapperDict[device.Index];
-                        if (map.ProfileFile != string.Empty)
+
+                        if (backendManager.MapperDict.ContainsKey(device.Index))
                         {
-                            devItem.PostInit(map.ProfileFile);
+                            Mapper map = backendManager.MapperDict[device.Index];
+                            if (map.ProfileFile != string.Empty)
+                            {
+                                devItem.PostInit(map.ProfileFile);
+
+                                devItem.ProfileIndexChanged += DevItem_ProfileIndexChanged;
+                                devItem.EditProfileRequested += DevItem_EditProfileRequested;
+                            }
                         }
 
                         //if (!string.IsNullOrWhiteSpace(backendManager.ProfileFile))
                         //{
                         //    devItem.PostInit(backendManager.ProfileFile);
                         //}
-
-                        devItem.ProfileIndexChanged += DevItem_ProfileIndexChanged;
-                        devItem.EditProfileRequested += DevItem_EditProfileRequested;
                         device.Removal += Device_Removal;
                         controllerList.Add(devItem);
 
@@ -138,8 +142,20 @@ namespace DS4MapperTest.ViewModels
             InputDeviceBase device = sender as InputDeviceBase;
             using (WriteLocker locker = new WriteLocker(_colListLocker))
             {
-                int ind = controllerList.Where((item) => item.ItemIndex == device.Index)
-                    .Select((item) => item.ItemIndex).DefaultIfEmpty(-1).First();
+                int ind = -1;
+                int findInd = 0;
+                foreach(DeviceListItem devItem in controllerList)
+                {
+                    if (devItem.ItemIndex == device.Index)
+                    {
+                        ind = findInd;
+                        break;
+                    }
+
+                    ind++;
+                }
+                //int ind = controllerList.Where((item) => item.ItemIndex == device.Index)
+                //    .Select((item) => item.ItemIndex).DefaultIfEmpty(-1).First();
                 if (device.Synced && ind >= 0)
                 {
                     controllerList.RemoveAt(ind);
@@ -278,6 +294,11 @@ namespace DS4MapperTest.ViewModels
         public BasicActionCommand EditProfCommand => editProfCommand;
 
         public event EventHandler EditProfileRequested;
+
+        public bool PrimaryDevice
+        {
+            get => device.PrimaryDevice;
+        }
 
         public DeviceListItem(InputDeviceBase device, int itemIndex, ProfileList profileListHolder)
         {

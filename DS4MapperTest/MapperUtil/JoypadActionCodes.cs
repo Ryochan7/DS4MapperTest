@@ -47,6 +47,11 @@ namespace DS4MapperTest.MapperUtil
         Btn28, BtnLGrip2 = Btn28,
         Btn29, BtnRGrip2 = Btn29,
 
+        Btn30, BtnLSideL = Btn30,
+        Btn31, BtnLSideR = Btn31,
+        Btn32, BtnRSideL = Btn32,
+        Btn33, BtnRSideR = Btn33,
+
         BtnMax = 255,
 
         Axis1 = 1 << 8, AxisLX = Axis1, X360_LX = Axis1,

@@ -28,6 +28,7 @@ namespace DS4MapperTest
         public const string DS4_PROFILE_DIR = "DualShock4";
         public const string DUALSENSE_PROFILE_DIR = "DualSense";
         public const string SWITCH_PRO_PROFILE_DIR = "SwitchPro";
+        public const string JOYCON_PROFILE_DIR = "JoyCon";
         public const string TEMPLATE_PROFILES_DIRNAME = "template_profiles";
 
         public static string exelocation = Process.GetCurrentProcess().MainModule.FileName;
@@ -86,6 +87,7 @@ namespace DS4MapperTest
                 DS4_PROFILE_DIR,
                 DUALSENSE_PROFILE_DIR,
                 SWITCH_PRO_PROFILE_DIR,
+                JOYCON_PROFILE_DIR,
             };
 
         public AppGlobalData()
@@ -549,7 +551,8 @@ namespace DS4MapperTest
 
                             controllerObj["Mac"] = macAddr;
                             controllerObj["Type"] = devType;
-                            if (activeProfiles.TryGetValue(testDev.Index, out string currentProfile) &&
+                            if (testDev.PrimaryDevice &&
+                                activeProfiles.TryGetValue(testDev.Index, out string currentProfile) &&
                                 !string.IsNullOrEmpty(currentProfile))
                             {
                                 controllerObj["LastProfile"] = Path.GetFileNameWithoutExtension(currentProfile);
@@ -686,6 +689,9 @@ namespace DS4MapperTest
                 case InputDeviceType.SwitchPro:
                     result = Path.Combine(baseProfilesPath, SWITCH_PRO_PROFILE_DIR);
                     break;
+                case InputDeviceType.JoyCon:
+                    result = Path.Combine(baseProfilesPath, JOYCON_PROFILE_DIR);
+                    break;
                 default:
                     break;
             }
@@ -808,6 +814,7 @@ namespace DS4MapperTest
         SwitchPro,
         DS4,
         DualSense,
+        JoyCon,
     }
 
     public static class AppGlobalDataSingleton

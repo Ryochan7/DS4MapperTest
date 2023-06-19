@@ -71,6 +71,13 @@ namespace DS4MapperTest
         }
         public event EventHandler BatteryChanged;
 
+        protected bool primaryDevice = true;
+        public bool PrimaryDevice
+        {
+            get => primaryDevice;
+            set => primaryDevice = value;
+        }
+
         public abstract void SetOperational();
         public abstract void Detach();
     }

@@ -7,6 +7,10 @@
         xmlns:local="clr-namespace:DS4MapperTest"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800" Closed="Window_Closed">
+
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+    </Window.Resources>
     <DockPanel>
         <DockPanel.Background>
             <SolidColorBrush Color="{StaticResource RegionColor}"/>
@@ -49,14 +53,14 @@
                             <GridViewColumn x:Name="profileOptionsColumn" Width="150">
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
-                                        <ComboBox ItemsSource="{Binding DevProfileList}" DisplayMemberPath="Name" SelectedIndex="{Binding ProfileIndex, FallbackValue='0'}" MinWidth="130" />
+                                        <ComboBox ItemsSource="{Binding DevProfileList}" DisplayMemberPath="Name" SelectedIndex="{Binding ProfileIndex, FallbackValue='0'}" Visibility="{Binding PrimaryDevice, Converter={StaticResource BooleanToVisibilityConverter}}" MinWidth="130" />
                                     </DataTemplate>
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>
                             <GridViewColumn>
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
-                                        <hc:SplitButton Content="Edit" Command="{Binding EditProfCommand}" CommandParameter="Hurricane">
+                                        <hc:SplitButton Content="Edit" Command="{Binding EditProfCommand}" CommandParameter="Hurricane" Visibility="{Binding PrimaryDevice, Converter={StaticResource BooleanToVisibilityConverter}}">
                                             <hc:SplitButton.DropDownContent>
                                                 <StackPanel>
                                                     <MenuItem Header="New" Click="NewProfMenuItem_Click" Tag="{Binding ItemIndex}" />

@@ -99,6 +99,22 @@ namespace DS4MapperTest
         }
     }
 
+    public class JoyConControllerOptions : ControllerOptionsStore
+    {
+        public JoyConControllerOptions(InputDeviceType deviceType) :
+            base(deviceType)
+        {
+        }
+
+        public override void LoadSettings(JObject controllerJObj)
+        {
+        }
+
+        public override void PersistSettings(JObject controllerJObj)
+        {
+        }
+    }
+
     public class SteamControllerControllerOptions : ControllerOptionsStore
     {
         public const string SETTINGS_PROP_NAME = "SteamControllerSettings";

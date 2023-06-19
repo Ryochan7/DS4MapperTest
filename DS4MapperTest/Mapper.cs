@@ -97,6 +97,8 @@ namespace DS4MapperTest
             get => mouseWheelSync; set => mouseWheelSync = value;
         }
 
+        protected bool gamepadSync;
+
         protected double currentRate = 1.0; // Expressed in Hz
         protected double currentLatency = 1.0; // Expressed in sec
 
@@ -214,6 +216,7 @@ namespace DS4MapperTest
         protected IVirtualGamepad outputController = null;
         protected OutputContType outputControlType = OutputContType.None;
         protected Xbox360FeedbackReceivedEventHandler outputForceFeedbackDel;
+        protected Xbox360FeedbackReceivedEventHandler outputForceFeedbackSecondDel;
 
         // TODO: Move elsewhere
         public enum OutputContType : ushort
@@ -1130,18 +1133,13 @@ namespace DS4MapperTest
                     {
                         Thread.Sleep(100);
                         EstablishForceFeedback();
-                        if (outputForceFeedbackDel != null)
-                        {
-                            (outputController as IXbox360Controller).FeedbackReceived += outputForceFeedbackDel;
-                        }
-                        
+                        HookFeedback();
                     }
                     else if (!actionProfile.OutputGamepadSettings.ForceFeedbackEnabled &&
                         outputControlType == OutputContType.Xbox360 &&
                         outputForceFeedbackDel != null)
                     {
-                        (outputController as IXbox360Controller).FeedbackReceived -= outputForceFeedbackDel;
-                        outputForceFeedbackDel = null;
+                        RemoveFeedback();
                     }
                 }
 
@@ -1189,6 +1187,23 @@ namespace DS4MapperTest
                 //        //ReferenceLoopHandling = ReferenceLoopHandling.Ignore
                 //    });
                 //Trace.WriteLine(tempOutJson);
+            }
+        }
+
+        public virtual void HookFeedback()
+        {
+            if (outputForceFeedbackDel != null)
+            {
+                (outputController as IXbox360Controller).FeedbackReceived += outputForceFeedbackDel;
+            }
+        }
+
+        public virtual void RemoveFeedback()
+        {
+            if (outputForceFeedbackDel != null)
+            {
+                (outputController as IXbox360Controller).FeedbackReceived -= outputForceFeedbackDel;
+                outputForceFeedbackDel = null;
             }
         }
 
@@ -2397,7 +2412,7 @@ namespace DS4MapperTest
             //fakerInputDev.UpdateKeyboard(keyboardReport);
             fakerInputHandler.Sync();
 
-            if (intermediateState.Dirty)
+            if (gamepadSync && intermediateState.Dirty)
             {
                 if (outputController != null)
                 {
@@ -2414,6 +2429,7 @@ namespace DS4MapperTest
                 }
 
                 intermediateState.Dirty = false;
+                gamepadSync = false;
             }
         }
 
@@ -2808,6 +2824,11 @@ namespace DS4MapperTest
             }
 
             outputController?.Disconnect();
+            if (outputController != null)
+            {
+                RemoveFeedback();
+            }
+
             outputController = null;
             outputControlType = OutputContType.None;
         }

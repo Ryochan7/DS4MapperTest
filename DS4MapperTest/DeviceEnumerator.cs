@@ -11,6 +11,7 @@ using static DS4MapperTest.VidPidMeta;
 using DS4MapperTest.SwitchProLibrary;
 using DS4MapperTest.DualSense;
 using Nefarius.Utilities.DeviceManagement.PnP;
+using DS4MapperTest.JoyConLibrary;
 
 namespace DS4MapperTest
 {
@@ -60,6 +61,9 @@ namespace DS4MapperTest
 
         private const int NINTENDO_VENDOR_ID = 0x57e;
         private const int SWITCH_PRO_PRODUCT_ID = 0x2009;
+        private const int JOYCON_L_PRODUCT_ID = 0x2006;
+        private const int JOYCON_R_PRODUCT_ID = 0x2007;
+        private const int JOYCON_CHARGING_GRIP_PRODUCT_ID = 0x200E;
 
         internal delegate bool HidDeviceCheckHandler(HidDevice device, VidPidMeta meta);
 
@@ -84,6 +88,10 @@ namespace DS4MapperTest
             new VidPidMeta(SONY_VID, SONY_DUALSENSE_EDGE_PID, "DualSense Edge", InputDeviceType.DualSense,
                 VidPidMeta.UsedConnectionBus.HID),
             new VidPidMeta(NINTENDO_VENDOR_ID, SWITCH_PRO_PRODUCT_ID, "Switch Pro", InputDeviceType.SwitchPro,
+                VidPidMeta.UsedConnectionBus.HID),
+            new VidPidMeta(NINTENDO_VENDOR_ID, JOYCON_L_PRODUCT_ID, "JoyCon L", InputDeviceType.JoyCon,
+                VidPidMeta.UsedConnectionBus.HID),
+            new VidPidMeta(NINTENDO_VENDOR_ID, JOYCON_R_PRODUCT_ID, "JoyCon R", InputDeviceType.JoyCon,
                 VidPidMeta.UsedConnectionBus.HID),
         };
 
@@ -113,6 +121,12 @@ namespace DS4MapperTest
                 else if (meta.inputDevType == InputDeviceType.SwitchPro)
                 {
                     meta.testDelUnion.hidHandler = SwitchProDeviceCheckHandler;
+                    vidPidMetaDict.Add($"VID_{meta.vid}&PID_{meta.pid}", meta);
+                    //vidPidDelDict.Add($"VID_{meta.vid}&PID_{meta.pid}", meta.testDelUnion.hidHandler);
+                }
+                else if (meta.inputDevType == InputDeviceType.JoyCon)
+                {
+                    meta.testDelUnion.hidHandler = JoyConDeviceCheckHandler;
                     vidPidMetaDict.Add($"VID_{meta.vid}&PID_{meta.pid}", meta);
                     //vidPidDelDict.Add($"VID_{meta.vid}&PID_{meta.pid}", meta.testDelUnion.hidHandler);
                 }
@@ -178,7 +192,7 @@ namespace DS4MapperTest
             // Filter out devices already scanned in previous sessions
             hidDevs = hidDevs.Where((hidDevice) =>
             {
-                return !foundDevicePaths.Contains(hidDevice.DevicePath);
+                return !foundDevicePaths.Contains(hidDevice.DevicePath) && hidDevice.IsConnected;
             });
 
             // Attempt to filter out virtual devices
@@ -207,6 +221,10 @@ namespace DS4MapperTest
                             value.testDelUnion.hidHandler?.Invoke(hidDev, value);
                         }
                         else if (value.inputDevType == InputDeviceType.SwitchPro)
+                        {
+                            value.testDelUnion.hidHandler?.Invoke(hidDev, value);
+                        }
+                        else if (value.inputDevType == InputDeviceType.JoyCon)
                         {
                             value.testDelUnion.hidHandler?.Invoke(hidDev, value);
                         }
@@ -342,13 +360,29 @@ namespace DS4MapperTest
             return result;
         }
 
-        internal bool SwitchProDeviceCheckHandler(HidDevice hidDev, VidPidMeta meta)
+        private bool SwitchProDeviceCheckHandler(HidDevice hidDev, VidPidMeta meta)
         {
             bool result = false;
 
             if (meta != null)
             {
                 SwitchProDevice tempDev = new SwitchProDevice(hidDev, meta.displayName);
+                foundKnownDevices.Add(hidDev.DevicePath, tempDev);
+                revFoundKnownDevices.Add(tempDev, hidDev.DevicePath);
+                newKnownDevices.Add(hidDev.DevicePath, tempDev);
+                result = true;
+            }
+
+            return result;
+        }
+
+        private bool JoyConDeviceCheckHandler(HidDevice hidDev, VidPidMeta meta)
+        {
+            bool result = false;
+
+            if (meta != null)
+            {
+                JoyConDevice tempDev = new JoyConDevice(hidDev, meta.displayName);
                 foundKnownDevices.Add(hidDev.DevicePath, tempDev);
                 revFoundKnownDevices.Add(tempDev, hidDev.DevicePath);
                 newKnownDevices.Add(hidDev.DevicePath, tempDev);
@@ -386,6 +420,14 @@ namespace DS4MapperTest
                         SwitchProDevice switchDevice = device as SwitchProDevice;
                         SwitchProReader reader = new SwitchProReader(switchDevice);
                         result = new SwitchProMapper(switchDevice, reader, appGlobal);
+                    }
+
+                    break;
+                case JoyConDevice:
+                    {
+                        JoyConDevice joyConDevice = device as JoyConDevice;
+                        JoyConReader reader = new JoyConReader(joyConDevice);
+                        result = new JoyConMapper(joyConDevice, reader, appGlobal);
                     }
 
                     break;
