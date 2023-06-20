@@ -1118,6 +1118,7 @@ namespace DS4MapperTest
                 }
                 else if (!actionProfile.OutputGamepadSettings.enabled && outputController != null)
                 {
+                    RemoveFeedback();
                     outputController.Disconnect();
                     outputController = null;
                     outputControlType = OutputContType.None;
