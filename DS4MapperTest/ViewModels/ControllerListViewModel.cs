@@ -39,6 +39,20 @@ namespace DS4MapperTest.ViewModels
             get => controllerList;
         }
 
+        private Dictionary<int, DeviceListItem> controllerDict =
+            new Dictionary<int, DeviceListItem>();
+        public DeviceListItem CurrentItem
+        {
+            get
+            {
+                if (selectedIndex == -1) return null;
+                controllerDict.TryGetValue(selectedIndex, out DeviceListItem item);
+                return item;
+            }
+        }
+
+        public Dictionary<int, DeviceListItem> ControllerDict { get => controllerDict; set => controllerDict = value; }
+
         private BackendManager backendManager;
         private int selectedIndex = -1;
 
@@ -82,6 +96,7 @@ namespace DS4MapperTest.ViewModels
                 //    .Select((item) => item.ItemIndex).DefaultIfEmpty(-1).First();
                 if (ind >= 0)
                 {
+                    controllerDict.Remove(ind);
                     controllerList.RemoveAt(ind);
                 }
             }
@@ -92,6 +107,7 @@ namespace DS4MapperTest.ViewModels
             using (WriteLocker locker = new WriteLocker(_colListLocker))
             {
                 controllerList.Clear();
+                controllerDict.Clear();
             }
         }
 
@@ -125,6 +141,7 @@ namespace DS4MapperTest.ViewModels
                         //}
                         device.Removal += Device_Removal;
                         controllerList.Add(devItem);
+                        controllerDict[i] = devItem;
 
                         i++;
                     }
@@ -180,6 +197,7 @@ namespace DS4MapperTest.ViewModels
                 devItem.EditProfileRequested += DevItem_EditProfileRequested;
                 device.Removal += Device_Removal;
                 controllerList.Add(devItem);
+                controllerDict[ind] = devItem;
             }
         }
 
