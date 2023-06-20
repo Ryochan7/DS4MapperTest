@@ -152,7 +152,7 @@ namespace DS4MapperTest.ViewModels
                         break;
                     }
 
-                    ind++;
+                    findInd++;
                 }
                 //int ind = controllerList.Where((item) => item.ItemIndex == device.Index)
                 //    .Select((item) => item.ItemIndex).DefaultIfEmpty(-1).First();
