@@ -86,6 +86,8 @@ namespace DS4MapperTest
                 appGlobal.CreateControllerDeviceSettingsFile();
             }
 
+            AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+
             // Use all display space
             appGlobal.PrepareAbsMonitorBounds(string.Empty);
 
@@ -104,7 +106,7 @@ namespace DS4MapperTest
 
             logHolder = new LoggerHolder(manager, appGlobal);
             Logger logger = logHolder.Logger;
-            logger.Info($"SteamControllerTest v. {AppGlobalData.exeversion}");
+            logger.Info($"DS4MapperTest v. {AppGlobalData.exeversion}");
 
             MainWindow window = new MainWindow();
             window.PostInit(appGlobal);
@@ -119,8 +121,38 @@ namespace DS4MapperTest
         {
             GC.Collect(0, GCCollectionMode.Forced, false);
         }
+        
+        private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            Exception exp = e.ExceptionObject as Exception;
+            bool canAccessMain = Current.Dispatcher.CheckAccess();
+            //Trace.WriteLine($"CRASHED {help}");
+            Logger logger = logHolder.Logger;
+            if (e.IsTerminating)
+            {
+                logger.Error($"Thread Crashed with message {exp.Message}");
+                logger.Error(exp.ToString());
 
+                if (canAccessMain)
+                {
+                    CleanShutDown();
+                }
+                else
+                {
+                    Dispatcher.Invoke(() =>
+                    {
+                        CleanShutDown();
+                    });
+                }
+            }
+        }
+        
         private void Application_Exit(object sender, ExitEventArgs e)
+        {
+            CleanShutDown();
+        }
+
+        private void CleanShutDown()
         {
             {
                 manager?.LogDebug($"Stopping manager");
