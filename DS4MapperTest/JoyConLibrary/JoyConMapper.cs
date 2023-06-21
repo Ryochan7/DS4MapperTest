@@ -68,6 +68,9 @@ namespace DS4MapperTest.JoyConLibrary
             this.reader = reader;
             this.appGlobal = appGlobal;
 
+            // Only sync gamepad events when PrimaryDevice poll is read
+            gamepadSync = false;
+
             bindingList = new List<InputBindingMeta>()
             {
                 new InputBindingMeta("A", "A", InputBindingMeta.InputControlType.Button),

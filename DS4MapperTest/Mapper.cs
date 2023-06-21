@@ -97,7 +97,9 @@ namespace DS4MapperTest
             get => mouseWheelSync; set => mouseWheelSync = value;
         }
 
-        protected bool gamepadSync;
+        // Used to ensure output gamepad events are sent only as
+        // needed when dealing with multiple input controllers (JoyCon)
+        protected bool gamepadSync = true;
 
         protected double currentRate = 1.0; // Expressed in Hz
         protected double currentLatency = 1.0; // Expressed in sec
