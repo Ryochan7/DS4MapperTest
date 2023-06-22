@@ -538,11 +538,6 @@ namespace DS4MapperTest.JoyConLibrary
 
                 if (this.device == device)
                 {
-                    if (!sideMapped.HasFlag(JoyConSideUsed.JoyConR))
-                    {
-                        Trace.WriteLine("WTF L");
-                    }
-
                     // Make copy of state data as the previous state
                     previousMapperState = currentMapperState;
 
