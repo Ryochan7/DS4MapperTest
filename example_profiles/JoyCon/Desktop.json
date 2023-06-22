@@ -1,0 +1,438 @@
+{
+  "Name": "Desktop",
+  "Description": "Desktop",
+  "Creator": "ryochan7",
+  "CreationDate": "2023-06-22T14:07:10.8775577Z",
+  "OutputGamepadSettings": {
+    "Enabled": false
+  },
+  "LightbarSettings": {
+    "Mode": "SolidColor",
+    "SolidColor": {
+      "red": 0,
+      "green": 0,
+      "blue": 255
+    },
+    "RainbowSecondsCycle": 5
+  },
+  "ActionSets": [
+    {
+      "Index": 0,
+      "Name": "Main",
+      "ActionLayers": [
+        {
+          "Index": 0,
+          "Name": "Default",
+          "MappedActions": [
+            {
+              "Id": 0,
+              "ActionMode": "ButtonAction",
+              "Functions": [
+                {
+                  "Type": "NormalPress",
+                  "OutputActions": [
+                    {
+                      "Type": "Keyboard",
+                      "Code": "Space"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "Id": 1,
+              "ActionMode": "StickMouseAction",
+              "Settings": {
+                "MouseSpeed": 100,
+                "DeadZone": 0.15,
+                "MaxZone": 1.0,
+                "OutputCurve": "Linear",
+                "DeltaSettings": {
+                  "Enabled": false,
+                  "Multiplier": 4.0,
+                  "MaxTravel": 0.2,
+                  "MinTravel": 0.01,
+                  "EasingDuration": 0.2,
+                  "MinFactor": 1.0
+                }
+              }
+            },
+            {
+              "Id": 2,
+              "ActionMode": "DPadAction",
+              "Bindings": {
+                "Up": {
+                  "Functions": [
+                    {
+                      "Type": "NormalPress",
+                      "OutputActions": [
+                        {
+                          "Type": "MouseWheel",
+                          "Code": "WheelUp"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "Down": {
+                  "Functions": [
+                    {
+                      "Type": "NormalPress",
+                      "OutputActions": [
+                        {
+                          "Type": "MouseWheel",
+                          "Code": "WheelDown"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "Left": {
+                  "Functions": []
+                },
+                "Right": {
+                  "Functions": []
+                }
+              },
+              "Settings": {
+                "PadMode": "Standard"
+              }
+            },
+            {
+              "Id": 3,
+              "ActionMode": "ButtonAction",
+              "Functions": [
+                {
+                  "Type": "NormalPress",
+                  "OutputActions": [
+                    {
+                      "Type": "MouseButton",
+                      "Code": "LeftButton"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "Id": 4,
+              "ActionMode": "ButtonAction",
+              "Functions": [
+                {
+                  "Type": "NormalPress",
+                  "OutputActions": [
+                    {
+                      "Type": "MouseButton",
+                      "Code": "RightButton"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "Id": 5,
+              "ActionMode": "ButtonAction",
+              "Functions": [
+                {
+                  "Type": "NormalPress",
+                  "OutputActions": [
+                    {
+                      "Type": "Keyboard",
+                      "Code": "LeftWindows"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "Id": 6,
+              "ActionMode": "ButtonAction",
+              "Functions": [
+                {
+                  "Type": "NormalPress",
+                  "OutputActions": [
+                    {
+                      "Type": "Keyboard",
+                      "Code": "Tab"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "Id": 7,
+              "ActionMode": "ButtonAction",
+              "Functions": [
+                {
+                  "Type": "NormalPress",
+                  "OutputActions": [
+                    {
+                      "Type": "Keyboard",
+                      "Code": "Escape"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "Id": 8,
+              "ActionMode": "ButtonAction",
+              "Functions": [
+                {
+                  "Type": "NormalPress",
+                  "OutputActions": [
+                    {
+                      "Type": "Keyboard",
+                      "Code": "LeftShift"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "Id": 9,
+              "ActionMode": "ButtonAction",
+              "Functions": [
+                {
+                  "Type": "NormalPress",
+                  "OutputActions": [
+                    {
+                      "Type": "Keyboard",
+                      "Code": "LeftControl"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "Id": 10,
+              "ActionMode": "StickPadAction",
+              "Bindings": {
+                "Up": {
+                  "Functions": [
+                    {
+                      "Type": "NormalPress",
+                      "OutputActions": [
+                        {
+                          "Type": "Keyboard",
+                          "Code": "Up"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "Down": {
+                  "Functions": [
+                    {
+                      "Type": "NormalPress",
+                      "OutputActions": [
+                        {
+                          "Type": "Keyboard",
+                          "Code": "Down"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "Left": {
+                  "Functions": [
+                    {
+                      "Type": "NormalPress",
+                      "OutputActions": [
+                        {
+                          "Type": "Keyboard",
+                          "Code": "Left"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "Right": {
+                  "Functions": [
+                    {
+                      "Type": "NormalPress",
+                      "OutputActions": [
+                        {
+                          "Type": "Keyboard",
+                          "Code": "Right"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              "Settings": {
+                "DeadZone": 0.3
+              }
+            },
+            {
+              "Id": 11,
+              "ActionMode": "ButtonAction",
+              "Functions": [
+                {
+                  "Type": "NormalPress",
+                  "OutputActions": [
+                    {
+                      "Type": "Keyboard",
+                      "Code": "PrintScreen"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "Id": 12,
+              "ActionMode": "ButtonAction",
+              "Functions": [
+                {
+                  "Type": "NormalPress",
+                  "OutputActions": [
+                    {
+                      "Type": "Keyboard",
+                      "Code": "Q"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "Id": 13,
+              "ActionMode": "ButtonAction",
+              "Functions": [
+                {
+                  "Type": "NormalPress",
+                  "OutputActions": [
+                    {
+                      "Type": "Keyboard",
+                      "Code": "R"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "Id": 14,
+              "ActionMode": "ButtonAction",
+              "Functions": [
+                {
+                  "Type": "NormalPress",
+                  "OutputActions": [
+                    {
+                      "Type": "Keyboard",
+                      "Code": "C"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "Id": 15,
+              "ActionMode": "ButtonAction",
+              "Functions": [
+                {
+                  "Type": "NormalPress",
+                  "OutputActions": [
+                    {
+                      "Type": "Keyboard",
+                      "Code": "E"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "Id": 16,
+              "ActionMode": "ButtonAction",
+              "Functions": [
+                {
+                  "Type": "NormalPress",
+                  "OutputActions": [
+                    {
+                      "Type": "Keyboard",
+                      "Code": "F"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "Mappings": [
+    {
+      "ActionSet": 0,
+      "ActionLayer": 0,
+      "InputMappings": [
+        {
+          "Input": "B",
+          "Action": 0
+        },
+        {
+          "Input": "RS",
+          "Action": 1
+        },
+        {
+          "Input": "DPad",
+          "Action": 2
+        },
+        {
+          "Input": "ZL",
+          "Action": 3
+        },
+        {
+          "Input": "ZR",
+          "Action": 4
+        },
+        {
+          "Input": "Home",
+          "Action": 5
+        },
+        {
+          "Input": "Minus",
+          "Action": 6
+        },
+        {
+          "Input": "Plus",
+          "Action": 7
+        },
+        {
+          "Input": "LSClick",
+          "Action": 8
+        },
+        {
+          "Input": "RSClick",
+          "Action": 9
+        },
+        {
+          "Input": "LS",
+          "Action": 10
+        },
+        {
+          "Input": "Capture",
+          "Action": 11
+        },
+        {
+          "Input": "LShoulder",
+          "Action": 12
+        },
+        {
+          "Input": "RShoulder",
+          "Action": 13
+        },
+        {
+          "Input": "A",
+          "Action": 14
+        },
+        {
+          "Input": "X",
+          "Action": 15
+        },
+        {
+          "Input": "Y",
+          "Action": 16
+        }
+      ]
+    }
+  ]
+}
