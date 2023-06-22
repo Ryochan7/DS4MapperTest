@@ -34,6 +34,8 @@ namespace DS4MapperTest.JoyConLibrary
         public delegate void JoyConReportDelegate(JoyConReader sender,
             JoyConDevice device);
         public event JoyConReportDelegate Report;
+        public event EventHandler<JoyConDevice> LeftStickCalibUpdated;
+        public event EventHandler<JoyConDevice> RightStickCalibUpdated;
 
         public JoyConReader(JoyConDevice device)
         {
@@ -89,6 +91,8 @@ namespace DS4MapperTest.JoyConLibrary
             //short gyroRoll = 0, gyroRoll2 = 0, gyroRoll3 = 0;
             short tempShort = 0;
             int tempAxis = 0;
+            int tempAxisX = 0;
+            int tempAxisY = 0;
 
             long currentTime = 0;
             long previousTime = 0;
@@ -197,17 +201,52 @@ namespace DS4MapperTest.JoyConLibrary
                             stick_raw[1] = inputReportBuffer[7];
                             stick_raw[2] = inputReportBuffer[8];
 
-                            tempAxis = (stick_raw[0] | ((stick_raw[1] & 0x0F) << 8));
-                            //current.LX = tempAxis > STICK_MAX ? (ushort)STICK_MAX : (tempAxis < STICK_MIN ? (ushort)STICK_MIN : (ushort)tempAxis);
-                            tempAxis = tempAxis > device.leftStickXData.max ? device.leftStickXData.max : (tempAxis < device.leftStickXData.min ? device.leftStickXData.min : tempAxis);
-                            //current.LX = (byte)((tempAxis - device.leftStickXData.min) / (double)(device.leftStickXData.max - device.leftStickXData.min) * 255);
-                            current.LX = (ushort)tempAxis;
+                            tempAxisX = (stick_raw[0] | ((stick_raw[1] & 0x0F) << 8));
+                            tempAxisY = ((stick_raw[1] >> 4) | (stick_raw[2] << 4));
+                            if (firstReport && !device.foundLeftStickCalib)
+                            {
+                                bool calibUpdated = false;
+                                if (tempAxisX > device.leftStickXData.mid)
+                                {
+                                    uint diff = (uint)(tempAxisX - device.leftStickXData.mid);
+                                    device.leftStickXData.min = (ushort)(device.leftStickXData.min + diff);
+                                    calibUpdated = true;
+                                }
+                                else if (tempAxisX < device.leftStickXData.mid)
+                                {
+                                    uint diff = (uint)(device.leftStickXData.max - tempAxisX);
+                                    device.leftStickXData.max = (ushort)(device.leftStickXData.max - diff);
+                                    calibUpdated = true;
+                                }
 
-                            tempAxis = ((stick_raw[1] >> 4) | (stick_raw[2] << 4));
-                            //current.LY = tempAxis > STICK_MAX ? (ushort)STICK_MAX : (tempAxis < STICK_MIN ? (ushort)STICK_MIN : (ushort)tempAxis);
-                            tempAxis = tempAxis > device.leftStickYData.max ? device.leftStickYData.max : (tempAxis < device.leftStickYData.min ? device.leftStickYData.min : tempAxis);
-                            current.LY = (ushort)tempAxis;
-                            //current.LY = (byte)((((tempAxis - device.leftStickYData.min) / (double)(device.leftStickYData.max - device.leftStickYData.min) - 0.5) * -1.0 + 0.5) * 255);
+                                if (tempAxisY > device.leftStickYData.mid)
+                                {
+                                    uint diff = (uint)(tempAxisY - device.leftStickYData.mid);
+                                    device.leftStickYData.min = (ushort)(device.leftStickYData.min + diff);
+                                    calibUpdated = true;
+                                }
+                                else if (tempAxisY < device.leftStickYData.mid)
+                                {
+                                    uint diff = (uint)(device.leftStickYData.max - tempAxisY);
+                                    device.leftStickYData.max = (ushort)(device.leftStickYData.max - diff);
+                                    calibUpdated = true;
+                                }
+
+                                if (calibUpdated)
+                                {
+                                    LeftStickCalibUpdated?.Invoke(this, device);
+                                }
+                            }
+
+                            //current.LX = tempAxisX > STICK_MAX ? (ushort)STICK_MAX : (tempAxisX < STICK_MIN ? (ushort)STICK_MIN : (ushort)tempAxisX);
+                            tempAxisX = tempAxisX > device.leftStickXData.max ? device.leftStickXData.max : (tempAxisX < device.leftStickXData.min ? device.leftStickXData.min : tempAxisX);
+                            //current.LX = (byte)((tempAxisX - device.leftStickXData.min) / (double)(device.leftStickXData.max - device.leftStickXData.min) * 255);
+                            current.LX = (ushort)tempAxisX;
+
+                            //current.LY = tempAxisY > STICK_MAX ? (ushort)STICK_MAX : (tempAxisY < STICK_MIN ? (ushort)STICK_MIN : (ushort)tempAxisY);
+                            tempAxisY = tempAxisY > device.leftStickYData.max ? device.leftStickYData.max : (tempAxisY < device.leftStickYData.min ? device.leftStickYData.min : tempAxisY);
+                            current.LY = (ushort)tempAxisY;
+                            //current.LY = (byte)((((tempAxisY - device.leftStickYData.min) / (double)(device.leftStickYData.max - device.leftStickYData.min) - 0.5) * -1.0 + 0.5) * 255);
                         }
                         else if (device.SideType == JoyConSide.Right)
                         {
@@ -230,17 +269,53 @@ namespace DS4MapperTest.JoyConLibrary
                             stick_raw2[1] = inputReportBuffer[10];
                             stick_raw2[2] = inputReportBuffer[11];
 
-                            tempAxis = (stick_raw2[0] | ((stick_raw2[1] & 0x0F) << 8));
-                            //current.RX = tempAxis > STICK_MAX ? (ushort)STICK_MAX : (tempAxis < STICK_MIN ? (ushort)STICK_MIN : (ushort)tempAxis);
-                            tempAxis = tempAxis > device.rightStickXData.max ? device.rightStickXData.max : (tempAxis < device.rightStickXData.min ? device.rightStickXData.min : tempAxis);
-                            //current.RX = (byte)((tempAxis - device.rightStickXData.min) / (double)(device.rightStickXData.max - device.rightStickXData.min) * 255);
-                            current.RX = (ushort)tempAxis;
+                            tempAxisX = (stick_raw2[0] | ((stick_raw2[1] & 0x0F) << 8));
+                            tempAxisY = ((stick_raw2[1] >> 4) | (stick_raw2[2] << 4));
 
-                            tempAxis = ((stick_raw2[1] >> 4) | (stick_raw2[2] << 4));
-                            //current.RY = tempAxis > STICK_MAX ? (ushort)STICK_MAX : (tempAxis < STICK_MIN ? (ushort)STICK_MIN : (ushort)tempAxis);
-                            tempAxis = tempAxis > device.rightStickYData.max ? device.rightStickYData.max : (tempAxis < device.rightStickYData.min ? device.rightStickYData.min : tempAxis);
-                            //current.RY = (byte)((((tempAxis - device.rightStickYData.min) / (double)(device.rightStickYData.max - device.rightStickYData.min) - 0.5) * -1.0 + 0.5) * 255);
-                            current.RY = (ushort)tempAxis;
+                            if (firstReport && !device.foundRightStickCalib)
+                            {
+                                bool calibUpdated = false;
+                                if (tempAxisX > device.rightStickXData.mid)
+                                {
+                                    uint diff = (uint)(tempAxisX - device.rightStickXData.mid);
+                                    device.rightStickXData.min = (ushort)(device.rightStickXData.min + diff);
+                                    calibUpdated = true;
+                                }
+                                else if (tempAxisX < device.rightStickXData.mid)
+                                {
+                                    uint diff = (uint)(device.rightStickXData.max - tempAxisX);
+                                    device.rightStickXData.max = (ushort)(device.rightStickXData.max - diff);
+                                    calibUpdated = true;
+                                }
+
+                                if (tempAxisY > device.rightStickYData.mid)
+                                {
+                                    uint diff = (uint)(tempAxisY - device.rightStickYData.mid);
+                                    device.rightStickYData.min = (ushort)(device.rightStickYData.min + diff);
+                                    calibUpdated = true;
+                                }
+                                else if (tempAxisY < device.rightStickYData.mid)
+                                {
+                                    uint diff = (uint)(device.rightStickYData.max - tempAxisY);
+                                    device.rightStickYData.max = (ushort)(device.rightStickYData.max - diff);
+                                    calibUpdated = true;
+                                }
+
+                                if (calibUpdated)
+                                {
+                                    RightStickCalibUpdated?.Invoke(this, device);
+                                }
+                            }
+
+                            //current.RX = tempAxisX > STICK_MAX ? (ushort)STICK_MAX : (tempAxisX < STICK_MIN ? (ushort)STICK_MIN : (ushort)tempAxisX);
+                            tempAxisX = tempAxisX > device.rightStickXData.max ? device.rightStickXData.max : (tempAxisX < device.rightStickXData.min ? device.rightStickXData.min : tempAxisX);
+                            //current.RX = (byte)((tempAxisX - device.rightStickXData.min) / (double)(device.rightStickXData.max - device.rightStickXData.min) * 255);
+                            current.RX = (ushort)tempAxisX;
+
+                            //current.RY = tempAxisY > STICK_MAX ? (ushort)STICK_MAX : (tempAxisY < STICK_MIN ? (ushort)STICK_MIN : (ushort)tempAxisY);
+                            tempAxisY = tempAxisY > device.rightStickYData.max ? device.rightStickYData.max : (tempAxisY < device.rightStickYData.min ? device.rightStickYData.min : tempAxisY);
+                            //current.RY = (byte)((((tempAxisY - device.rightStickYData.min) / (double)(device.rightStickYData.max - device.rightStickYData.min) - 0.5) * -1.0 + 0.5) * 255);
+                            current.RY = (ushort)tempAxisY;
                         }
 
                         for (int i = 0; i < 3; i++)

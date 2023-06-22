@@ -181,8 +181,11 @@ namespace DS4MapperTest.JoyConLibrary
         public double[] gyroSensMulti = new double[3];
         public double[] gyroCoeff = new double[3];
 
+        public bool foundLeftStickCalib;
         public StickAxisData leftStickXData;
         public StickAxisData leftStickYData;
+
+        public bool foundRightStickCalib;
         public StickAxisData rightStickXData;
         public StickAxisData rightStickYData;
 
@@ -705,6 +708,7 @@ namespace DS4MapperTest.JoyConLibrary
                 if (tmpBuffer[SPI_RESP_OFFSET] == 0xB2 && tmpBuffer[SPI_RESP_OFFSET + 1] == 0xA1)
                 {
                     foundUserCalib = true;
+                    foundLeftStickCalib = true;
                 }
 
                 if (foundUserCalib)
@@ -775,6 +779,7 @@ namespace DS4MapperTest.JoyConLibrary
                 if (tmpBuffer[SPI_RESP_OFFSET] == 0xB2 && tmpBuffer[SPI_RESP_OFFSET + 1] == 0xA1)
                 {
                     foundUserCalib = true;
+                    foundRightStickCalib = true;
                 }
 
                 if (foundUserCalib)

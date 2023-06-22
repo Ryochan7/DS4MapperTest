@@ -217,7 +217,40 @@ namespace DS4MapperTest.JoyConLibrary
             base.Start(vigemTestClient, fakerInputHandler);
 
             reader.Report += Reader_Report;
+            reader.LeftStickCalibUpdated += Reader_LeftStickCalibUpdated;
+            reader.RightStickCalibUpdated += Reader_RightStickCalibUpdated;
             reader.StartUpdate();
+        }
+
+        private void Reader_LeftStickCalibUpdated(object sender, JoyConDevice currentDevice)
+        {
+            // Replace placeholder data with real device data
+            lsDefintion.xAxis.min = (short)currentDevice.leftStickXData.min;
+            lsDefintion.xAxis.max = (short)currentDevice.leftStickXData.max;
+            lsDefintion.xAxis.mid = (short)currentDevice.leftStickXData.mid;
+            lsDefintion.xAxis.PostInit();
+
+            // Replace placeholder data with real device data
+            lsDefintion.yAxis.min = (short)currentDevice.leftStickYData.min;
+            lsDefintion.yAxis.max = (short)currentDevice.leftStickYData.max;
+            lsDefintion.yAxis.mid = (short)currentDevice.leftStickYData.mid;
+            lsDefintion.yAxis.PostInit();
+        }
+
+        private void Reader_RightStickCalibUpdated(object sender, JoyConDevice currentDevice)
+        {
+
+            // Replace placeholder data with real device data
+            rsDefintion.xAxis.min = (short)currentDevice.rightStickXData.min;
+            rsDefintion.xAxis.max = (short)currentDevice.rightStickXData.max;
+            rsDefintion.xAxis.mid = (short)currentDevice.rightStickXData.mid;
+            rsDefintion.xAxis.PostInit();
+
+            // Replace placeholder data with real device data
+            rsDefintion.yAxis.min = (short)currentDevice.rightStickYData.min;
+            rsDefintion.yAxis.max = (short)currentDevice.rightStickYData.max;
+            rsDefintion.yAxis.mid = (short)currentDevice.rightStickYData.mid;
+            rsDefintion.yAxis.PostInit();
         }
 
         private void Reader_Report(JoyConReader sender, JoyConDevice device)
@@ -719,6 +752,8 @@ namespace DS4MapperTest.JoyConLibrary
             secondJoyReader = reader;
 
             reader.Report += Reader_Report;
+            reader.LeftStickCalibUpdated += Reader_LeftStickCalibUpdated;
+            reader.RightStickCalibUpdated += Reader_RightStickCalibUpdated;
             reader.StartUpdate();
 
             device.Removal += SecondaryDeviceRemoval;
