@@ -542,6 +542,8 @@ namespace DS4MapperTest.DualSense
 
             lightProcess.UpdateLightbarDS(device, actionProfile);
 
+            gamepadSync = intermediateState.Dirty;
+
             ProcessSyncEvents();
 
             ProcessActionSetLayerChecks();

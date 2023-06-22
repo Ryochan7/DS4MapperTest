@@ -361,6 +361,8 @@ namespace DS4MapperTest.SwitchProLibrary
                     //sender.CombLatency = 0;
                 }
 
+                gamepadSync = intermediateState.Dirty;
+
                 ProcessSyncEvents();
 
                 ProcessActionSetLayerChecks();

@@ -242,11 +242,13 @@ namespace DS4MapperTest.JoyConLibrary
                     //intermediateState = new IntermediateState();
                 }
 
+                gamepadSync = false;
+
                 //if (!device.PrimaryDevice)
                 //{
                 //    return;
                 //}
-                
+
                 currentLatency = currentMapperState.timeElapsed;
                 currentRate = 1.0 / currentLatency;
 
@@ -525,7 +527,7 @@ namespace DS4MapperTest.JoyConLibrary
                     sideMapped |= JoyConSideUsed.JoyConR;
                 }
 
-                if (device.PrimaryDevice)
+                if (device.PrimaryDevice && intermediateState.Dirty)
                 {
                     gamepadSync = true;
                 }
