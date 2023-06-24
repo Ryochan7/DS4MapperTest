@@ -1,4 +1,4 @@
-﻿using DS4MapperTest.SwitchProLibrary;
+﻿using DS4MapperTest.DS4Library;
 using HidLibrary;
 using System;
 using System.Collections.Generic;
@@ -257,6 +257,11 @@ namespace DS4MapperTest.JoyConLibrary
         private bool modeChangeDone;
         public bool ModeChangeDone { get => modeChangeDone; }
 
+        /// <summary>
+        /// Flag to tell methods if device has been successfully initialized and opened
+        /// </summary>
+        private bool connectionOpened = false;
+
         public override event EventHandler Removal;
 
         public JoyConDevice(HidDevice hidDevice, string displayName)
@@ -296,6 +301,8 @@ namespace DS4MapperTest.JoyConLibrary
             }
             else if (connectionType == ConnectionType.USB)
             {
+                //JoyConDevice.ReadUSBSerial(hidDevice);
+
                 // Run handshake sequence for JoyCon docked to Charging Grip.
                 // Routine will retrieve and set the Mac serial during the sequence
                 RunUSBSetup();
@@ -428,6 +435,51 @@ namespace DS4MapperTest.JoyConLibrary
             //    Thread.Sleep(300);
             //    //SetInitRumble();
             //}
+
+            connectionOpened = true;
+        }
+
+        public static string ReadUSBSerial(HidDevice hDevice)
+        {
+            if (!hDevice.IsFileStreamOpen())
+            {
+                hDevice.OpenFileStream(INPUT_REPORT_LEN_USB);
+            }
+
+            string serial = DS4Device.BLANK_SERIAL;
+            byte[] data = new byte[64];
+            data[0] = 0x80; data[1] = 0x01;
+            //result = hidDevice.WriteAsyncOutputReportViaInterrupt(data);
+            bool result = hDevice.WriteOutputReportViaInterrupt(data, 0);
+            hDevice.fileStream.Flush();
+            //Thread.Sleep(1000);
+
+            byte[] cmdBuffer = new byte[64];
+            HidDevice.ReadStatus res = hDevice.ReadWithFileStream(cmdBuffer, 100);
+            while (!(cmdBuffer[0] == 0x81 && cmdBuffer[1] == 0x01))
+            {
+                if (cmdBuffer[0] != 0x81)
+                {
+                    result = hDevice.WriteOutputReportViaInterrupt(data, 0);
+                    hDevice.fileStream.Flush();
+                }
+
+                Array.Clear(cmdBuffer);
+                res = hDevice.ReadWithFileStream(cmdBuffer, 100);
+                //Trace.WriteLine($"{cmdBuffer[0]} | {cmdBuffer[3]}");
+            }
+
+            //Trace.WriteLine($"OUT {cmdBuffer[0]} | {cmdBuffer[3]}");
+            if (cmdBuffer[3] == 0x01)
+            {
+                serial = $"{cmdBuffer[9]:X2}:{cmdBuffer[8]:X2}:{cmdBuffer[7]:X2}:{cmdBuffer[6]:X2}:{cmdBuffer[5]:X2}:{cmdBuffer[4]:X2}";
+            }
+            else if (cmdBuffer[3] == 0x02)
+            {
+                serial = $"{cmdBuffer[9]:X2}:{cmdBuffer[8]:X2}:{cmdBuffer[7]:X2}:{cmdBuffer[6]:X2}:{cmdBuffer[5]:X2}:{cmdBuffer[4]:X2}";
+            }
+
+            return serial;
         }
 
         private void RunUSBSetup()
@@ -435,8 +487,8 @@ namespace DS4MapperTest.JoyConLibrary
             bool result;
             //byte[] tmpReport = new byte[INPUT_REPORT_LEN];
 
-            byte[] modeSwitchCommand = new byte[] { 0x3F };
-            Subcommand(0x03, modeSwitchCommand, 1, checkResponse: true);
+            //byte[] modeSwitchCommand = new byte[] { 0x3F };
+            //Subcommand(0x03, modeSwitchCommand, 1, checkResponse: true);
 
             byte[] data = new byte[64];
             data[0] = 0x80; data[1] = 0x01;
@@ -485,6 +537,7 @@ namespace DS4MapperTest.JoyConLibrary
             //Thread.Sleep(1000);
             result = hidDevice.WriteOutputReportViaInterrupt(data, 0);
             hidDevice.fileStream.Flush();
+            WaitForReportResponse(0x81, 0x02, data, true);
 
             /*data[0] = 0x80; data[1] = 0x03; // 3Mbit baud rate
             //result = hidDevice.WriteAsyncOutputReportViaInterrupt(data);
@@ -500,11 +553,14 @@ namespace DS4MapperTest.JoyConLibrary
             //result = hidDevice.WriteOutputReportViaInterrupt(command, 500);
             //Thread.Sleep(2000);
             hidDevice.fileStream.Flush();
+            WaitForReportResponse(0x81, 0x02, data, true);
 
             data[0] = 0x80; data[1] = 0x4; // Prevent HID timeout
             result = hidDevice.WriteOutputReportViaInterrupt(data, 0);
             hidDevice.fileStream.Flush();
             //result = hidDevice.WriteOutputReportViaInterrupt(command, 500);
+
+            EnableFastPollRate();
         }
 
         private void TestBaudChangeResponse()
@@ -601,7 +657,8 @@ namespace DS4MapperTest.JoyConLibrary
         {
             byte[] cmdBuffer = new byte[64];
             HidDevice.ReadStatus res = hidDevice.ReadWithFileStream(cmdBuffer, 100);
-            while (!(cmdBuffer[0] == reportId && cmdBuffer[1] == command))
+            int tries = 0;
+            while (!(cmdBuffer[0] == reportId && cmdBuffer[1] == command) && tries < 100)
             {
                 if (repeatPacket)
                 {
@@ -612,6 +669,7 @@ namespace DS4MapperTest.JoyConLibrary
                 Array.Clear(cmdBuffer);
                 res = hidDevice.ReadWithFileStream(cmdBuffer, 100);
                 //Trace.WriteLine($"{cmdBuffer[0]} | {cmdBuffer[1]}");
+                tries++;
             }
 
             //Trace.WriteLine($"{cmdBuffer[0]} | {cmdBuffer[1]}");
@@ -926,11 +984,19 @@ namespace DS4MapperTest.JoyConLibrary
 
         public override void Detach()
         {
-            if (!hidDevice.IsFileStreamOpen())
+            //if (!hidDevice.IsFileStreamOpen())
+            //{
+            //    return;
+            //}
+
+            //if (!connectionOpened)
+            /*if (true)
             {
                 return;
             }
+            */
 
+            /*
             // Disable Gyro
             byte[] tmpOffBuffer = new byte[] { 0x0 };
             Subcommand(0x40, tmpOffBuffer, 1, checkResponse: true);
@@ -942,9 +1008,12 @@ namespace DS4MapperTest.JoyConLibrary
             // Revert back to low power state
             byte[] powerChoiceArray = new byte[] { 0x01 };
             Subcommand(SwitchProSubCmd.SET_LOW_POWER_STATE, powerChoiceArray, 1, checkResponse: true);
+            //hidDevice.fileStream.Flush();
+            */
 
-            hidDevice.fileStream.Flush();
+            //hidDevice.CancelIO();
             hidDevice.CloseDevice();
+            connectionOpened = false;
         }
     }
 }

@@ -93,6 +93,8 @@ namespace DS4MapperTest
                 VidPidMeta.UsedConnectionBus.HID),
             new VidPidMeta(NINTENDO_VENDOR_ID, JOYCON_R_PRODUCT_ID, "JoyCon R", InputDeviceType.JoyCon,
                 VidPidMeta.UsedConnectionBus.HID),
+            new VidPidMeta(NINTENDO_VENDOR_ID, JOYCON_CHARGING_GRIP_PRODUCT_ID, "JoyCon Charging Grip", InputDeviceType.JoyCon,
+                VidPidMeta.UsedConnectionBus.HID),
         };
 
         public DeviceEnumerator()

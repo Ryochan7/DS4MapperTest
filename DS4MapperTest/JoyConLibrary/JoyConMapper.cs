@@ -751,12 +751,12 @@ namespace DS4MapperTest.JoyConLibrary
             secondJoyDevice = device;
             secondJoyReader = reader;
 
-            reader.Report += Reader_Report;
-            reader.LeftStickCalibUpdated += Reader_LeftStickCalibUpdated;
-            reader.RightStickCalibUpdated += Reader_RightStickCalibUpdated;
-            reader.StartUpdate();
+            secondJoyReader.Report += Reader_Report;
+            secondJoyReader.LeftStickCalibUpdated += Reader_LeftStickCalibUpdated;
+            secondJoyReader.RightStickCalibUpdated += Reader_RightStickCalibUpdated;
+            secondJoyReader.StartUpdate();
 
-            device.Removal += SecondaryDeviceRemoval;
+            secondJoyDevice.Removal += SecondaryDeviceRemoval;
 
             if (actionProfile.OutputGamepadSettings.ForceFeedbackEnabled &&
                 outputControlType == OutputContType.Xbox360 &&
@@ -923,9 +923,11 @@ namespace DS4MapperTest.JoyConLibrary
 
             if (secondJoyDevice != null)
             {
+                secondJoyReader.StopUpdate();
                 secondJoyDevice.Detach();
                 //secondJoyDevice.RaiseRemoval();
                 secondJoyDevice = null;
+                //secondJoyReader.StopUpdate();
             }
         }
     }

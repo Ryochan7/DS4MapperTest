@@ -48,10 +48,10 @@ namespace DS4MapperTest.JoyConLibrary
 
         private void PrepareDevice()
         {
+            device.SetOperational();
+
             NativeMethods.HidD_SetNumInputBuffers(device.HidDevice.safeReadHandle.DangerousGetHandle(),
                 3);
-
-            device.SetOperational();
         }
 
         public override void StartUpdate()
@@ -72,7 +72,8 @@ namespace DS4MapperTest.JoyConLibrary
             device.PurgeRemoval();
             device.HidDevice.CancelIO();
             //inputThread.Interrupt();
-            if (inputThread != null && inputThread.IsAlive)
+            if (inputThread != null && inputThread.IsAlive &&
+                Thread.CurrentThread != inputThread)
             {
                 inputThread.Join();
             }
@@ -117,8 +118,29 @@ namespace DS4MapperTest.JoyConLibrary
                     {
                         if (inputReportBuffer[0] != 0x30)
                         {
-                            Console.WriteLine("Got unexpected input report id 0x{0:X2}. Try again",
+                            if (device.DevConnectionType == JoyConDevice.ConnectionType.USB)
+                            {
+                                if (inputReportBuffer[0] == 0x81 &&
+                                    inputReportBuffer[1] == 0x01 &&
+                                    inputReportBuffer[2] == 0x03)
+                                {
+                                    // 0x03 in byte 2 seems to be a Disconnect status
+                                    activeInputLoop = false;
+                                    device.RaiseRemoval();
+                                }
+                                else
+                                {
+                                    Console.WriteLine("Got unexpected input report id 0x{0:X2}. Try again",
+                                    inputReportBuffer[0]);
+                                }
+
+                                continue;
+                            }
+                            else
+                            {
+                                Console.WriteLine("Got unexpected input report id 0x{0:X2}. Try again",
                                 inputReportBuffer[0]);
+                            }
 
                             continue;
                         }
@@ -214,7 +236,7 @@ namespace DS4MapperTest.JoyConLibrary
                                 }
                                 else if (tempAxisX < device.leftStickXData.mid)
                                 {
-                                    uint diff = (uint)(device.leftStickXData.max - tempAxisX);
+                                    uint diff = (uint)(device.leftStickXData.mid - tempAxisX);
                                     device.leftStickXData.max = (ushort)(device.leftStickXData.max - diff);
                                     calibUpdated = true;
                                 }
@@ -227,7 +249,7 @@ namespace DS4MapperTest.JoyConLibrary
                                 }
                                 else if (tempAxisY < device.leftStickYData.mid)
                                 {
-                                    uint diff = (uint)(device.leftStickYData.max - tempAxisY);
+                                    uint diff = (uint)(device.leftStickYData.mid - tempAxisY);
                                     device.leftStickYData.max = (ushort)(device.leftStickYData.max - diff);
                                     calibUpdated = true;
                                 }
@@ -283,7 +305,7 @@ namespace DS4MapperTest.JoyConLibrary
                                 }
                                 else if (tempAxisX < device.rightStickXData.mid)
                                 {
-                                    uint diff = (uint)(device.rightStickXData.max - tempAxisX);
+                                    uint diff = (uint)(device.rightStickXData.mid - tempAxisX);
                                     device.rightStickXData.max = (ushort)(device.rightStickXData.max - diff);
                                     calibUpdated = true;
                                 }
@@ -296,7 +318,7 @@ namespace DS4MapperTest.JoyConLibrary
                                 }
                                 else if (tempAxisY < device.rightStickYData.mid)
                                 {
-                                    uint diff = (uint)(device.rightStickYData.max - tempAxisY);
+                                    uint diff = (uint)(device.rightStickYData.mid - tempAxisY);
                                     device.rightStickYData.max = (ushort)(device.rightStickYData.max - diff);
                                     calibUpdated = true;
                                 }
