@@ -72,7 +72,8 @@ namespace DS4MapperTest.SwitchProLibrary
             device.PurgeRemoval();
             device.HidDevice.CancelIO();
             //inputThread.Interrupt();
-            if (inputThread != null && inputThread.IsAlive)
+            if (inputThread != null && inputThread.IsAlive &&
+                Thread.CurrentThread != inputThread)
             {
                 inputThread.Join();
             }
