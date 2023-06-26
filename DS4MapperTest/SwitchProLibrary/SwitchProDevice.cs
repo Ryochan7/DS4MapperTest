@@ -140,8 +140,11 @@ namespace DS4MapperTest.SwitchProLibrary
         private const double STICK_AXIS_MAX_CUTOFF = 0.96;
         private const double STICK_AXIS_MIN_CUTOFF = 1.04;
 
+        public bool foundLeftStickCalib;
         public StickAxisData leftStickXData;
         public StickAxisData leftStickYData;
+
+        public bool foundRightStickCalib;
         public StickAxisData rightStickXData;
         public StickAxisData rightStickYData;
 
@@ -543,6 +546,7 @@ namespace DS4MapperTest.SwitchProLibrary
             if (tmpBuffer[SPI_RESP_OFFSET] == 0xB2 && tmpBuffer[SPI_RESP_OFFSET + 1] == 0xA1)
             {
                 foundUserCalib = true;
+                foundLeftStickCalib = true;
             }
 
             if (foundUserCalib)
@@ -599,6 +603,7 @@ namespace DS4MapperTest.SwitchProLibrary
             if (tmpBuffer[SPI_RESP_OFFSET] == 0xB2 && tmpBuffer[SPI_RESP_OFFSET + 1] == 0xA1)
             {
                 foundUserCalib = true;
+                foundRightStickCalib = true;
             }
 
             if (foundUserCalib)
