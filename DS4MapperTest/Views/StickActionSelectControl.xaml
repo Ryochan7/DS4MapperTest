@@ -14,6 +14,7 @@
                 <ComboBoxItem>Stick</ComboBoxItem>
                 <ComboBoxItem>DPad</ComboBoxItem>
                 <ComboBoxItem>Mouse</ComboBoxItem>
+                <ComboBoxItem>Circular</ComboBoxItem>
             </ComboBox>
         </StackPanel>
     </DockPanel>

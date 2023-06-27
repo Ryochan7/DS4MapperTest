@@ -4988,6 +4988,185 @@ namespace DS4MapperTest
         }
     }
 
+    public class StickCircularSerializer : MapActionSerializer
+    {
+        public class StickCircBtnBinding
+        {
+            private string actionDirName;
+            [JsonProperty("Name", Required = Required.Default)]
+            public string ActionDirName
+            {
+                get => actionDirName;
+                set => actionDirName = value;
+            }
+            public bool ShouldSerializeActionDirName()
+            {
+                return !string.IsNullOrEmpty(actionDirName);
+            }
+
+            private List<ActionFuncSerializer> actionFuncSerializers =
+                new List<ActionFuncSerializer>();
+            [JsonProperty("Functions", Required = Required.Always)]
+            public List<ActionFuncSerializer> ActionFuncSerializers
+            {
+                get => actionFuncSerializers;
+                set
+                {
+                    actionFuncSerializers = value;
+                    ActionFuncSerializersChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler ActionFuncSerializersChanged;
+        }
+
+        public class StickCircularSettings
+        {
+            private StickCircular touchCircAct;
+
+            public StickCircularSettings(StickCircular action)
+            {
+                touchCircAct = action;
+            }
+        }
+
+        private StickCircular stickCircAct = new StickCircular();
+
+        private StickCircBtnBinding clockwiseBinding;
+        public StickCircBtnBinding Clockwise
+        {
+            get => clockwiseBinding;
+            set
+            {
+                clockwiseBinding = value;
+                ClockwiseChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        private event EventHandler ClockwiseChanged;
+
+        private StickCircBtnBinding counterClockwiseBinding;
+        public StickCircBtnBinding CounterClockwise
+        {
+            get => counterClockwiseBinding;
+            set
+            {
+                counterClockwiseBinding = value;
+                CounterClockwiseChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        private event EventHandler CounterClockwiseChanged;
+
+        private StickCircularSettings settings;
+        public StickCircularSettings Settings
+        {
+            get => settings;
+            set => settings = value;
+        }
+
+        // Deserialize
+        public StickCircularSerializer() : base()
+        {
+            mapAction = stickCircAct;
+            settings = new StickCircularSettings(stickCircAct);
+
+            NameChanged += StickpadCircularSerializer_NameChanged;
+            ClockwiseChanged += StickCircularSerializer_ClockwiseChanged;
+            CounterClockwiseChanged += StickCircularSerializer_CounterClockwiseChanged;
+        }
+
+        // Serialize
+        public StickCircularSerializer(ActionLayer tempLayer, MapAction mapAction) :
+            base(tempLayer, mapAction)
+        {
+            if (mapAction is StickCircular temp)
+            {
+                stickCircAct = temp;
+                this.mapAction = stickCircAct;
+                settings = new StickCircularSettings(stickCircAct);
+
+                PopulateFuncs();
+            }
+        }
+
+        // Post-deserialize
+        public override void PopulateMap()
+        {
+            stickCircAct.ClockWiseBtn.ActionFuncs.Clear();
+            stickCircAct.CounterClockwiseBtn.ActionFuncs.Clear();
+
+            TouchpadCircularButton tempBtn = null;
+
+            if (clockwiseBinding != null)
+            {
+                tempBtn = stickCircAct.ClockWiseBtn;
+                tempBtn.Name = clockwiseBinding.ActionDirName;
+                foreach (ActionFuncSerializer serializer in clockwiseBinding.ActionFuncSerializers)
+                {
+                    serializer.PopulateFunc();
+                    tempBtn.ActionFuncs.Add(serializer.ActionFunc);
+                }
+
+                stickCircAct.ChangedProperties.Add(StickCircular.PropertyKeyStrings.SCROLL_BUTTON_1);
+                tempBtn = null;
+            }
+
+            if (counterClockwiseBinding != null)
+            {
+                tempBtn = stickCircAct.CounterClockwiseBtn;
+                tempBtn.Name = counterClockwiseBinding.ActionDirName;
+                foreach (ActionFuncSerializer serializer in counterClockwiseBinding.ActionFuncSerializers)
+                {
+                    serializer.PopulateFunc();
+                    tempBtn.ActionFuncs.Add(serializer.ActionFunc);
+                }
+
+                stickCircAct.ChangedProperties.Add(StickCircular.PropertyKeyStrings.SCROLL_BUTTON_2);
+                tempBtn = null;
+            }
+        }
+
+        // Pre-serialize
+        public void PopulateFuncs()
+        {
+            List<ActionFuncSerializer> tempFuncs = new List<ActionFuncSerializer>();
+
+            clockwiseBinding = new StickCircBtnBinding();
+            clockwiseBinding.ActionDirName = stickCircAct.ClockWiseBtn.Name;
+            foreach (ActionFunc tempFunc in stickCircAct.ClockWiseBtn.ActionFuncs)
+            {
+                ActionFuncSerializer tempSerializer =
+                        ActionFuncSerializerFactory.CreateSerializer(tempFunc);
+                tempFuncs.Add(tempSerializer);
+            }
+            clockwiseBinding.ActionFuncSerializers.AddRange(tempFuncs);
+
+            tempFuncs.Clear();
+            counterClockwiseBinding = new StickCircBtnBinding();
+            counterClockwiseBinding.ActionDirName = stickCircAct.CounterClockwiseBtn.Name;
+            foreach (ActionFunc tempFunc in stickCircAct.CounterClockwiseBtn.ActionFuncs)
+            {
+                ActionFuncSerializer tempSerializer =
+                        ActionFuncSerializerFactory.CreateSerializer(tempFunc);
+                tempFuncs.Add(tempSerializer);
+            }
+            counterClockwiseBinding.ActionFuncSerializers.AddRange(tempFuncs);
+        }
+
+        private void StickCircularSerializer_CounterClockwiseChanged(object sender, EventArgs e)
+        {
+            stickCircAct.ChangedProperties.Add(StickCircular.PropertyKeyStrings.SCROLL_BUTTON_2);
+        }
+
+        private void StickCircularSerializer_ClockwiseChanged(object sender, EventArgs e)
+        {
+            stickCircAct.ChangedProperties.Add(StickCircular.PropertyKeyStrings.SCROLL_BUTTON_1);
+        }
+
+        private void StickpadCircularSerializer_NameChanged(object sender, EventArgs e)
+        {
+            stickCircAct.ChangedProperties.Add(StickCircular.PropertyKeyStrings.NAME);
+        }
+    }
+
     public static class GyroActionsUtils
     {
         public enum GyroTriggerEvalCond
@@ -6495,6 +6674,11 @@ namespace DS4MapperTest
                     StickAbsMouseActionSerializer stickAbsMouseInstance = new StickAbsMouseActionSerializer();
                     JsonConvert.PopulateObject(j.ToString(), stickAbsMouseInstance);
                     resultInstance = stickAbsMouseInstance;
+                    break;
+                case "StickCircularAction":
+                    StickCircularSerializer stickCircActInstance = new StickCircularSerializer();
+                    JsonConvert.PopulateObject(j.ToString(), stickCircActInstance);
+                    resultInstance = stickCircActInstance;
                     break;
                 case "StickNoAction":
                     StickNoActionSerializer stickNoActinstance = new StickNoActionSerializer();

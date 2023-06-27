@@ -31,6 +31,9 @@ namespace DS4MapperTest
                 case "StickAbsMouseAction":
                     serializer = new StickAbsMouseActionSerializer(layer, action);
                     break;
+                case "StickCircularAction":
+                    serializer = new StickCircularSerializer(layer, action);
+                    break;
                 case "StickNoAction":
                     serializer = new StickNoActionSerializer(layer, action);
                     break;
