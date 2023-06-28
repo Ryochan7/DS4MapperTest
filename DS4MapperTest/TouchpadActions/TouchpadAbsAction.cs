@@ -157,6 +157,7 @@ namespace DS4MapperTest.TouchpadActions
                 xcenter = 0.5,
                 ycenter = 0.5,
             };
+            absRange.Init();
             outerRing = true;
             antiRadius = 0.0;
         }
@@ -201,8 +202,8 @@ namespace DS4MapperTest.TouchpadActions
             {
                 inputStatus = isActive;
 
-                double usedXNorm = (!wasActive) ? xNorm : prevXNorm;
-                double usedYNorm = (!wasActive) ? yNorm : prevYNorm;
+                double usedXNorm = (isActive) ? xNorm : (!snapToCenterRelease ? prevXNorm : 0.0);
+                double usedYNorm = (isActive) ? yNorm : (!snapToCenterRelease ? prevYNorm : 0.0);
                 double xSign = usedXNorm >= 0.0 ? 1.0 : -1.0;
                 double ySign = usedYNorm >= 0.0 ? 1.0 : -1.0;
                 //double absXUnit = Math.Abs(usedXNorm);
@@ -211,28 +212,31 @@ namespace DS4MapperTest.TouchpadActions
                 double angCos = Math.Abs(Math.Cos(angleRad));
                 double angSin = Math.Abs(Math.Sin(angleRad));
 
-                // Implement fuzz logic to make output cursor less jittery when
-                // trying to hold a position
-                double fuzzSquared = 0.01 * 0.01;
-                double dist = Math.Pow(fuzzXNorm - xNorm, 2) + Math.Pow(fuzzYNorm - yNorm, 2);
-                if (dist <= fuzzSquared)
+                if (inSafeZone)
                 {
-                    active = true;
-                    activeEvent = true;
-                    return;
-                }
-                else
-                {
-                    fuzzXNorm = xNorm;
-                    fuzzYNorm = yNorm;
+                    // Implement fuzz logic to make output cursor less jittery when
+                    // trying to hold a position
+                    double fuzzSquared = 0.01 * 0.01;
+                    double dist = Math.Pow(fuzzXNorm - usedXNorm, 2) + Math.Pow(fuzzYNorm - usedYNorm, 2);
+                    if (dist <= fuzzSquared)
+                    {
+                        active = true;
+                        activeEvent = true;
+                        return;
+                    }
+                    else
+                    {
+                        fuzzXNorm = usedXNorm;
+                        fuzzYNorm = usedYNorm;
+                    }
                 }
 
-                double outXRatio = xNorm, outYRatio = yNorm;
+                double outXRatio = usedXNorm, outYRatio = usedYNorm;
                 //double antiDead = 0.2;
                 double antiDead = antiRadius;
 
                 // Find Release zone
-                if (antiDead != 0.0)
+                if (inSafeZone && antiDead != 0.0)
                 {
                     double antiDeadX = antiDead * angCos;
                     double antiDeadY = antiDead * angSin;
@@ -294,7 +298,7 @@ namespace DS4MapperTest.TouchpadActions
             if (useRingButton && usedRingButton != null)
             {
                 bool activeMod = outerRing ? (ringDistance > outerRingDeadZone ? true : false) :
-                    (ringDistance > 0.0 && ringDistance <= outerRingDeadZone ? true : false);
+                    (ringDistance > 0.0 && (outerRingDeadZone == 1.0 || ringDistance <= outerRingDeadZone) ? true : false);
 
                 double tempRingDistance = activeMod ? ringDistance : 0.0;
                 double tempRingUnit = activeMod ? 1.0 : 0.0;
