@@ -32,7 +32,7 @@ namespace DS4MapperTest.StickActions
             CounterClockwise,
         }
 
-        private const double CLICK_ANGLE_THRESHOLD = 36.0;
+        private const double CLICK_ANGLE_THRESHOLD = 28.0;
         private const double CLICK_RAD_THRESHOLD = CLICK_ANGLE_THRESHOLD * Math.PI / 180.0;
         private const double DEFAULT_DEADZONE = 0.70;
         public const string ACTION_TYPE_NAME = "StickCircularAction";
