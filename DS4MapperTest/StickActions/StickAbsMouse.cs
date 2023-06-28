@@ -16,6 +16,9 @@ namespace DS4MapperTest.StickActions
         {
             public const string NAME = "Name";
             public const string DEAD_ZONE = "DeadZone";
+            public const string MAX_ZONE = "MaxZone";
+            public const string ANTI_RADIUS = "AntiRadius";
+            public const string SNAP_TO_CENTER_RELEASE = "SnapToCenterRelease";
 
             public const string OUTER_RING_BUTTON = "OuterRingButton";
 
@@ -33,6 +36,9 @@ namespace DS4MapperTest.StickActions
         {
             PropertyKeyStrings.NAME,
             PropertyKeyStrings.DEAD_ZONE,
+            PropertyKeyStrings.MAX_ZONE,
+            PropertyKeyStrings.ANTI_RADIUS,
+            PropertyKeyStrings.SNAP_TO_CENTER_RELEASE,
 
             PropertyKeyStrings.OUTER_RING_BUTTON,
             PropertyKeyStrings.USE_OUTER_RING,
@@ -95,6 +101,12 @@ namespace DS4MapperTest.StickActions
 
         private AxisDirButton ringButton = new AxisDirButton();
         private AxisDirButton usedRingButton = null;
+        private bool useParentRingButton;
+        public bool UseParentRingButton
+        {
+            get => useParentRingButton;
+            set => useParentRingButton = value;
+        }
 
         /// <summary>
         /// Used to determine outer ring mode or inner ring mode. Will change to using an Enum later
@@ -117,6 +129,20 @@ namespace DS4MapperTest.StickActions
         private double yMotion;
         private double fuzzXNorm;
         private double fuzzYNorm;
+        private double antiRadius = 0.0;
+
+        public double AntiRadius
+        {
+            get => antiRadius;
+            set => antiRadius = value;
+        }
+
+        private bool snapToCenterRelease = true;
+        public bool SnapToCenterRelease
+        {
+            get => snapToCenterRelease;
+            set => snapToCenterRelease = value;
+        }
 
         public StickDeadZone DeadMod { get => deadMod; }
         public ref AbsCoordRange AbsMouseRange
@@ -148,7 +174,9 @@ namespace DS4MapperTest.StickActions
                 xcenter = 0.5,
                 ycenter = 0.5,
             };
-            //absRange.Init();
+            absRange.Init();
+
+            antiRadius = 0.0;
             //useRingButton = true;
             // FakerInput code for Tilde key
             //ringButton.ActionFuncs.Add(new NormalPressFunc(new MapperUtil.OutputActionData(MapperUtil.OutputActionData.ActionType.Keyboard, 53)));
@@ -161,6 +189,17 @@ namespace DS4MapperTest.StickActions
             //deadMod = new StickDeadZone(0.10, 0.9, 0.0);
             deadMod = new StickDeadZone(0.10, 1.0, 0.0);
             deadMod.CircleDead = true;
+            absRange = new AbsCoordRange()
+            {
+                //top = 0.3, bottom = 0.7, left = 0.3, right = 0.7,
+                width = 0.4,
+                height = 0.4,
+                xcenter = 0.5,
+                ycenter = 0.5,
+            };
+            absRange.Init();
+
+            antiRadius = 0.0;
             //absRange = new AbsCoordRange()
             //{
             //    top = 0.3,
@@ -195,15 +234,15 @@ namespace DS4MapperTest.StickActions
 
             bool isActive = xNorm != 0.0 || yNorm != 0.0;
             bool inSafeZone = isActive;
-            if (inSafeZone || wasActive)
+            if (inSafeZone || (wasActive && snapToCenterRelease))
             {
                 inputStatus = isActive;
                 //stateData.wasActive = stateData.state;
                 //stateData.state = inSafeZone;
                 //stateData.axisNormValue = xNorm;
 
-                double usedXNorm = (!wasActive) ? xNorm : prevXNorm;
-                double usedYNorm = (!wasActive) ? yNorm : prevYNorm;
+                double usedXNorm = (isActive) ? xNorm : (!snapToCenterRelease ? prevXNorm : 0.0);
+                double usedYNorm = (isActive) ? yNorm : (!snapToCenterRelease ? prevYNorm : 0.0);
                 double xSign = usedXNorm >= 0.0 ? 1.0 : -1.0;
                 double ySign = usedYNorm >= 0.0 ? 1.0 : -1.0;
                 //double absXUnit = Math.Abs(usedXNorm);
@@ -212,27 +251,31 @@ namespace DS4MapperTest.StickActions
                 double angCos = Math.Abs(Math.Cos(angleRad));
                 double angSin = Math.Abs(Math.Sin(angleRad));
 
-                // Implement fuzz logic to make output cursor less jittery when
-                // trying to hold a position
-                double fuzzSquared = 0.01 * 0.01;
-                double dist = Math.Pow(fuzzXNorm - xNorm, 2) + Math.Pow(fuzzYNorm - yNorm, 2);
-                if (dist <= fuzzSquared)
+                if (inSafeZone)
                 {
-                    active = true;
-                    activeEvent = true;
-                    return;
-                }
-                else
-                {
-                    fuzzXNorm = xNorm;
-                    fuzzYNorm = yNorm;
+                    // Implement fuzz logic to make output cursor less jittery when
+                    // trying to hold a position
+                    double fuzzSquared = 0.01 * 0.01;
+                    double dist = Math.Pow(fuzzXNorm - usedXNorm, 2) + Math.Pow(fuzzYNorm - usedYNorm, 2);
+                    if (dist <= fuzzSquared)
+                    {
+                        active = true;
+                        activeEvent = true;
+                        return;
+                    }
+                    else
+                    {
+                        fuzzXNorm = usedXNorm;
+                        fuzzYNorm = usedYNorm;
+                    }
                 }
 
-                double outXRatio = xNorm, outYRatio = yNorm;
-                double antiDead = 0.2;
+                double outXRatio = usedXNorm, outYRatio = usedYNorm;
+                //double antiDead = 0.2;
+                double antiDead = antiRadius;
 
                 // Find Release zone
-                if (antiDead != 0.0)
+                if (inSafeZone && antiDead != 0.0)
                 {
                     double antiDeadX = antiDead * angCos;
                     double antiDeadY = antiDead * angSin;
@@ -332,7 +375,7 @@ namespace DS4MapperTest.StickActions
             {
                 double dist = Math.Sqrt((xNorm * xNorm) + (yNorm * yNorm));
                 bool activeMod = outerRing ? (dist > outerRingDeadZone ? true : false) :
-                    (dist > 0.0 && dist <= outerRingDeadZone ? true : false);
+                    (dist > 0.0 && (outerRingDeadZone == 1.0 || dist <= outerRingDeadZone) ? true : false);
 
                 // Treat as boolean button for now
                 usedRingButton.Prepare(mapper, activeMod);
@@ -369,8 +412,20 @@ namespace DS4MapperTest.StickActions
 
         public override void SoftRelease(Mapper mapper, MapAction checkAction, bool resetState = true)
         {
+            xNorm = yNorm = 0.0;
+            xMotion = yMotion = 0.0;
+            fuzzXNorm = fuzzYNorm = 0.0;
+
+            if (useRingButton && usedRingButton != null && !useParentRingButton)
+            {
+                usedRingButton.Release(mapper, resetState);
+            }
+
+            active = false;
+            activeEvent = false;
+
             // Just call main Release method for now
-            Release(mapper, resetState);
+            //Release(mapper, resetState);
         }
 
         public override StickMapAction DuplicateAction()
@@ -407,8 +462,15 @@ namespace DS4MapperTest.StickActions
                         case PropertyKeyStrings.DEAD_ZONE:
                             deadMod.DeadZone = tempAbsAction.deadMod.DeadZone;
                             break;
+                        case PropertyKeyStrings.MAX_ZONE:
+                            deadMod.MaxZone = tempAbsAction.deadMod.MaxZone;
+                            break;
+                        case PropertyKeyStrings.ANTI_RADIUS:
+                            antiRadius = tempAbsAction.antiRadius;
+                            break;
                         case PropertyKeyStrings.OUTER_RING_BUTTON:
                             ringButton = tempAbsAction.ringButton;
+                            useParentRingButton = true;
                             break;
                         case PropertyKeyStrings.USE_OUTER_RING:
                             useRingButton = tempAbsAction.useRingButton;
@@ -418,6 +480,9 @@ namespace DS4MapperTest.StickActions
                             break;
                         case PropertyKeyStrings.USE_AS_OUTER_RING:
                             outerRing = tempAbsAction.outerRing;
+                            break;
+                        case PropertyKeyStrings.SNAP_TO_CENTER_RELEASE:
+                            snapToCenterRelease = tempAbsAction.snapToCenterRelease;
                             break;
                         case PropertyKeyStrings.BOX_WIDTH:
                             absRange.width = tempAbsAction.absRange.width;
@@ -466,8 +531,15 @@ namespace DS4MapperTest.StickActions
                 case PropertyKeyStrings.DEAD_ZONE:
                     deadMod.DeadZone = tempAbsAction.deadMod.DeadZone;
                     break;
+                case PropertyKeyStrings.MAX_ZONE:
+                    deadMod.MaxZone = tempAbsAction.deadMod.MaxZone;
+                    break;
+                case PropertyKeyStrings.ANTI_RADIUS:
+                    antiRadius = tempAbsAction.antiRadius;
+                    break;
                 case PropertyKeyStrings.OUTER_RING_BUTTON:
                     ringButton = tempAbsAction.ringButton;
+                    useParentRingButton = true;
                     break;
                 case PropertyKeyStrings.USE_OUTER_RING:
                     useRingButton = tempAbsAction.useRingButton;
@@ -477,6 +549,9 @@ namespace DS4MapperTest.StickActions
                     break;
                 case PropertyKeyStrings.USE_AS_OUTER_RING:
                     outerRing = tempAbsAction.outerRing;
+                    break;
+                case PropertyKeyStrings.SNAP_TO_CENTER_RELEASE:
+                    snapToCenterRelease = tempAbsAction.snapToCenterRelease;
                     break;
                 case PropertyKeyStrings.BOX_WIDTH:
                     absRange.width = tempAbsAction.absRange.width;

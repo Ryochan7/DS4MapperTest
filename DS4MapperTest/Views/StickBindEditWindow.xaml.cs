@@ -92,9 +92,44 @@ namespace DS4MapperTest.Views
                     }
 
                     break;
+                case StickAbsMouse:
+                    {
+                        StickAbsMousePropControl propControl = new StickAbsMousePropControl();
+                        propControl.PostInit(stickBindEditVM.Mapper, stickBindEditVM.Action);
+                        propControl.RequestFuncEditor += StickAbsMousePropControl_RequestFuncEditor; ;
+                        propControl.ActionTypeIndexChanged += PropControl_ActionTypeIndexChanged;
+                        stickBindEditVM.DisplayControl = propControl;
+                    }
+
+                    break;
                 default:
                     break;
             }
+        }
+
+        private void StickAbsMousePropControl_RequestFuncEditor(object sender, StickPadActionControl.DirButtonBindingArgs e)
+        {
+            FuncBindingControl tempControl = new FuncBindingControl();
+            tempControl.PostInit(stickBindEditVM.Mapper, e.DirBtn);
+            tempControl.RequestBindingEditor += TempControl_RequestBindingEditor;
+            tempControl.FuncBindVM.IsRealAction = e.RealAction;
+            tempControl.PreActionSwitch += (oldAction, newAction) =>
+            {
+                e.UpdateActHandler?.Invoke(oldAction, newAction);
+            };
+            tempControl.ActionChanged += (sender, action) =>
+            {
+                e.UpdateActHandler?.Invoke(null, action);
+            };
+
+            UserControl oldControl = stickBindEditVM.DisplayControl;
+            tempControl.RequestClose += (sender, args) =>
+            {
+                (oldControl as StickAbsMousePropControl).RefreshView();
+                stickBindEditVM.DisplayControl = oldControl;
+            };
+
+            stickBindEditVM.DisplayControl = tempControl;
         }
 
         private void StickPadAct_PropControl_RequestFuncEditor(object sender, StickPadActionControl.DirButtonBindingArgs e)

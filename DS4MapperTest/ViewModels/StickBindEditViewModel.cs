@@ -100,6 +100,15 @@ namespace DS4MapperTest.ViewModels
                     }
 
                     break;
+                case 5:
+                    {
+                        StickAbsMouse tempAction = new StickAbsMouse();
+                        //var joyDefaults = mapper.DeviceActionDefaults.GrabTouchActionPadDefaults();
+                        //joyDefaults.Process(tempAction);
+                        result = tempAction;
+                    }
+
+                    break;
                 default:
                     break;
             }

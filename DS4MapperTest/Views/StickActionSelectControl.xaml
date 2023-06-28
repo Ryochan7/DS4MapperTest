@@ -15,6 +15,7 @@
                 <ComboBoxItem>DPad</ComboBoxItem>
                 <ComboBoxItem>Mouse</ComboBoxItem>
                 <ComboBoxItem>Circular</ComboBoxItem>
+                <ComboBoxItem>Absolute Mouse</ComboBoxItem>
             </ComboBox>
         </StackPanel>
     </DockPanel>

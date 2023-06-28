@@ -1,0 +1,143 @@
+﻿<UserControl x:Class="DS4MapperTest.Views.StickActionPropControls.StickAbsMousePropControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:DS4MapperTest.Views.StickActionPropControls"
+             xmlns:local1="clr-namespace:DS4MapperTest.Views"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="boolVisConv" />
+    </UserControl.Resources>
+    
+    <DockPanel Margin="0,8,0,0">
+        <StackPanel DockPanel.Dock="Top">
+            <local1:StickActionSelectControl x:Name="stickSelectControl" DockPanel.Dock="Top" />
+            
+            <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                <Label Content="Name" />
+                <TextBox Text="{Binding Name,UpdateSourceTrigger=LostFocus}" Width="200" Margin="8,0,0,0" />
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                <Label Content="Dead Zone" />
+                <TextBox Text="{Binding DeadZone, UpdateSourceTrigger=LostFocus}" Width="100" Margin="8,0,0,0">
+                    <TextBox.Style>
+                        <Style TargetType="TextBox" BasedOn="{StaticResource TextBoxBaseStyle}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding HighlightDeadZone}" Value="False">
+                                    <Setter Property="Opacity" Value="0.7" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBox.Style>
+                </TextBox>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                <Label Content="_Max Zone" />
+                <TextBox Text="{Binding MaxZone, UpdateSourceTrigger=LostFocus}" Width="100" Margin="8,0,0,0">
+                    <TextBox.Style>
+                        <Style TargetType="TextBox" BasedOn="{StaticResource TextBoxBaseStyle}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding HighlightMaxZone}" Value="False">
+                                    <Setter Property="Opacity" Value="0.7" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBox.Style>
+                </TextBox>
+            </StackPanel>
+
+
+            <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                <Expander ExpandDirection="Down" Header="Outer Ring" IsExpanded="False">
+                    <StackPanel Orientation="Vertical">
+                        <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                            <Label Content="Use Outer Ring" />
+                            <CheckBox IsChecked="{Binding UseOuterRing}" Width="20" VerticalAlignment="Center" Margin="8,0,0,0">
+                                <CheckBox.Style>
+                                    <Style TargetType="CheckBox" BasedOn="{StaticResource CheckBoxBaseStyle}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding HighlightUseOuterRing}" Value="False">
+                                                <Setter Property="Opacity" Value="0.7" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </CheckBox.Style>
+                            </CheckBox>
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                            <Label Content="Outer Ring Bind" />
+                            <Button x:Name="btnEditTest" Content="{Binding ActionRingDisplayBind,Mode=OneWay,FallbackValue='Test Bind'}" Click="btnEditTest_Click" Margin="8,0,0,0" MinWidth="60" />
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                            <Label Content="Outer Ring Invert" />
+                            <CheckBox IsChecked="{Binding OuterRingInvert}" Width="20" VerticalAlignment="Center" Margin="8,0,0,0">
+                                <CheckBox.Style>
+                                    <Style TargetType="CheckBox" BasedOn="{StaticResource CheckBoxBaseStyle}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding HighlightOuterRingInvert}" Value="False">
+                                                <Setter Property="Opacity" Value="0.7" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </CheckBox.Style>
+                            </CheckBox>
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                            <Label Content="Outer Ring Dead Zone" />
+                            <TextBox Text="{Binding OuterRingDeadZone, UpdateSourceTrigger=LostFocus}" Width="100" Margin="8,0,0,0">
+                                <TextBox.Style>
+                                    <Style TargetType="TextBox" BasedOn="{StaticResource TextBoxBaseStyle}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding HighlightOuterRingDeadZone}" Value="False">
+                                                <Setter Property="Opacity" Value="0.7" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBox.Style>
+                            </TextBox>
+                        </StackPanel>
+
+                    </StackPanel>
+                </Expander>
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                <Label Content="Anti Release" />
+                <TextBox Text="{Binding AntiRelease, UpdateSourceTrigger=LostFocus}" Width="100" Margin="8,0,0,0">
+                    <TextBox.Style>
+                        <Style TargetType="TextBox" BasedOn="{StaticResource TextBoxBaseStyle}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding HighlightAntiRelease}" Value="False">
+                                    <Setter Property="Opacity" Value="0.7" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBox.Style>
+                </TextBox>
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                <Label Content="Snap To Center On Release" />
+                <CheckBox IsChecked="{Binding SnapToCenterRelease}" Width="20" VerticalAlignment="Center" Margin="8,0,0,0">
+                    <CheckBox.Style>
+                        <Style TargetType="CheckBox" BasedOn="{StaticResource CheckBoxBaseStyle}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding HighlightSnapToCenterRelease}" Value="False">
+                                    <Setter Property="Opacity" Value="0.7" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </CheckBox.Style>
+                </CheckBox>
+            </StackPanel>
+
+        </StackPanel>
+    </DockPanel>
+</UserControl>

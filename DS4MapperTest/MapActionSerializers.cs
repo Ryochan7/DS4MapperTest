@@ -4789,6 +4789,17 @@ namespace DS4MapperTest
             }
             public event EventHandler DeadZoneChanged;
 
+            public double MaxZone
+            {
+                get => stickAbsMouseAction.DeadMod.MaxZone;
+                set
+                {
+                    stickAbsMouseAction.DeadMod.MaxZone = Math.Clamp(value, 0.0, 1.0);
+                    MaxZoneChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler MaxZoneChanged;
+
             [JsonProperty("UseOuterRing")]
             public bool UseOuterRing
             {
@@ -4824,6 +4835,17 @@ namespace DS4MapperTest
                 }
             }
             public event EventHandler UseAsOuterRingChanged;
+
+            public bool SnapToCenterOnRelease
+            {
+                get => stickAbsMouseAction.SnapToCenterRelease;
+                set
+                {
+                    stickAbsMouseAction.SnapToCenterRelease = value;
+                    SnapToCenterOnReleaseChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler SnapToCenterOnReleaseChanged;
 
             public double Width
             {
@@ -4906,9 +4928,11 @@ namespace DS4MapperTest
             NameChanged += StickAbsMouseActionSerializer_NameChanged;
             RingBindingChanged += StickAbsMouseActionSerializer_RingBindingChanged;
             settings.DeadZoneChanged += Settings_DeadZoneChanged;
+            settings.MaxZoneChanged += Settings_MaxZoneChanged;
             settings.UseAsOuterRingChanged += Settings_UseAsOuterRingChanged;
             settings.UseOuterRingChanged += Settings_UseOuterRingChanged;
             settings.OuterRingDeadZoneChanged += Settings_OuterRingDeadZoneChanged;
+            settings.SnapToCenterOnReleaseChanged += Settings_SnapToCenterOnReleaseChanged;
 
             settings.WidthChanged += Settings_WidthChanged;
             settings.HeightChanged += Settings_HeightChanged;
@@ -4936,6 +4960,11 @@ namespace DS4MapperTest
             stickAbsMouseAction.ChangedProperties.Add(StickAbsMouse.PropertyKeyStrings.BOX_WIDTH);
         }
 
+        private void Settings_SnapToCenterOnReleaseChanged(object sender, EventArgs e)
+        {
+            stickAbsMouseAction.ChangedProperties.Add(StickAbsMouse.PropertyKeyStrings.SNAP_TO_CENTER_RELEASE);
+        }
+
         // Serialize
         public StickAbsMouseActionSerializer(ActionLayer tempLayer, MapAction action) :
             base(tempLayer, action)
@@ -4951,6 +4980,11 @@ namespace DS4MapperTest
         private void Settings_DeadZoneChanged(object sender, EventArgs e)
         {
             stickAbsMouseAction.ChangedProperties.Add(StickAbsMouse.PropertyKeyStrings.DEAD_ZONE);
+        }
+
+        private void Settings_MaxZoneChanged(object sender, EventArgs e)
+        {
+            stickAbsMouseAction.ChangedProperties.Add(StickAbsMouse.PropertyKeyStrings.MAX_ZONE);
         }
 
         private void StickAbsMouseActionSerializer_NameChanged(object sender, EventArgs e)
