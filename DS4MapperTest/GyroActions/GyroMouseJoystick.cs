@@ -226,9 +226,13 @@ namespace DS4MapperTest.GyroActions
 
             if (!triggerActivated)
             {
+                if (prevXNorm != 0.0 || prevYNorm != 0.0)
+                {
+                    mapper.IntermediateStateRef.Dirty = true;
+                }
+
                 prevXNorm = xNorm; prevYNorm = yNorm;
                 xNorm = yNorm = 0.0;
-                //mapper.IntermediateStateRef.Dirty = true;
 
                 mStickParams.smoothingFilterSettings.filterX.Filter(0.0, currentRate);
                 mStickParams.smoothingFilterSettings.filterY.Filter(0.0, currentRate);
@@ -357,6 +361,11 @@ namespace DS4MapperTest.GyroActions
             //    active = true;
             //    activeEvent = true;
             //}
+            else if (prevXNorm != 0.0 || prevYNorm != 0.0)
+            {
+                active = true;
+                activeEvent = true;
+            }
             else
             {
                 active = false;
