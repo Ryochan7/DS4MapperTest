@@ -85,6 +85,12 @@ namespace DS4MapperTest
             get => onlyOnPrimary;
         }
 
+        protected bool outputOnSecondary = true;
+        public bool OutputOnSecondary
+        {
+            get => outputOnSecondary;
+        }
+
         protected class NotifyPropertyChangeArgs
         {
             private string propertyName;

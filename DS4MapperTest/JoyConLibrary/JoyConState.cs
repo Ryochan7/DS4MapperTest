@@ -47,6 +47,7 @@ namespace DS4MapperTest.JoyConLibrary
         public byte ConnInfo;
         public bool Charging;
         public double timeElapsed;
+        public double timeElapsedR;
 
         public bool A;
         public bool B;

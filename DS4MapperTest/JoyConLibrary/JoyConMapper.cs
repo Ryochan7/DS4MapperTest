@@ -394,7 +394,8 @@ namespace DS4MapperTest.JoyConLibrary
                     GyroMapAction gyroAct = currentLayer.gyroActionDict["GyroL"];
                     // Skip if duration is less than 10 ms
                     //if (currentMapperState.timeElapsed > 0.01)
-                    if (gyroAct.OnlyOnPrimary && currentDev)
+                    bool runPrepareAction = (gyroAct.OnlyOnPrimary && currentDev);
+                    if (!gyroAct.OnlyOnPrimary || runPrepareAction)
                     {
                         GyroEventFrame mouseFrame = new GyroEventFrame
                         {
@@ -410,13 +411,17 @@ namespace DS4MapperTest.JoyConLibrary
                             AccelXG = currentMapperState.MotionL.AccelXG,
                             AccelYG = currentMapperState.MotionL.AccelYG,
                             AccelZG = currentMapperState.MotionL.AccelZG,
-                            timeElapsed = currentLatency,
+                            timeElapsed = currentMapperState.timeElapsed,
                             //elapsedReference = 66.7,
                             elapsedReference = device.BaseElapsedReference * 3,
                         };
 
-                        gyroAct.Prepare(this, ref mouseFrame);
-                        if (gyroAct.active)
+                        if (currentDev || runPrepareAction)
+                        {
+                            gyroAct.Prepare(this, ref mouseFrame);
+                        }
+
+                        if (gyroAct.active && (currentDev || gyroAct.OutputOnSecondary))
                         {
                             gyroAct.Event(this);
                         }
@@ -530,7 +535,8 @@ namespace DS4MapperTest.JoyConLibrary
                     GyroMapAction gyroAct = currentLayer.gyroActionDict["GyroR"];
                     // Skip if duration is less than 10 ms
                     //if (currentMapperState.timeElapsed > 0.01)
-                    if (gyroAct.OnlyOnPrimary && currentDev)
+                    bool runPrepareAction = (gyroAct.OnlyOnPrimary && currentDev);
+                    if (!gyroAct.OnlyOnPrimary || runPrepareAction)
                     {
                         GyroEventFrame mouseFrame = new GyroEventFrame
                         {
@@ -546,13 +552,17 @@ namespace DS4MapperTest.JoyConLibrary
                             AccelXG = currentMapperState.MotionR.AccelXG,
                             AccelYG = currentMapperState.MotionR.AccelYG,
                             AccelZG = currentMapperState.MotionR.AccelZG,
-                            timeElapsed = currentLatency,
+                            timeElapsed = currentMapperState.timeElapsedR,
                             //elapsedReference = 66.7,
                             elapsedReference = device.BaseElapsedReference * 3,
                         };
 
-                        gyroAct.Prepare(this, ref mouseFrame);
-                        if (gyroAct.active)
+                        if (currentDev || runPrepareAction)
+                        {
+                            gyroAct.Prepare(this, ref mouseFrame);
+                        }
+
+                        if (gyroAct.active && (currentDev || gyroAct.OutputOnSecondary))
                         {
                             gyroAct.Event(this);
                         }
@@ -909,6 +919,7 @@ namespace DS4MapperTest.JoyConLibrary
                 currentMapperState.Y = srcState.Y;
 
                 currentMapperState.timeElapsed = srcState.timeElapsed;
+                currentMapperState.timeElapsedR = srcState.timeElapsed;
                 currentMapperState.Motion = srcState.Motion;
                 currentMapperState.MotionR = srcState.Motion;
             }

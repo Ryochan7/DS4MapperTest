@@ -22,6 +22,20 @@ namespace DS4MapperTest.GyroActions
         public double timeElapsed;
 
         public double elapsedReference;
+
+        public double CurrentRate
+        {
+            get
+            {
+                double result = 1.0;
+                if (timeElapsed > 0.0)
+                {
+                    result = 1.0 / timeElapsed;
+                }
+
+                return result;
+            }
+        }
     }
 
     public abstract class GyroMapAction : MapAction

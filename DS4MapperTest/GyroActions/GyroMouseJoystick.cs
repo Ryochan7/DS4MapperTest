@@ -153,8 +153,6 @@ namespace DS4MapperTest.GyroActions
             mStickParams.smoothingFilterSettings.UpdateSmoothingFilters();
 
             mStickParams.OutputStickChanged += MStickParms_OutputStickChanged;
-
-            onlyOnPrimary = true;
         }
 
         private void MStickParms_OutputStickChanged(object sender, EventArgs e)
@@ -167,8 +165,6 @@ namespace DS4MapperTest.GyroActions
             actionTypeName = ACTION_TYPE_NAME;
             this.mStickParams = mstickParams;
             mStickParams.OutputStickChanged += MStickParms_OutputStickChanged;
-
-            onlyOnPrimary = true;
         }
 
         public GyroMouseJoystick(GyroMouseJoystick parentAction)
@@ -177,8 +173,6 @@ namespace DS4MapperTest.GyroActions
             this.parentAction = parentAction;
             this.mStickParams = parentAction.mStickParams;
             mStickParams.OutputStickChanged += MStickParms_OutputStickChanged;
-
-            onlyOnPrimary = true;
         }
 
         public override void Prepare(Mapper mapper, ref GyroEventFrame joystickFrame, bool alterState = true)
@@ -200,6 +194,8 @@ namespace DS4MapperTest.GyroActions
             JoypadActionCodes[] tempTriggerButtons = mStickParams.gyroTriggerButtons;
             bool triggerButtonActive = mapper.IsButtonsActiveDraft(tempTriggerButtons, mStickParams.andCond);
             bool triggerActivated = true;
+
+            double currentRate = joystickFrame.CurrentRate;
             //if (tempTriggerButton != JoypadActionCodes.Empty)
             {
                 //bool triggerButtonActive = mapper.IsButtonActive(mStickParms.gyroTriggerButton);
@@ -234,8 +230,8 @@ namespace DS4MapperTest.GyroActions
                 xNorm = yNorm = 0.0;
                 //mapper.IntermediateStateRef.Dirty = true;
 
-                mStickParams.smoothingFilterSettings.filterX.Filter(0.0, mapper.CurrentRate);
-                mStickParams.smoothingFilterSettings.filterY.Filter(0.0, mapper.CurrentRate);
+                mStickParams.smoothingFilterSettings.filterX.Filter(0.0, currentRate);
+                mStickParams.smoothingFilterSettings.filterY.Filter(0.0, currentRate);
                 active = false;
                 activeEvent = false;
                 return;
@@ -314,8 +310,8 @@ namespace DS4MapperTest.GyroActions
             //deltaY = (int)mapper.MStickFilterY.Filter(deltaY, mapper.CurrentRate);
             if (mStickParams.smoothing)
             {
-                deltaX = (int)mStickParams.smoothingFilterSettings.filterX.Filter(deltaX, mapper.CurrentRate);
-                deltaY = (int)mStickParams.smoothingFilterSettings.filterY.Filter(deltaY, mapper.CurrentRate);
+                deltaX = (int)mStickParams.smoothingFilterSettings.filterX.Filter(deltaX, currentRate);
+                deltaY = (int)mStickParams.smoothingFilterSettings.filterY.Filter(deltaY, currentRate);
             }
 
             if (deltaX != 0) xratio = deltaX / (double)maxValX;
