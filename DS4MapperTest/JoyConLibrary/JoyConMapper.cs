@@ -394,7 +394,7 @@ namespace DS4MapperTest.JoyConLibrary
                     // Skip if duration is less than 10 ms
                     //if (currentMapperState.timeElapsed > 0.01)
                     bool runPrepareAction = (gyroAct.OnlyOnPrimary && currentDev);
-                    if (!gyroAct.OnlyOnPrimary || runPrepareAction)
+                    //if (!gyroAct.OnlyOnPrimary || runPrepareAction)
                     {
                         GyroEventFrame mouseFrame = new GyroEventFrame
                         {
@@ -415,12 +415,12 @@ namespace DS4MapperTest.JoyConLibrary
                             elapsedReference = device.BaseElapsedReference * 3,
                         };
 
-                        if (currentDev || runPrepareAction)
+                        //if (currentDev || runPrepareAction)
                         {
                             gyroAct.Prepare(this, ref mouseFrame);
                         }
 
-                        if (gyroAct.active && (currentDev || gyroAct.OutputOnSecondary))
+                        if (gyroAct.active)
                         {
                             gyroAct.Event(this);
                         }
@@ -534,7 +534,7 @@ namespace DS4MapperTest.JoyConLibrary
                     // Skip if duration is less than 10 ms
                     //if (currentMapperState.timeElapsed > 0.01)
                     bool runPrepareAction = (gyroAct.OnlyOnPrimary && currentDev);
-                    if (!gyroAct.OnlyOnPrimary || runPrepareAction)
+                    //if (!gyroAct.OnlyOnPrimary || runPrepareAction)
                     {
                         GyroEventFrame mouseFrame = new GyroEventFrame
                         {
@@ -555,12 +555,12 @@ namespace DS4MapperTest.JoyConLibrary
                             elapsedReference = device.BaseElapsedReference * 3,
                         };
 
-                        if (currentDev || runPrepareAction)
+                        //if (currentDev || runPrepareAction)
                         {
                             gyroAct.Prepare(this, ref mouseFrame);
                         }
 
-                        if (gyroAct.active && (currentDev || gyroAct.OutputOnSecondary))
+                        if (gyroAct.active)
                         {
                             gyroAct.Event(this);
                         }
