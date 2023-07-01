@@ -2432,6 +2432,7 @@ namespace DS4MapperTest
                 }
 
                 intermediateState.Dirty = false;
+                intermediateState.LSDirty = intermediateState.RSDirty = false;
                 gamepadSync = false;
             }
         }
@@ -2755,20 +2756,48 @@ namespace DS4MapperTest
         }
 
         public virtual void GamepadFromStickInput(OutputActionData data,
-            double xNorm, double yNorm)
+            double xNorm, double yNorm, bool force=true)
         {
             data.activatedEvent = true;
 
             switch (data.StickCode)
             {
                 case StickActionCodes.LS:
-                    intermediateState.LX = xNorm;
-                    intermediateState.LY = yNorm;
+                    if (force)
+                    {
+                        intermediateState.LX = xNorm;
+                        intermediateState.LY = yNorm;
+                        intermediateState.LSDirty = true;
+                    }
+                    else
+                    {
+                        if (!intermediateState.LSDirty)
+                        {
+                            intermediateState.LX = xNorm;
+                            intermediateState.LY = yNorm;
+                            intermediateState.LSDirty = true;
+                        }
+                    }
+
                     intermediateState.Dirty = true;
                     break;
                 case StickActionCodes.RS:
-                    intermediateState.RX = xNorm;
-                    intermediateState.RY = yNorm;
+                    if (force)
+                    {
+                        intermediateState.RX = xNorm;
+                        intermediateState.RY = yNorm;
+                        intermediateState.RSDirty = true;
+                    }
+                    else
+                    {
+                        if (!intermediateState.RSDirty)
+                        {
+                            intermediateState.RX = xNorm;
+                            intermediateState.RY = yNorm;
+                            intermediateState.RSDirty = true;
+                        }
+                    }
+
                     intermediateState.Dirty = true;
                     break;
 

@@ -10,8 +10,10 @@ namespace DS4MapperTest.MapperUtil
     {
         public double LX;
         public double LY;
+        public bool LSDirty;
         public double RX;
         public double RY;
+        public bool RSDirty;
         public double LTrigger;
         public double RTrigger;
 

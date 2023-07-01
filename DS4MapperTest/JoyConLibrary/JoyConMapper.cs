@@ -271,7 +271,7 @@ namespace DS4MapperTest.JoyConLibrary
 
                 if (this.device == device)
                 {
-                    outputController?.ResetReport();
+                    //outputController?.ResetReport();
                     //intermediateState = new IntermediateState();
                 }
 
@@ -300,8 +300,7 @@ namespace DS4MapperTest.JoyConLibrary
                     }
                 }
 
-                if (device.SideType == JoyConSide.Left ||
-                    (device.PrimaryDevice && !sideMapped.HasFlag(JoyConSideUsed.JoyConL)))
+                if (device.SideType == JoyConSide.Left)
                 {
                     //if (device.PrimaryDevice && !sideMapped.HasFlag(JoyConSideUsed.JoyConL))
                     //{
@@ -432,8 +431,7 @@ namespace DS4MapperTest.JoyConLibrary
                     sideMapped |= JoyConSideUsed.JoyConL;
                 }
 
-                if (device.SideType == JoyConSide.Right ||
-                    (device.PrimaryDevice && !sideMapped.HasFlag(JoyConSideUsed.JoyConR)))
+                if (device.SideType == JoyConSide.Right)
                 {
                     bool currentDev = device.SideType == JoyConSide.Right;
                     StickMapAction mapAction = currentLayer.stickActionDict["RS"];
@@ -587,7 +585,7 @@ namespace DS4MapperTest.JoyConLibrary
                     // Make copy of state data as the previous state
                     previousMapperState = currentMapperState;
 
-                    intermediateState = new IntermediateState();
+                    //intermediateState = new IntermediateState();
                     sideMapped = JoyConSideUsed.None;
                 }
 
