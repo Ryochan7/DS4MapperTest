@@ -312,6 +312,7 @@ namespace DS4MapperTest.JoyConLibrary
                     //    Trace.WriteLine("GOT REPORT L");
                     //}
 
+                    bool currentDev = device.SideType == JoyConSide.Left;
                     StickMapAction mapAction = currentLayer.stickActionDict["LS"];
                     //if ((currentMapperState.LX != previousMapperState.LX) || (currentMapperState.LY != previousMapperState.LY))
                     {
@@ -390,10 +391,10 @@ namespace DS4MapperTest.JoyConLibrary
                     if (dpadMapAction.active)
                         dpadMapAction.Event(this);
 
-
                     GyroMapAction gyroAct = currentLayer.gyroActionDict["GyroL"];
                     // Skip if duration is less than 10 ms
                     //if (currentMapperState.timeElapsed > 0.01)
+                    if (gyroAct.OnlyOnPrimary && currentDev)
                     {
                         GyroEventFrame mouseFrame = new GyroEventFrame
                         {
@@ -429,6 +430,7 @@ namespace DS4MapperTest.JoyConLibrary
                 if (device.SideType == JoyConSide.Right ||
                     (device.PrimaryDevice && !sideMapped.HasFlag(JoyConSideUsed.JoyConR)))
                 {
+                    bool currentDev = device.SideType == JoyConSide.Right;
                     StickMapAction mapAction = currentLayer.stickActionDict["RS"];
 
                     //Console.WriteLine(currentMapperState.RY);
@@ -528,6 +530,7 @@ namespace DS4MapperTest.JoyConLibrary
                     GyroMapAction gyroAct = currentLayer.gyroActionDict["GyroR"];
                     // Skip if duration is less than 10 ms
                     //if (currentMapperState.timeElapsed > 0.01)
+                    if (gyroAct.OnlyOnPrimary && currentDev)
                     {
                         GyroEventFrame mouseFrame = new GyroEventFrame
                         {

@@ -153,6 +153,8 @@ namespace DS4MapperTest.GyroActions
             mStickParams.smoothingFilterSettings.UpdateSmoothingFilters();
 
             mStickParams.OutputStickChanged += MStickParms_OutputStickChanged;
+
+            onlyOnPrimary = true;
         }
 
         private void MStickParms_OutputStickChanged(object sender, EventArgs e)
@@ -165,6 +167,8 @@ namespace DS4MapperTest.GyroActions
             actionTypeName = ACTION_TYPE_NAME;
             this.mStickParams = mstickParams;
             mStickParams.OutputStickChanged += MStickParms_OutputStickChanged;
+
+            onlyOnPrimary = true;
         }
 
         public GyroMouseJoystick(GyroMouseJoystick parentAction)
@@ -173,6 +177,8 @@ namespace DS4MapperTest.GyroActions
             this.parentAction = parentAction;
             this.mStickParams = parentAction.mStickParams;
             mStickParams.OutputStickChanged += MStickParms_OutputStickChanged;
+
+            onlyOnPrimary = true;
         }
 
         public override void Prepare(Mapper mapper, ref GyroEventFrame joystickFrame, bool alterState = true)

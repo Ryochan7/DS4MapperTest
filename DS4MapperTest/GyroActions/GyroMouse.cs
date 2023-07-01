@@ -154,12 +154,14 @@ namespace DS4MapperTest.GyroActions
             };
 
             mouseParams.smoothingFilterSettings.Init();
+            onlyOnPrimary = true;
         }
 
         public GyroMouse(GyroMouseParams mouseParams)
         {
             actionTypeName = ACTION_TYPE_NAME;
             this.mouseParams = mouseParams;
+            onlyOnPrimary = true;
         }
 
         public GyroMouse(GyroMouse parentAction)
@@ -167,6 +169,7 @@ namespace DS4MapperTest.GyroActions
             actionTypeName = ACTION_TYPE_NAME;
             this.parentAction = parentAction;
             this.mouseParams = parentAction.mouseParams;
+            onlyOnPrimary = true;
         }
 
         public override void Prepare(Mapper mapper, ref GyroEventFrame gyroFrame, bool alterState = true)

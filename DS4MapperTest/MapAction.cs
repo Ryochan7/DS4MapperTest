@@ -79,6 +79,12 @@ namespace DS4MapperTest
 
         //protected ActionFuncStateData actionStateData = new ActionFuncStateData();
 
+        protected bool onlyOnPrimary = false;
+        public bool OnlyOnPrimary
+        {
+            get => onlyOnPrimary;
+        }
+
         protected class NotifyPropertyChangeArgs
         {
             private string propertyName;
