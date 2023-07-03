@@ -35,6 +35,9 @@
     <None Remove="libs\x86\**" Condition="'$(Platform)' != 'x86'" />
   </ItemGroup>
 
+  <!-- Apparently the None tags are needed as well as the Resource tags.
+       Without the None, app slowdown occurs for me. Why?!!! -->
+  <!-- TODO: Check and maybe carry this over to DS4Windows -->
   <ItemGroup>
     <None Remove="images\circle-info-solid.png" />
     <None Remove="images\gamepad-solid.png" />
