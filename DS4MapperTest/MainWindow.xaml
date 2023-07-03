@@ -11,78 +11,108 @@
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
     </Window.Resources>
-    <DockPanel>
+    <DockPanel LastChildFill="True">
         <DockPanel.Background>
             <SolidColorBrush Color="{StaticResource RegionColor}"/>
         </DockPanel.Background>
 
-        <StackPanel DockPanel.Dock="Bottom" Margin="6,10,6,10" Orientation="Vertical">
-            <Button x:Name="serviceChangeBtn" Content="{Binding ServiceBtnText,Mode=OneWay,FallbackValue='Start'}" Click="Button_Click" HorizontalAlignment="Stretch" />
-        </StackPanel>
+        <TabControl DockPanel.Dock="Top" TabStripPlacement="Left">
+            <TabItem>
+                <TabItem.Header>
+                    <StackPanel Orientation="Horizontal">
+                        <Image Width="16" Source="/images/gamepad-solid.png" />
+                        <TextBlock Text="List" Margin="8,0,0,0" />
+                    </StackPanel>
+                </TabItem.Header>
+                <DockPanel LastChildFill="True">
+                    <StackPanel DockPanel.Dock="Bottom" Margin="6,10,6,10" Orientation="Vertical">
+                        <Button x:Name="serviceChangeBtn" Content="{Binding ServiceBtnText,Mode=OneWay,FallbackValue='Start'}" Click="Button_Click" HorizontalAlignment="Stretch" />
+                    </StackPanel>
 
-        <DockPanel Margin="6,10,6,10" DockPanel.Dock="Bottom" Visibility="Collapsed">
-            <Button x:Name="findProfileBtn" Width="50" Height="20" Content="Change" Margin="0,0,0,0" DockPanel.Dock="Right" Click="FindProfileBtn_Click" />
-            <TextBlock IsEnabled="False" Text="{Binding ProfilePath}" DockPanel.Dock="Left" />
-        </DockPanel>
-        <DockPanel DockPanel.Dock="Top">
-            <ListView x:Name="deviceListView" ItemsSource="{Binding ControllerList}" SelectedIndex="{Binding SelectIndex, FallbackValue='-1'}" MouseDoubleClick="DeviceListView_MouseDoubleClick">
-                <ListView.View>
-                    <GridView>
-                        <GridView.Columns>
-                            <GridViewColumn Header="#" Width="30">
-                                <GridViewColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <TextBlock Text="{Binding DisplayIndex}" />
-                                    </DataTemplate>
-                                </GridViewColumn.CellTemplate>
-                            </GridViewColumn>
-                            <GridViewColumn Header="ID" Width="200">
-                                <GridViewColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <TextBlock Text="{Binding DisplayName}" />
-                                    </DataTemplate>
-                                </GridViewColumn.CellTemplate>
-                            </GridViewColumn>
-                            <GridViewColumn Header="Bat." Width="60">
-                                <GridViewColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <TextBlock Text="{Binding Battery}" />
-                                    </DataTemplate>
-                                </GridViewColumn.CellTemplate>
-                            </GridViewColumn>
-                            <GridViewColumn x:Name="profileOptionsColumn" Width="150">
-                                <GridViewColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <ComboBox ItemsSource="{Binding DevProfileList}" DisplayMemberPath="Name" SelectedIndex="{Binding ProfileIndex, FallbackValue='0'}" Visibility="{Binding PrimaryDevice, Converter={StaticResource BooleanToVisibilityConverter}}" MinWidth="130" />
-                                    </DataTemplate>
-                                </GridViewColumn.CellTemplate>
-                            </GridViewColumn>
-                            <GridViewColumn>
-                                <GridViewColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <hc:SplitButton Content="Edit" Command="{Binding EditProfCommand}" CommandParameter="Hurricane" Visibility="{Binding PrimaryDevice, Converter={StaticResource BooleanToVisibilityConverter}}">
-                                            <hc:SplitButton.DropDownContent>
-                                                <StackPanel>
-                                                    <MenuItem Header="New" Click="NewProfMenuItem_Click" Tag="{Binding ItemIndex}" />
-                                                </StackPanel>
-                                            </hc:SplitButton.DropDownContent>
-                                        </hc:SplitButton>
-                                        <!--<Button x:Name="editPro" Content="Edit" Width="50" Click="EditPro_Click" />-->
-                                    </DataTemplate>
-                                </GridViewColumn.CellTemplate>
-                            </GridViewColumn>
-                            <GridViewColumn Width="50">
-                                <GridViewColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <Button x:Name="contSettingsBtn" Content="🎮" Click="ContSettingsBtn_Click"
+                    <DockPanel DockPanel.Dock="Top">
+                        <ListView x:Name="deviceListView" ItemsSource="{Binding ControllerList}" SelectedIndex="{Binding SelectIndex, FallbackValue='-1'}" MouseDoubleClick="DeviceListView_MouseDoubleClick">
+                            <ListView.View>
+                                <GridView>
+                                    <GridView.Columns>
+                                        <GridViewColumn Header="#" Width="30">
+                                            <GridViewColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <TextBlock Text="{Binding DisplayIndex}" />
+                                                </DataTemplate>
+                                            </GridViewColumn.CellTemplate>
+                                        </GridViewColumn>
+                                        <GridViewColumn Header="ID" Width="200">
+                                            <GridViewColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <TextBlock Text="{Binding DisplayName}" />
+                                                </DataTemplate>
+                                            </GridViewColumn.CellTemplate>
+                                        </GridViewColumn>
+                                        <GridViewColumn Header="Bat." Width="60">
+                                            <GridViewColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <TextBlock Text="{Binding Battery}" />
+                                                </DataTemplate>
+                                            </GridViewColumn.CellTemplate>
+                                        </GridViewColumn>
+                                        <GridViewColumn x:Name="profileOptionsColumn" Width="150">
+                                            <GridViewColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <ComboBox ItemsSource="{Binding DevProfileList}" DisplayMemberPath="Name" SelectedIndex="{Binding ProfileIndex, FallbackValue='0'}" Visibility="{Binding PrimaryDevice, Converter={StaticResource BooleanToVisibilityConverter}}" MinWidth="130" />
+                                                </DataTemplate>
+                                            </GridViewColumn.CellTemplate>
+                                        </GridViewColumn>
+                                        <GridViewColumn>
+                                            <GridViewColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <hc:SplitButton Content="Edit" Command="{Binding EditProfCommand}" CommandParameter="Hurricane" Visibility="{Binding PrimaryDevice, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                                        <hc:SplitButton.DropDownContent>
+                                                            <StackPanel>
+                                                                <MenuItem Header="New" Click="NewProfMenuItem_Click" Tag="{Binding ItemIndex}" />
+                                                            </StackPanel>
+                                                        </hc:SplitButton.DropDownContent>
+                                                    </hc:SplitButton>
+                                                    <!--<Button x:Name="editPro" Content="Edit" Width="50" Click="EditPro_Click" />-->
+                                                </DataTemplate>
+                                            </GridViewColumn.CellTemplate>
+                                        </GridViewColumn>
+                                        <GridViewColumn Width="50">
+                                            <GridViewColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <Button x:Name="contSettingsBtn" Content="🎮" Click="ContSettingsBtn_Click"
                                                 Tag="{Binding ItemIndex}" ToolTip="Controller Settings" />
-                                    </DataTemplate>
-                                </GridViewColumn.CellTemplate>
-                            </GridViewColumn>
-                        </GridView.Columns>
-                    </GridView>
-                </ListView.View>
-            </ListView>
-        </DockPanel>
+                                                </DataTemplate>
+                                            </GridViewColumn.CellTemplate>
+                                        </GridViewColumn>
+                                    </GridView.Columns>
+                                </GridView>
+                            </ListView.View>
+                        </ListView>
+                    </DockPanel>
+                </DockPanel>
+            </TabItem>
+            <TabItem>
+                <TabItem.Header>
+                    <StackPanel Orientation="Horizontal">
+                        <Image Width="16" Source="/images/circle-info-solid.png" />
+                        <TextBlock Text="About" Margin="8,0,0,0" />
+                    </StackPanel>
+                </TabItem.Header>
+                <DockPanel Margin="8">
+                    <StackPanel Orientation="Vertical">
+                        <TextBlock Text="DS4MapperTest">
+                        </TextBlock>
+
+                        <TextBlock>
+                            <TextBlock.Text>
+                                <Binding Path="VersionText" StringFormat="{}version {0}" />
+                            </TextBlock.Text>
+                        </TextBlock>
+                    </StackPanel>
+
+                </DockPanel>
+            </TabItem>
+        </TabControl>
+
     </DockPanel>
 </Window>

@@ -34,6 +34,16 @@
     <None Remove="libs\x64\**" Condition="'$(Platform)' != 'x64'" />
     <None Remove="libs\x86\**" Condition="'$(Platform)' != 'x86'" />
   </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="images\circle-info-solid.png" />
+    <None Remove="images\gamepad-solid.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="images\circle-info-solid.png" />
+    <Resource Include="images\gamepad-solid.png" />
+  </ItemGroup>
   
   <ItemGroup>
     <PackageReference Include="HandyControl" Version="3.3.0" />
