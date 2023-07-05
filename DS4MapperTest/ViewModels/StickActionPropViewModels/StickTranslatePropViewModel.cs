@@ -267,6 +267,34 @@ namespace DS4MapperTest.ViewModels.StickActionPropViewModels
         }
         public event EventHandler InvertChanged;
 
+        public bool SquareStickEnabled
+        {
+            get => action.SquareStickEnabled;
+            set
+            {
+                if (action.SquareStickEnabled == value) return;
+                action.SquareStickEnabled = value;
+                SquareStickEnabledChanged?.Invoke(this, EventArgs.Empty);
+                ActionPropertyChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        public event EventHandler SquareStickEnabledChanged;
+
+        public string SquareStickRoundness
+        {
+            get => action.SquareStickRoundness.ToString("N2");
+            set
+            {
+                if (double.TryParse(value, out double temp))
+                {
+                    action.SquareStickRoundness = temp;
+                    SquareStickRoundnessChanged?.Invoke(this, EventArgs.Empty);
+                    ActionPropertyChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+        }
+        public event EventHandler SquareStickRoundnessChanged;
+
         public bool HighlightName
         {
             get => action.ParentAction == null ||
@@ -352,6 +380,20 @@ namespace DS4MapperTest.ViewModels.StickActionPropViewModels
         }
         public event EventHandler HighlightInvertChanged;
 
+        public bool HighlightSquareStickEnabled
+        {
+            get => action.ParentAction == null ||
+                action.ChangedProperties.Contains(StickTranslate.PropertyKeyStrings.SQUARE_STICK_ENABLED);
+        }
+        public event EventHandler HighlightSquareStickEnabledChanged;
+
+        public bool HighlightSquareStickRoundness
+        {
+            get => action.ParentAction == null ||
+                action.ChangedProperties.Contains(StickTranslate.PropertyKeyStrings.SQUARE_STICK_ROUNDNESS);
+        }
+        public event EventHandler HighlightSquareStickRoundnessChanged;
+
         public event EventHandler ActionPropertyChanged;
         public event EventHandler<StickMapAction> ActionChanged;
 
@@ -397,6 +439,30 @@ namespace DS4MapperTest.ViewModels.StickActionPropViewModels
             InvertChanged += StickTranslatePropViewModel_InvertChanged;
             VerticalScaleChanged += StickTranslatePropViewModel_VerticalScaleChanged;
             OutputCurveChanged += StickTranslatePropViewModel_OutputCurveChanged;
+            SquareStickEnabledChanged += StickTranslatePropViewModel_SquareStickEnabledChanged;
+            SquareStickRoundnessChanged += StickTranslatePropViewModel_SquareStickRoundnessChanged;
+        }
+
+        private void StickTranslatePropViewModel_SquareStickRoundnessChanged(object sender, EventArgs e)
+        {
+            if (!action.ChangedProperties.Contains(StickTranslate.PropertyKeyStrings.SQUARE_STICK_ROUNDNESS))
+            {
+                action.ChangedProperties.Add(StickTranslate.PropertyKeyStrings.SQUARE_STICK_ROUNDNESS);
+            }
+
+            action.RaiseNotifyPropertyChange(mapper, StickTranslate.PropertyKeyStrings.SQUARE_STICK_ROUNDNESS);
+            HighlightSquareStickRoundnessChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void StickTranslatePropViewModel_SquareStickEnabledChanged(object sender, EventArgs e)
+        {
+            if (!action.ChangedProperties.Contains(StickTranslate.PropertyKeyStrings.SQUARE_STICK_ENABLED))
+            {
+                action.ChangedProperties.Add(StickTranslate.PropertyKeyStrings.SQUARE_STICK_ENABLED);
+            }
+
+            action.RaiseNotifyPropertyChange(mapper, StickTranslate.PropertyKeyStrings.SQUARE_STICK_ENABLED);
+            HighlightSquareStickEnabledChanged?.Invoke(this, EventArgs.Empty);
         }
 
         private void StickTranslatePropViewModel_OutputCurveChanged(object sender, EventArgs e)

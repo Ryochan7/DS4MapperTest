@@ -199,6 +199,35 @@
                     </ComboBox>
                 </StackPanel>
 
+                <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                    <Label Content="Square Stick" />
+                    <CheckBox IsChecked="{Binding SquareStickEnabled}" Content="Enable" VerticalAlignment="Center" Margin="8,0,0,0">
+                        <CheckBox.Style>
+                            <Style TargetType="CheckBox" BasedOn="{StaticResource CheckBoxBaseStyle}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding HighlightSquareStickEnabled}" Value="False">
+                                        <Setter Property="Opacity" Value="0.7" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </CheckBox.Style>
+                    </CheckBox>
+
+                    <hc:NumericUpDown Minimum="1.0" Maximum="10.0" Value="{Binding SquareStickRoundness}" DecimalPlaces="2"
+                                      IsEnabled="{Binding SquareStickEnabled}" Width="100" Margin="8,0,0,0">
+                        <hc:NumericUpDown.Style>
+                            <Style TargetType="hc:NumericUpDown" BasedOn="{StaticResource NumericUpDownBaseStyle}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding HighlightSquareStickRoundness}" Value="False">
+                                        <Setter Property="Opacity" Value="0.7" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </hc:NumericUpDown.Style>
+                    </hc:NumericUpDown>
+
+                </StackPanel>
+
             </StackPanel>
         </ScrollViewer>
         

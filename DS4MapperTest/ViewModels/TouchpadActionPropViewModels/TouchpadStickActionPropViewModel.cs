@@ -257,6 +257,34 @@ namespace DS4MapperTest.ViewModels.TouchpadActionPropViewModels
         }
         public event EventHandler InvertChanged;
 
+        public bool SquareStickEnabled
+        {
+            get => action.SquareStickEnabled;
+            set
+            {
+                if (action.SquareStickEnabled == value) return;
+                action.SquareStickEnabled = value;
+                SquareStickEnabledChanged?.Invoke(this, EventArgs.Empty);
+                ActionPropertyChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        public event EventHandler SquareStickEnabledChanged;
+
+        public string SquareStickRoundness
+        {
+            get => action.SquareStickRoundness.ToString("N2");
+            set
+            {
+                if (double.TryParse(value, out double temp))
+                {
+                    action.SquareStickRoundness = temp;
+                    SquareStickRoundnessChanged?.Invoke(this, EventArgs.Empty);
+                    ActionPropertyChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+        }
+        public event EventHandler SquareStickRoundnessChanged;
+
 
         public event EventHandler ActionPropertyChanged;
 
@@ -340,6 +368,20 @@ namespace DS4MapperTest.ViewModels.TouchpadActionPropViewModels
         }
         public event EventHandler HighlightInvertChanged;
 
+        public bool HighlightSquareStickEnabled
+        {
+            get => action.ParentAction == null ||
+                action.ChangedProperties.Contains(TouchpadStickAction.PropertyKeyStrings.SQUARE_STICK_ENABLED);
+        }
+        public event EventHandler HighlightSquareStickEnabledChanged;
+
+        public bool HighlightSquareStickRoundness
+        {
+            get => action.ParentAction == null ||
+                action.ChangedProperties.Contains(TouchpadStickAction.PropertyKeyStrings.SQUARE_STICK_ROUNDNESS);
+        }
+        public event EventHandler HighlightSquareStickRoundnessChanged;
+
         public TouchpadStickActionPropViewModel(Mapper mapper,
             TouchpadMapAction action)
         {
@@ -391,6 +433,30 @@ namespace DS4MapperTest.ViewModels.TouchpadActionPropViewModels
             InvertChanged += TouchpadStickActionPropViewModel_InvertChanged;
             VerticalScaleChanged += TouchpadStickActionPropViewModel_VerticalScaleChanged;
             OutputCurveChanged += TouchpadStickActionPropViewModel_OutputCurveChanged;
+            SquareStickEnabledChanged += TouchpadStickActionPropViewModel_SquareStickEnabledChanged;
+            SquareStickRoundnessChanged += TouchpadStickActionPropViewModel_SquareStickRoundnessChanged;
+        }
+
+        private void TouchpadStickActionPropViewModel_SquareStickRoundnessChanged(object sender, EventArgs e)
+        {
+            if (!this.action.ChangedProperties.Contains(TouchpadStickAction.PropertyKeyStrings.SQUARE_STICK_ROUNDNESS))
+            {
+                this.action.ChangedProperties.Add(TouchpadStickAction.PropertyKeyStrings.SQUARE_STICK_ROUNDNESS);
+            }
+
+            action.RaiseNotifyPropertyChange(mapper, TouchpadStickAction.PropertyKeyStrings.SQUARE_STICK_ROUNDNESS);
+            HighlightSquareStickRoundnessChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void TouchpadStickActionPropViewModel_SquareStickEnabledChanged(object sender, EventArgs e)
+        {
+            if (!this.action.ChangedProperties.Contains(TouchpadStickAction.PropertyKeyStrings.SQUARE_STICK_ENABLED))
+            {
+                this.action.ChangedProperties.Add(TouchpadStickAction.PropertyKeyStrings.SQUARE_STICK_ENABLED);
+            }
+
+            action.RaiseNotifyPropertyChange(mapper, TouchpadStickAction.PropertyKeyStrings.SQUARE_STICK_ENABLED);
+            HighlightSquareStickEnabledChanged?.Invoke(this, EventArgs.Empty);
         }
 
         private void TouchpadStickActionPropViewModel_OutputCurveChanged(object sender, EventArgs e)
