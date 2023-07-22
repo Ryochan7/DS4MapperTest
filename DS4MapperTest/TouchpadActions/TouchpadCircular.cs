@@ -18,6 +18,7 @@ namespace DS4MapperTest.TouchpadActions
             public const string NAME = "Name";
             public const string SCROLL_BUTTON_1 = "ScrollButton1";
             public const string SCROLL_BUTTON_2 = "ScrollButton2";
+            public const string SENSITIVITY = "Sensitivity";
         }
 
         private HashSet<string> fullPropertySet = new HashSet<string>()
@@ -25,6 +26,7 @@ namespace DS4MapperTest.TouchpadActions
             PropertyKeyStrings.NAME,
             PropertyKeyStrings.SCROLL_BUTTON_1,
             PropertyKeyStrings.SCROLL_BUTTON_2,
+            PropertyKeyStrings.SENSITIVITY,
         };
 
         private enum ClickDirection
@@ -36,6 +38,7 @@ namespace DS4MapperTest.TouchpadActions
         private const double CLICK_ANGLE_THRESHOLD = 12.0;
         private const double CLICK_RAD_THRESHOLD = CLICK_ANGLE_THRESHOLD * Math.PI / 180.0;
         private const double DEFAULT_DEADZONE = 0.25;
+        private const double DEFAULT_SENSITIVITY = 1.0;
         public const string ACTION_TYPE_NAME = "TouchCircularAction";
 
         private double startAngleRad;
@@ -67,6 +70,13 @@ namespace DS4MapperTest.TouchpadActions
 
         private StickDeadZone deadMod;
         public StickDeadZone DeadMod => deadMod;
+
+        private double sensitivity = DEFAULT_SENSITIVITY;
+        public double Sensitivity
+        {
+            get => sensitivity;
+            set => sensitivity = value;
+        }
 
         public TouchpadCircular()
         {
@@ -158,6 +168,11 @@ namespace DS4MapperTest.TouchpadActions
                 {
                     //Trace.WriteLine("NEG FAR");
                     diffAngle += 2 * Math.PI;
+                }
+
+                if (sensitivity != 1.0)
+                {
+                    diffAngle *= sensitivity;
                 }
 
                 travelAngleChangeRad += diffAngle;
@@ -282,6 +297,9 @@ namespace DS4MapperTest.TouchpadActions
                         case PropertyKeyStrings.SCROLL_BUTTON_2:
                             useParentCircButtons[1] = true;
                             break;
+                        case PropertyKeyStrings.SENSITIVITY:
+                            sensitivity = tempCirleAction.sensitivity;
+                            break;
                         default:
                             break;
                     }
@@ -325,6 +343,9 @@ namespace DS4MapperTest.TouchpadActions
                     break;
                 case PropertyKeyStrings.SCROLL_BUTTON_2:
                     useParentCircButtons[1] = true;
+                    break;
+                case PropertyKeyStrings.SENSITIVITY:
+                    sensitivity = tempCirleAction.sensitivity;
                     break;
                 default:
                     break;

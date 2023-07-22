@@ -2332,6 +2332,22 @@ namespace DS4MapperTest
         {
             private TouchpadCircular touchCircAct;
 
+            public double Sensitivity
+            {
+                get => touchCircAct.Sensitivity;
+                set
+                {
+                    touchCircAct.Sensitivity = Math.Clamp(value, 0.0, 10.0);
+                    SensitivityChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler SensitivityChanged;
+
+            public bool ShouldSerializeSensitivity()
+            {
+                return touchCircAct.ChangedProperties.Contains(TouchpadCircular.PropertyKeyStrings.SENSITIVITY);
+            }
+
             public TouchpadCircularSettings(TouchpadCircular action)
             {
                 touchCircAct = action;
@@ -2380,6 +2396,12 @@ namespace DS4MapperTest
             NameChanged += TouchpadCircularSerializer_NameChanged;
             ClockwiseChanged += TouchpadCircularSerializer_ClockwiseChanged;
             CounterClockwiseChanged += TouchpadCircularSerializer_CounterClockwiseChanged;
+            settings.SensitivityChanged += Settings_SensitivityChanged;
+        }
+
+        private void Settings_SensitivityChanged(object sender, EventArgs e)
+        {
+            touchCircAct.ChangedProperties.Add(TouchpadCircular.PropertyKeyStrings.SENSITIVITY);
         }
 
         // Serialize
