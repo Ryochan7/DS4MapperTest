@@ -17,6 +17,7 @@ namespace DS4MapperTest.StickActions
             public const string NAME = "Name";
             public const string SCROLL_BUTTON_1 = "ScrollButton1";
             public const string SCROLL_BUTTON_2 = "ScrollButton2";
+            public const string SENSITIVITY = "Sensitivity";
         }
 
         private HashSet<string> fullPropertySet = new HashSet<string>()
@@ -24,6 +25,7 @@ namespace DS4MapperTest.StickActions
             PropertyKeyStrings.NAME,
             PropertyKeyStrings.SCROLL_BUTTON_1,
             PropertyKeyStrings.SCROLL_BUTTON_2,
+            PropertyKeyStrings.SENSITIVITY,
         };
 
         private enum ClickDirection
@@ -35,6 +37,7 @@ namespace DS4MapperTest.StickActions
         private const double CLICK_ANGLE_THRESHOLD = 26.0;
         private const double CLICK_RAD_THRESHOLD = CLICK_ANGLE_THRESHOLD * Math.PI / 180.0;
         private const double DEFAULT_DEADZONE = 0.70;
+        private const double DEFAULT_SENSITIVITY = 1.0;
         public const string ACTION_TYPE_NAME = "StickCircularAction";
 
         private double startAngleRad;
@@ -66,6 +69,13 @@ namespace DS4MapperTest.StickActions
 
         private StickDeadZone deadMod;
         public StickDeadZone DeadMod => deadMod;
+
+        private double sensitivity = DEFAULT_SENSITIVITY;
+        public double Sensitivity
+        {
+            get => sensitivity;
+            set => sensitivity = value;
+        }
 
         private double xNorm = 0.0, yNorm = 0.0;
 
@@ -148,23 +158,40 @@ namespace DS4MapperTest.StickActions
                 double angleRad = Math.Atan2(xNorm, yNorm);
                 //double angleDeg = (angleRad >= 0 ? angleRad : (2 * Math.PI + angleRad)) * 180 / Math.PI;
 
-                currentAngleRad = angleRad;
+                currentAngleRad = angleRad >= 0 ? angleRad : (2 * Math.PI + angleRad);
+                double tempCurrentAngleRad = currentAngleRad;
 
-                double diffAngle = currentAngleRad - previousAngleRad;
-                // Negate wrapping between PI to -PI on lower portion of Touchpad
+                double diffAngle = tempCurrentAngleRad - previousAngleRad;
+                // Negate wrapping between 0 to 2*PI. If change is larger than PI in one poll,
+                // assume boundary change and adjust diffAngle accordingly
                 if (diffAngle > Math.PI)
                 {
-                    //Trace.WriteLine("POS FAR");
                     diffAngle -= 2 * Math.PI;
                 }
                 else if (diffAngle < -Math.PI)
                 {
-                    //Trace.WriteLine("NEG FAR");
                     diffAngle += 2 * Math.PI;
                 }
 
+                if (sensitivity != 1.0)
+                {
+                    diffAngle *= sensitivity;
+                }
+
+                // Negate wrapping between PI to -PI on lower portion of Touchpad
+                //if (diffAngle > Math.PI)
+                //{
+                //    //Trace.WriteLine("POS FAR");
+                //    diffAngle -= 2 * Math.PI;
+                //}
+                //else if (diffAngle < -Math.PI)
+                //{
+                //    //Trace.WriteLine("NEG FAR");
+                //    diffAngle += 2 * Math.PI;
+                //}
+
                 travelAngleChangeRad += diffAngle;
-                //Trace.WriteLine($"DIFF {diffAngle} RAD: {angleRad} Previous: {previousAngleRad} CURRENT ANG: {currentAngleRad} TRAVEL ANG: {travelAngleChangeRad}");
+                //System.Diagnostics.Trace.WriteLine($"DIFF {diffAngle} RAD: {angleRad} Previous: {previousAngleRad} CURRENT ANG: {currentAngleRad} TRAVEL ANG: {travelAngleChangeRad}");
                 //if (Math.Abs(travelAngleChangeRad) > 5 * CLICK_RAD_THRESHOLD)
                 //{
                 //    Trace.WriteLine($"OUT OF WHACK {travelAngleChangeRad} {diffAngle}");
@@ -288,6 +315,9 @@ namespace DS4MapperTest.StickActions
                         case PropertyKeyStrings.SCROLL_BUTTON_2:
                             useParentCircButtons[1] = true;
                             break;
+                        case PropertyKeyStrings.SENSITIVITY:
+                            sensitivity = tempCirleAction.sensitivity;
+                            break;
                         default:
                             break;
                     }
@@ -325,6 +355,9 @@ namespace DS4MapperTest.StickActions
                     break;
                 case PropertyKeyStrings.SCROLL_BUTTON_2:
                     useParentCircButtons[1] = true;
+                    break;
+                case PropertyKeyStrings.SENSITIVITY:
+                    sensitivity = tempCirleAction.sensitivity;
                     break;
                 default:
                     break;

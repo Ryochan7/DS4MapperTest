@@ -46,12 +46,31 @@ namespace DS4MapperTest.ViewModels.StickActionPropViewModels
             get => action.CounterClockwiseBtn.DescribeActions(mapper);
         }
 
+        public double Sensitivity
+        {
+            get => action.Sensitivity;
+            set
+            {
+                action.Sensitivity = Math.Clamp(value, 0.0, 10.0);
+                SensitivityChanged?.Invoke(this, EventArgs.Empty);
+                ActionPropertyChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        public event EventHandler SensitivityChanged;
+
         public bool HighlightName
         {
             get => action.ParentAction == null ||
                 action.ChangedProperties.Contains(StickCircular.PropertyKeyStrings.NAME);
         }
         public event EventHandler HighlightNameChanged;
+
+        public bool HighlightSensitivity
+        {
+            get => action.ParentAction == null ||
+                action.ChangedProperties.Contains(StickCircular.PropertyKeyStrings.SENSITIVITY);
+        }
+        public event EventHandler HighlightSensitivityChanged;
 
         public event EventHandler ActionPropertyChanged;
         public event EventHandler<StickMapAction> ActionChanged;
@@ -87,6 +106,18 @@ namespace DS4MapperTest.ViewModels.StickActionPropViewModels
             PrepareModel();
 
             NameChanged += StickCircularPropViewModel_NameChanged;
+            SensitivityChanged += StickCircularPropViewModel_SensitivityChanged;
+        }
+
+        private void StickCircularPropViewModel_SensitivityChanged(object sender, EventArgs e)
+        {
+            if (!action.ChangedProperties.Contains(StickCircular.PropertyKeyStrings.SENSITIVITY))
+            {
+                action.ChangedProperties.Add(StickCircular.PropertyKeyStrings.SENSITIVITY);
+            }
+
+            action.RaiseNotifyPropertyChange(mapper, StickCircular.PropertyKeyStrings.SENSITIVITY);
+            HighlightSensitivityChanged?.Invoke(this, EventArgs.Empty);
         }
 
         private void StickCircularPropViewModel_NameChanged(object sender, EventArgs e)

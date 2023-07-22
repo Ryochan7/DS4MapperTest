@@ -5055,11 +5055,27 @@ namespace DS4MapperTest
 
         public class StickCircularSettings
         {
-            private StickCircular touchCircAct;
+            private StickCircular stickCircAct;
+
+            public double Sensitivity
+            {
+                get => stickCircAct.Sensitivity;
+                set
+                {
+                    stickCircAct.Sensitivity = Math.Clamp(value, 0.0, 10.0);
+                    SensitivityChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler SensitivityChanged;
+
+            public bool ShouldSerializeSensitivity()
+            {
+                return stickCircAct.ChangedProperties.Contains(StickCircular.PropertyKeyStrings.SENSITIVITY);
+            }
 
             public StickCircularSettings(StickCircular action)
             {
-                touchCircAct = action;
+                stickCircAct = action;
             }
         }
 
@@ -5105,6 +5121,12 @@ namespace DS4MapperTest
             NameChanged += StickpadCircularSerializer_NameChanged;
             ClockwiseChanged += StickCircularSerializer_ClockwiseChanged;
             CounterClockwiseChanged += StickCircularSerializer_CounterClockwiseChanged;
+            settings.SensitivityChanged += Settings_SensitivityChanged;
+        }
+
+        private void Settings_SensitivityChanged(object sender, EventArgs e)
+        {
+            stickCircAct.ChangedProperties.Add(StickCircular.PropertyKeyStrings.SENSITIVITY);
         }
 
         // Serialize

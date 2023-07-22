@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:hc="https://handyorg.github.io/handycontrol"
              xmlns:local="clr-namespace:DS4MapperTest.Views.StickActionPropControls"
              xmlns:local1="clr-namespace:DS4MapperTest.Views"
              mc:Ignorable="d" 
@@ -27,6 +28,22 @@
             <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
                 <Label Content="Backward" />
                 <Button x:Name="btnEditBackward" Content="{Binding BackwardDisplayBind,Mode=OneTime,FallbackValue='Test Backward'}" Click="BtnEditBackward_Click"  Margin="8,0,0,0" MinWidth="60" />
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                <Label Content="Sensitivity" />
+                <hc:NumericUpDown Minimum="0.0" Maximum="10.0" DecimalPlaces="1" Increment="0.1"
+                                  Value="{Binding Sensitivity,FallbackValue='1.0'}" Margin="8,0,0,0">
+                    <hc:NumericUpDown.Style>
+                        <Style TargetType="hc:NumericUpDown" BasedOn="{StaticResource NumericUpDownBaseStyle}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding HighlightSensitivity}" Value="False">
+                                    <Setter Property="Opacity" Value="0.7" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </hc:NumericUpDown.Style>
+                </hc:NumericUpDown>
             </StackPanel>
 
         </StackPanel>
