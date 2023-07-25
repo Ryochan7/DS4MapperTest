@@ -13,6 +13,10 @@ FakerInput - [https://github.com/Ryochan7/FakerInput/releases/download/v0.1.0/Fa
 
 HidHide - [https://vigem.org/projects/HidHide/](https://vigem.org/projects/HidHide/)
 
+## Current Beta
+
+https://github.com/Ryochan7/DS4MapperTest/releases/tag/v0.0.12
+
 ## Screenshots
 
 ![example_mapper_screen_20220605](https://user-images.githubusercontent.com/581968/172064947-bc3358c7-7ec3-4a5d-86f5-3715bd4638e7.png)
