@@ -10,9 +10,9 @@
     <EnableNETAnalyzers>False</EnableNETAnalyzers>
     <RunAnalyzersDuringLiveAnalysis>False</RunAnalyzersDuringLiveAnalysis>
     <ServerGarbageCollection>true</ServerGarbageCollection>
-    <AssemblyVersion>0.0.11</AssemblyVersion>
-    <FileVersion>0.0.11</FileVersion>
-    <Version>0.0.11</Version>
+    <AssemblyVersion>0.0.12</AssemblyVersion>
+    <FileVersion>0.0.12</FileVersion>
+    <Version>0.0.12</Version>
     <Configuration Condition="'$(Configuration)' == ''">Debug</Configuration>
     <Platform Condition="'$(Platform)' == ''">x64</Platform>
   </PropertyGroup>
@@ -37,7 +37,6 @@
 
   <!-- Apparently the None tags are needed as well as the Resource tags.
        Without the None, app slowdown occurs for me. Why?!!! -->
-  <!-- TODO: Check and maybe carry this over to DS4Windows -->
   <ItemGroup>
     <None Remove="images\circle-info-solid.png" />
     <None Remove="images\gamepad-solid.png" />
