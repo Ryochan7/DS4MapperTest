@@ -396,3 +396,9 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+
+#
+# Custom rules
+#
+!DS4MapperTest/libs/x64/
+!DS4MapperTest/libs/x86/
