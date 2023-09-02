@@ -144,7 +144,8 @@ namespace DS4MapperTest.StickActions
             }
             else if (isActive && !wasActive)
             {
-                double angleRad = Math.Atan2(xNorm, yNorm);
+                // Use raw axis values to find stick angle
+                double angleRad = Math.Atan2(axisXVal, axisYVal);
                 double angleDeg = (angleRad >= 0 ? angleRad : (2 * Math.PI + angleRad)) * 180 / Math.PI;
 
                 startAngleRad = angleRad;
@@ -155,7 +156,8 @@ namespace DS4MapperTest.StickActions
             {
                 double previousAngleRad = currentAngleRad;
 
-                double angleRad = Math.Atan2(xNorm, yNorm);
+                // Use raw axis values to find stick angle
+                double angleRad = Math.Atan2(axisXVal, axisYVal);
                 //double angleDeg = (angleRad >= 0 ? angleRad : (2 * Math.PI + angleRad)) * 180 / Math.PI;
 
                 currentAngleRad = angleRad >= 0 ? angleRad : (2 * Math.PI + angleRad);
