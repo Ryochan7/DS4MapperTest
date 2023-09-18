@@ -10,7 +10,6 @@ using System.Runtime.InteropServices;
 using static DS4MapperTest.VidPidMeta;
 using DS4MapperTest.SwitchProLibrary;
 using DS4MapperTest.DualSense;
-using Nefarius.Utilities.DeviceManagement.PnP;
 using DS4MapperTest.JoyConLibrary;
 
 namespace DS4MapperTest
