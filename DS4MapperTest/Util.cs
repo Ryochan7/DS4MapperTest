@@ -5,6 +5,7 @@ using System.Runtime.InteropServices;
 using System.Security;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Win32;
 using HidLibrary;
 
 namespace DS4MapperTest
@@ -187,6 +188,20 @@ namespace DS4MapperTest
                 Console.WriteLine("{0} {1}", ex.HelpLink, ex.Message);
                 throw;
             }
+        }
+
+        public static string GetOSProductName()
+        {
+            string productName =
+                Registry.GetValue(@"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion", "ProductName", "").ToString();
+            return productName;
+        }
+
+        public static string GetOSReleaseId()
+        {
+            string releaseId =
+                Registry.GetValue(@"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion", "ReleaseId", "").ToString();
+            return releaseId;
         }
 
         private static string GetStringDeviceProperty(string deviceInstanceId,
