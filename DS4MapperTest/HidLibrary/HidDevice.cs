@@ -4,6 +4,7 @@ using System.Threading;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Win32.SafeHandles;
+
 namespace HidLibrary
 {
     public class HidDevice : IDisposable
@@ -25,6 +26,10 @@ namespace HidLibrary
         private readonly HidDeviceCapabilities _deviceCapabilities;
         private bool _monitorDeviceEvents;
         private string serial = null;
+        private SafeFileHandle safeReadHandle1;
+        private FileStream fileStream1;
+        private bool isOpen;
+        private bool isExclusive;
         private const string BLANK_SERIAL = "00:00:00:00:00:00";
 
         internal HidDevice(string devicePath, string description = null)
@@ -48,10 +53,10 @@ namespace HidLibrary
             }
         }
 
-        public SafeFileHandle safeReadHandle { get; private set; }
-        public FileStream fileStream { get; private set; }
-        public bool IsOpen { get; private set; }
-        public bool IsExclusive { get; private set; }
+        public SafeFileHandle safeReadHandle { get => safeReadHandle1; private set => safeReadHandle1 = value; }
+        public FileStream fileStream { get => fileStream1; private set => fileStream1 = value; }
+        public bool IsOpen { get => isOpen; private set => isOpen = value; }
+        public bool IsExclusive { get => isExclusive; private set => isExclusive = value; }
         public bool IsConnected { get { return HidDevices.IsConnected(_devicePath); } }
         public string Description { get { return _description; } }
         public HidDeviceCapabilities Capabilities { get { return _deviceCapabilities; } }
