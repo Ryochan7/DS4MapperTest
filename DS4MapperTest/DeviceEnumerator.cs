@@ -143,21 +143,8 @@ namespace DS4MapperTest
 
         private bool IsRealDev(HidDevice hDevice)
         {
-            var device = PnPDevice.GetDeviceByInterfaceId(hDevice.DevicePath);
-
-            return !device.IsVirtual(pDevice =>
-            {
-                var hardwareIds = pDevice.GetProperty<string[]>(DevicePropertyKey.Device_HardwareIds).ToList();
-
-                // hardware IDs of root hubs/controllers that emit supported virtual devices as sources
-                var excludedIds = new[]
-                {
-                    @"ROOT\HIDGAMEMAP", // reWASD
-                    @"ROOT\VHUSB3HC", // VirtualHere
-                };
-
-                return hardwareIds.Any(id => excludedIds.Contains(id.ToUpper()));
-            });
+            bool result = !Util.CheckIfVirtualDevice(hDevice.DevicePath);
+            return result;
         }
 
         public void FindControllers()
