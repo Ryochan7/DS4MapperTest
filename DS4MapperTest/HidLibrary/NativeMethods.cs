@@ -110,7 +110,9 @@ namespace HidLibrary
         internal const int DEVICE_NOTIFY_SERVICE_HANDLE = 1;
         internal const int DEVICE_NOTIFY_WINDOW_HANDLE = 0;
         internal const int WM_DEVICECHANGE = 0x219;
+        internal const short DIGCF_DEFAULT = 0x1;
         internal const short DIGCF_PRESENT = 0x2;
+        internal const short DIGCF_PROFILE = 0x8;
         internal const short DIGCF_DEVICEINTERFACE = 0x10;
         internal const int DIGCF_ALLCLASSES = 0x4;
         internal const int DICS_ENABLE = 1;
@@ -338,7 +340,13 @@ namespace HidLibrary
         internal static extern int SetupDiCreateDeviceInfoList(ref Guid classGuid, int hwndParent);
 
         [DllImport("setupapi.dll")]
+        internal static extern IntPtr SetupDiCreateDeviceInfoList(IntPtr guid, int hwndParent);
+
+        [DllImport("setupapi.dll")]
         static internal extern int SetupDiDestroyDeviceInfoList(IntPtr deviceInfoSet);
+
+        [DllImport("setupapi.dll")]
+        internal static extern bool SetupDiOpenDeviceInfo(IntPtr deviceInfoSet, string deviceInstanceId, IntPtr parent, uint flags, ref SP_DEVINFO_DATA deviceInfoData);
 
         [DllImport("setupapi.dll")]
         static internal extern bool SetupDiEnumDeviceInterfaces(IntPtr deviceInfoSet, ref SP_DEVINFO_DATA deviceInfoData, ref Guid interfaceClassGuid, int memberIndex, ref SP_DEVICE_INTERFACE_DATA deviceInterfaceData);
