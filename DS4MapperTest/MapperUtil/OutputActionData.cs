@@ -107,6 +107,7 @@ namespace DS4MapperTest.MapperUtil
         private bool tickTimerActive;
         private const int DEFAULT_CHANGE_LAYER_ID = -1;
         private int changeToLayer = DEFAULT_CHANGE_LAYER_ID;
+        // TODO: Why is this here again? Possibly remove?
         private int fromProfileChangeLayer = DEFAULT_CHANGE_LAYER_ID;
         private ActionLayerChangeCondition layerChangeCondition;
 
@@ -262,6 +263,11 @@ namespace DS4MapperTest.MapperUtil
             repeat = sourceData.repeat;
             changeToSet = sourceData.changeToSet;
             ChangeCondition = sourceData.changeCondition;
+
+            changeToLayer = sourceData.changeToLayer;
+            layerChangeCondition = sourceData.layerChangeCondition;
+            fromProfileChangeLayer = sourceData.fromProfileChangeLayer;
+
             durationMs = sourceData.durationMs;
             effectiveDurationMs = sourceData.effectiveDurationMs;
             outputPadMap = new JoypadActionCodeMapping(sourceData.outputPadMap);
