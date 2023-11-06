@@ -138,16 +138,21 @@ namespace DS4MapperTest.Views
             tempControl.PostInit(stickBindEditVM.Mapper, e.DirBtn);
             tempControl.RequestBindingEditor += TempControl_RequestBindingEditor;
             tempControl.FuncBindVM.IsRealAction = e.RealAction;
+
+            UserControl oldControl = stickBindEditVM.DisplayControl;
             tempControl.PreActionSwitch += (oldAction, newAction) =>
             {
                 e.UpdateActHandler?.Invoke(oldAction, newAction);
             };
             tempControl.ActionChanged += (sender, action) =>
             {
-                e.UpdateActHandler?.Invoke(null, action);
+                //e.UpdateActHandler?.Invoke(null, action);
+                StickPadActionControl stickDisplayControl =
+                    oldControl as StickPadActionControl;
+
+                stickBindEditVM.UpdateAction(stickDisplayControl.StickPadActVM.Action);
             };
 
-            UserControl oldControl = stickBindEditVM.DisplayControl;
             tempControl.RequestClose += (sender, args) =>
             {
                 (oldControl as StickPadActionControl).RefreshView();
