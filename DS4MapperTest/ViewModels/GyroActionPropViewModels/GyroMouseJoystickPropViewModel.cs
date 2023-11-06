@@ -28,6 +28,11 @@ namespace DS4MapperTest.ViewModels.GyroActionPropViewModels
             get => outputStickIndex;
             set
             {
+                if (outputStickIndex == value) return;
+
+                // TODO: Move to using SelectedValue in XAML rather than SelectedIndex
+                int codeIndex = value >= 0 ? value : 0;
+                action.mStickParams.OutputStick = outputStickHolder.OutputStickItems[codeIndex].Code;
                 outputStickIndex = value;
                 OutputStickIndexChanged?.Invoke(this, EventArgs.Empty);
                 ActionPropertyChanged?.Invoke(this, EventArgs.Empty);
@@ -558,6 +563,11 @@ namespace DS4MapperTest.ViewModels.GyroActionPropViewModels
 
         private void GyroMouseJoystickPropViewModel_OutputAxesChoiceChanged(object sender, EventArgs e)
         {
+            if (outputStickIndex != -1 && outputStickHolder.OutputStickItems.Count > outputStickIndex)
+            {
+                action.mStickParams.OutputStick = outputStickHolder.OutputStickItems[outputStickIndex].Code;
+            }
+
             if (!action.ChangedProperties.Contains(GyroMouseJoystick.PropertyKeyStrings.OUTPUT_AXES))
             {
                 action.ChangedProperties.Add(GyroMouseJoystick.PropertyKeyStrings.OUTPUT_AXES);
