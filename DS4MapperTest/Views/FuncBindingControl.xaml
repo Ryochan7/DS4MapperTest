@@ -34,6 +34,7 @@
             </ItemsControl>
             <Button x:Name="addFuncButton" Content="Add +" Click="AddFuncButton_Click" IsEnabled="{Binding IsRealAction}" Margin="10,0,0,0" />
             <Button Name="copyFuncButton" Content="Copy" Click="CopyFuncButton_Click" IsEnabled="{Binding IsNotRealAction}" Margin="8,0,0,0" />
+            <Button Name="resetFuncButton" Content="Reset" Click="ResetFuncButton_Click" Margin="8,0,0,0" />
         </WrapPanel>
 
         <Button Content="Close" Click="Button_Click_1" DockPanel.Dock="Bottom" HorizontalAlignment="Right" MinWidth="60" />

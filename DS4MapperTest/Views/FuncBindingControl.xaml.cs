@@ -280,5 +280,39 @@ namespace DS4MapperTest.Views
         {
             RequestClose?.Invoke(this, EventArgs.Empty);
         }
+
+        private void ResetFuncButton_Click(object sender, RoutedEventArgs e)
+        {
+            DisconnectPartialEvents();
+            DataContext = null;
+
+            if (!funcBindVM.IsRealAction)
+            {
+                Mapper mapper = funcBindVM.Mapper;
+                //ButtonAction oldAction = funcBindVM.Action.ParentAction as ButtonAction;
+                ButtonAction oldAction = funcBindVM.Action as ButtonAction;
+                ButtonAction newAction = FuncBindingControlViewModel.CreateUnboundAction(oldAction);
+
+                PreActionSwitch?.Invoke(oldAction, newAction);
+                funcBindVM.SwitchAction(oldAction, newAction);
+                ActionChanged?.Invoke(this, newAction);
+
+                funcBindVM = new FuncBindingControlViewModel(mapper, newAction, defaultPropControl);
+                funcBindVM.IsRealAction = true;
+                funcBindVM.CurrentItem.ItemActive = true;
+                SwitchPropView(funcBindVM.CurrentItem);
+            }
+            else
+            {
+                Mapper mapper = funcBindVM.Mapper;
+                ButtonAction oldAction = funcBindVM.Action as ButtonAction;
+                funcBindVM.ResetFunctions(oldAction);
+
+                SwitchPropView(funcBindVM.CurrentItem);
+            }
+
+            ConnectPartialEvents();
+            DataContext = funcBindVM;
+        }
     }
 }

@@ -195,10 +195,10 @@ namespace DS4MapperTest.ViewModels
             return result;
         }
 
-        public static ButtonAction CopyAction(ButtonAction sourceAction)
+        public static ButtonAction CreateNewAction(ButtonAction sourceAction)
         {
             ButtonAction result = null;
-            switch(sourceAction)
+            switch (sourceAction)
             {
                 case AxisDirButton:
                     result = new AxisDirButton();
@@ -213,10 +213,33 @@ namespace DS4MapperTest.ViewModels
                     break;
             }
 
+            return result;
+        }
+
+        public static ButtonAction CopyAction(ButtonAction sourceAction)
+        {
+            ButtonAction result = CreateNewAction(sourceAction);
+
             if (result != null)
             {
                 result.CopyBaseProps(sourceAction);
                 result.CopyAction(sourceAction);
+            }
+
+            return result;
+        }
+
+        public static ButtonAction CreateUnboundAction(ButtonAction sourceAction)
+        {
+            ButtonAction result = CreateNewAction(sourceAction);
+
+            if (result != null)
+            {
+                result.CopyBaseProps(sourceAction);
+                result.ActionFuncs.Add(new NormalPressFunc(
+                            new OutputActionData(OutputActionData.ActionType.Empty, 0)));
+                result.ChangedProperties.Add(ButtonAction.PropertyKeyStrings.NAME);
+                result.ChangedProperties.Add(ButtonAction.PropertyKeyStrings.FUNCTIONS);
             }
 
             return result;
@@ -257,6 +280,43 @@ namespace DS4MapperTest.ViewModels
             */
 
             this.action = newAction;
+        }
+
+        public void ResetFunctions(ButtonAction action)
+        {
+            thing.Clear();
+
+            ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
+
+            mapper.QueueEvent(() =>
+            {
+                action.Release(mapper, ignoreReleaseActions: true);
+
+                if (action is ButtonAction)
+                {
+                    action.ActionFuncs.Clear();
+                    action.ActionFuncs.Add(new NormalPressFunc(
+                                new OutputActionData(OutputActionData.ActionType.Empty, 0)));
+                    action.ChangedProperties.Add(ButtonAction.PropertyKeyStrings.FUNCTIONS);
+                }
+
+                resetEvent.Set();
+            });
+
+            resetEvent.Wait(1000);
+
+            int tempInd = 0;
+            foreach (ActionFunc func in action.ActionFuncs)
+            {
+                thing.Add(new FuncBindItem(action, func, tempInd++));
+            }
+
+            currentItem = thing.FirstOrDefault();
+            if (currentItem != null)
+            {
+                currentBindItemIndex = 0;
+                currentItem.ItemActive = true;
+            }
         }
     }
 
