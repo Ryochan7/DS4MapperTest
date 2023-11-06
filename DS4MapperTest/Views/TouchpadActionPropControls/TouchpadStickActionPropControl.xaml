@@ -219,6 +219,22 @@
 
                 </StackPanel>
 
+                <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                    <Label Content="Force Center" />
+                    <CheckBox IsChecked="{Binding ForceCenter}" Content="Enable" VerticalAlignment="Center" Margin="8,0,0,0">
+                        <CheckBox.Style>
+                            <Style TargetType="CheckBox" BasedOn="{StaticResource CheckBoxBaseStyle}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding HighlightForceCenterChanged}" Value="False">
+                                        <Setter Property="Opacity" Value="0.7" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </CheckBox.Style>
+                    </CheckBox>
+
+                </StackPanel>
+
             </StackPanel>
 
         </ScrollViewer>

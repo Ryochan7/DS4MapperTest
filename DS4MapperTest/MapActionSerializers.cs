@@ -1096,7 +1096,7 @@ namespace DS4MapperTest
 
             private List<ActionFuncSerializer> actionFuncSerializers =
                 new List<ActionFuncSerializer>();
-            [JsonProperty("Functions", Required = Required.Always)]
+            [JsonProperty("Functions")]
             public List<ActionFuncSerializer> ActionFuncSerializers
             {
                 get => actionFuncSerializers;
@@ -1107,6 +1107,8 @@ namespace DS4MapperTest
                 }
             }
             public event EventHandler ActionFuncSerializersChanged;
+            // TODO: Decide whether Functions property should be always required or not.
+            // Conflicting statements here
             public bool ShouldSerializeActionFuncSerializers()
             {
                 return actionFuncSerializers != null &&
@@ -2721,6 +2723,21 @@ namespace DS4MapperTest
                 return touchStickAction.ChangedProperties.Contains(TouchpadStickAction.PropertyKeyStrings.SQUARE_STICK_ROUNDNESS);
             }
 
+            public bool ForcedCenter
+            {
+                get => touchStickAction.ForcedCenter;
+                set
+                {
+                    touchStickAction.ForcedCenter = true;
+                    ForcedCenterChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler ForcedCenterChanged;
+            public bool ShouldSerializeForcedCenter()
+            {
+                return touchStickAction.ChangedProperties.Contains(TouchpadStickAction.PropertyKeyStrings.FORCED_CENTER);
+            }
+
             public TouchStickActionSettings(TouchpadStickAction action)
             {
                 this.touchStickAction = action;
@@ -2756,6 +2773,12 @@ namespace DS4MapperTest
             settings.SquareStickEnabledChanged += Settings_SquareStickEnabledChanged;
             settings.SquareStickRoundnessChanged += Settings_SquareStickRoundnessChanged;
             settings.DeadZoneTypeChanged += Settings_DeadZoneTypeChanged;
+            settings.ForcedCenterChanged += Settings_ForcedCenterChanged;
+        }
+
+        private void Settings_ForcedCenterChanged(object sender, EventArgs e)
+        {
+            touchStickAction.ChangedProperties.Add(TouchpadStickAction.PropertyKeyStrings.FORCED_CENTER);
         }
 
         private void Settings_DeadZoneTypeChanged(object sender, EventArgs e)
@@ -5095,6 +5118,7 @@ namespace DS4MapperTest
                 return stickCircAct.ChangedProperties.Contains(StickCircular.PropertyKeyStrings.SENSITIVITY);
             }
 
+
             public StickCircularSettings(StickCircular action)
             {
                 stickCircAct = action;
@@ -6116,7 +6140,7 @@ namespace DS4MapperTest
 
             public bool ShouldSerializeJitterCompensation()
             {
-                return gyroMouseStickAction.ChangedProperties.Contains(GyroMouseJoystick.PropertyKeyStrings.JITTER_COMPENSATION);
+                return gyroMouseStickAction.ChangedProperties.Add(GyroMouseJoystick.PropertyKeyStrings.JITTER_COMPENSATION);
             }
 
             public GyroMouseJoystickOuputAxes OutputAxes

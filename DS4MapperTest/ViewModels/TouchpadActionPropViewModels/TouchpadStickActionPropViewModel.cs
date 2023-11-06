@@ -285,6 +285,20 @@ namespace DS4MapperTest.ViewModels.TouchpadActionPropViewModels
         }
         public event EventHandler SquareStickRoundnessChanged;
 
+        public bool ForceCenter
+        {
+            get => action.ForcedCenter;
+            set
+            {
+                if (action.ForcedCenter == value) return;
+
+                action.ForcedCenter = value;
+                ForceCenterChanged?.Invoke(this, EventArgs.Empty);
+                ActionPropertyChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        public event EventHandler ForceCenterChanged;
+
 
         public event EventHandler ActionPropertyChanged;
 
@@ -382,6 +396,13 @@ namespace DS4MapperTest.ViewModels.TouchpadActionPropViewModels
         }
         public event EventHandler HighlightSquareStickRoundnessChanged;
 
+        public bool HighlightForceCenter
+        {
+            get => action.ParentAction == null ||
+                action.ChangedProperties.Contains(TouchpadStickAction.PropertyKeyStrings.FORCED_CENTER);
+        }
+        public event EventHandler HighlightForceCenterChanged;
+
         public TouchpadStickActionPropViewModel(Mapper mapper,
             TouchpadMapAction action)
         {
@@ -435,6 +456,18 @@ namespace DS4MapperTest.ViewModels.TouchpadActionPropViewModels
             OutputCurveChanged += TouchpadStickActionPropViewModel_OutputCurveChanged;
             SquareStickEnabledChanged += TouchpadStickActionPropViewModel_SquareStickEnabledChanged;
             SquareStickRoundnessChanged += TouchpadStickActionPropViewModel_SquareStickRoundnessChanged;
+            ForceCenterChanged += TouchpadStickActionPropViewModel_ForceCenterChanged;
+        }
+
+        private void TouchpadStickActionPropViewModel_ForceCenterChanged(object sender, EventArgs e)
+        {
+            if (!this.action.ChangedProperties.Contains(TouchpadStickAction.PropertyKeyStrings.FORCED_CENTER))
+            {
+                this.action.ChangedProperties.Add(TouchpadStickAction.PropertyKeyStrings.FORCED_CENTER);
+            }
+
+            action.RaiseNotifyPropertyChange(mapper, TouchpadStickAction.PropertyKeyStrings.FORCED_CENTER);
+            HighlightForceCenterChanged?.Invoke(this, EventArgs.Empty);
         }
 
         private void TouchpadStickActionPropViewModel_SquareStickRoundnessChanged(object sender, EventArgs e)
