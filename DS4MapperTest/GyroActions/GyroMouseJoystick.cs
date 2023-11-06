@@ -137,6 +137,7 @@ namespace DS4MapperTest.GyroActions
                 antiDeadzoneY = 0.45,
                 verticalScale = 1.0,
                 outputAxes = GyroMouseJoystickOuputAxes.All,
+                outputStick = StickActionCodes.RS,
                 maxOutput = 1.0,
                 andCond = true,
                 gyroTriggerButtons = new JoypadActionCodes[1]
@@ -182,9 +183,6 @@ namespace DS4MapperTest.GyroActions
             //const int maxZone = 600;
             //const double antidead = 0.54;
             //const double antidead = 0.45;
-
-            double previousXNorm = xNorm;
-            double previousYNorm = yNorm;
 
             int deadzone = mStickParams.deadZone;
             int maxZone = mStickParams.maxZone;
@@ -233,6 +231,7 @@ namespace DS4MapperTest.GyroActions
 
                 prevXNorm = xNorm; prevYNorm = yNorm;
                 xNorm = yNorm = 0.0;
+                //mapper.IntermediateStateRef.Dirty = true;
 
                 mStickParams.smoothingFilterSettings.filterX.Filter(0.0, currentRate);
                 mStickParams.smoothingFilterSettings.filterY.Filter(0.0, currentRate);
@@ -359,11 +358,6 @@ namespace DS4MapperTest.GyroActions
                 active = true;
                 activeEvent = true;
             }
-            //else if (previousXNorm != xNorm || previousYNorm != yNorm)
-            //{
-            //    active = true;
-            //    activeEvent = true;
-            //}
             else if (prevXNorm != 0.0 || prevYNorm != 0.0)
             {
                 active = true;
