@@ -283,6 +283,7 @@ namespace DS4MapperTest
                 }
                 catch (JsonSerializationException)
                 {
+                    UseBlankProfile();
                     return;
                 }
 
@@ -2190,6 +2191,7 @@ namespace DS4MapperTest
                 catch (JsonException)
                 {
                     // Place some log message here eventually
+                    // Blank profile will be loaded before exception is rethrown
                 }
             }
             else
