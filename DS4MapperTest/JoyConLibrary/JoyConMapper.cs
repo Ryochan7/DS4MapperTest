@@ -2,10 +2,9 @@
 using DS4MapperTest.DPadActions;
 using DS4MapperTest.GyroActions;
 using DS4MapperTest.MapperUtil;
+using DS4MapperTest.ScpVBus;
 using DS4MapperTest.StickActions;
 using DS4MapperTest.SwitchProLibrary;
-using Nefarius.ViGEm.Client;
-using Nefarius.ViGEm.Client.Targets;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -13,6 +12,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using static DS4MapperTest.ScpVBus.Xbox360ScpOutDevice;
 
 namespace DS4MapperTest.JoyConLibrary
 {
@@ -67,6 +67,7 @@ namespace DS4MapperTest.JoyConLibrary
             this.device = device;
             this.reader = reader;
             this.appGlobal = appGlobal;
+            this.baseDevice = device;
 
             // Only sync gamepad events when PrimaryDevice poll is read
             gamepadSync = false;
@@ -212,9 +213,9 @@ namespace DS4MapperTest.JoyConLibrary
             };
         }
 
-        public override void Start(ViGEmClient vigemTestClient, FakerInputHandler fakerInputHandler)
+        public override void Start(X360BusDevice busDevice, FakerInputHandler fakerInputHandler)
         {
-            base.Start(vigemTestClient, fakerInputHandler);
+            base.Start(busDevice, fakerInputHandler);
 
             reader.Report += Reader_Report;
             reader.LeftStickCalibUpdated += Reader_LeftStickCalibUpdated;
@@ -602,10 +603,10 @@ namespace DS4MapperTest.JoyConLibrary
             {
                 if (device != null)
                 {
-                    outputForceFeedbackDel = (sender, e) =>
+                    Xbox360FeedbackReceivedEventHandler tempDel = (Xbox360ScpOutDevice sender, byte large, byte small, int idx) =>
                     {
-                        device.currentLeftAmpRatio = e.LargeMotor / 255.0;
-                        device.currentRightAmpRatio = e.SmallMotor / 255.0;
+                        device.currentLeftAmpRatio = large / 255.0;
+                        device.currentRightAmpRatio = small / 255.0;
                         using (WriteLocker locker = new WriteLocker(device.rumbleDataLock))
                         {
                             device.rumbleDirty = true;
@@ -614,36 +615,39 @@ namespace DS4MapperTest.JoyConLibrary
                         //Trace.WriteLine($"TEST {e.LargeMotor} {e.SmallMotor}");
                         reader.WriteRumbleReport();
                     };
+                    outputControllerSCP.forceFeedbacksDict.Add(device.Index, tempDel);
                 }
                 
                 if (secondJoyDevice != null)
                 {
-                    outputForceFeedbackSecondDel = (sender, e) =>
+                    Xbox360FeedbackReceivedEventHandler tempDel = (Xbox360ScpOutDevice sender, byte large, byte small, int idx) =>
                     {
-                        secondJoyDevice.currentLeftAmpRatio = e.LargeMotor / 255.0;
-                        secondJoyDevice.currentRightAmpRatio = e.SmallMotor / 255.0;
+                        secondJoyDevice.currentLeftAmpRatio = large / 255.0;
+                        secondJoyDevice.currentRightAmpRatio = small / 255.0;
                         using (WriteLocker locker = new WriteLocker(secondJoyDevice.rumbleDataLock))
                         {
                             secondJoyDevice.rumbleDirty = true;
                         }
                         secondJoyReader.WriteRumbleReport();
                     };
+                    outputControllerSCP.forceFeedbacksDict.Add(secondJoyDevice.Index, tempDel);
                 }
             }
         }
 
         private void EstablishSecondaryForceFeedback()
         {
-            outputForceFeedbackSecondDel = (sender, e) =>
+            Xbox360FeedbackReceivedEventHandler tempDel = (Xbox360ScpOutDevice sender, byte large, byte small, int idx) =>
             {
-                secondJoyDevice.currentLeftAmpRatio = e.LargeMotor / 255.0;
-                secondJoyDevice.currentRightAmpRatio = e.SmallMotor / 255.0;
+                secondJoyDevice.currentLeftAmpRatio = large / 255.0;
+                secondJoyDevice.currentRightAmpRatio = small / 255.0;
                 using (WriteLocker locker = new WriteLocker(secondJoyDevice.rumbleDataLock))
                 {
                     secondJoyDevice.rumbleDirty = true;
                 }
                 secondJoyReader.WriteRumbleReport();
             };
+            outputControllerSCP.forceFeedbacksDict.Add(secondJoyDevice.Index, tempDel);
         }
 
         public override bool IsButtonActive(JoypadActionCodes code)
@@ -771,7 +775,7 @@ namespace DS4MapperTest.JoyConLibrary
 
             if (actionProfile.OutputGamepadSettings.ForceFeedbackEnabled &&
                 outputControlType == OutputContType.Xbox360 &&
-                outputForceFeedbackSecondDel == null)
+                !outputControllerSCP.forceFeedbacksDict.ContainsKey(secondJoyDevice.Index))
             {
                 EstablishSecondaryForceFeedback();
                 //outputForceFeedbackSecondDel = (sender, e) =>
@@ -815,7 +819,7 @@ namespace DS4MapperTest.JoyConLibrary
 
                 if (actionProfile.OutputGamepadSettings.ForceFeedbackEnabled &&
                     outputControlType == OutputContType.Xbox360 &&
-                    outputForceFeedbackSecondDel != null)
+                    outputControllerSCP.forceFeedbacksDict.ContainsKey(secondJoyDevice.Index))
                 {
                     HookSecondaryFeedback();
                 }
@@ -844,10 +848,14 @@ namespace DS4MapperTest.JoyConLibrary
             if (actionProfile.OutputGamepadSettings.ForceFeedbackEnabled &&
                 outputControlType == OutputContType.Xbox360)
             {
-                if (outputForceFeedbackDel != null)
+                if (outputControllerSCP.forceFeedbacksDict.TryGetValue(device.Index, out Xbox360FeedbackReceivedEventHandler tempDel))
                 {
-                    (outputController as IXbox360Controller).FeedbackReceived += outputForceFeedbackDel;
+                    outputControllerSCP.FeedbackReceived += tempDel;
                 }
+                //if (outputForceFeedbackDel != null)
+                //{
+                //    (outputController as IXbox360Controller).FeedbackReceived += outputForceFeedbackDel;
+                //}
 
                 HookSecondaryFeedback();                
             }
@@ -855,25 +863,19 @@ namespace DS4MapperTest.JoyConLibrary
 
         public override void RemoveFeedback()
         {
-            if (outputForceFeedbackDel != null)
-            {
-                (outputController as IXbox360Controller).FeedbackReceived -= outputForceFeedbackDel;
-                outputForceFeedbackDel = null;
-            }
-
-            if (outputForceFeedbackSecondDel != null)
-            {
-                (outputController as IXbox360Controller).FeedbackReceived -= outputForceFeedbackSecondDel;
-                outputForceFeedbackSecondDel = null;
-            }
+            outputControllerSCP.RemoveFeedbacks();
         }
 
         private void HookSecondaryFeedback()
         {
-            if (outputForceFeedbackSecondDel != null)
+            if (outputControllerSCP.forceFeedbacksDict.TryGetValue(secondJoyDevice.Index, out Xbox360FeedbackReceivedEventHandler tempDel))
             {
-                (outputController as IXbox360Controller).FeedbackReceived += outputForceFeedbackSecondDel;
+                outputControllerSCP.FeedbackReceived += tempDel;
             }
+            //if (outputForceFeedbackSecondDel != null)
+            //{
+            //    (outputController as IXbox360Controller).FeedbackReceived += outputForceFeedbackSecondDel;
+            //}
         }
 
         private void CopyStateData(JoyConDevice device, ref JoyConState srcState)

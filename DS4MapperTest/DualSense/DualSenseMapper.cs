@@ -8,10 +8,11 @@ using DS4MapperTest.DPadActions;
 using DS4MapperTest.DS4Library;
 using DS4MapperTest.GyroActions;
 using DS4MapperTest.MapperUtil;
+using DS4MapperTest.ScpVBus;
 using DS4MapperTest.StickActions;
 using DS4MapperTest.TouchpadActions;
 using DS4MapperTest.TriggerActions;
-using Nefarius.ViGEm.Client;
+using static DS4MapperTest.ScpVBus.Xbox360ScpOutDevice;
 
 namespace DS4MapperTest.DualSense
 {
@@ -44,6 +45,7 @@ namespace DS4MapperTest.DualSense
             this.appGlobal = appGlobal;
             this.device = device;
             this.reader = reader;
+            this.baseDevice = device;
 
             deviceActionDefaults = new DS4ActionDefaultsCreator();
 
@@ -213,12 +215,12 @@ namespace DS4MapperTest.DualSense
             }
         }
 
-        public override void Start(ViGEmClient vigemTestClient, FakerInputHandler fakerInputHandler)
+        public override void Start(X360BusDevice busDevice, FakerInputHandler fakerInputHandler)
         {
             PostProfileChange += DualSenseMapper_PostProfileChange;
             lightProcess.Reset();
 
-            base.Start(vigemTestClient, fakerInputHandler);
+            base.Start(busDevice, fakerInputHandler);
             // Update current lightbar status before sending first output packet
             lightProcess.UpdateLightbarDS(device, actionProfile);
 
@@ -248,7 +250,7 @@ namespace DS4MapperTest.DualSense
 
             unchecked
             {
-                outputController?.ResetReport();
+                //outputController?.ResetReport();
 
                 intermediateState = new IntermediateState();
                 currentLatency = currentMapperState.timeElapsed;
@@ -756,13 +758,14 @@ namespace DS4MapperTest.DualSense
         {
             if (outputControlType == OutputContType.Xbox360)
             {
-                outputForceFeedbackDel = (sender, e) =>
+                Xbox360FeedbackReceivedEventHandler tempDel = (Xbox360ScpOutDevice sender, byte large, byte small, int idx) =>
                 {
-                    device.FeedbackStateRef.LeftHeavy = e.LargeMotor;
-                    device.FeedbackStateRef.RightLight = e.SmallMotor;
+                    device.FeedbackStateRef.LeftHeavy = large;
+                    device.FeedbackStateRef.RightLight = small;
                     device.HapticsDirty = true;
                     //reader.WriteRumbleReport();
                 };
+                outputControllerSCP.forceFeedbacksDict.Add(device.Index, tempDel);
             }
         }
     }

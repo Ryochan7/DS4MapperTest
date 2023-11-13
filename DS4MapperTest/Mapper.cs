@@ -9,7 +9,6 @@ using System.Windows.Input;
 using System.Windows;
 using DS4MapperTest.DPadActions;
 using DS4MapperTest.MapperUtil;
-using Nefarius.ViGEm.Client;
 using DS4MapperTest.ButtonActions;
 using Sensorit.Base;
 using DS4MapperTest.TouchpadActions;
@@ -19,12 +18,11 @@ using DS4MapperTest.GyroActions;
 using DS4MapperTest.TriggerActions;
 using Newtonsoft.Json;
 using System.IO;
-using Nefarius.ViGEm.Client.Targets;
 using System.Reflection.PortableExecutable;
-using Nefarius.ViGEm.Client.Targets.Xbox360;
-using Nefarius.ViGEm.Client.Targets.DualShock4;
 using System.Runtime.CompilerServices;
 using DS4MapperTest.ViewModels.GyroActionPropViewModels;
+using DS4MapperTest.ScpVBus;
+using static DS4MapperTest.ScpVBus.Xbox360ScpOutDevice;
 
 namespace DS4MapperTest
 {
@@ -176,6 +174,8 @@ namespace DS4MapperTest
             get;
         }
 
+        protected InputDeviceBase baseDevice;
+
         protected bool quit = false;
         public bool Quit { get => quit; set => quit = value; }
 
@@ -213,12 +213,16 @@ namespace DS4MapperTest
 
         protected FakerInputHandler fakerInputHandler;
 
-        protected ViGEmClient vigemTestClient = null;
+        //protected ViGEmClient vigemTestClient = null;
+        protected X360BusDevice x360BusDevice = null;
+        protected Xbox360ScpOutDevice outputControllerSCP = null;
         //protected IXbox360Controller outputX360 = null;
-        protected IVirtualGamepad outputController = null;
+        //protected IVirtualGamepad outputController = null;
         protected OutputContType outputControlType = OutputContType.None;
-        protected Xbox360FeedbackReceivedEventHandler outputForceFeedbackDel;
-        protected Xbox360FeedbackReceivedEventHandler outputForceFeedbackSecondDel;
+        //protected Xbox360FeedbackReceivedEventHandler outputForceFeedbackDel;
+        //protected Xbox360FeedbackReceivedEventHandler outputForceFeedbackSecondDel;
+        //protected Xbox360FeedbackReceivedEventHandler outputForceFeedbackDel;
+        //protected Xbox360FeedbackReceivedEventHandler outputForceFeedbackSecondDel;
 
         // TODO: Move elsewhere
         public enum OutputContType : ushort
@@ -1054,10 +1058,14 @@ namespace DS4MapperTest
                     };
 
                 // Reset virtual controller if currently connected
-                if (outputController != null)
+                //if (outputController != null)
+                //{
+                //    outputController.ResetReport();
+                //    outputController.SubmitReport();
+                //}
+                if (outputControllerSCP != null)
                 {
-                    outputController.ResetReport();
-                    outputController.SubmitReport();
+                    outputControllerSCP.ResetState();
                 }
 
                 OutputContType oldContType = outputControlType;
@@ -1081,36 +1089,27 @@ namespace DS4MapperTest
 
                 // Check if requested output controller is different than the currently
                 // connected type
-                if (actionProfile.OutputGamepadSettings.Enabled && outputController != null &&
+                if (actionProfile.OutputGamepadSettings.Enabled && outputControllerSCP != null &&
                     actionProfile.OutputGamepadSettings.OutputGamepad != outputControlType)
                 {
-                    outputController.Disconnect();
-                    outputController = null;
+                    outputControllerSCP.Disconnect();
+                    outputControllerSCP = null;
                     outputControlType = OutputContType.None;
                     Thread.Sleep(100); // More of a pre-caution
                 }
 
                 // Create virtual controller if desired
-                if (actionProfile.OutputGamepadSettings.Enabled && outputController == null &&
+                if (actionProfile.OutputGamepadSettings.Enabled && outputControllerSCP == null &&
                     actionProfile.OutputGamepadSettings.OutputGamepad != OutputContType.None)
                 {
                     Thread contThr = new Thread(() =>
                     {
                         if (actionProfile.OutputGamepadSettings.OutputGamepad == OutputContType.Xbox360)
                         {
-                            IXbox360Controller tempOutputX360 = vigemTestClient.CreateXbox360Controller();
-                            tempOutputX360.AutoSubmitReport = false;
+                            Xbox360ScpOutDevice tempOutputX360 = new Xbox360ScpOutDevice(x360BusDevice, baseDevice.Index);
                             tempOutputX360.Connect();
-                            outputController = tempOutputX360;
+                            outputControllerSCP = tempOutputX360;
                             outputControlType = OutputContType.Xbox360;
-                        }
-                        else if (actionProfile.OutputGamepadSettings.OutputGamepad == OutputContType.DualShock4)
-                        {
-                            IDualShock4Controller tempOutputDS4 = vigemTestClient.CreateDualShock4Controller();
-                            tempOutputDS4.AutoSubmitReport = false;
-                            tempOutputDS4.Connect();
-                            outputController = tempOutputDS4;
-                            outputControlType = OutputContType.DualShock4;
                         }
                     });
                     contThr.Priority = ThreadPriority.Normal;
@@ -1119,21 +1118,21 @@ namespace DS4MapperTest
                     contThr.Join(); // Wait for bus object start
                     contThr = null;
                 }
-                else if (!actionProfile.OutputGamepadSettings.enabled && outputController != null)
+                else if (!actionProfile.OutputGamepadSettings.enabled && outputControllerSCP != null)
                 {
                     RemoveFeedback();
-                    outputController.Disconnect();
-                    outputController = null;
+                    outputControllerSCP.Disconnect();
+                    outputControllerSCP = null;
                     outputControlType = OutputContType.None;
                 }
 
                 // Check for current output controller and check for desired vibration
                 // status
-                if (outputController != null)
+                if (outputControllerSCP != null)
                 {
                     if (actionProfile.OutputGamepadSettings.ForceFeedbackEnabled &&
                         outputControlType == OutputContType.Xbox360 &&
-                        outputForceFeedbackDel == null)
+                        outputControllerSCP.forceFeedbacksDict.Count == 0)
                     {
                         Thread.Sleep(100);
                         EstablishForceFeedback();
@@ -1141,7 +1140,7 @@ namespace DS4MapperTest
                     }
                     else if (!actionProfile.OutputGamepadSettings.ForceFeedbackEnabled &&
                         outputControlType == OutputContType.Xbox360 &&
-                        outputForceFeedbackDel != null)
+                        outputControllerSCP.forceFeedbacksDict.Count != 0)
                     {
                         RemoveFeedback();
                     }
@@ -1196,19 +1195,24 @@ namespace DS4MapperTest
 
         public virtual void HookFeedback()
         {
-            if (outputForceFeedbackDel != null)
+            if (outputControllerSCP.forceFeedbacksDict.TryGetValue(baseDevice.Index, out Xbox360FeedbackReceivedEventHandler tempDel))
             {
-                (outputController as IXbox360Controller).FeedbackReceived += outputForceFeedbackDel;
+                outputControllerSCP.FeedbackReceived += tempDel;
             }
+            //if (outputForceFeedbackDel != null)
+            //{
+            //    (outputController as IXbox360Controller).FeedbackReceived += outputForceFeedbackDel;
+            //}
         }
 
         public virtual void RemoveFeedback()
         {
-            if (outputForceFeedbackDel != null)
-            {
-                (outputController as IXbox360Controller).FeedbackReceived -= outputForceFeedbackDel;
-                outputForceFeedbackDel = null;
-            }
+            outputControllerSCP.RemoveFeedbacks();
+            //if (outputForceFeedbackDel != null)
+            //{
+            //    (outputController as IXbox360Controller).FeedbackReceived -= outputForceFeedbackDel;
+            //    outputForceFeedbackDel = null;
+            //}
         }
 
         public void SyncKeyboard()
@@ -2176,10 +2180,11 @@ namespace DS4MapperTest
             }
         }
 
-        public virtual void Start(ViGEmClient vigemTestClient,
+        public virtual void Start(X360BusDevice busDevice,
             FakerInputHandler fakerInputHandler)
         {
-            this.vigemTestClient = vigemTestClient;
+            //this.vigemTestClient = vigemTestClient;
+            this.x360BusDevice = busDevice;
             this.fakerInputHandler = fakerInputHandler;
 
             if (!string.IsNullOrEmpty(profileFile))
@@ -2202,88 +2207,88 @@ namespace DS4MapperTest
 
         protected void PopulateXbox()
         {
-            IXbox360Controller outputX360 = outputController as IXbox360Controller;
+            //IXbox360Controller outputX360 = outputController as IXbox360Controller;
 
-            unchecked
-            {
-                ushort tempButtons = 0;
-                if (intermediateState.BtnSouth) tempButtons |= Xbox360Button.A.Value;
-                if (intermediateState.BtnEast) tempButtons |= Xbox360Button.B.Value;
-                if (intermediateState.BtnWest) tempButtons |= Xbox360Button.X.Value;
-                if (intermediateState.BtnNorth) tempButtons |= Xbox360Button.Y.Value;
-                if (intermediateState.BtnStart) tempButtons |= Xbox360Button.Start.Value;
-                if (intermediateState.BtnSelect) tempButtons |= Xbox360Button.Back.Value;
+            //unchecked
+            //{
+            //    ushort tempButtons = 0;
+            //    if (intermediateState.BtnSouth) tempButtons |= Xbox360Button.A.Value;
+            //    if (intermediateState.BtnEast) tempButtons |= Xbox360Button.B.Value;
+            //    if (intermediateState.BtnWest) tempButtons |= Xbox360Button.X.Value;
+            //    if (intermediateState.BtnNorth) tempButtons |= Xbox360Button.Y.Value;
+            //    if (intermediateState.BtnStart) tempButtons |= Xbox360Button.Start.Value;
+            //    if (intermediateState.BtnSelect) tempButtons |= Xbox360Button.Back.Value;
 
-                if (intermediateState.BtnLShoulder) tempButtons |= Xbox360Button.LeftShoulder.Value;
-                if (intermediateState.BtnRShoulder) tempButtons |= Xbox360Button.RightShoulder.Value;
-                if (intermediateState.BtnMode) tempButtons |= Xbox360Button.Guide.Value;
+            //    if (intermediateState.BtnLShoulder) tempButtons |= Xbox360Button.LeftShoulder.Value;
+            //    if (intermediateState.BtnRShoulder) tempButtons |= Xbox360Button.RightShoulder.Value;
+            //    if (intermediateState.BtnMode) tempButtons |= Xbox360Button.Guide.Value;
 
-                if (intermediateState.BtnThumbL) tempButtons |= Xbox360Button.LeftThumb.Value;
-                if (intermediateState.BtnThumbR) tempButtons |= Xbox360Button.RightThumb.Value;
+            //    if (intermediateState.BtnThumbL) tempButtons |= Xbox360Button.LeftThumb.Value;
+            //    if (intermediateState.BtnThumbR) tempButtons |= Xbox360Button.RightThumb.Value;
 
-                if (intermediateState.DpadUp) tempButtons |= Xbox360Button.Up.Value;
-                if (intermediateState.DpadDown) tempButtons |= Xbox360Button.Down.Value;
-                if (intermediateState.DpadLeft) tempButtons |= Xbox360Button.Left.Value;
-                if (intermediateState.DpadRight) tempButtons |= Xbox360Button.Right.Value;
+            //    if (intermediateState.DpadUp) tempButtons |= Xbox360Button.Up.Value;
+            //    if (intermediateState.DpadDown) tempButtons |= Xbox360Button.Down.Value;
+            //    if (intermediateState.DpadLeft) tempButtons |= Xbox360Button.Left.Value;
+            //    if (intermediateState.DpadRight) tempButtons |= Xbox360Button.Right.Value;
 
-                outputX360.SetButtonsFull(tempButtons);
-            }
+            //    outputX360.SetButtonsFull(tempButtons);
+            //}
 
-            outputX360.LeftThumbX = (short)(intermediateState.LX * (intermediateState.LX >= 0 ? X360_STICK_MAX : -X360_STICK_MIN));
-            outputX360.LeftThumbY = (short)(intermediateState.LY * (intermediateState.LY >= 0 ? X360_STICK_MAX : -X360_STICK_MIN));
+            //outputX360.LeftThumbX = (short)(intermediateState.LX * (intermediateState.LX >= 0 ? X360_STICK_MAX : -X360_STICK_MIN));
+            //outputX360.LeftThumbY = (short)(intermediateState.LY * (intermediateState.LY >= 0 ? X360_STICK_MAX : -X360_STICK_MIN));
 
-            outputX360.RightThumbX = (short)(intermediateState.RX * (intermediateState.RX >= 0 ? X360_STICK_MAX : -X360_STICK_MIN));
-            outputX360.RightThumbY = (short)(intermediateState.RY * (intermediateState.RY >= 0 ? X360_STICK_MAX : -X360_STICK_MIN));
+            //outputX360.RightThumbX = (short)(intermediateState.RX * (intermediateState.RX >= 0 ? X360_STICK_MAX : -X360_STICK_MIN));
+            //outputX360.RightThumbY = (short)(intermediateState.RY * (intermediateState.RY >= 0 ? X360_STICK_MAX : -X360_STICK_MIN));
 
-            outputX360.LeftTrigger = (byte)(intermediateState.LTrigger * 255);
-            outputX360.RightTrigger = (byte)(intermediateState.RTrigger * 255);
+            //outputX360.LeftTrigger = (byte)(intermediateState.LTrigger * 255);
+            //outputX360.RightTrigger = (byte)(intermediateState.RTrigger * 255);
         }
 
         protected void PopulateDualShock4()
         {
-            IDualShock4Controller tempDS4 = outputController as IDualShock4Controller;
+            //IDualShock4Controller tempDS4 = outputController as IDualShock4Controller;
 
-            unchecked
-            {
-                ushort tempButtons = 0;
-                DualShock4DPadDirection tempDPad = DualShock4DPadDirection.None;
-                ushort tempSpecial = 0;
-                if (intermediateState.BtnSouth) tempButtons |= DualShock4Button.Cross.Value;
-                if (intermediateState.BtnEast) tempButtons |= DualShock4Button.Circle.Value;
-                if (intermediateState.BtnWest) tempButtons |= DualShock4Button.Square.Value;
-                if (intermediateState.BtnNorth) tempButtons |= DualShock4Button.Triangle.Value;
-                if (intermediateState.BtnStart) tempButtons |= DualShock4Button.Options.Value;
-                if (intermediateState.BtnSelect) tempButtons |= DualShock4Button.Share.Value;
+            //unchecked
+            //{
+            //    ushort tempButtons = 0;
+            //    DualShock4DPadDirection tempDPad = DualShock4DPadDirection.None;
+            //    ushort tempSpecial = 0;
+            //    if (intermediateState.BtnSouth) tempButtons |= DualShock4Button.Cross.Value;
+            //    if (intermediateState.BtnEast) tempButtons |= DualShock4Button.Circle.Value;
+            //    if (intermediateState.BtnWest) tempButtons |= DualShock4Button.Square.Value;
+            //    if (intermediateState.BtnNorth) tempButtons |= DualShock4Button.Triangle.Value;
+            //    if (intermediateState.BtnStart) tempButtons |= DualShock4Button.Options.Value;
+            //    if (intermediateState.BtnSelect) tempButtons |= DualShock4Button.Share.Value;
 
-                if (intermediateState.BtnLShoulder) tempButtons |= DualShock4Button.ShoulderLeft.Value;
-                if (intermediateState.BtnRShoulder) tempButtons |= DualShock4Button.ShoulderRight.Value;
-                if (intermediateState.BtnMode) tempSpecial |= DualShock4SpecialButton.Ps.Value;
+            //    if (intermediateState.BtnLShoulder) tempButtons |= DualShock4Button.ShoulderLeft.Value;
+            //    if (intermediateState.BtnRShoulder) tempButtons |= DualShock4Button.ShoulderRight.Value;
+            //    if (intermediateState.BtnMode) tempSpecial |= DualShock4SpecialButton.Ps.Value;
 
-                if (intermediateState.BtnThumbL) tempButtons |= DualShock4Button.ThumbLeft.Value;
-                if (intermediateState.BtnThumbR) tempButtons |= DualShock4Button.ThumbRight.Value;
+            //    if (intermediateState.BtnThumbL) tempButtons |= DualShock4Button.ThumbLeft.Value;
+            //    if (intermediateState.BtnThumbR) tempButtons |= DualShock4Button.ThumbRight.Value;
 
-                if (intermediateState.DpadUp && intermediateState.DpadRight) tempDPad = DualShock4DPadDirection.Northeast;
-                else if (intermediateState.DpadUp && intermediateState.DpadLeft) tempDPad = DualShock4DPadDirection.Northwest;
-                else if (intermediateState.DpadUp) tempDPad = DualShock4DPadDirection.North;
-                else if (intermediateState.DpadRight && intermediateState.DpadDown) tempDPad = DualShock4DPadDirection.Southeast;
-                else if (intermediateState.DpadRight) tempDPad = DualShock4DPadDirection.East;
-                else if (intermediateState.DpadDown && intermediateState.DpadLeft) tempDPad = DualShock4DPadDirection.Southwest;
-                else if (intermediateState.DpadDown) tempDPad = DualShock4DPadDirection.South;
-                else if (intermediateState.DpadLeft) tempDPad = DualShock4DPadDirection.West;
+            //    if (intermediateState.DpadUp && intermediateState.DpadRight) tempDPad = DualShock4DPadDirection.Northeast;
+            //    else if (intermediateState.DpadUp && intermediateState.DpadLeft) tempDPad = DualShock4DPadDirection.Northwest;
+            //    else if (intermediateState.DpadUp) tempDPad = DualShock4DPadDirection.North;
+            //    else if (intermediateState.DpadRight && intermediateState.DpadDown) tempDPad = DualShock4DPadDirection.Southeast;
+            //    else if (intermediateState.DpadRight) tempDPad = DualShock4DPadDirection.East;
+            //    else if (intermediateState.DpadDown && intermediateState.DpadLeft) tempDPad = DualShock4DPadDirection.Southwest;
+            //    else if (intermediateState.DpadDown) tempDPad = DualShock4DPadDirection.South;
+            //    else if (intermediateState.DpadLeft) tempDPad = DualShock4DPadDirection.West;
 
-                tempDS4.SetButtonsFull(tempButtons);
-                tempDS4.SetSpecialButtonsFull((byte)tempSpecial);
-                tempDS4.SetDPadDirection(tempDPad);
-            }
+            //    tempDS4.SetButtonsFull(tempButtons);
+            //    tempDS4.SetSpecialButtonsFull((byte)tempSpecial);
+            //    tempDS4.SetDPadDirection(tempDPad);
+            //}
 
-            tempDS4.LeftThumbX = (byte)((intermediateState.LX >= 0 ? (DS4_STICK_MAX - DS4_STICK_MID) : -(DS4_STICK_MIN - DS4_STICK_MID)) * intermediateState.LX + DS4_STICK_MID);
-            tempDS4.LeftThumbY = (byte)((intermediateState.LY >= 0 ? -(DS4_STICK_MIN - DS4_STICK_MID) : (DS4_STICK_MAX - DS4_STICK_MID)) * -intermediateState.LY + DS4_STICK_MID);
+            //tempDS4.LeftThumbX = (byte)((intermediateState.LX >= 0 ? (DS4_STICK_MAX - DS4_STICK_MID) : -(DS4_STICK_MIN - DS4_STICK_MID)) * intermediateState.LX + DS4_STICK_MID);
+            //tempDS4.LeftThumbY = (byte)((intermediateState.LY >= 0 ? -(DS4_STICK_MIN - DS4_STICK_MID) : (DS4_STICK_MAX - DS4_STICK_MID)) * -intermediateState.LY + DS4_STICK_MID);
 
-            tempDS4.RightThumbX = (byte)((intermediateState.RX >= 0 ? (DS4_STICK_MAX - DS4_STICK_MID) : -(DS4_STICK_MIN - DS4_STICK_MID)) * intermediateState.RX + DS4_STICK_MID);
-            tempDS4.RightThumbY = (byte)((intermediateState.RY >= 0 ? -(DS4_STICK_MIN - DS4_STICK_MID) : (DS4_STICK_MAX - DS4_STICK_MID)) * -intermediateState.RY + DS4_STICK_MID);
+            //tempDS4.RightThumbX = (byte)((intermediateState.RX >= 0 ? (DS4_STICK_MAX - DS4_STICK_MID) : -(DS4_STICK_MIN - DS4_STICK_MID)) * intermediateState.RX + DS4_STICK_MID);
+            //tempDS4.RightThumbY = (byte)((intermediateState.RY >= 0 ? -(DS4_STICK_MIN - DS4_STICK_MID) : (DS4_STICK_MAX - DS4_STICK_MID)) * -intermediateState.RY + DS4_STICK_MID);
 
-            tempDS4.LeftTrigger = (byte)(intermediateState.LTrigger * 255);
-            tempDS4.RightTrigger = (byte)(intermediateState.RTrigger * 255);
+            //tempDS4.LeftTrigger = (byte)(intermediateState.LTrigger * 255);
+            //tempDS4.RightTrigger = (byte)(intermediateState.RTrigger * 255);
         }
 
         public void ProcessActionSetLayerChecks()
@@ -2419,17 +2424,13 @@ namespace DS4MapperTest
 
             if (gamepadSync && intermediateState.Dirty)
             {
-                if (outputController != null)
+                if (outputControllerSCP != null)
                 {
                     if (outputControlType == OutputContType.Xbox360)
                     {
-                        PopulateXbox();
-                        outputController?.SubmitReport();
-                    }
-                    else if (outputControlType == OutputContType.DualShock4)
-                    {
-                        PopulateDualShock4();
-                        outputController?.SubmitReport();
+                        //PopulateXbox();
+                        //outputController?.SubmitReport();
+                        outputControllerSCP?.ConvertandSendReport(intermediateState, outputControllerSCP.SlotIdx);
                     }
                 }
 
@@ -2857,13 +2858,21 @@ namespace DS4MapperTest
                 fakerInputHandler.Sync();
             }
 
-            outputController?.Disconnect();
-            if (outputController != null)
+            //outputController?.Disconnect();
+            //if (outputController != null)
+            //{
+            //    RemoveFeedback();
+            //}
+
+            //outputController = null;
+
+            outputControllerSCP?.Disconnect();
+            if (outputControllerSCP != null)
             {
                 RemoveFeedback();
             }
 
-            outputController = null;
+            outputControllerSCP = null;
             outputControlType = OutputContType.None;
         }
     }

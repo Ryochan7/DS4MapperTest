@@ -4,12 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Nefarius.ViGEm.Client;
+//using Nefarius.ViGEm.Client;
 using DS4MapperTest.DS4Library;
 using System.Windows.Threading;
 using System.Runtime.InteropServices;
 using System.Diagnostics;
 using DS4MapperTest.JoyConLibrary;
+using DS4MapperTest.ScpVBus;
 
 namespace DS4MapperTest
 {
@@ -89,7 +90,8 @@ namespace DS4MapperTest
         private DeviceEnumerator testEnumerator;
         //private List<DeviceEnumeratorBase> enumeratorList;
 
-        private ViGEmClient vigemTestClient = null;
+        //private ViGEmClient vigemTestClient = null;
+        private X360BusDevice x360BusDevice = null;
         private ArgumentParser _argParser;
 
         public delegate void HotplugControllerHandler(InputDeviceBase device, int ind);
@@ -159,7 +161,10 @@ namespace DS4MapperTest
             // to GUI thread
             vbusThr = new Thread(() =>
             {
-                vigemTestClient = new ViGEmClient();
+                //vigemTestClient = new ViGEmClient();
+                x360BusDevice = new X360BusDevice();
+                x360BusDevice.Open();
+                x360BusDevice.Start();
             });
 
             vbusThr.Priority = ThreadPriority.AboveNormal;
@@ -233,7 +238,7 @@ namespace DS4MapperTest
                 }
 
                 int tempInd = ind;
-                testMapper.Start(vigemTestClient, fakerInputHandler);
+                testMapper.Start(x360BusDevice, fakerInputHandler);
                 testMapper.ProfileChanged += (object sender, string e) => {
                     appGlobal.activeProfiles[tempInd] = e;
                     appGlobal.SaveControllerDeviceSettings(device, device.DeviceOptions);
@@ -331,8 +336,10 @@ namespace DS4MapperTest
 
             appGlobal.activeProfiles.Clear();
 
-            vigemTestClient?.Dispose();
-            vigemTestClient = null;
+            //vigemTestClient?.Dispose();
+            //vigemTestClient = null;
+            x360BusDevice?.UnplugAll();
+            x360BusDevice = null;
 
             fakerInputHandler.Sync();
             Thread.Sleep(100);
@@ -486,7 +493,7 @@ namespace DS4MapperTest
             }
 
             int tempInd = ind;
-            mapper.Start(vigemTestClient, fakerInputHandler);
+            mapper.Start(x360BusDevice, fakerInputHandler);
             mapper.ProfileChanged += (object sender, string e) => {
                 appGlobal.activeProfiles[tempInd] = e;
                 appGlobal.SaveControllerDeviceSettings(device, device.DeviceOptions);
