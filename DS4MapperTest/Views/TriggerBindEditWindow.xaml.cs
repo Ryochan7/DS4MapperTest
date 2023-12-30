@@ -197,6 +197,9 @@ namespace DS4MapperTest.Views
                 default:
                     break;
             }
+
+            DataContext = null;
+            trigBindEditVM.DisplayControl = null;
         }
     }
 }

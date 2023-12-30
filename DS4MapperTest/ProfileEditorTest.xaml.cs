@@ -383,5 +383,10 @@ namespace DS4MapperTest
                 editorTestVM.ResetMapperEditActionRefs(editorTestVM.DeviceMapper);
             }
         }
+
+        private void Window_Closed(object sender, EventArgs e)
+        {
+            DataContext = null;
+        }
     }
 }

@@ -391,6 +391,10 @@ namespace DS4MapperTest.Views
                 default:
                     break;
             }
+
+            DataContext = null;
+            touchBindEditVM.DisplayControl = null;
+            touchBindEditVM.ActionBaseDisplayControl = null;
         }
     }
 }

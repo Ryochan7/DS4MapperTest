@@ -214,5 +214,11 @@ namespace DS4MapperTest.Views
 
             stickBindEditVM.DisplayControl = tempControl;
         }
+
+        private void Window_Closed(object sender, EventArgs e)
+        {
+            DataContext = null;
+            stickBindEditVM.DisplayControl = null;
+        }
     }
 }

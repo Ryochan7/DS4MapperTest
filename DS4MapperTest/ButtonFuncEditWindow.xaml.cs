@@ -181,6 +181,20 @@ namespace DS4MapperTest
 
         private void Window_Closed(object sender, EventArgs e)
         {
+            DataContext = null;
+            if (btnActionEditVM != null)
+            {
+                btnActionEditVM.DisplayControl = null;
+                btnActionEditVM = null;
+            }
+
+            if (btnNoActVM != null)
+            {
+                btnNoActVM.DisplayControl = null;
+                btnNoActVM = null;
+            }
+
+            innerViewControl.DataContext = null;
         }
     }
 }

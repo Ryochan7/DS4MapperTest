@@ -129,5 +129,11 @@ namespace DS4MapperTest.Views
                 SetupDisplayControl();
             }
         }
+
+        private void Window_Closed(object sender, EventArgs e)
+        {
+            DataContext = null;
+            dpadBindEditVM.DisplayControl = null;
+        }
     }
 }
