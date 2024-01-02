@@ -129,6 +129,9 @@ namespace DS4MapperTest.SteamControllerLibrary
             leftPadDefiniton = new TouchpadDefinition(lpadXAxis, lpadYAxis, TouchpadActionCodes.TouchL,
                 elapsedReference: device.BaseElapsedReference, mouseScale: 0.012 * 1.1, mouseOffset: 0.4,
                 trackballScale: 0.000023);
+            leftPadDefiniton.throttleRelMouse = true;
+            leftPadDefiniton.throttleRelMousePower = 1.428;
+            leftPadDefiniton.throttleRelMouseZone = 10;
 
             TouchpadDefinition.TouchAxisData rpadXAxis = new TouchpadDefinition.TouchAxisData
             {
@@ -155,6 +158,9 @@ namespace DS4MapperTest.SteamControllerLibrary
             rightPadDefinition = new TouchpadDefinition(rpadXAxis, rpadYAxis, TouchpadActionCodes.TouchR,
                 elapsedReference: device.BaseElapsedReference, mouseScale: 0.012 * 1.1, mouseOffset: 0.4,
                 trackballScale: 0.000023);
+            rightPadDefinition.throttleRelMouse = true;
+            rightPadDefinition.throttleRelMousePower = 1.428;
+            rightPadDefinition.throttleRelMouseZone = 10;
 
             TriggerDefinition.TriggerAxisData ltAxis = new TriggerDefinition.TriggerAxisData
             {
