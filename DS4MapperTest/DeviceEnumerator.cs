@@ -101,6 +101,8 @@ namespace DS4MapperTest
             new VidPidMeta(NINTENDO_VENDOR_ID, JOYCON_CHARGING_GRIP_PRODUCT_ID, "JoyCon Charging Grip", InputDeviceType.JoyCon,
                 VidPidMeta.UsedConnectionBus.HID),
             new VidPidMeta(STEAM_CONTROLLER_VENDOR_ID, STEAM_CONTROLLER_PRODUCT_ID, "Steam Controller", InputDeviceType.SteamController,
+                VidPidMeta.UsedConnectionBus.HID),
+            new VidPidMeta(STEAM_CONTROLLER_VENDOR_ID, STEAM_DONGLE_CONTROLLER_PRODUCT_ID, "Steam Controller", InputDeviceType.SteamController,
                 VidPidMeta.UsedConnectionBus.HID)
         };
 
