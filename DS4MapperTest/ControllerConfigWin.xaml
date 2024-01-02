@@ -1,0 +1,31 @@
+﻿<Window x:Class="DS4MapperTest.ControllerConfigWin"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:DS4MapperTest"
+        mc:Ignorable="d"
+        Title="ControllerConfigWin" Height="450" Width="800" Closed="Window_Closed">
+    <Window.Background>
+        <SolidColorBrush Color="{StaticResource RegionColor}"/>
+    </Window.Background>
+    <DockPanel Margin="8">
+        <TabControl SelectedIndex="0">
+            <TabItem x:Name="steamControllerTabItem" Header="SteamController" Visibility="Collapsed">
+                <StackPanel Orientation="Vertical">
+                    <StackPanel Orientation="Horizontal">
+                        <Label>Left Pad Rotation:</Label>
+                        <Slider Minimum="-180" Maximum="180" Value="{Binding ControlOptions.LeftTouchpadRotation, FallbackValue='0'}" Width="300" />
+                        <TextBlock Text="{Binding ControlOptions.LeftTouchpadRotation, FallbackValue='0'}" Width="30" />
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                        <Label>Right Pad Rotation:</Label>
+                        <Slider Minimum="-180" Maximum="180" Value="{Binding ControlOptions.RightTouchpadRotation, FallbackValue='0'}" Width="300" />
+                        <TextBlock Text="{Binding ControlOptions.RightTouchpadRotation, FallbackValue='0'}" Width="30" />
+                    </StackPanel>
+                </StackPanel>
+            </TabItem>
+        </TabControl>
+    </DockPanel>
+</Window>

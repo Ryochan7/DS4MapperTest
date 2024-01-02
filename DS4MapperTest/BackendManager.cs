@@ -120,6 +120,10 @@ namespace DS4MapperTest
             ProfileList joyconDeviceProfileList = new ProfileList(InputDeviceType.JoyCon);
             joyconDeviceProfileList.Refresh();
             deviceProfileListDict.Add(InputDeviceType.JoyCon, joyconDeviceProfileList);
+
+            ProfileList steamControllerDeviceProfileList = new ProfileList(InputDeviceType.SteamController);
+            steamControllerDeviceProfileList.Refresh();
+            deviceProfileListDict.Add(InputDeviceType.SteamController, steamControllerDeviceProfileList);
             //enumeratorList = new List<DeviceEnumeratorBase>()
             //{
             //    new DS4Enumerator(),
