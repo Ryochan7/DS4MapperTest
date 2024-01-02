@@ -1196,7 +1196,8 @@ namespace DS4MapperTest
 
         public virtual void HookFeedback()
         {
-            if (outputForceFeedbackDel != null)
+            if (outputController != null &&
+                outputForceFeedbackDel != null)
             {
                 (outputController as IXbox360Controller).FeedbackReceived += outputForceFeedbackDel;
             }
@@ -1204,7 +1205,8 @@ namespace DS4MapperTest
 
         public virtual void RemoveFeedback()
         {
-            if (outputForceFeedbackDel != null)
+            if (outputController != null &&
+                outputForceFeedbackDel != null)
             {
                 (outputController as IXbox360Controller).FeedbackReceived -= outputForceFeedbackDel;
                 outputForceFeedbackDel = null;
