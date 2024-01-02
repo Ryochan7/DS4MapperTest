@@ -55,6 +55,8 @@ namespace DS4MapperTest.SteamControllerLibrary
             this.reader = reader;
             this.appGlobal = appGlobal;
 
+            deviceActionDefaults = new SteamControllerDeviceDefaults();
+
             bindingList = new List<InputBindingMeta>()
             {
                 new InputBindingMeta("A", "A", InputBindingMeta.InputControlType.Button),
