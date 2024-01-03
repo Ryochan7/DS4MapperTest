@@ -103,6 +103,8 @@ namespace DS4MapperTest
             new VidPidMeta(STEAM_CONTROLLER_VENDOR_ID, STEAM_CONTROLLER_PRODUCT_ID, "Steam Controller", InputDeviceType.SteamController,
                 VidPidMeta.UsedConnectionBus.HID),
             new VidPidMeta(STEAM_CONTROLLER_VENDOR_ID, STEAM_DONGLE_CONTROLLER_PRODUCT_ID, "Steam Controller", InputDeviceType.SteamController,
+                VidPidMeta.UsedConnectionBus.HID),
+            new VidPidMeta(STEAM_CONTROLLER_VENDOR_ID, STEAM_BT_CONTROLLER_PRODUCT_ID, "Steam Controller", InputDeviceType.SteamController,
                 VidPidMeta.UsedConnectionBus.HID)
         };
 
@@ -416,6 +418,14 @@ namespace DS4MapperTest
                     newKnownDevices.Add(hidDev.DevicePath, tempDev);
                     result = true;
                 }
+                else if (meta.pid == STEAM_BT_CONTROLLER_PRODUCT_ID)
+                {
+                    SteamControllerBTDevice tempDev = new SteamControllerBTDevice(hidDev, meta.displayName);
+                    foundKnownDevices.Add(hidDev.DevicePath, tempDev);
+                    revFoundKnownDevices.Add(tempDev, hidDev.DevicePath);
+                    newKnownDevices.Add(hidDev.DevicePath, tempDev);
+                    result = true;
+                }
             }
 
             return result;
@@ -463,8 +473,18 @@ namespace DS4MapperTest
                 case SteamControllerDevice:
                     {
                         SteamControllerDevice steamDevice = device as SteamControllerDevice;
-                        SteamControllerReader reader = new SteamControllerReader(steamDevice);
-                        result = new SteamControllerMapper(steamDevice, reader, appGlobal);
+                        if (steamDevice.ConType != SteamControllerDevice.ConnectionType.Bluetooth)
+                        {
+                            SteamControllerReader reader = new SteamControllerReader(steamDevice);
+                            result = new SteamControllerMapper(steamDevice, reader, appGlobal);
+                        }
+                        else
+                        {
+                            SteamControllerBTDevice btSteamDevice = steamDevice as SteamControllerBTDevice;
+                            SteamControllerBTReader reader = new SteamControllerBTReader(btSteamDevice);
+                            result = new SteamControllerMapper(btSteamDevice, reader, appGlobal);
+                        }
+
                         break;
                     }
                 default: break;
