@@ -153,7 +153,11 @@ namespace DS4MapperTest.TouchpadActions
         public bool TrackballEnabled
         {
             get => trackballEnabled;
-            set => trackballEnabled = value;
+            set
+            {
+                trackballEnabled = value;
+                CalcTrackAccel();
+            }
         }
         //private bool useParentTrackball;
 
@@ -161,7 +165,11 @@ namespace DS4MapperTest.TouchpadActions
         public int TrackballFriction
         {
             get => trackballFriction;
-            set => trackballFriction = value;
+            set
+            {
+                trackballFriction = value;
+                CalcTrackAccel();
+            }
         }
 
         private double sensitivity = DEFAULT_SENSITIVITY;
