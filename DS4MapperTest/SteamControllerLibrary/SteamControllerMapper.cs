@@ -221,8 +221,10 @@ namespace DS4MapperTest.SteamControllerLibrary
                 new ActionTriggerItem("Left Grip", JoypadActionCodes.BtnLGrip),
                 new ActionTriggerItem("Right Grip", JoypadActionCodes.BtnRGrip),
                 new ActionTriggerItem("Stick Click", JoypadActionCodes.BtnThumbL),
-                new ActionTriggerItem("Touchpad Touch", JoypadActionCodes.LPadTouch),
-                new ActionTriggerItem("Touchpad Click", JoypadActionCodes.LPadClick),
+                new ActionTriggerItem("Left Touchpad Touch", JoypadActionCodes.LPadTouch),
+                new ActionTriggerItem("Left Touchpad Touch", JoypadActionCodes.LPadTouch),
+                new ActionTriggerItem("Right Touchpad Touch", JoypadActionCodes.RPadTouch),
+                new ActionTriggerItem("Right Touchpad Click", JoypadActionCodes.RPadClick),
 
                 new ActionTriggerItem("Back", JoypadActionCodes.BtnSelect),
                 new ActionTriggerItem("Start", JoypadActionCodes.BtnStart),
