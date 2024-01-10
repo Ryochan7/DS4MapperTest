@@ -44,10 +44,34 @@ namespace DS4MapperTest.SteamControllerLibrary
             int error = Marshal.GetLastWin32Error();
             hidDevice.fileStream.Flush();
 
+            // Sleep seems to be needed before probing for feature report data with serial.
+            Thread.Sleep(200);
+
             byte[] retReportData = new byte[READ_FEATURE_REPORT_LEN];
             retReportData[0] = FEATURE_REPORT_ID;
             retReportData[1] = FEATURE_REPORT_BT_PREFIX;
             hidDevice.readFeatureData(retReportData);
+
+            // Might need to try to obtain serial multiple times
+            const int MAX_SERIAL_TRIES = 3;
+            for (int tries = 0; tries < MAX_SERIAL_TRIES; tries++)
+            {
+                // Check if first byte of serial is not empty
+                if (retReportData[6] != '\0')
+                {
+                    break;
+                }
+                else
+                {
+                    // Write to device again
+                    hidDevice.WriteFeatureReport(featureData);
+                    hidDevice.fileStream.Flush();
+
+                    // Attempt to read again
+                    //Thread.Sleep(200);
+                    hidDevice.readFeatureData(retReportData);
+                }
+            }
             //Console.WriteLine("LKJDKJLLD: {0}", retReportData[1]);
 
             string baseS = System.Text.Encoding.Default.GetString(retReportData, 6, 12);
