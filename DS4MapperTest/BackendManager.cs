@@ -64,6 +64,9 @@ namespace DS4MapperTest
             get => mapperDict;
         }
         private Dictionary<InputDeviceBase, DeviceReaderBase> deviceReadersMap;
+        private Dictionary<InputDeviceBase, Mapper> deviceMapperMap =
+            new Dictionary<InputDeviceBase, Mapper>();
+
         private InputDeviceBase[] controllerList =
             new InputDeviceBase[CONTROLLER_LIMIT];
         public InputDeviceBase[] ControllerList
@@ -83,6 +86,8 @@ namespace DS4MapperTest
         {
             get => eventDispatcher;
         }
+
+        private ReaderWriterLockSlim _hotplugLock = new ReaderWriterLockSlim();
 
         private AppGlobalData appGlobal;
         //private DS4Enumerator enumerator;
@@ -215,6 +220,28 @@ namespace DS4MapperTest
 
                 Mapper testMapper = testEnumerator.PrepareDeviceMapper(device, appGlobal);
                 DeviceReaderBase reader = testMapper.BaseReader;
+
+                if (!device.Synced)
+                {
+                    //mapperDict.Add(ind, testMapper);
+                    deviceMapperMap.Add(device, testMapper);
+                    deviceReadersMap.Add(device, reader);
+
+                    device.Removal += Device_Removal;
+                    device.SyncedChanged += Device_SyncedChanged;
+                    // Attempt to run reader early
+                    reader.StartUpdate();
+
+                    //LogDebug($"Detected unsynced controller ({device.Serial}. Waiting for active status");
+                    continue;
+                }
+
+                device.SyncedChanged += Device_SyncedChanged;
+                //if (device.CheckForSyncChange)
+                //{
+                //    device.SyncedChanged += Device_SyncedChanged;
+                //}
+
                 //DeviceReaderBase reader = enumerator.PrepareDeviceReader(device as DS4Device);
                 //Mapper testMapper = new DS4Mapper(device as DS4Device,
                 //    reader as DS4Reader, AppGlobalDataSingleton.Instance);
@@ -244,6 +271,7 @@ namespace DS4MapperTest
                 };
 
                 mapperDict.Add(ind, testMapper);
+                deviceMapperMap.Add(device, testMapper);
                 deviceReadersMap.Add(device, reader);
 
                 controllerList[ind] = device;
@@ -260,15 +288,139 @@ namespace DS4MapperTest
             LogDebug("Service started");
         }
 
+        private void Device_SyncedChanged(object sender, EventArgs e)
+        {
+            InputDeviceBase device = sender as InputDeviceBase;
+            if (device.Synced)
+            {
+                using WriteLocker locker = new WriteLocker(_hotplugLock);
+
+                Func<bool> tempFoundDevFunc = () =>
+                {
+                    bool found = false;
+                    for (int i = 0, arlen = controllerList.Length; i < arlen; i++)
+                    {
+                        if (controllerList[i] != null &&
+                            controllerList[i].Serial == device.Serial)
+                        {
+                            found = true;
+                        }
+                    }
+
+                    return found;
+                };
+
+                bool alreadyExists = tempFoundDevFunc();
+                if (!alreadyExists)
+                {
+                    for (int ind = 0, arlen = controllerList.Length; ind < arlen; ind++)
+                    {
+                        // No controller in input slot. Insert newly created
+                        // device in slot
+                        if (controllerList[ind] == null)
+                        {
+                            if (deviceReadersMap.TryGetValue(device,
+                                out DeviceReaderBase reader))
+                            {
+                                PrepareSyncedInputDevice(device, reader, ind);
+                                HotplugController?.Invoke(device, ind);
+                            }
+
+                            break;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                UnplugController?.Invoke(device, device.Index);
+
+                if (mapperDict.TryGetValue(device.Index, out Mapper tempMapper))
+                {
+                    Task tempTask = Task.Run(() =>
+                    {
+                        tempMapper.Stop(true);
+                        tempMapper = null;
+                    });
+                    //tempTask.Wait();
+
+                    mapperDict.Remove(device.Index);
+                    if (deviceMapperMap.ContainsKey(device))
+                    {
+                        deviceMapperMap.Remove(device);
+                    }
+                }
+
+                eventDispatcher.Invoke(() =>
+                {
+                    if (device.Index >= 0)
+                    {
+                        controllerList[device.Index] = null;
+                        if (appGlobal.activeProfiles.ContainsKey(device.Index))
+                        {
+                            appGlobal.activeProfiles.Remove(device.Index);
+                            LogDebug($"Desynced controller #{device.Index + 1} ({device.Serial})");
+                        }
+                    }
+                });
+            }
+        }
+
+        private void PrepareSyncedInputDevice(InputDeviceBase device, DeviceReaderBase reader, int ind)
+        {
+            device.Index = ind;
+            //device.Removal += Device_Removal;
+
+            appGlobal.LoadControllerDeviceSettings(device, device.DeviceOptions);
+
+            string tempProfilePath = string.Empty;
+            if (appGlobal.activeProfiles.TryGetValue(ind, out tempProfilePath))
+            {
+            }
+            else if (deviceProfileListDict[device.DeviceType].ProfileListCol.Count > 0)
+            {
+                tempProfilePath = deviceProfileListDict[device.DeviceType].ProfileListCol[0].ProfilePath;
+            }
+
+            if (deviceMapperMap.TryGetValue(device, out Mapper testMapper))
+            {
+                if (!string.IsNullOrEmpty(tempProfilePath))
+                {
+                    testMapper.ProfileFile = tempProfilePath;
+                }
+
+                //testMapper.Start(device, reader);
+                testMapper.Start(vigemTestClient, fakerInputHandler);
+                //testMapper.RequestOSD += TestMapper_RequestOSD;
+                int tempInd = ind;
+                testMapper.ProfileChanged += (object sender, string e) => {
+                    appGlobal.activeProfiles[tempInd] = e;
+                    appGlobal.SaveControllerDeviceSettings(device, device.DeviceOptions);
+                };
+
+                mapperDict.Add(ind, testMapper);
+
+                controllerList[ind] = device;
+                LogDebug($"Synced controller #{ind + 1} ({device.Serial})");
+            }
+        }
+
         private void Device_Removal(object sender, EventArgs e)
         {
             InputDeviceBase device = sender as InputDeviceBase;
             if (device != null)
             {
-                DeviceReaderBase reader = deviceReadersMap[device];
-                deviceReadersMap.Remove(device);
+                using WriteLocker locker = new WriteLocker(_hotplugLock);
+
+                if (deviceReadersMap.TryGetValue(device, out DeviceReaderBase reader))
+                {
+                    deviceReadersMap.Remove(device);
+                }
+
                 if (mapperDict.TryGetValue(device.Index, out Mapper tempMapper))
                 {
+                    mapperDict.Remove(device.Index);
+
                     if (device.PrimaryDevice)
                     {
                         Task tempTask = Task.Run(() =>
@@ -288,7 +440,11 @@ namespace DS4MapperTest
                     //    //reader.StopUpdate();
                     //}
                     //tempMapper.BaseReader.StopUpdate();
-                    mapperDict.Remove(device.Index);
+
+                    if (deviceMapperMap.ContainsKey(device))
+                    {
+                        deviceMapperMap.Remove(device);
+                    }
                 }
 
                 reader = null;
@@ -329,6 +485,7 @@ namespace DS4MapperTest
 
             mapperDict.Clear();
             deviceReadersMap.Clear();
+            deviceMapperMap.Clear();
             testEnumerator.StopControllers();
             //enumerator.StopControllers();
             Array.Clear(controllerList, 0, CONTROLLER_LIMIT);
@@ -368,6 +525,8 @@ namespace DS4MapperTest
         {
             if (isRunning)
             {
+                using WriteLocker locker = new WriteLocker(_hotplugLock);
+
                 Task temp = Task.Run(() =>
                 {
                     //enumerator.FindControllers();
@@ -430,7 +589,11 @@ namespace DS4MapperTest
 
                             Mapper mapper = testEnumerator.PrepareDeviceMapper(device, appGlobal);
                             PrepareAddInputDevice(device, mapper, ind);
-                            HotplugController?.Invoke(device, ind);
+                            if (device.Synced)
+                            {
+                                HotplugController?.Invoke(device, ind);
+                            }
+
                             break;
                         }
                     }
@@ -450,9 +613,26 @@ namespace DS4MapperTest
             //    reader = new SteamControllerReader(device);
             //}
 
+            DeviceReaderBase reader = mapper.BaseReader;
             device.Index = ind;
             //device.SetOperational();
+
+            if (!device.Synced)
+            {
+                deviceMapperMap.Add(device, mapper);
+                deviceReadersMap.Add(device, reader);
+
+                device.Removal += Device_Removal;
+                device.SyncedChanged += Device_SyncedChanged;
+                // Attempt to run reader early
+                reader.StartUpdate();
+
+                //LogDebug($"Detected unsynced controller ({device.Serial}. Waiting for active status");
+                return;
+            }
+
             device.Removal += Device_Removal;
+            device.SyncedChanged += Device_SyncedChanged;
             //if (device.CheckForSyncChange)
             //{
             //    device.SyncedChanged += Device_SyncedChanged;
@@ -496,8 +676,9 @@ namespace DS4MapperTest
                 appGlobal.SaveControllerDeviceSettings(device, device.DeviceOptions);
             };
 
-            DeviceReaderBase reader = mapper.BaseReader;
+            //DeviceReaderBase reader = mapper.BaseReader;
             mapperDict.Add(ind, mapper);
+            deviceMapperMap.Add(device, mapper);
             deviceReadersMap.Add(device, reader);
 
             controllerList[ind] = device;
@@ -508,7 +689,23 @@ namespace DS4MapperTest
         {
             device.Index = ind;
             //device.SetOperational();
+
+            if (!device.Synced)
+            {
+                deviceMapperMap.Add(device, mapper);
+                deviceReadersMap.Add(device, reader);
+
+                device.Removal += Device_Removal;
+                device.SyncedChanged += Device_SyncedChanged;
+                // Attempt to run reader early
+                reader.StartUpdate();
+
+                //LogDebug($"Detected unsynced controller ({device.Serial}. Waiting for active status");
+                return;
+            }
+
             device.Removal += Device_Removal;
+            device.SyncedChanged += Device_SyncedChanged;
             //if (device.CheckForSyncChange)
             //{
             //    device.SyncedChanged += Device_SyncedChanged;
@@ -517,6 +714,7 @@ namespace DS4MapperTest
             appGlobal.LoadControllerDeviceSettings(device, device.DeviceOptions);
 
             mapperDict.Add(ind, mapper);
+            deviceMapperMap.Add(device, mapper);
             deviceReadersMap.Add(device, reader);
 
             controllerList[ind] = device;
