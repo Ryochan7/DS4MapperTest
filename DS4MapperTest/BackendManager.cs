@@ -333,6 +333,8 @@ namespace DS4MapperTest
             }
             else
             {
+                using WriteLocker locker = new WriteLocker(_hotplugLock);
+
                 UnplugController?.Invoke(device, device.Index);
 
                 if (mapperDict.TryGetValue(device.Index, out Mapper tempMapper))
@@ -345,11 +347,12 @@ namespace DS4MapperTest
                     //tempTask.Wait();
 
                     mapperDict.Remove(device.Index);
-                    if (deviceMapperMap.ContainsKey(device))
-                    {
-                        deviceMapperMap.Remove(device);
-                    }
                 }
+
+                //if (deviceMapperMap.ContainsKey(device))
+                //{
+                //    deviceMapperMap.Remove(device);
+                //}
 
                 eventDispatcher.Invoke(() =>
                 {
