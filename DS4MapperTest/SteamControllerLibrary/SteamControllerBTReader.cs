@@ -203,9 +203,9 @@ namespace DS4MapperTest.SteamControllerLibrary
                             uint batt = (uint)((inputReportBuffer[14] << 8) | inputReportBuffer[13]);
                             //Trace.WriteLine($"{batt} {inputReportBuffer[13]:X2} {inputReportBuffer[14]:X2}");
                             // Percentage / Voltage (mV)
-                            const double BATSLOPE = (100 - 0) / (3500 - 2000);
+                            const double BATSLOPE = (100.0 - 0.0) / (3500.0 - 2000.0);
                             //uint tempBat = Math.Clamp(batt / 35, 0, 100);
-                            uint tempBat = Math.Clamp((uint)(batt * BATSLOPE - 2000), 0, 100);
+                            uint tempBat = (uint)Math.Clamp(batt * BATSLOPE - 133.34, 0, 100);
                             device.Battery = tempBat;
                             continue;
                         }
