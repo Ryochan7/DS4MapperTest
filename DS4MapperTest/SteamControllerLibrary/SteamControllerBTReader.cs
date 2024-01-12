@@ -205,7 +205,7 @@ namespace DS4MapperTest.SteamControllerLibrary
                             // Percentage / Voltage (mV)
                             const double BATSLOPE = (100.0 - 0.0) / (3500.0 - 2000.0);
                             //uint tempBat = Math.Clamp(batt / 35, 0, 100);
-                            uint tempBat = (uint)Math.Clamp(batt * BATSLOPE - 133.34, 0, 100);
+                            uint tempBat = (uint)Math.Clamp((int)(batt * BATSLOPE - 133.34), 0, 100);
                             device.Battery = tempBat;
                             continue;
                         }
