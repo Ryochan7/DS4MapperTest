@@ -179,6 +179,9 @@ namespace DS4MapperTest.SteamControllerLibrary
                         lastElapsed = deltaElapsed * (1.0 / Stopwatch.Frequency) * 1000.0;
                         tempTimeElapsed = lastElapsed * .001;
 
+                        // Need to set previous time here before potential PING packet processing
+                        previousTime = currentTime;
+
                         /*if ((packetTypeByte & 0x05) == 0x05)
                         {
                             Trace.WriteLine($"PING {packetTypeByte}");
@@ -210,8 +213,8 @@ namespace DS4MapperTest.SteamControllerLibrary
                             continue;
                         }
 
+                        // Got INPUT packet. Modify state timeElapsed
                         current.timeElapsed = tempTimeElapsed;
-                        previousTime = currentTime;
 
                         //Trace.WriteLine(tempTimeElapsed);
 
