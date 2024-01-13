@@ -460,7 +460,7 @@ namespace DS4MapperTest.ViewModels
 
             MouseDirItem item = mouseDirComboItems[index];
             ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
-            mapper.QueueEvent(() =>
+            mapper.ProcessMappingChangeAction(() =>
             {
                 currentAction.Release(mapper, ignoreReleaseActions: true);
                 OutputSlotItem slotItem = slotItems[selectedSlotItemIndex];
@@ -490,7 +490,7 @@ namespace DS4MapperTest.ViewModels
 
             MouseDirItem item = mouseDirComboItems[index];
             ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
-            mapper.QueueEvent(() =>
+            mapper.ProcessMappingChangeAction(() =>
             {
                 currentAction.Release(mapper, ignoreReleaseActions: true);
                 OutputSlotItem slotItem = slotItems[selectedSlotItemIndex];
@@ -523,7 +523,7 @@ namespace DS4MapperTest.ViewModels
             // Tick time might get reset to 0. Keep reference to new value for later
             // inspection
             int tempDuration = 0;
-            mapper.QueueEvent(() =>
+            mapper.ProcessMappingChangeAction(() =>
             {
                 currentAction.Release(mapper, ignoreReleaseActions: true);
                 OutputSlotItem slotItem = slotItems[selectedSlotItemIndex];
@@ -568,7 +568,7 @@ namespace DS4MapperTest.ViewModels
 
             MouseButtonCodeItem item = mouseWheelButtonComboItems[index];
             ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
-            mapper.QueueEvent(() =>
+            mapper.ProcessMappingChangeAction(() =>
             {
                 currentAction.Release(mapper, ignoreReleaseActions: true);
                 OutputSlotItem slotItem = slotItems[selectedSlotItemIndex];
@@ -604,7 +604,7 @@ namespace DS4MapperTest.ViewModels
 
             AvailableSetChoiceItem tempItem = availableSetsComboItems[index];
             ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
-            mapper.QueueEvent(() =>
+            mapper.ProcessMappingChangeAction(() =>
             {
                 currentAction.Release(mapper, ignoreReleaseActions: true);
                 OutputSlotItem slotItem = slotItems[selectedSlotItemIndex];
@@ -630,7 +630,7 @@ namespace DS4MapperTest.ViewModels
             AvailableSetChoiceItem tempItem = availableSetsComboItems[index];
             ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
             bool fireConditionChangedEvent = false;
-            mapper.QueueEvent(() =>
+            mapper.ProcessMappingChangeAction(() =>
             {
                 currentAction.Release(mapper, ignoreReleaseActions: true);
                 OutputSlotItem slotItem = slotItems[selectedSlotItemIndex];
@@ -680,7 +680,7 @@ namespace DS4MapperTest.ViewModels
             ResetComboBoxIndex(ActionComboBoxTypes.RelativeMouseDir);
             MouseDirItem item = mouseDirComboItems[index];
             ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
-            mapper.QueueEvent(() =>
+            mapper.ProcessMappingChangeAction(() =>
             {
                 currentAction.Release(mapper, ignoreReleaseActions: true);
                 OutputSlotItem slotItem = slotItems[selectedSlotItemIndex];
@@ -711,7 +711,7 @@ namespace DS4MapperTest.ViewModels
             ResetComboBoxIndex(ActionComboBoxTypes.MouseWheelButton);
             MouseButtonCodeItem item = mouseWheelButtonComboItems[index];
             ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
-            mapper.QueueEvent(() =>
+            mapper.ProcessMappingChangeAction(() =>
             {
                 currentAction.Release(mapper, ignoreReleaseActions: true);
                 OutputSlotItem slotItem = slotItems[selectedSlotItemIndex];
@@ -736,7 +736,7 @@ namespace DS4MapperTest.ViewModels
             if (index == -1) return;
 
             ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
-            mapper.QueueEvent(() =>
+            mapper.ProcessMappingChangeAction(() =>
             {
                 currentAction.Release(mapper, ignoreReleaseActions: true);
                 OutputSlotItem slotItem = slotItems[selectedSlotItemIndex];
@@ -757,7 +757,7 @@ namespace DS4MapperTest.ViewModels
             AvailableLayerChoiceItem tempItem = availableLayerComboItems[index];
             LayerOpChoiceItem opItem = layerOperationsComboItems[selectedLayerOpsIndex];
             ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
-            mapper.QueueEvent(() =>
+            mapper.ProcessMappingChangeAction(() =>
             {
                 currentAction.Release(mapper, ignoreReleaseActions: true);
                 OutputSlotItem slotItem = slotItems[selectedSlotItemIndex];
@@ -814,7 +814,7 @@ namespace DS4MapperTest.ViewModels
             AvailableLayerChoiceItem tempLayerChoiceItem = selectedLayerChoiceIndex != -1 ? availableLayerComboItems[selectedLayerChoiceIndex] : null;
             LayerOpChoiceItem opItem = layerOperationsComboItems[selectedLayerOpsIndex];
             ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
-            mapper.QueueEvent(() =>
+            mapper.ProcessMappingChangeAction(() =>
             {
                 currentAction.Release(mapper, ignoreReleaseActions: true);
                 OutputSlotItem slotItem = slotItems[selectedSlotItemIndex];
@@ -1003,7 +1003,7 @@ namespace DS4MapperTest.ViewModels
             ResetComboBoxIndex(ActionComboBoxTypes.Keyboard);
             KeyboardCodeItem item = keyboardComboItems[index];
             ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
-            mapper.QueueEvent(() =>
+            mapper.ProcessMappingChangeAction(() =>
             {
                 currentAction.Release(mapper, ignoreReleaseActions: true);
                 OutputSlotItem slotItem = slotItems[selectedSlotItemIndex];
@@ -1047,7 +1047,7 @@ namespace DS4MapperTest.ViewModels
             JoypadActionCodes temp = revGamepadIndexAliases[index];
             OutputSlotItem item = slotItems[selectedSlotItemIndex];
             ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
-            mapper.QueueEvent(() =>
+            mapper.ProcessMappingChangeAction(() =>
             {
                 currentAction.Release(mapper, ignoreReleaseActions: true);
                 //currentAction.ActionFuncs[0].Release(mapper);
@@ -1088,7 +1088,7 @@ namespace DS4MapperTest.ViewModels
             ResetComboBoxIndex(ActionComboBoxTypes.MouseButton);
             MouseButtonCodeItem item = mouseButtonComboItems[index];
             ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
-            mapper.QueueEvent(() =>
+            mapper.ProcessMappingChangeAction(() =>
             {
                 currentAction.Release(mapper, ignoreReleaseActions: true);
                 OutputSlotItem slotItem = slotItems[selectedSlotItemIndex];
@@ -1337,7 +1337,7 @@ namespace DS4MapperTest.ViewModels
 
             SelectedSlotItemIndex = ind;
 
-            mapper.QueueEvent(() =>
+            mapper.ProcessMappingChangeAction(() =>
             {
                 currentAction.Release(mapper, ignoreReleaseActions: true);
                 func.OutputActions.Add(tempData);
@@ -1352,7 +1352,7 @@ namespace DS4MapperTest.ViewModels
 
             OutputSlotItem item = slotItems[selectedSlotItemIndex];
             ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
-            mapper.QueueEvent(() =>
+            mapper.ProcessMappingChangeAction(() =>
             {
                 currentAction.Release(mapper, ignoreReleaseActions: true);
 
@@ -1385,7 +1385,7 @@ namespace DS4MapperTest.ViewModels
             slotItems.RemoveAt(tempInd);
             SelectedSlotItemIndex = ind < slotItems.Count ? ind : slotItems.Count - 1;
             ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
-            mapper.QueueEvent(() =>
+            mapper.ProcessMappingChangeAction(() =>
             {
                 currentAction.Release(mapper, ignoreReleaseActions: true);
                 func.OutputActions.RemoveAt(tempInd);

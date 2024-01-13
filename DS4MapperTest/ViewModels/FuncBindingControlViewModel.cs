@@ -98,7 +98,7 @@ namespace DS4MapperTest.ViewModels
             NormalPressFunc tempFunc =
                 new NormalPressFunc(new OutputActionData(OutputActionData.ActionType.Empty, 0));
 
-            mapper.QueueEvent(() =>
+            mapper.ProcessMappingChangeAction(() =>
             {
                 action.Release(mapper, ignoreReleaseActions: true);
                 action.ActionFuncs.Add(tempFunc);
@@ -127,7 +127,7 @@ namespace DS4MapperTest.ViewModels
 
             thing.RemoveAt(ind);
             int removeInd = ind;
-            mapper.QueueEvent(() =>
+            mapper.ProcessMappingChangeAction(() =>
             {
                 action.Release(mapper, ignoreReleaseActions: true);
                 action.ActionFuncs.RemoveAt(removeInd);
@@ -155,7 +155,7 @@ namespace DS4MapperTest.ViewModels
             item.Func = func;
             item.RaiseDisplayNameChanged();
 
-            mapper.QueueEvent(() =>
+            mapper.ProcessMappingChangeAction(() =>
             {
                 action.Release(mapper, ignoreReleaseActions: true);
                 action.ActionFuncs.RemoveAt(ind);
@@ -249,7 +249,7 @@ namespace DS4MapperTest.ViewModels
         {
             /*ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
 
-            mapper.QueueEvent(() =>
+            mapper.ProcessMappingChangeAction(() =>
             {
                 oldAction.Release(mapper, ignoreReleaseActions: true);
 
@@ -288,7 +288,7 @@ namespace DS4MapperTest.ViewModels
 
             ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
 
-            mapper.QueueEvent(() =>
+            mapper.ProcessMappingChangeAction(() =>
             {
                 action.Release(mapper, ignoreReleaseActions: true);
 

@@ -167,7 +167,7 @@ namespace DS4MapperTest.ViewModels
 
             ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
 
-            mapper.QueueEvent(() =>
+            mapper.ProcessMappingChangeAction(() =>
             {
                 oldAction.Release(mapper, ignoreReleaseActions: true);
                 //int tempInd = mapper.ActionProfile.CurrentActionSet.CurrentActionLayer.LayerActions.FindIndex((item) => item == tempAction);

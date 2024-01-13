@@ -46,7 +46,7 @@ namespace DS4MapperTest.ViewModels.TouchpadActionPropViewModels
             {
                 ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
 
-                mapper.QueueEvent(() =>
+                mapper.ProcessMappingChangeAction(() =>
                 {
                     this.baseAction.ParentAction.Release(mapper, ignoreReleaseActions: true);
                     //this.baseAction.Release(mapper, ignoreReleaseActions: true);
@@ -78,7 +78,7 @@ namespace DS4MapperTest.ViewModels.TouchpadActionPropViewModels
         {
             ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
 
-            mapper.QueueEvent(() =>
+            mapper.ProcessMappingChangeAction(() =>
             {
                 tempAction?.Invoke();
 

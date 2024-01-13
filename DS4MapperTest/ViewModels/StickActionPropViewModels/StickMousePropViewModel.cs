@@ -407,7 +407,7 @@ namespace DS4MapperTest.ViewModels.StickActionPropViewModels
             {
                 ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
 
-                mapper.QueueEvent(() =>
+                mapper.ProcessMappingChangeAction(() =>
                 {
                     this.action.ParentAction.Release(mapper, ignoreReleaseActions: true);
 

@@ -563,7 +563,7 @@ namespace DS4MapperTest.ViewModels.StickActionPropViewModels
             OutputStickSelectionItem item = outputStickHolder.OutputStickItems[outputStickIndex];
             ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
 
-            mapper.QueueEvent(() =>
+            mapper.ProcessMappingChangeAction(() =>
             {
                 action.Release(mapper, ignoreReleaseActions: true);
 
@@ -638,7 +638,7 @@ namespace DS4MapperTest.ViewModels.StickActionPropViewModels
             {
                 ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
 
-                mapper.QueueEvent(() =>
+                mapper.ProcessMappingChangeAction(() =>
                 {
                     this.action.ParentAction.Release(mapper, ignoreReleaseActions: true);
 

@@ -110,7 +110,7 @@ namespace DS4MapperTest.ViewModels
 
             Profile tempProfile = null;
             string profileName = string.Empty;
-            mapper.QueueEvent(() =>
+            mapper.ProcessMappingChangeAction(() =>
             {
                 mapper.UseBlankProfile();
                 tempProfile = mapper.ActionProfile;

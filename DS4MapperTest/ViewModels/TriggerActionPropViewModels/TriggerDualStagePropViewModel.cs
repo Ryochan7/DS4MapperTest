@@ -252,7 +252,7 @@ namespace DS4MapperTest.ViewModels.TriggerActionPropViewModels
             {
                 ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
 
-                mapper.QueueEvent(() =>
+                mapper.ProcessMappingChangeAction(() =>
                 {
                     this.action.ParentAction?.Release(mapper, ignoreReleaseActions: true);
 
@@ -367,7 +367,7 @@ namespace DS4MapperTest.ViewModels.TriggerActionPropViewModels
 
             ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
             //ExecuteInMapperThread(() =>
-            mapper.QueueEvent(() =>
+            mapper.ProcessMappingChangeAction(() =>
             {
                 if (oldAction != null)
                 {
@@ -394,7 +394,7 @@ namespace DS4MapperTest.ViewModels.TriggerActionPropViewModels
 
             ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
             //ExecuteInMapperThread(() =>
-            mapper.QueueEvent(() =>
+            mapper.ProcessMappingChangeAction(() =>
             {
                 if (oldAction != null)
                 {
