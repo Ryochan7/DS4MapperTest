@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Net.NetworkInformation;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using DS4MapperTest.ButtonActions;
 using DS4MapperTest.DPadActions;
@@ -218,6 +219,13 @@ namespace DS4MapperTest.DS4Library
 
         private void Reader_Report(DS4Reader sender, DS4Device device)
         {
+            while (pauseMapper)
+            {
+                Thread.SpinWait(500);
+            }
+
+            mapperActionActive = true;
+
             ref DS4State current = ref device.CurrentStateRef;
             //ref DS4State previous = ref device.PreviousStateRef;
 
@@ -487,6 +495,8 @@ namespace DS4MapperTest.DS4Library
 
             // Make copy of state data as the previous state
             previousMapperState = currentMapperState;
+
+            mapperActionActive = false;
 
             if (hasInputEvts)
             {
