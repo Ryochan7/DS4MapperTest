@@ -5,6 +5,8 @@ VisualStudioVersion = 17.4.33103.184
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DS4MapperTest", "DS4MapperTest\DS4MapperTest.csproj", "{0F0078E5-7A1D-4450-A8AC-70859D4D1802}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DS4MapperUnitTests", "DS4MapperUnitTests\DS4MapperUnitTests.csproj", "{D4122FA7-ACC6-4852-8597-CD233F470F4B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -15,6 +17,10 @@ Global
 		{0F0078E5-7A1D-4450-A8AC-70859D4D1802}.Debug|x64.Build.0 = Debug|x64
 		{0F0078E5-7A1D-4450-A8AC-70859D4D1802}.Release|x64.ActiveCfg = Release|x64
 		{0F0078E5-7A1D-4450-A8AC-70859D4D1802}.Release|x64.Build.0 = Release|x64
+		{D4122FA7-ACC6-4852-8597-CD233F470F4B}.Debug|x64.ActiveCfg = Debug|x64
+		{D4122FA7-ACC6-4852-8597-CD233F470F4B}.Debug|x64.Build.0 = Debug|x64
+		{D4122FA7-ACC6-4852-8597-CD233F470F4B}.Release|x64.ActiveCfg = Release|x64
+		{D4122FA7-ACC6-4852-8597-CD233F470F4B}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
