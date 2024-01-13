@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace DS4MapperTest.SteamControllerLibrary
@@ -242,6 +243,13 @@ namespace DS4MapperTest.SteamControllerLibrary
 
         private void Reader_Report(SteamControllerReader sender, SteamControllerDevice device)
         {
+            while (pauseMapper)
+            {
+                Thread.SpinWait(500);
+            }
+
+            mapperActionActive = true;
+
             ref SteamControllerState current = ref device.CurrentStateRef;
             ref SteamControllerState previous = ref device.PreviousStateRef;
 
@@ -510,6 +518,8 @@ namespace DS4MapperTest.SteamControllerLibrary
 
                 // Make copy of state data as the previous state
                 previousMapperState = currentMapperState;
+
+                mapperActionActive = false;
 
                 if (hasInputEvts)
                 {

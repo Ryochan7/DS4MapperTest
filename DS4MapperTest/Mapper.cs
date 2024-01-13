@@ -260,6 +260,11 @@ namespace DS4MapperTest
         protected ReaderWriterLockSlim eventQueueLocker = new ReaderWriterLockSlim();
         protected Queue<Action> eventQueue = new Queue<Action>();
 
+        protected ReaderWriterLockSlim mapperActiveEditLock = new ReaderWriterLockSlim();
+        protected bool mapperActionActive;
+        protected bool pauseMapper;
+        protected bool skipMapping;
+
         private void ReadFromProfile()
         {
             editActionSet = null;
@@ -2511,6 +2516,11 @@ namespace DS4MapperTest
             }
         }
 
+        /// <summary>
+        /// Add Action to a list of Actions to call at the end of mapping routine.
+        /// Action will be called in input thread
+        /// </summary>
+        /// <param name="tempAct">Action to enqueue to Queue</param>
         public void QueueEvent(Action tempAct)
         {
             //lock(eventQueueLock)
@@ -2518,6 +2528,31 @@ namespace DS4MapperTest
             {
                 eventQueue.Enqueue(tempAct);
                 hasInputEvts = true;
+            }
+        }
+
+        /// <summary>
+        /// Wait for mapping routine to be finished and then call passed Action.
+        /// Action will run in called thread
+        /// </summary>
+        /// <param name="tempAct">Action to call when mapping routine is not running.</param>
+        public void ProcessMappingChangeAction(Action tempAct)
+        {
+            using (WriteLocker locker = new WriteLocker(mapperActiveEditLock))
+            {
+                while (mapperActionActive)
+                {
+                    Thread.SpinWait(500);
+                }
+
+                // Mapping is not active. Set flag to halt mapper when entered
+                pauseMapper = true;
+
+                // Run call
+                tempAct.Invoke();
+
+                // Let mapper continue
+                pauseMapper = false;
             }
         }
 

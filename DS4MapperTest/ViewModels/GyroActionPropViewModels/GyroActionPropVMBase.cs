@@ -81,7 +81,7 @@ namespace DS4MapperTest.ViewModels.GyroActionPropViewModels
             {
                 ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
 
-                mapper.QueueEvent(() =>
+                mapper.ProcessMappingChangeAction(() =>
                 {
                     this.baseAction.ParentAction.Release(mapper, ignoreReleaseActions: true);
 
@@ -110,7 +110,7 @@ namespace DS4MapperTest.ViewModels.GyroActionPropViewModels
         {
             ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
 
-            mapper.QueueEvent(() =>
+            mapper.ProcessMappingChangeAction(() =>
             {
                 tempAction?.Invoke();
 
