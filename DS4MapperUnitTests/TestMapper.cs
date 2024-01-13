@@ -4,15 +4,21 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DS4MapperTest;
+using DS4MapperTest.ButtonActions;
 using DS4MapperTest.GyroActions;
 using DS4MapperTest.MapperUtil;
+using DS4MapperTest.SteamControllerLibrary;
 using DS4MapperTest.StickActions;
 using DS4MapperTest.TouchpadActions;
 using DS4MapperTest.TriggerActions;
 
 namespace DS4MapperUnitTests
 {
-    internal class TestMapper : Mapper
+    /// <summary>
+    /// Simple Mapper class for use in unit tests. Currently using trimmed down Steam Controller
+    /// mapper for testing and Steam Controller backend data as a base
+    /// </summary>
+    public class TestMapper : Mapper
     {
         private StickDefinition lsDefintion;
         private TouchpadDefinition leftPadDefiniton;
@@ -21,12 +27,23 @@ namespace DS4MapperUnitTests
         private TriggerDefinition rightTriggerDefinition;
         private GyroSensDefinition gyroSensDefinition;
 
+        private SteamControllerState currentMapperState;
+        public SteamControllerState CurrentMapperState => currentMapperState;
+        private SteamControllerState previousMapperState;
+        public SteamControllerState PreviousMapperState => previousMapperState;
+
+        private TouchEventFrame previousTouchFrameLeftPad;
+        private TouchEventFrame previousTouchFrameRightPad;
+
         public Dictionary<string, StickDefinition> KnownStickDefinitions => knownStickDefinitions;
         public Dictionary<string, TriggerDefinition> KnownTriggerDefinitions => knownTriggerDefinitions;
         public Dictionary<string, TouchpadDefinition> KnownTouchpadDefinitions => knownTouchpadDefinitions;
         public Dictionary<string, GyroSensDefinition> KnownGyroSensDefinitions => knownGyroSensDefinitions;
 
         public override DeviceReaderBase BaseReader => throw new NotImplementedException();
+
+        private const short STICK_MAX = 30000;
+        private const short STICK_MIN = -30000;
 
         public TestMapper()
         {
@@ -205,6 +222,277 @@ namespace DS4MapperUnitTests
             };
         }
 
+        public TestMapper(Profile actionProfile) : this()
+        {
+            this.actionProfile = actionProfile;
+        }
+
+        public void Reader_Report(SteamControllerState inputState,
+            out IntermediateState outputState)
+        {
+            ref SteamControllerState current = ref inputState;
+            //ref SteamControllerState previous = ref device.PreviousStateRef;
+
+            // Copy state struct data for later mapper manipulation. Leave
+            // device state instance alone
+            currentMapperState = inputState;
+
+            mouseX = mouseY = 0.0;
+
+            unchecked
+            {
+                outputController?.ResetReport();
+
+                intermediateState = new IntermediateState();
+                currentLatency = currentMapperState.timeElapsed;
+                currentRate = 1.0 / currentLatency;
+
+                ProcessReleaseEvents();
+                ProcessCycleChecks();
+
+                ActionLayer currentLayer = actionProfile.CurrentActionSet.CurrentActionLayer;
+
+                if (currentLayer.actionSetActionDict.TryGetValue($"{actionProfile.CurrentActionSet.ActionButtonId}",
+                    out ButtonMapAction currentSetAction))
+                {
+                    currentSetAction.Prepare(this, true);
+                    if (currentSetAction.active)
+                    {
+                        currentSetAction.Event(this);
+                    }
+                }
+
+                StickMapAction mapAction = currentLayer.stickActionDict["Stick"];
+                //if ((currentMapperState.LX != previousMapperState.LX) || (currentMapperState.LY != previousMapperState.LY))
+                {
+                    //Trace.WriteLine($"{currentMapperState.LX} {currentMapperState.LY}");
+                    int LX = Math.Clamp(currentMapperState.LX, STICK_MIN, STICK_MAX);
+                    int LY = Math.Clamp(currentMapperState.LY, STICK_MIN, STICK_MAX);
+                    mapAction.Prepare(this, LX, LY);
+                }
+
+                if (mapAction.active)
+                {
+                    mapAction.Event(this);
+                }
+
+                TriggerMapAction trigMapAction = currentLayer.triggerActionDict["LT"];
+                {
+                    TriggerEventFrame eventFrame = new TriggerEventFrame
+                    {
+                        axisValue = currentMapperState.LT,
+                        fullClick = currentMapperState.LTClick,
+                    };
+                    trigMapAction.Prepare(this, ref eventFrame);
+                }
+                if (trigMapAction.active) trigMapAction.Event(this);
+
+                trigMapAction = currentLayer.triggerActionDict["RT"];
+                {
+                    TriggerEventFrame eventFrame = new TriggerEventFrame
+                    {
+                        axisValue = currentMapperState.RT,
+                        fullClick = currentMapperState.RTClick,
+                    };
+                    trigMapAction.Prepare(this, ref eventFrame);
+                }
+                if (trigMapAction.active) trigMapAction.Event(this);
+
+                ButtonMapAction tempBtnAct = currentLayer.buttonActionDict["A"];
+                if (currentMapperState.A || currentMapperState.A != previousMapperState.A)
+                {
+                    tempBtnAct.Prepare(this, currentMapperState.A);
+                }
+
+                if (tempBtnAct.active) tempBtnAct.Event(this);
+
+                tempBtnAct = currentLayer.buttonActionDict["B"];
+                if (currentMapperState.B || currentMapperState.B != previousMapperState.B)
+                {
+                    tempBtnAct.Prepare(this, currentMapperState.B);
+                }
+
+                if (tempBtnAct.active) tempBtnAct.Event(this);
+
+                tempBtnAct = currentLayer.buttonActionDict["X"];
+                if (currentMapperState.X || currentMapperState.X != previousMapperState.X)
+                {
+                    tempBtnAct.Prepare(this, currentMapperState.X);
+                }
+
+                if (tempBtnAct.active) tempBtnAct.Event(this);
+
+                tempBtnAct = currentLayer.buttonActionDict["Y"];
+                if (currentMapperState.Y || currentMapperState.Y != previousMapperState.Y)
+                {
+                    tempBtnAct.Prepare(this, currentMapperState.Y);
+                }
+
+                if (tempBtnAct.active) tempBtnAct.Event(this);
+
+                tempBtnAct = currentLayer.buttonActionDict["Back"];
+                if (currentMapperState.Back || currentMapperState.Back != previousMapperState.Back)
+                {
+                    tempBtnAct.Prepare(this, currentMapperState.Back);
+                }
+
+                if (tempBtnAct.active) tempBtnAct.Event(this);
+
+                tempBtnAct = currentLayer.buttonActionDict["Start"];
+                if (currentMapperState.Start || currentMapperState.Start != previousMapperState.Start)
+                {
+                    tempBtnAct.Prepare(this, currentMapperState.Start);
+                }
+
+                if (tempBtnAct.active) tempBtnAct.Event(this);
+
+                tempBtnAct = currentLayer.buttonActionDict["LShoulder"];
+                if (currentMapperState.LB || currentMapperState.LB != previousMapperState.LB)
+                {
+                    tempBtnAct.Prepare(this, currentMapperState.LB);
+                }
+
+                if (tempBtnAct.active) tempBtnAct.Event(this);
+
+                tempBtnAct = currentLayer.buttonActionDict["RShoulder"];
+                if (currentMapperState.RB || currentMapperState.RB != previousMapperState.RB)
+                {
+                    tempBtnAct.Prepare(this, currentMapperState.RB);
+                }
+
+                if (tempBtnAct.active) tempBtnAct.Event(this);
+
+                tempBtnAct = currentLayer.buttonActionDict["LSClick"];
+                if (currentMapperState.LSClick || currentMapperState.LSClick != previousMapperState.LSClick)
+                {
+                    tempBtnAct.Prepare(this, currentMapperState.LSClick);
+                }
+                if (tempBtnAct.active) tempBtnAct.Event(this);
+
+                tempBtnAct = currentLayer.buttonActionDict["LeftGrip"];
+                if (currentMapperState.LGrip || currentMapperState.LGrip != previousMapperState.LGrip)
+                {
+                    tempBtnAct.Prepare(this, currentMapperState.LGrip);
+                }
+                if (tempBtnAct.active) tempBtnAct.Event(this);
+
+                tempBtnAct = currentLayer.buttonActionDict["RightGrip"];
+                if (currentMapperState.RGrip || currentMapperState.RGrip != previousMapperState.RGrip)
+                {
+                    tempBtnAct.Prepare(this, currentMapperState.RGrip);
+                }
+                if (tempBtnAct.active) tempBtnAct.Event(this);
+
+                tempBtnAct = currentLayer.buttonActionDict["LeftPadClick"];
+                if (currentMapperState.LeftPad.Click || currentMapperState.LeftPad.Click != previousMapperState.LeftPad.Click)
+                {
+                    tempBtnAct.Prepare(this, currentMapperState.LeftPad.Click);
+                }
+                if (tempBtnAct.active) tempBtnAct.Event(this);
+
+                tempBtnAct = currentLayer.buttonActionDict["RightPadClick"];
+                if (currentMapperState.RightPad.Click || currentMapperState.RightPad.Click != previousMapperState.RightPad.Click)
+                {
+                    tempBtnAct.Prepare(this, currentMapperState.RightPad.Click);
+                }
+                if (tempBtnAct.active) tempBtnAct.Event(this);
+
+                tempBtnAct = currentLayer.buttonActionDict["Steam"];
+                if (currentMapperState.Guide || currentMapperState.Guide != previousMapperState.Guide)
+                {
+                    tempBtnAct.Prepare(this, currentMapperState.Guide);
+                }
+                if (tempBtnAct.active) tempBtnAct.Event(this);
+
+                TouchpadMapAction tempTouchAction = currentLayer.touchpadActionDict["LeftTouchpad"];
+                //if (currentMapperState.LeftPad.Touch || currentMapperState.LeftPad.Touch != previousMapperState.LeftPad.Touch)
+                {
+                    //Trace.WriteLine($"{currentMapperState.LeftPad.X} {currentMapperState.LeftPad.Y}");
+                    TouchEventFrame eventFrame = new TouchEventFrame
+                    {
+                        X = Math.Clamp(currentMapperState.LeftPad.X, (short)-32768, (short)32767),
+                        Y = Math.Clamp(currentMapperState.LeftPad.Y, (short)-32768, (short)32767),
+                        Touch = currentMapperState.LeftPad.Touch,
+                        Click = currentMapperState.LeftPad.Click,
+                        numTouches = 1,
+                        timeElapsed = currentMapperState.timeElapsed,
+                    };
+
+                    tempTouchAction.Prepare(this, ref eventFrame);
+                    if (tempTouchAction.active) tempTouchAction.Event(this);
+
+                    previousTouchFrameLeftPad = eventFrame;
+                }
+
+                {
+                    tempTouchAction = currentLayer.touchpadActionDict["RightTouchpad"];
+                    //if (currentMapperState.RightPad.Touch || currentMapperState.RightPad.Touch != previousMapperState.RightPad.Touch)
+                    TouchEventFrame eventFrame = new TouchEventFrame
+                    {
+                        X = Math.Clamp(currentMapperState.RightPad.X, (short)-32768, (short)32767),
+                        Y = Math.Clamp(currentMapperState.RightPad.Y, (short)-32768, (short)32767),
+                        Touch = currentMapperState.RightPad.Touch,
+                        Click = currentMapperState.RightPad.Click,
+                        numTouches = 1,
+                        timeElapsed = currentMapperState.timeElapsed,
+                    };
+
+                    tempTouchAction.Prepare(this, ref eventFrame);
+                    if (tempTouchAction.active) tempTouchAction.Event(this);
+
+                    previousTouchFrameRightPad = eventFrame;
+                }
+
+                GyroMapAction gyroAct = currentLayer.gyroActionDict["Gyro"];
+                // Skip if duration is less than 10 ms
+                //if (currentMapperState.timeElapsed > 0.01)
+                {
+                    GyroEventFrame mouseFrame = new GyroEventFrame
+                    {
+                        GyroYaw = currentMapperState.Motion.GyroYaw,
+                        GyroPitch = currentMapperState.Motion.GyroPitch,
+                        GyroRoll = currentMapperState.Motion.GyroRoll,
+                        AngGyroYaw = currentMapperState.Motion.AngGyroYaw,
+                        AngGyroPitch = currentMapperState.Motion.AngGyroPitch,
+                        AngGyroRoll = currentMapperState.Motion.AngGyroRoll,
+                        AccelX = currentMapperState.Motion.AccelX,
+                        AccelY = currentMapperState.Motion.AccelY,
+                        AccelZ = currentMapperState.Motion.AccelZ,
+                        AccelXG = currentMapperState.Motion.AccelXG,
+                        AccelYG = currentMapperState.Motion.AccelYG,
+                        AccelZG = currentMapperState.Motion.AccelZG,
+                        timeElapsed = currentLatency,
+                        elapsedReference = 125.0,
+                        //elapsedReference = device.BaseElapsedReference,
+                    };
+
+                    gyroAct.Prepare(this, ref mouseFrame);
+                    if (gyroAct.active)
+                    {
+                        gyroAct.Event(this);
+                    }
+                }
+
+                gamepadSync = intermediateState.Dirty;
+
+                //ProcessSyncEvents();
+
+                ProcessActionSetLayerChecks();
+
+                // Make copy of state data as the previous state
+                previousMapperState = currentMapperState;
+
+                mapperActionActive = false;
+
+                //if (hasInputEvts)
+                //{
+                //    ProcessQueuedActions();
+                //}
+            }
+
+            outputState = intermediateState;
+        }
+
         public override void EstablishForceFeedback()
         {
             throw new NotImplementedException();
@@ -212,12 +500,155 @@ namespace DS4MapperUnitTests
 
         public override bool IsButtonActive(JoypadActionCodes code)
         {
-            throw new NotImplementedException();
+            bool result = false;
+            switch (code)
+            {
+                case JoypadActionCodes.AlwaysOn:
+                    result = true;
+                    break;
+                case JoypadActionCodes.BtnSouth:
+                    result = currentMapperState.A;
+                    break;
+                case JoypadActionCodes.BtnEast:
+                    result = currentMapperState.B;
+                    break;
+                case JoypadActionCodes.BtnNorth:
+                    result = currentMapperState.Y;
+                    break;
+                case JoypadActionCodes.BtnWest:
+                    result = currentMapperState.X;
+                    break;
+                case JoypadActionCodes.BtnLShoulder:
+                    result = currentMapperState.LB;
+                    break;
+                case JoypadActionCodes.BtnRShoulder:
+                    result = currentMapperState.RB;
+                    break;
+                case JoypadActionCodes.BtnStart:
+                    result = currentMapperState.Start;
+                    break;
+                case JoypadActionCodes.BtnMode:
+                    result = currentMapperState.Guide;
+                    break;
+                case JoypadActionCodes.AxisLTrigger:
+                    result = currentMapperState.LT > 0;
+                    break;
+                case JoypadActionCodes.AxisRTrigger:
+                    result = currentMapperState.RT > 0;
+                    break;
+                case JoypadActionCodes.LPadTouch:
+                    result = currentMapperState.LeftPad.Touch;
+                    break;
+                case JoypadActionCodes.RPadTouch:
+                    result = currentMapperState.RightPad.Touch;
+                    break;
+                case JoypadActionCodes.LPadClick:
+                    result = currentMapperState.LeftPad.Click;
+                    break;
+                case JoypadActionCodes.RPadClick:
+                    result = currentMapperState.RightPad.Click;
+                    break;
+                case JoypadActionCodes.LTFullPull:
+                    result = currentMapperState.LTClick;
+                    break;
+                case JoypadActionCodes.RTFullPull:
+                    result = currentMapperState.RTClick;
+                    break;
+                default:
+                    break;
+            }
+
+            return result;
         }
 
         public override bool IsButtonsActiveDraft(IEnumerable<JoypadActionCodes> codes, bool andEval = true)
         {
-            throw new NotImplementedException();
+            bool result = false;
+            foreach (JoypadActionCodes code in codes)
+            {
+                switch (code)
+                {
+                    case JoypadActionCodes.AlwaysOn:
+                        result = true;
+                        break;
+                    case JoypadActionCodes.BtnSouth:
+                        result = currentMapperState.A;
+                        break;
+                    case JoypadActionCodes.BtnEast:
+                        result = currentMapperState.B;
+                        break;
+                    case JoypadActionCodes.BtnNorth:
+                        result = currentMapperState.Y;
+                        break;
+                    case JoypadActionCodes.BtnWest:
+                        result = currentMapperState.X;
+                        break;
+                    case JoypadActionCodes.BtnLShoulder:
+                        result = currentMapperState.LB;
+                        break;
+                    case JoypadActionCodes.BtnRShoulder:
+                        result = currentMapperState.RB;
+                        break;
+                    case JoypadActionCodes.BtnStart:
+                        result = currentMapperState.Start;
+                        break;
+                    case JoypadActionCodes.BtnMode:
+                        result = currentMapperState.Guide;
+                        break;
+                    case JoypadActionCodes.AxisLTrigger:
+                        result = currentMapperState.LT > 0;
+                        break;
+                    case JoypadActionCodes.AxisRTrigger:
+                        result = currentMapperState.RT > 0;
+                        break;
+                    case JoypadActionCodes.LPadTouch:
+                        result = currentMapperState.LeftPad.Touch;
+                        break;
+                    case JoypadActionCodes.RPadTouch:
+                        result = currentMapperState.RightPad.Touch;
+                        break;
+                    case JoypadActionCodes.LPadClick:
+                        result = currentMapperState.LeftPad.Click;
+                        break;
+                    case JoypadActionCodes.RPadClick:
+                        result = currentMapperState.RightPad.Click;
+                        break;
+                    case JoypadActionCodes.LTFullPull:
+                        result = currentMapperState.LTClick;
+                        break;
+                    case JoypadActionCodes.RTFullPull:
+                        result = currentMapperState.RTClick;
+                        break;
+                    default:
+                        break;
+                }
+
+                if (andEval && !result)
+                {
+                    break;
+                }
+                else if (!andEval && result)
+                {
+                    break;
+                }
+            }
+
+            return result;
+        }
+
+        public override ref TouchEventFrame GetPreviousTouchEventFrame(TouchpadActionCodes padID)
+        {
+            switch (padID)
+            {
+                case TouchpadActionCodes.Touch1:
+                    return ref previousTouchFrameLeftPad;
+                case TouchpadActionCodes.Touch2:
+                    return ref previousTouchFrameRightPad;
+                default:
+                    break;
+            }
+
+            return ref previousTouchFrameLeftPad;
         }
     }
 }
