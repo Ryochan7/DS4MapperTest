@@ -5,8 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Input;
-using System.Windows;
+using System.Windows; // Rect
 using DS4MapperTest.DPadActions;
 using DS4MapperTest.MapperUtil;
 using Nefarius.ViGEm.Client;
@@ -23,7 +22,6 @@ using Nefarius.ViGEm.Client.Targets;
 using Nefarius.ViGEm.Client.Targets.Xbox360;
 using Nefarius.ViGEm.Client.Targets.DualShock4;
 using System.Runtime.CompilerServices;
-using DS4MapperTest.ViewModels.GyroActionPropViewModels;
 
 namespace DS4MapperTest
 {
