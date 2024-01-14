@@ -15,14 +15,24 @@
     <Version>0.0.16</Version>
     <Configuration Condition="'$(Configuration)' == ''">Debug</Configuration>
     <Platform Condition="'$(Platform)' == ''">x64</Platform>
+    <Configurations>Debug;Release;Debug Tests;Release Tests</Configurations>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <DefineConstants>$(DefineConstants);WIN64</DefineConstants>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug Tests|x64'">
+    <DefineConstants>$(DefineConstants);WIN64;MAKE_TESTS</DefineConstants>
+  </PropertyGroup>
+
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <DefineConstants>$(DefineConstants);WIN64</DefineConstants>
+    <DebugType>none</DebugType>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release Tests|x64'">
+    <DefineConstants>$(DefineConstants);WIN64;MAKE_TESTS</DefineConstants>
     <DebugType>none</DebugType>
   </PropertyGroup>
 

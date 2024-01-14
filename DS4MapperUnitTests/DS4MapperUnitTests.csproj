@@ -9,6 +9,7 @@
     <IsTestProject>true</IsTestProject>
     <Platforms>x64</Platforms>
     <IsPublishable>False</IsPublishable>
+    <Configurations>Debug;Release;Debug Tests;Release Tests</Configurations>
   </PropertyGroup>
 
   <ItemGroup>

@@ -1226,7 +1226,9 @@ namespace DS4MapperTest
                     refCount--;
                     if (refCount <= 0)
                     {
+#if !MAKE_TESTS
                         fakerInputHandler.PerformKeyRelease(vk);
+#endif
                         //keyboardReport.KeyUp((KeyboardKey)vk);
                         //InputMethods.performKeyRelease((ushort)vk);
                         keyReferenceCountDict.Remove(vk);
@@ -1242,7 +1244,9 @@ namespace DS4MapperTest
             {
                 if (!keyReferenceCountDict.TryGetValue(vk, out int refCount))
                 {
+#if !MAKE_TESTS
                     fakerInputHandler.PerformKeyPress(vk);
+#endif
                     //keyboardReport.KeyDown((KeyboardKey)vk);
                     //InputMethods.performKeyPress((ushort)vk);
                     keyReferenceCountDict.Add(vk, 1);
