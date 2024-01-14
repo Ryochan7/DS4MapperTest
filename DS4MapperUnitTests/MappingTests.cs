@@ -614,11 +614,36 @@ namespace DS4MapperUnitTests
                 LY = -27000,
             };
 
-            // Run mapper routine and check output state
-            mapper.Reader_Report(inputState, out IntermediateState outputState);
-            Assert.AreEqual(true, outputState.BtnSouth);
-            Assert.AreEqual(true, outputState.DpadDown);
-            Assert.AreEqual(true, outputState.DpadRight);
+            {
+                // Run mapper routine and check output state
+                mapper.Reader_Report(inputState, out IntermediateState outputState);
+                Assert.AreEqual(true, outputState.BtnSouth); // A
+                Assert.AreEqual(true, outputState.DpadDown); // LY
+                Assert.AreEqual(true, outputState.DpadRight); // LX
+            }
+
+            // Populate input state struct with mock data
+            inputState = new SteamControllerState()
+            {
+                X = true,
+                LeftPad = new SteamControllerState.TouchPadInfo()
+                {
+                    X = 32767,
+                    Y = 0,
+                    Touch = true,
+                    Click = false,
+                },
+            };
+
+            {
+                // Run mapper routine and check output state
+                mapper.Reader_Report(inputState, out IntermediateState outputState);
+                Assert.AreEqual(true, outputState.BtnWest); // X
+                Assert.AreEqual(false, outputState.BtnSouth); // A (check release)
+                Assert.AreEqual(1.0, outputState.LX); // LeftPad X
+                Assert.AreEqual(0.0, outputState.LY); // LeftPad Y
+                Assert.AreEqual(false, outputState.BtnThumbL); // LeftPad Click
+            }
         }
     }
 }
