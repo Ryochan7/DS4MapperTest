@@ -20,7 +20,6 @@ using DS4MapperTest.TriggerActions;
 using Newtonsoft.Json;
 using System.IO;
 using Nefarius.ViGEm.Client.Targets;
-using System.Reflection.PortableExecutable;
 using Nefarius.ViGEm.Client.Targets.Xbox360;
 using Nefarius.ViGEm.Client.Targets.DualShock4;
 using System.Runtime.CompilerServices;
