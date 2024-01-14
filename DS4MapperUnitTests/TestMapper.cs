@@ -241,8 +241,6 @@ namespace DS4MapperUnitTests
 
             unchecked
             {
-                outputController?.ResetReport();
-
                 intermediateState = new IntermediateState();
                 currentLatency = currentMapperState.timeElapsed;
                 currentRate = 1.0 / currentLatency;

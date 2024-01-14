@@ -22,10 +22,4 @@
     <ProjectReference Include="..\DS4MapperTest\DS4MapperTest.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Reference Include="Nefarius.ViGEm.Client">
-      <HintPath>..\DS4MapperTest\libs\x64\Nefarius.ViGEm.Client\Nefarius.ViGEm.Client.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-
 </Project>
