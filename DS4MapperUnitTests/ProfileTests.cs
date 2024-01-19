@@ -1421,7 +1421,7 @@ namespace DS4MapperUnitTests
 
             // Grab currently bound Gyro action and swap it with a GyroMouse action
             ActionSet currentSet = tempProfile.CurrentActionSet;
-            ActionLayer currentLayer = tempProfile.CurrentActionSet.CurrentActionLayer;
+            ActionLayer currentLayer = tempProfile.CurrentActionSet.RecentAppliedLayer;
             GyroMapAction oldAction = currentLayer.gyroActionDict["Gyro"];
             GyroMouse mouseAction = new GyroMouse();
             mouseAction.CopyBaseProps(oldAction);
