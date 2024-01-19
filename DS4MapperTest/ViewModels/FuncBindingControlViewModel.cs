@@ -286,8 +286,6 @@ namespace DS4MapperTest.ViewModels
         {
             thing.Clear();
 
-            ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
-
             mapper.ProcessMappingChangeAction(() =>
             {
                 action.Release(mapper, ignoreReleaseActions: true);
@@ -299,11 +297,7 @@ namespace DS4MapperTest.ViewModels
                                 new OutputActionData(OutputActionData.ActionType.Empty, 0)));
                     action.ChangedProperties.Add(ButtonAction.PropertyKeyStrings.FUNCTIONS);
                 }
-
-                resetEvent.Set();
             });
-
-            resetEvent.Wait(1000);
 
             int tempInd = 0;
             foreach (ActionFunc func in action.ActionFuncs)

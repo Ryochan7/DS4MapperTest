@@ -650,18 +650,13 @@ namespace DS4MapperTest.ViewModels
         public void AddLayer()
         {
             ActionLayer tempLayer = null;
-            ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
             mapper.ProcessMappingChangeAction(() =>
             {
                 int ind = mapper.ActionProfile.CurrentActionSet.ActionLayers.Count;
                 tempLayer = new ActionLayer(ind);
                 tempLayer.Name = $"Layer {ind+1}";
                 mapper.ActionProfile.CurrentActionSet.ActionLayers.Add(tempLayer);
-
-                resetEvent.Set();
             });
-
-            resetEvent.Wait();
 
             ActionLayerItemsTest tempItem = new ActionLayerItemsTest(mapper.ActionProfile.CurrentActionSet, tempLayer, layerItems.Count);
             layerItems.Add(tempItem);
@@ -671,26 +666,21 @@ namespace DS4MapperTest.ViewModels
         {
             if (selectedActionLayerIndex <= 0) return;
 
-            ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
             mapper.ProcessMappingChangeAction(() =>
             {
                 ActionLayer tempLayer = mapper.ActionProfile.CurrentActionSet.RecentAppliedLayer;
                 tempLayer.ReleaseActions(mapper, ignoreReleaseActions: true);
                 mapper.ActionProfile.CurrentActionSet.ActionLayers.Remove(tempLayer);
                 mapper.ActionProfile.CurrentActionSet.RecompileCompositeLayer(mapper);
-
-                resetEvent.Set();
             });
 
             layerItems.RemoveAt(selectedActionLayerIndex);
             SelectedActionLayerIndex = 0;
-            resetEvent.Wait();
         }
 
         public void AddSet()
         {
             ActionSet tempSet = null;
-            ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
             mapper.ProcessMappingChangeAction(() =>
             {
                 int ind = mapper.ActionProfile.ActionSets.Count;
@@ -700,11 +690,7 @@ namespace DS4MapperTest.ViewModels
 
                 tempSet.ClearCompositeLayerActions();
                 tempSet.PrepareCompositeLayer();
-
-                resetEvent.Set();
             });
-
-            resetEvent.Wait();
 
             ActionSetItemsTest tempItem = new ActionSetItemsTest(tempSet);
             actionSetItems.Add(tempItem);
@@ -714,7 +700,6 @@ namespace DS4MapperTest.ViewModels
         {
             if (selectedActionSetIndex <= 0) return;
 
-            ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
             mapper.ProcessMappingChangeAction(() =>
             {
                 ActionSet tempSet = mapper.ActionProfile.CurrentActionSet;
@@ -725,13 +710,10 @@ namespace DS4MapperTest.ViewModels
                 mapper.ActionProfile.ActionSets.Remove(tempSet);
 
                 mapper.ActionProfile.CurrentActionSet.RecompileCompositeLayer(mapper);
-
-                resetEvent.Set();
             });
 
             actionSetItems.RemoveAt(SelectedActionSetIndex);
             SelectedActionSetIndex = 0;
-            resetEvent.Wait();
         }
 
         public void PopulateMapperEditActionRefs(Mapper mapper)

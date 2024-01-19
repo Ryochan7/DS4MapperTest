@@ -244,14 +244,10 @@ namespace DS4MapperTest.ViewModels
 
         public void WaitMapperEvent(DeviceListItem item)
         {
-            ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
             Mapper map = backendManager.MapperDict[item.Device.Index];
             map.ProcessMappingChangeAction(() =>
             {
-                resetEvent.Set();
             });
-
-            resetEvent.Wait();
         }
     }
 

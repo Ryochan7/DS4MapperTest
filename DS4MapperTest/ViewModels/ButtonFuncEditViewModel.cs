@@ -153,8 +153,6 @@ namespace DS4MapperTest.ViewModels
 
         public void SwitchLayerAction(ButtonMapAction oldAction, ButtonMapAction newAction, bool copyProps = true)
         {
-            ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
-
             mapper.ProcessMappingChangeAction(() =>
             {
                 oldAction.Release(mapper, ignoreReleaseActions: true);
@@ -201,10 +199,7 @@ namespace DS4MapperTest.ViewModels
                 }
 
                 usingRealAction = true;
-                resetEvent.Set();
             });
-
-            resetEvent.Wait();
         }
     }
 

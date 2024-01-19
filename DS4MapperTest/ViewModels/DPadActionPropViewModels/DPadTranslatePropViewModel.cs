@@ -94,8 +94,6 @@ namespace DS4MapperTest.ViewModels.DPadActionPropViewModels
         {
             if (!usingRealAction)
             {
-                ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
-
                 mapper.ProcessMappingChangeAction(() =>
                 {
                     this.action.ParentAction.Release(mapper, ignoreReleaseActions: true);
@@ -109,11 +107,7 @@ namespace DS4MapperTest.ViewModels.DPadActionPropViewModels
                     {
                         mapper.ActionProfile.CurrentActionSet.CurrentActionLayer.SyncActions();
                     }
-
-                    resetEvent.Set();
                 });
-
-                resetEvent.Wait();
 
                 usingRealAction = true;
 

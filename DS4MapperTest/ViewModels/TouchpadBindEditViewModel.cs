@@ -165,8 +165,6 @@ namespace DS4MapperTest.ViewModels
             TouchpadMapAction oldAction = this.action;
             TouchpadMapAction newAction = action;
 
-            ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
-
             mapper.ProcessMappingChangeAction(() =>
             {
                 oldAction.Release(mapper, ignoreReleaseActions: true);
@@ -207,11 +205,7 @@ namespace DS4MapperTest.ViewModels
                         mapper.ActionProfile.CurrentActionSet.PrepareCompositeLayer();
                     }
                 }
-
-                resetEvent.Set();
             });
-
-            resetEvent.Wait();
 
             this.action = action;
         }

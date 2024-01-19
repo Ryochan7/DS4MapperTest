@@ -561,8 +561,6 @@ namespace DS4MapperTest.ViewModels.StickActionPropViewModels
             if (outputStickIndex == -1) return;
 
             OutputStickSelectionItem item = outputStickHolder.OutputStickItems[outputStickIndex];
-            ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
-
             mapper.ProcessMappingChangeAction(() =>
             {
                 action.Release(mapper, ignoreReleaseActions: true);
@@ -570,11 +568,7 @@ namespace DS4MapperTest.ViewModels.StickActionPropViewModels
                 action.OutputAction.Reset();
                 action.OutputAction.Prepare(MapperUtil.OutputActionData.ActionType.GamepadControl, 0);
                 action.OutputAction.StickCode = item.Code;
-
-                resetEvent.Set();
             });
-
-            resetEvent.Wait();
         }
 
         private void StickTranslatePropViewModel_MaxZoneChanged(object sender, EventArgs e)
@@ -636,8 +630,6 @@ namespace DS4MapperTest.ViewModels.StickActionPropViewModels
         {
             if (!replacedAction)
             {
-                ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
-
                 mapper.ProcessMappingChangeAction(() =>
                 {
                     this.action.ParentAction.Release(mapper, ignoreReleaseActions: true);
@@ -651,11 +643,7 @@ namespace DS4MapperTest.ViewModels.StickActionPropViewModels
                     {
                         mapper.EditLayer.SyncActions();
                     }
-
-                    resetEvent.Set();
                 });
-
-                resetEvent.Wait();
 
                 replacedAction = true;
 

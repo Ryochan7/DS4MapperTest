@@ -106,8 +106,6 @@ namespace DS4MapperTest.ViewModels
 
         public bool CreateProfile()
         {
-            ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
-
             Profile tempProfile = null;
             string profileName = string.Empty;
             mapper.ProcessMappingChangeAction(() =>
@@ -123,11 +121,7 @@ namespace DS4MapperTest.ViewModels
                 tempProfile.ActionSets[0].ActionLayers[0].Name = "Default";
 
                 mapper.AppGlobal.CreateBlankProfile(profilePath, tempProfile);
-
-                resetEvent.Set();
             });
-
-            resetEvent.Wait();
 
             manager.DeviceProfileListDict[mapper.DeviceType].CreateProfileItem(profilePath,
                     profileName,

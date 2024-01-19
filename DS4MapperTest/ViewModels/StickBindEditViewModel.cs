@@ -121,8 +121,6 @@ namespace DS4MapperTest.ViewModels
             StickMapAction oldAction = this.action;
             StickMapAction newAction = action;
 
-            ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
-
             mapper.ProcessMappingChangeAction(() =>
             {
                 oldAction.Release(mapper, ignoreReleaseActions: true);
@@ -161,11 +159,7 @@ namespace DS4MapperTest.ViewModels
                         mapper.ActionProfile.CurrentActionSet.PrepareCompositeLayer();
                     }
                 }
-
-                resetEvent.Set();
             });
-
-            resetEvent.Wait();
 
             this.action = action;
         }

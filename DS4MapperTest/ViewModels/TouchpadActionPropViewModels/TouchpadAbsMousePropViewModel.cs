@@ -389,7 +389,6 @@ namespace DS4MapperTest.ViewModels.TouchpadActionPropViewModels
         {
             if (!usingRealAction)
             {
-                ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
                 mapper.ProcessMappingChangeAction(() =>
                 {
                     this.action.ParentAction.Release(mapper, ignoreReleaseActions: true);
@@ -403,11 +402,7 @@ namespace DS4MapperTest.ViewModels.TouchpadActionPropViewModels
                     {
                         mapper.EditLayer.SyncActions();
                     }
-
-                    resetEvent.Set();
                 });
-
-                resetEvent.Wait();
 
                 usingRealAction = true;
             }
@@ -425,7 +420,6 @@ namespace DS4MapperTest.ViewModels.TouchpadActionPropViewModels
                 ReplaceExistingLayerAction(this, EventArgs.Empty);
             }
 
-            ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
             //ExecuteInMapperThread(() =>
             mapper.ProcessMappingChangeAction(() =>
             {
@@ -437,11 +431,7 @@ namespace DS4MapperTest.ViewModels.TouchpadActionPropViewModels
 
                 action.ChangedProperties.Add(TouchpadAbsAction.PropertyKeyStrings.OUTER_RING_BUTTON);
                 action.UseParentRingButton = false;
-
-                resetEvent.Set();
             });
-
-            resetEvent.Wait();
         }
     }
 }

@@ -631,8 +631,6 @@ namespace DS4MapperTest.ViewModels.TouchpadActionPropViewModels
         {
             if (!usingRealAction)
             {
-                ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
-
                 mapper.ProcessMappingChangeAction(() =>
                 {
                     this.action.ParentAction.Release(mapper, ignoreReleaseActions: true);
@@ -646,11 +644,7 @@ namespace DS4MapperTest.ViewModels.TouchpadActionPropViewModels
                     {
                         mapper.EditLayer.SyncActions();
                     }
-
-                    resetEvent.Set();
                 });
-
-                resetEvent.Wait();
 
                 usingRealAction = true;
             }

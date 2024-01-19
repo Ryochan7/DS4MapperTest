@@ -250,8 +250,6 @@ namespace DS4MapperTest.ViewModels.TriggerActionPropViewModels
         {
             if (!usingRealAction)
             {
-                ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
-
                 mapper.ProcessMappingChangeAction(() =>
                 {
                     this.action.ParentAction?.Release(mapper, ignoreReleaseActions: true);
@@ -267,11 +265,7 @@ namespace DS4MapperTest.ViewModels.TriggerActionPropViewModels
                         mapper.EditActionSet.ClearCompositeLayerActions();
                         mapper.EditActionSet.PrepareCompositeLayer();
                     }
-
-                    resetEvent.Set();
                 });
-
-                resetEvent.Wait();
 
                 usingRealAction = true;
 
@@ -365,7 +359,6 @@ namespace DS4MapperTest.ViewModels.TriggerActionPropViewModels
                 ReplaceExistingLayerAction(this, EventArgs.Empty);
             }
 
-            ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
             //ExecuteInMapperThread(() =>
             mapper.ProcessMappingChangeAction(() =>
             {
@@ -378,11 +371,7 @@ namespace DS4MapperTest.ViewModels.TriggerActionPropViewModels
                 action.ChangedProperties.Add(TriggerDualStageAction.PropertyKeyStrings.FULLPULL_BUTTON);
                 action.UseParentFullPullBtn = false;
                 action.RaiseNotifyPropertyChange(mapper, TriggerDualStageAction.PropertyKeyStrings.FULLPULL_BUTTON);
-
-                resetEvent.Set();
             });
-
-            resetEvent.Wait();
         }
 
         public void UpdateSoftPullAction(ButtonAction oldAction, ButtonAction newAction)
@@ -392,7 +381,6 @@ namespace DS4MapperTest.ViewModels.TriggerActionPropViewModels
                 ReplaceExistingLayerAction(this, EventArgs.Empty);
             }
 
-            ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
             //ExecuteInMapperThread(() =>
             mapper.ProcessMappingChangeAction(() =>
             {
@@ -405,11 +393,7 @@ namespace DS4MapperTest.ViewModels.TriggerActionPropViewModels
                 action.ChangedProperties.Add(TriggerDualStageAction.PropertyKeyStrings.SOFTPULL_BUTTON);
                 action.UseParentSoftPullBtn = false;
                 action.RaiseNotifyPropertyChange(mapper, TriggerDualStageAction.PropertyKeyStrings.SOFTPULL_BUTTON);
-
-                resetEvent.Set();
             });
-
-            resetEvent.Wait();
         }
     }
 }

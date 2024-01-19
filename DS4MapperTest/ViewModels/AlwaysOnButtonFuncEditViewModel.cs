@@ -28,8 +28,6 @@ namespace DS4MapperTest.ViewModels
 
         public new void SwitchLayerAction(ButtonMapAction oldAction, ButtonMapAction newAction, bool copyProps = true)
         {
-            ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
-
             mapper.ProcessMappingChangeAction(() =>
             {
                 oldAction.Release(mapper, ignoreReleaseActions: true);
@@ -74,11 +72,7 @@ namespace DS4MapperTest.ViewModels
                         mapper.ActionProfile.CurrentActionSet.PrepareCompositeLayer();
                     }
                 }
-
-                resetEvent.Set();
             });
-
-            resetEvent.Wait();
         }
     }
 }

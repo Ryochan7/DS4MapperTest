@@ -135,8 +135,6 @@ namespace DS4MapperTest.ViewModels.StickActionPropViewModels
         {
             if (!usingRealAction)
             {
-                ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
-
                 mapper.ProcessMappingChangeAction(() =>
                 {
                     this.action.ParentAction.Release(mapper, ignoreReleaseActions: true);
@@ -152,11 +150,7 @@ namespace DS4MapperTest.ViewModels.StickActionPropViewModels
                         mapper.EditActionSet.ClearCompositeLayerActions();
                         mapper.EditActionSet.PrepareCompositeLayer();
                     }
-
-                    resetEvent.Set();
                 });
-
-                resetEvent.Wait();
 
                 usingRealAction = true;
 
@@ -211,16 +205,10 @@ namespace DS4MapperTest.ViewModels.StickActionPropViewModels
 
         protected void ExecuteInMapperThread(Action tempAction)
         {
-            ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
-
             mapper.ProcessMappingChangeAction(() =>
             {
                 tempAction?.Invoke();
-
-                resetEvent.Set();
             });
-
-            resetEvent.Wait();
         }
     }
 }

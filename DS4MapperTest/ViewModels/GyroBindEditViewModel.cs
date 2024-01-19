@@ -85,8 +85,6 @@ namespace DS4MapperTest.ViewModels
             GyroMapAction oldAction = this.action;
             GyroMapAction newAction = action;
 
-            ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
-
             mapper.ProcessMappingChangeAction(() =>
             {
                 oldAction.Release(mapper, ignoreReleaseActions: true);
@@ -127,11 +125,7 @@ namespace DS4MapperTest.ViewModels
                         mapper.ActionProfile.CurrentActionSet.PrepareCompositeLayer();
                     }
                 }
-
-                resetEvent.Set();
             });
-
-            resetEvent.Wait();
 
             this.action = action;
         }
