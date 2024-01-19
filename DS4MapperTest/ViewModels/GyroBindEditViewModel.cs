@@ -99,15 +99,15 @@ namespace DS4MapperTest.ViewModels
                     //oldAction.Release(mapper, ignoreReleaseActions: true);
 
                     //mapper.ActionProfile.CurrentActionSet.RecentAppliedLayer.AddTouchpadAction(this.action);
-                    bool exists = mapper.ActionProfile.CurrentActionSet.RecentAppliedLayer.LayerActions.Contains(oldAction);
+                    bool exists = mapper.EditLayer.LayerActions.Contains(oldAction);
                     //if (oldAction.Id != MapAction.DEFAULT_UNBOUND_ID)
                     if (exists)
                     {
-                        mapper.ActionProfile.CurrentActionSet.RecentAppliedLayer.ReplaceGyroAction(oldAction, newAction);
+                        mapper.EditLayer.ReplaceGyroAction(oldAction, newAction);
                     }
                     else
                     {
-                        mapper.ActionProfile.CurrentActionSet.RecentAppliedLayer.AddGyroAction(newAction);
+                        mapper.EditLayer.AddGyroAction(newAction);
                     }
 
                     if (mapper.ActionProfile.CurrentActionSet.UsingCompositeLayer)
