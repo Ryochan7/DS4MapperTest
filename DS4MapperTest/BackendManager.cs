@@ -398,7 +398,7 @@ namespace DS4MapperTest
                 }
 
                 //testMapper.Start(device, reader);
-                testMapper.Start(vigemTestClient, fakerInputHandler);
+                testMapper.Start(x360BusDevice, fakerInputHandler);
                 //testMapper.RequestOSD += TestMapper_RequestOSD;
                 int tempInd = ind;
                 testMapper.ProfileChanged += (object sender, string e) => {

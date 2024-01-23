@@ -1,16 +1,17 @@
 ﻿using DS4MapperTest.ButtonActions;
 using DS4MapperTest.GyroActions;
 using DS4MapperTest.MapperUtil;
+using DS4MapperTest.ScpVBus;
 using DS4MapperTest.StickActions;
 using DS4MapperTest.TouchpadActions;
 using DS4MapperTest.TriggerActions;
-using Nefarius.ViGEm.Client;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using static DS4MapperTest.ScpVBus.Xbox360ScpOutDevice;
 
 namespace DS4MapperTest.SteamControllerLibrary
 {
@@ -233,9 +234,9 @@ namespace DS4MapperTest.SteamControllerLibrary
             };
         }
 
-        public override void Start(ViGEmClient vigemTestClient, FakerInputHandler fakerInputHandler)
+        public override void Start(X360BusDevice busDevice, FakerInputHandler fakerInputHandler)
         {
-            base.Start(vigemTestClient, fakerInputHandler);
+            base.Start(busDevice, fakerInputHandler);
 
             reader.Report += Reader_Report;
             reader.StartUpdate();
@@ -278,7 +279,7 @@ namespace DS4MapperTest.SteamControllerLibrary
 
             unchecked
             {
-                outputController?.ResetReport();
+                //outputControllerSCP?.ResetState(false);
 
                 intermediateState = new IntermediateState();
                 currentLatency = currentMapperState.timeElapsed;
@@ -530,14 +531,15 @@ namespace DS4MapperTest.SteamControllerLibrary
 
         public override void EstablishForceFeedback()
         {
-            if (outputControlType == OutputContType.Xbox360)
+            if (outputControlType == OutputContType.Xbox360 && outputControllerSCP != null)
             {
-                outputForceFeedbackDel = (sender, e) =>
+                Xbox360FeedbackReceivedEventHandler tempDel = (Xbox360ScpOutDevice sender, byte large, byte small, int idx) =>
                 {
-                    device.currentLeftAmpRatio = e.LargeMotor / 255.0;
-                    device.currentRightAmpRatio = e.SmallMotor / 255.0;
+                    device.currentLeftAmpRatio = large / 255.0;
+                    device.currentRightAmpRatio = small / 255.0;
                     reader.WriteRumbleReport();
                 };
+                outputControllerSCP.forceFeedbacksDict.Add(device.Index, tempDel);
             }
         }
 
