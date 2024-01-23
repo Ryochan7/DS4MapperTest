@@ -121,9 +121,7 @@ namespace DS4MapperTest.ViewModels
             StickMapAction oldAction = this.action;
             StickMapAction newAction = action;
 
-            ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
-
-            mapper.QueueEvent(() =>
+            mapper.ProcessMappingChangeAction(() =>
             {
                 oldAction.Release(mapper, ignoreReleaseActions: true);
                 //int tempInd = mapper.ActionProfile.CurrentActionSet.CurrentActionLayer.LayerActions.FindIndex((item) => item == tempAction);
@@ -161,11 +159,7 @@ namespace DS4MapperTest.ViewModels
                         mapper.ActionProfile.CurrentActionSet.PrepareCompositeLayer();
                     }
                 }
-
-                resetEvent.Set();
             });
-
-            resetEvent.Wait();
 
             this.action = action;
         }

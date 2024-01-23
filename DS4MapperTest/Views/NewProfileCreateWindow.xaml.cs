@@ -79,5 +79,10 @@ namespace DS4MapperTest.Views
                 return;
             }
         }
+
+        private void Window_Closed(object sender, EventArgs e)
+        {
+            DataContext = null;
+        }
     }
 }

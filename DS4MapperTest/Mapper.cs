@@ -5,8 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Input;
-using System.Windows;
+using System.Windows; // Rect
 using DS4MapperTest.DPadActions;
 using DS4MapperTest.MapperUtil;
 using DS4MapperTest.ButtonActions;
@@ -263,6 +262,11 @@ namespace DS4MapperTest
         //protected object eventQueueLock = new object();
         protected ReaderWriterLockSlim eventQueueLocker = new ReaderWriterLockSlim();
         protected Queue<Action> eventQueue = new Queue<Action>();
+
+        protected ReaderWriterLockSlim mapperActiveEditLock = new ReaderWriterLockSlim();
+        protected bool mapperActionActive;
+        protected bool pauseMapper;
+        protected bool skipMapping;
 
         private void ReadFromProfile()
         {
@@ -1195,7 +1199,7 @@ namespace DS4MapperTest
 
         public virtual void HookFeedback()
         {
-            if (outputControllerSCP.forceFeedbacksDict.TryGetValue(baseDevice.Index, out Xbox360FeedbackReceivedEventHandler tempDel))
+            if (outputControllerSCP != null && outputControllerSCP.forceFeedbacksDict.TryGetValue(baseDevice.Index, out Xbox360FeedbackReceivedEventHandler tempDel))
             {
                 outputControllerSCP.FeedbackReceived += tempDel;
             }
@@ -1207,7 +1211,7 @@ namespace DS4MapperTest
 
         public virtual void RemoveFeedback()
         {
-            outputControllerSCP.RemoveFeedbacks();
+            outputControllerSCP?.RemoveFeedbacks();
             //if (outputForceFeedbackDel != null)
             //{
             //    (outputController as IXbox360Controller).FeedbackReceived -= outputForceFeedbackDel;
@@ -1226,7 +1230,9 @@ namespace DS4MapperTest
                     refCount--;
                     if (refCount <= 0)
                     {
+#if !MAKE_TESTS
                         fakerInputHandler.PerformKeyRelease(vk);
+#endif
                         //keyboardReport.KeyUp((KeyboardKey)vk);
                         //InputMethods.performKeyRelease((ushort)vk);
                         keyReferenceCountDict.Remove(vk);
@@ -1242,7 +1248,9 @@ namespace DS4MapperTest
             {
                 if (!keyReferenceCountDict.TryGetValue(vk, out int refCount))
                 {
+#if !MAKE_TESTS
                     fakerInputHandler.PerformKeyPress(vk);
+#endif
                     //keyboardReport.KeyDown((KeyboardKey)vk);
                     //InputMethods.performKeyPress((ushort)vk);
                     keyReferenceCountDict.Add(vk, 1);
@@ -2510,6 +2518,11 @@ namespace DS4MapperTest
             }
         }
 
+        /// <summary>
+        /// Add Action to a list of Actions to call at the end of mapping routine.
+        /// Action will be called in input thread
+        /// </summary>
+        /// <param name="tempAct">Action to enqueue to Queue</param>
         public void QueueEvent(Action tempAct)
         {
             //lock(eventQueueLock)
@@ -2517,6 +2530,31 @@ namespace DS4MapperTest
             {
                 eventQueue.Enqueue(tempAct);
                 hasInputEvts = true;
+            }
+        }
+
+        /// <summary>
+        /// Wait for mapping routine to be finished and then call passed Action.
+        /// Action will run in called thread
+        /// </summary>
+        /// <param name="tempAct">Action to call when mapping routine is not running.</param>
+        public void ProcessMappingChangeAction(Action tempAct)
+        {
+            using (WriteLocker locker = new WriteLocker(mapperActiveEditLock))
+            {
+                while (mapperActionActive)
+                {
+                    Thread.SpinWait(500);
+                }
+
+                // Mapping is not active. Set flag to halt mapper when entered
+                pauseMapper = true;
+
+                // Run call
+                tempAct.Invoke();
+
+                // Let mapper continue
+                pauseMapper = false;
             }
         }
 

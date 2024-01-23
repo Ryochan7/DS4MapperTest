@@ -207,7 +207,7 @@ namespace DS4MapperTest.ViewModels
             Mapper map = backendManager.MapperDict[item.Device.Index];
             string profilePath = backendManager.DeviceProfileListDict[item.Device.DeviceType].ProfileListCol[item.ProfileIndex].ProfilePath;
 
-            map.QueueEvent(() =>
+            map.ProcessMappingChangeAction(() =>
             {
                 //map.UseBlankProfile();
                 //ReadProfileFailure?.Invoke(this, new ReadProfileFailException(new JsonException(), $"Failed to read profile {profilePath}"));
@@ -244,14 +244,10 @@ namespace DS4MapperTest.ViewModels
 
         public void WaitMapperEvent(DeviceListItem item)
         {
-            ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
             Mapper map = backendManager.MapperDict[item.Device.Index];
-            map.QueueEvent(() =>
+            map.ProcessMappingChangeAction(() =>
             {
-                resetEvent.Set();
             });
-
-            resetEvent.Wait();
         }
     }
 

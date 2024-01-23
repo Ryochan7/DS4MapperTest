@@ -85,9 +85,7 @@ namespace DS4MapperTest.ViewModels
             GyroMapAction oldAction = this.action;
             GyroMapAction newAction = action;
 
-            ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
-
-            mapper.QueueEvent(() =>
+            mapper.ProcessMappingChangeAction(() =>
             {
                 oldAction.Release(mapper, ignoreReleaseActions: true);
                 //int tempInd = mapper.ActionProfile.CurrentActionSet.CurrentActionLayer.LayerActions.FindIndex((item) => item == tempAction);
@@ -99,15 +97,15 @@ namespace DS4MapperTest.ViewModels
                     //oldAction.Release(mapper, ignoreReleaseActions: true);
 
                     //mapper.ActionProfile.CurrentActionSet.RecentAppliedLayer.AddTouchpadAction(this.action);
-                    bool exists = mapper.ActionProfile.CurrentActionSet.RecentAppliedLayer.LayerActions.Contains(oldAction);
+                    bool exists = mapper.EditLayer.LayerActions.Contains(oldAction);
                     //if (oldAction.Id != MapAction.DEFAULT_UNBOUND_ID)
                     if (exists)
                     {
-                        mapper.ActionProfile.CurrentActionSet.RecentAppliedLayer.ReplaceGyroAction(oldAction, newAction);
+                        mapper.EditLayer.ReplaceGyroAction(oldAction, newAction);
                     }
                     else
                     {
-                        mapper.ActionProfile.CurrentActionSet.RecentAppliedLayer.AddGyroAction(newAction);
+                        mapper.EditLayer.AddGyroAction(newAction);
                     }
 
                     if (mapper.ActionProfile.CurrentActionSet.UsingCompositeLayer)
@@ -127,11 +125,7 @@ namespace DS4MapperTest.ViewModels
                         mapper.ActionProfile.CurrentActionSet.PrepareCompositeLayer();
                     }
                 }
-
-                resetEvent.Set();
             });
-
-            resetEvent.Wait();
 
             this.action = action;
         }

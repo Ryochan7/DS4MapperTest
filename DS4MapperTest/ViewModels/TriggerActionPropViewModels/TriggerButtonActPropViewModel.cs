@@ -134,9 +134,7 @@ namespace DS4MapperTest.ViewModels.TriggerActionPropViewModels
         {
             if (!usingRealAction)
             {
-                ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
-
-                mapper.QueueEvent(() =>
+                mapper.ProcessMappingChangeAction(() =>
                 {
                     this.action.ParentAction?.Release(mapper, ignoreReleaseActions: true);
 
@@ -151,11 +149,7 @@ namespace DS4MapperTest.ViewModels.TriggerActionPropViewModels
                         mapper.EditActionSet.ClearCompositeLayerActions();
                         mapper.EditActionSet.PrepareCompositeLayer();
                     }
-
-                    resetEvent.Set();
                 });
-
-                resetEvent.Wait();
 
                 usingRealAction = true;
 
@@ -175,9 +169,8 @@ namespace DS4MapperTest.ViewModels.TriggerActionPropViewModels
                 ReplaceExistingLayerAction(this, EventArgs.Empty);
             }
 
-            ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
             //ExecuteInMapperThread(() =>
-            mapper.QueueEvent(() =>
+            mapper.ProcessMappingChangeAction(() =>
             {
                 if (oldAction != null)
                 {
@@ -188,11 +181,7 @@ namespace DS4MapperTest.ViewModels.TriggerActionPropViewModels
                 action.ChangedProperties.Add(TriggerButtonAction.PropertyKeyStrings.OUTPUT_BINDING);
                 action.UseParentEventButton = false;
                 action.RaiseNotifyPropertyChange(mapper, TriggerButtonAction.PropertyKeyStrings.OUTPUT_BINDING);
-
-                resetEvent.Set();
             });
-
-            resetEvent.Wait();
         }
     }
 }

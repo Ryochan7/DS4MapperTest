@@ -19,6 +19,7 @@ using HidLibrary;
 using System.Windows.Interop;
 using System.Diagnostics;
 using System.Threading;
+using DS4MapperTest.SteamControllerLibrary;
 
 namespace DS4MapperTest
 {
@@ -210,7 +211,20 @@ namespace DS4MapperTest
 
         private void ContSettingsBtn_Click(object sender, RoutedEventArgs e)
         {
-
+            Control tempControl = sender as Control;
+            int itemIndex = Convert.ToInt32(tempControl.Tag);
+            if (itemIndex >= 0)
+            {
+                int selectedIndex = itemIndex;
+                controlListVM.SelectedIndex = selectedIndex;
+                InputDeviceBase device = controlListVM.ControllerList[selectedIndex].Device;
+                if (device is SteamControllerDevice)
+                {
+                    ControllerConfigWin dialog = new ControllerConfigWin();
+                    dialog.PostInit(device as SteamControllerDevice);
+                    dialog.ShowDialog();
+                }
+            }
         }
 
         private void ControlListVM_ReadProfileFailure(object sender, ReadProfileFailException e)

@@ -631,9 +631,7 @@ namespace DS4MapperTest.ViewModels.TouchpadActionPropViewModels
         {
             if (!usingRealAction)
             {
-                ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
-
-                mapper.QueueEvent(() =>
+                mapper.ProcessMappingChangeAction(() =>
                 {
                     this.action.ParentAction.Release(mapper, ignoreReleaseActions: true);
 
@@ -646,11 +644,7 @@ namespace DS4MapperTest.ViewModels.TouchpadActionPropViewModels
                     {
                         mapper.EditLayer.SyncActions();
                     }
-
-                    resetEvent.Set();
                 });
-
-                resetEvent.Wait();
 
                 usingRealAction = true;
             }
@@ -659,7 +653,7 @@ namespace DS4MapperTest.ViewModels.TouchpadActionPropViewModels
         private void TouchpadStickActionPropViewModel_OutputStickIndexChanged(object sender, EventArgs e)
         {
             OutputStickSelectionItem item = outputStickItems[outputStickIndex];
-            mapper.QueueEvent(() =>
+            mapper.ProcessMappingChangeAction(() =>
             {
                 action.OutputAction.StickCode = item.Code;
                 action.ChangedProperties.Add(TouchpadStickAction.PropertyKeyStrings.OUTPUT_STICK);

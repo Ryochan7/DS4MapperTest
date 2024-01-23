@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using static DS4MapperTest.ScpVBus.Xbox360ScpOutDevice;
 
@@ -186,6 +187,13 @@ namespace DS4MapperTest.SwitchProLibrary
 
         private void Reader_Report(SwitchProReader sender, SwitchProDevice device)
         {
+            while (pauseMapper)
+            {
+                Thread.SpinWait(500);
+            }
+
+            mapperActionActive = true;
+
             ref SwitchProState current = ref device.ClothOff;
             //ref SwitchProState previous = ref device.ClothOff2;
 
@@ -403,6 +411,8 @@ namespace DS4MapperTest.SwitchProLibrary
 
                 // Make copy of state data as the previous state
                 previousMapperState = currentMapperState;
+
+                mapperActionActive = false;
 
                 if (hasInputEvts)
                 {

@@ -33,9 +33,11 @@ namespace DS4MapperTest
         public ActionLayer DefaultActionLayer { get => defaultActionLayer; }
 
         private List<ActionLayer> appliedLayers = new List<ActionLayer>();
+        private ActionLayer recentAppliedLayer;
         public ActionLayer RecentAppliedLayer
         {
-            get => appliedLayers.Last();
+            //get => appliedLayers.Last();
+            get => recentAppliedLayer;
         }
         // Composite layer used when merging ActionLayer instances
         private ActionLayer activeCompositeLayer;
@@ -93,6 +95,7 @@ namespace DS4MapperTest
             currentActionLayer = defaultActionLayer;
 
             appliedLayers.Add(currentActionLayer);
+            recentAppliedLayer = currentActionLayer;
 
             activeCompositeLayer = new ActionLayer(0);
         }
@@ -143,6 +146,7 @@ namespace DS4MapperTest
                 !appliedLayers.Contains(layer))
             {
                 appliedLayers.Add(layer);
+                recentAppliedLayer = layer;
 
                 currentActionLayer.CompareReleaseActions(mapper, layer, false);
 
@@ -227,6 +231,7 @@ namespace DS4MapperTest
 
                     // Applying base ActionLayer
                     currentActionLayer = defaultActionLayer;
+                    recentAppliedLayer = defaultActionLayer;
                 }
                 else
                 {
@@ -336,6 +341,7 @@ namespace DS4MapperTest
                     PrepareCompositeLayer();
 
                     currentActionLayer = defaultActionLayer;
+                    recentAppliedLayer = defaultActionLayer;
                 }
                 else
                 {
@@ -351,6 +357,7 @@ namespace DS4MapperTest
                     }
 
                     appliedLayers.Add(changingLayer);
+                    recentAppliedLayer = changingLayer;
 
                     HashSet<string> tempOverrideIds =
                         changingLayer.normalActionDict.Keys.ToHashSet();
@@ -514,12 +521,14 @@ namespace DS4MapperTest
         {
             currentActionLayer = null;
             defaultActionLayer = null;
+            recentAppliedLayer = null;
             appliedLayers.Clear();
             if (actionLayers.Count > 0)
             {
                 currentActionLayer = actionLayers[0];
                 defaultActionLayer = currentActionLayer;
                 appliedLayers.Add(defaultActionLayer);
+                recentAppliedLayer = defaultActionLayer;
             }
         }
 
@@ -557,7 +566,8 @@ namespace DS4MapperTest
             //    PrepareCompositeLayer();
             //}
 
-            ActionLayer lastAppliedLayer = appliedLayers.Last();
+            //ActionLayer lastAppliedLayer = appliedLayers.Last();
+            ActionLayer lastAppliedLayer = recentAppliedLayer;
 
             HashSet<string> tempOverrideIds =
                         lastAppliedLayer.normalActionDict.Keys.ToHashSet();

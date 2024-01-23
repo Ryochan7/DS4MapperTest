@@ -153,7 +153,11 @@ namespace DS4MapperTest.TouchpadActions
         public bool TrackballEnabled
         {
             get => trackballEnabled;
-            set => trackballEnabled = value;
+            set
+            {
+                trackballEnabled = value;
+                CalcTrackAccel();
+            }
         }
         //private bool useParentTrackball;
 
@@ -161,7 +165,11 @@ namespace DS4MapperTest.TouchpadActions
         public int TrackballFriction
         {
             get => trackballFriction;
-            set => trackballFriction = value;
+            set
+            {
+                trackballFriction = value;
+                CalcTrackAccel();
+            }
         }
 
         private double sensitivity = DEFAULT_SENSITIVITY;
@@ -232,6 +240,9 @@ namespace DS4MapperTest.TouchpadActions
             //}
             else
             {
+                // Add smoothing even when finger is not touching
+                smoothingFilterSettings.filterX.Filter(0.0, mapper.CurrentRate);
+                smoothingFilterSettings.filterY.Filter(0.0, mapper.CurrentRate);
                 active = activeEvent = false;
             }
         }
@@ -492,10 +503,12 @@ namespace DS4MapperTest.TouchpadActions
                 yMotion *= verticalScale;
             }
 
-            if (false)
+            if (touchpadDefinition.throttleRelMouse)
             {
-                double throttla = 1.428;
-                double offman = 10;
+                double throttla = touchpadDefinition.throttleRelMousePower;
+                double offman = touchpadDefinition.throttleRelMouseZone;
+                //double throttla = 1.428;
+                //double offman = 10;
                 //double throttla = 1.4;
                 //double offman = 12;
 

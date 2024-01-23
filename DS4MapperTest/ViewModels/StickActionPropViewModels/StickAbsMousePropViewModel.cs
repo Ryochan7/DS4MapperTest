@@ -357,9 +357,7 @@ namespace DS4MapperTest.ViewModels.StickActionPropViewModels
         {
             if (!usingRealAction)
             {
-                ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
-
-                mapper.QueueEvent(() =>
+                mapper.ProcessMappingChangeAction(() =>
                 {
                     this.action.ParentAction.Release(mapper, ignoreReleaseActions: true);
 
@@ -374,11 +372,7 @@ namespace DS4MapperTest.ViewModels.StickActionPropViewModels
                         mapper.EditActionSet.ClearCompositeLayerActions();
                         mapper.EditActionSet.PrepareCompositeLayer();
                     }
-
-                    resetEvent.Set();
                 });
-
-                resetEvent.Wait();
 
                 usingRealAction = true;
 
@@ -393,9 +387,8 @@ namespace DS4MapperTest.ViewModels.StickActionPropViewModels
                 ReplaceExistingLayerAction(this, EventArgs.Empty);
             }
 
-            ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
             //ExecuteInMapperThread(() =>
-            mapper.QueueEvent(() =>
+            mapper.ProcessMappingChangeAction(() =>
             {
                 if (oldAction != null)
                 {
@@ -405,11 +398,7 @@ namespace DS4MapperTest.ViewModels.StickActionPropViewModels
 
                 action.ChangedProperties.Add(StickAbsMouse.PropertyKeyStrings.OUTER_RING_BUTTON);
                 //action.UseParentRingButton = false;
-
-                resetEvent.Set();
             });
-
-            resetEvent.Wait();
         }
     }
 }

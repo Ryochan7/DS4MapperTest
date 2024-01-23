@@ -574,9 +574,8 @@ namespace DS4MapperTest.ViewModels.TouchpadActionPropViewModels
                 ReplaceExistingLayerAction(this, EventArgs.Empty);
             }
 
-            ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
             //ExecuteInMapperThread(() =>
-            mapper.QueueEvent(() =>
+            mapper.ProcessMappingChangeAction(() =>
             {
                 if (oldAction != null)
                 {
@@ -586,11 +585,7 @@ namespace DS4MapperTest.ViewModels.TouchpadActionPropViewModels
 
                 action.ChangedProperties.Add(TouchpadActionPad.PropertyKeyStrings.OUTER_RING_BUTTON);
                 action.UseParentRingButton = false;
-
-                resetEvent.Set();
             });
-
-            resetEvent.Wait();
         }
     }
 

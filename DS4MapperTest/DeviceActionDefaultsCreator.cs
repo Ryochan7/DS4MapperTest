@@ -43,12 +43,15 @@ namespace DS4MapperTest
         public struct TouchMouseJoystickActionValues
         {
             public int deadZone;
+            public int maxZone;
 
             public void Process(TouchpadMouseJoystick action)
             {
                 action.MStickParams.deadZone = deadZone;
+                action.MStickParams.maxZone = maxZone;
 
                 action.ChangedProperties.Add(TouchpadMouseJoystick.PropertyKeyStrings.DEAD_ZONE);
+                action.ChangedProperties.Add(TouchpadMouseJoystick.PropertyKeyStrings.MAX_ZONE);
             }
         }
 
@@ -291,6 +294,31 @@ namespace DS4MapperTest
             TouchMouseJoystickActionValues result = new TouchMouseJoystickActionValues()
             {
                 deadZone = 0,
+                maxZone = 8,
+            };
+
+            return result;
+        }
+    }
+
+    public class SteamControllerDeviceDefaults : DummyActionDefaultsCreator
+    {
+        public override TouchMouseActionValues GrabTouchMouseDefaults()
+        {
+            TouchMouseActionValues result = new TouchMouseActionValues()
+            {
+                deadZone = 8,
+            };
+
+            return result;
+        }
+
+        public override TouchMouseJoystickActionValues GrabTouchMouseJoystickDefaults()
+        {
+            TouchMouseJoystickActionValues result = new TouchMouseJoystickActionValues()
+            {
+                deadZone = 70,
+                maxZone = 430,
             };
 
             return result;

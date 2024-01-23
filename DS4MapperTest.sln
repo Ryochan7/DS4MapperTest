@@ -3,24 +3,32 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.4.33103.184
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DS4MapperTest", "DS4MapperTest\DS4MapperTest.csproj", "{0F0078E5-7A1D-4450-A8AC-70859D4D1802}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DS4MapperTest", "DS4MapperTest\DS4MapperTest.csproj", "{0F0078E5-7A1D-4450-A8AC-70859D4D1802}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DS4MapperUnitTests", "DS4MapperUnitTests\DS4MapperUnitTests.csproj", "{D4122FA7-ACC6-4852-8597-CD233F470F4B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		Debug|Any CPU = Debug|Any CPU
+		Debug Tests|x64 = Debug Tests|x64
 		Debug|x64 = Debug|x64
-		Release|Any CPU = Release|Any CPU
+		Release Tests|x64 = Release Tests|x64
 		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{0F0078E5-7A1D-4450-A8AC-70859D4D1802}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0F0078E5-7A1D-4450-A8AC-70859D4D1802}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0F0078E5-7A1D-4450-A8AC-70859D4D1802}.Debug Tests|x64.ActiveCfg = Debug Tests|x64
+		{0F0078E5-7A1D-4450-A8AC-70859D4D1802}.Debug Tests|x64.Build.0 = Debug Tests|x64
 		{0F0078E5-7A1D-4450-A8AC-70859D4D1802}.Debug|x64.ActiveCfg = Debug|x64
 		{0F0078E5-7A1D-4450-A8AC-70859D4D1802}.Debug|x64.Build.0 = Debug|x64
-		{0F0078E5-7A1D-4450-A8AC-70859D4D1802}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0F0078E5-7A1D-4450-A8AC-70859D4D1802}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0F0078E5-7A1D-4450-A8AC-70859D4D1802}.Release Tests|x64.ActiveCfg = Release Tests|x64
+		{0F0078E5-7A1D-4450-A8AC-70859D4D1802}.Release Tests|x64.Build.0 = Release Tests|x64
 		{0F0078E5-7A1D-4450-A8AC-70859D4D1802}.Release|x64.ActiveCfg = Release|x64
 		{0F0078E5-7A1D-4450-A8AC-70859D4D1802}.Release|x64.Build.0 = Release|x64
+		{D4122FA7-ACC6-4852-8597-CD233F470F4B}.Debug Tests|x64.ActiveCfg = Debug Tests|x64
+		{D4122FA7-ACC6-4852-8597-CD233F470F4B}.Debug Tests|x64.Build.0 = Debug Tests|x64
+		{D4122FA7-ACC6-4852-8597-CD233F470F4B}.Debug|x64.ActiveCfg = Debug|x64
+		{D4122FA7-ACC6-4852-8597-CD233F470F4B}.Release Tests|x64.ActiveCfg = Release Tests|x64
+		{D4122FA7-ACC6-4852-8597-CD233F470F4B}.Release Tests|x64.Build.0 = Release Tests|x64
+		{D4122FA7-ACC6-4852-8597-CD233F470F4B}.Release|x64.ActiveCfg = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

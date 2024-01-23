@@ -11,6 +11,7 @@ using static DS4MapperTest.VidPidMeta;
 using DS4MapperTest.SwitchProLibrary;
 using DS4MapperTest.DualSense;
 using DS4MapperTest.JoyConLibrary;
+using DS4MapperTest.SteamControllerLibrary;
 
 namespace DS4MapperTest
 {
@@ -64,6 +65,11 @@ namespace DS4MapperTest
         private const int JOYCON_R_PRODUCT_ID = 0x2007;
         private const int JOYCON_CHARGING_GRIP_PRODUCT_ID = 0x200E;
 
+        private const int STEAM_CONTROLLER_VENDOR_ID = 0x28DE;
+        private const int STEAM_CONTROLLER_PRODUCT_ID = 0x1102;
+        private const int STEAM_DONGLE_CONTROLLER_PRODUCT_ID = 0x1142;
+        private const int STEAM_BT_CONTROLLER_PRODUCT_ID = 0x1106;
+
         internal delegate bool HidDeviceCheckHandler(HidDevice device, VidPidMeta meta);
 
         private HashSet<string> foundDevicePaths;
@@ -94,6 +100,12 @@ namespace DS4MapperTest
                 VidPidMeta.UsedConnectionBus.HID),
             new VidPidMeta(NINTENDO_VENDOR_ID, JOYCON_CHARGING_GRIP_PRODUCT_ID, "JoyCon Charging Grip", InputDeviceType.JoyCon,
                 VidPidMeta.UsedConnectionBus.HID),
+            new VidPidMeta(STEAM_CONTROLLER_VENDOR_ID, STEAM_CONTROLLER_PRODUCT_ID, "Steam Controller", InputDeviceType.SteamController,
+                VidPidMeta.UsedConnectionBus.HID),
+            new VidPidMeta(STEAM_CONTROLLER_VENDOR_ID, STEAM_DONGLE_CONTROLLER_PRODUCT_ID, "Steam Controller", InputDeviceType.SteamController,
+                VidPidMeta.UsedConnectionBus.HID),
+            new VidPidMeta(STEAM_CONTROLLER_VENDOR_ID, STEAM_BT_CONTROLLER_PRODUCT_ID, "Steam Controller", InputDeviceType.SteamController,
+                VidPidMeta.UsedConnectionBus.HID)
         };
 
         public DeviceEnumerator()
@@ -130,6 +142,11 @@ namespace DS4MapperTest
                     meta.testDelUnion.hidHandler = JoyConDeviceCheckHandler;
                     vidPidMetaDict.Add($"VID_{meta.vid}&PID_{meta.pid}", meta);
                     //vidPidDelDict.Add($"VID_{meta.vid}&PID_{meta.pid}", meta.testDelUnion.hidHandler);
+                }
+                else if (meta.inputDevType == InputDeviceType.SteamController)
+                {
+                    meta.testDelUnion.hidHandler = SteamControllerDeviceCheckHandler;
+                    vidPidMetaDict.Add($"VID_{meta.vid}&PID_{meta.pid}", meta);
                 }
             }
 
@@ -213,6 +230,10 @@ namespace DS4MapperTest
                             value.testDelUnion.hidHandler?.Invoke(hidDev, value);
                         }
                         else if (value.inputDevType == InputDeviceType.JoyCon)
+                        {
+                            value.testDelUnion.hidHandler?.Invoke(hidDev, value);
+                        }
+                        else if (value.inputDevType == InputDeviceType.SteamController)
                         {
                             value.testDelUnion.hidHandler?.Invoke(hidDev, value);
                         }
@@ -380,6 +401,36 @@ namespace DS4MapperTest
             return result;
         }
 
+        private bool SteamControllerDeviceCheckHandler(HidDevice hidDev, VidPidMeta meta)
+        {
+            bool result = false;
+
+            if (meta != null)
+            {
+                if (meta.pid == STEAM_CONTROLLER_PRODUCT_ID ||
+                    meta.pid == STEAM_DONGLE_CONTROLLER_PRODUCT_ID)
+                {
+                    SteamControllerLibrary.SteamControllerDevice tempDev =
+                        new SteamControllerLibrary.SteamControllerDevice(hidDev, meta.displayName);
+
+                    foundKnownDevices.Add(hidDev.DevicePath, tempDev);
+                    revFoundKnownDevices.Add(tempDev, hidDev.DevicePath);
+                    newKnownDevices.Add(hidDev.DevicePath, tempDev);
+                    result = true;
+                }
+                else if (meta.pid == STEAM_BT_CONTROLLER_PRODUCT_ID)
+                {
+                    SteamControllerBTDevice tempDev = new SteamControllerBTDevice(hidDev, meta.displayName);
+                    foundKnownDevices.Add(hidDev.DevicePath, tempDev);
+                    revFoundKnownDevices.Add(tempDev, hidDev.DevicePath);
+                    newKnownDevices.Add(hidDev.DevicePath, tempDev);
+                    result = true;
+                }
+            }
+
+            return result;
+        }
+
         // TODO: Possibly move to BackendManager. Mainly to deal with possible Joined JoyCon
         // Mapper type in the future
         public Mapper PrepareDeviceMapper(InputDeviceBase device, AppGlobalData appGlobal)
@@ -419,6 +470,23 @@ namespace DS4MapperTest
                     }
 
                     break;
+                case SteamControllerDevice:
+                    {
+                        SteamControllerDevice steamDevice = device as SteamControllerDevice;
+                        if (steamDevice.ConType != SteamControllerDevice.ConnectionType.Bluetooth)
+                        {
+                            SteamControllerReader reader = new SteamControllerReader(steamDevice);
+                            result = new SteamControllerMapper(steamDevice, reader, appGlobal);
+                        }
+                        else
+                        {
+                            SteamControllerBTDevice btSteamDevice = steamDevice as SteamControllerBTDevice;
+                            SteamControllerBTReader reader = new SteamControllerBTReader(btSteamDevice);
+                            result = new SteamControllerMapper(btSteamDevice, reader, appGlobal);
+                        }
+
+                        break;
+                    }
                 default: break;
             }
 

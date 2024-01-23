@@ -98,7 +98,7 @@ namespace DS4MapperTest.ViewModels
             NormalPressFunc tempFunc =
                 new NormalPressFunc(new OutputActionData(OutputActionData.ActionType.Empty, 0));
 
-            mapper.QueueEvent(() =>
+            mapper.ProcessMappingChangeAction(() =>
             {
                 action.Release(mapper, ignoreReleaseActions: true);
                 action.ActionFuncs.Add(tempFunc);
@@ -127,7 +127,7 @@ namespace DS4MapperTest.ViewModels
 
             thing.RemoveAt(ind);
             int removeInd = ind;
-            mapper.QueueEvent(() =>
+            mapper.ProcessMappingChangeAction(() =>
             {
                 action.Release(mapper, ignoreReleaseActions: true);
                 action.ActionFuncs.RemoveAt(removeInd);
@@ -155,7 +155,7 @@ namespace DS4MapperTest.ViewModels
             item.Func = func;
             item.RaiseDisplayNameChanged();
 
-            mapper.QueueEvent(() =>
+            mapper.ProcessMappingChangeAction(() =>
             {
                 action.Release(mapper, ignoreReleaseActions: true);
                 action.ActionFuncs.RemoveAt(ind);
@@ -249,7 +249,7 @@ namespace DS4MapperTest.ViewModels
         {
             /*ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
 
-            mapper.QueueEvent(() =>
+            mapper.ProcessMappingChangeAction(() =>
             {
                 oldAction.Release(mapper, ignoreReleaseActions: true);
 
@@ -286,9 +286,7 @@ namespace DS4MapperTest.ViewModels
         {
             thing.Clear();
 
-            ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
-
-            mapper.QueueEvent(() =>
+            mapper.ProcessMappingChangeAction(() =>
             {
                 action.Release(mapper, ignoreReleaseActions: true);
 
@@ -299,11 +297,7 @@ namespace DS4MapperTest.ViewModels
                                 new OutputActionData(OutputActionData.ActionType.Empty, 0)));
                     action.ChangedProperties.Add(ButtonAction.PropertyKeyStrings.FUNCTIONS);
                 }
-
-                resetEvent.Set();
             });
-
-            resetEvent.Wait(1000);
 
             int tempInd = 0;
             foreach (ActionFunc func in action.ActionFuncs)

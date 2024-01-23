@@ -39,6 +39,9 @@ namespace DS4MapperTest.TouchpadActions
         public double mouseScale;
         public double mouseOffset;
         public double trackballScale;
+        public bool throttleRelMouse;
+        public double throttleRelMousePower = 1.0;
+        public double throttleRelMouseZone = 1.0;
 
         public TouchpadDefinition(TouchAxisData xAxis, TouchAxisData yAxis, TouchpadActionCodes touchCode)
         {
@@ -70,6 +73,9 @@ namespace DS4MapperTest.TouchpadActions
             this.mouseScale = other.mouseScale;
             this.mouseOffset = other.mouseOffset;
             this.trackballScale = other.trackballScale;
+            this.throttleRelMouse = other.throttleRelMouse;
+            this.throttleRelMousePower = other.throttleRelMousePower;
+            this.throttleRelMouseZone = other.throttleRelMouseZone;
         }
     }
 }

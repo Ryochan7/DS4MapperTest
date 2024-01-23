@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using DS4MapperTest.ButtonActions;
 using DS4MapperTest.DPadActions;
@@ -239,6 +240,13 @@ namespace DS4MapperTest.DualSense
 
         private void Reader_Report(DualSenseReader sender, DualSenseDevice device)
         {
+            while (pauseMapper)
+            {
+                Thread.SpinWait(500);
+            }
+
+            mapperActionActive = true;
+
             ref DualSenseState current = ref device.CurrentStateRef;
             //ref DualSenseState previous = ref device.PreviousStateRef;
 
@@ -552,6 +560,8 @@ namespace DS4MapperTest.DualSense
 
             // Make copy of state data as the previous state
             previousMapperState = currentMapperState;
+
+            mapperActionActive = false;
 
             if (hasInputEvts)
             {
