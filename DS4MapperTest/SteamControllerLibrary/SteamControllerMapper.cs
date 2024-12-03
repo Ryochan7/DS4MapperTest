@@ -80,7 +80,9 @@ namespace DS4MapperTest.SteamControllerLibrary
                 new InputBindingMeta("LeftTouchpad", "Left Touchpad", InputBindingMeta.InputControlType.Touchpad),
                 new InputBindingMeta("RightTouchpad", "Right Touchpad", InputBindingMeta.InputControlType.Touchpad),
                 new InputBindingMeta("LeftPadClick", "Left Pad Click", InputBindingMeta.InputControlType.Button),
+                new InputBindingMeta("LeftPadTouch", "Left Pad Touch", InputBindingMeta.InputControlType.Button),
                 new InputBindingMeta("RightPadClick", "Right Pad Click", InputBindingMeta.InputControlType.Button),
+                new InputBindingMeta("RightPadTouch", "Right Pad Touch", InputBindingMeta.InputControlType.Button),
                 new InputBindingMeta("Gyro", "Gyro", InputBindingMeta.InputControlType.Gyro),
             };
 
@@ -433,6 +435,20 @@ namespace DS4MapperTest.SteamControllerLibrary
                 if (currentMapperState.RightPad.Click || currentMapperState.RightPad.Click != previousMapperState.RightPad.Click)
                 {
                     tempBtnAct.Prepare(this, currentMapperState.RightPad.Click);
+                }
+                if (tempBtnAct.active) tempBtnAct.Event(this);
+
+                tempBtnAct = currentLayer.buttonActionDict["LeftPadTouch"];
+                if (currentMapperState.LeftPad.Touch || currentMapperState.LeftPad.Touch != previousMapperState.LeftPad.Touch)
+                {
+                    tempBtnAct.Prepare(this, currentMapperState.LeftPad.Touch);
+                }
+                if (tempBtnAct.active) tempBtnAct.Event(this);
+
+                tempBtnAct = currentLayer.buttonActionDict["RightPadTouch"];
+                if (currentMapperState.RightPad.Touch || currentMapperState.RightPad.Touch != previousMapperState.RightPad.Touch)
+                {
+                    tempBtnAct.Prepare(this, currentMapperState.RightPad.Touch);
                 }
                 if (tempBtnAct.active) tempBtnAct.Event(this);
 
