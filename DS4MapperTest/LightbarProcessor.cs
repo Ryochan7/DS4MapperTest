@@ -231,7 +231,7 @@ namespace DS4MapperTest
             if (updateColor)
             {
                 device.SetLightbarColor(ref useColor);
-                device.HapticsDirty = true;
+                //device.HapticsDirty = true;
             }
         }
 
@@ -371,7 +371,7 @@ namespace DS4MapperTest
             if (updateColor)
             {
                 device.SetLightbarColor(ref useColor);
-                device.HapticsDirty = true;
+                //device.HapticsDirty = true;
             }
         }
 
@@ -440,7 +440,7 @@ namespace DS4MapperTest
             double m = val - C;
             double rPrime = 0.0, gPrime = 0.0, bPrime = 0.0;
 #if DEBUG
-            Trace.WriteLine($"H {hue} H'{hPrime} C{C} X{X}");
+            //Trace.WriteLine($"H {hue} H'{hPrime} C{C} X{X}");
 #endif
 
             switch((int)hPrime)

@@ -7,10 +7,25 @@ using HidLibrary;
 
 namespace DS4MapperTest.DS4Library
 {
-    public struct DS4ForceFeedbackState
+    public struct DS4ForceFeedbackState : IEquatable<DS4ForceFeedbackState>
     {
         public byte LeftHeavy;
         public byte RightLight;
+
+        public void Reset()
+        {
+            LeftHeavy = RightLight = 0;
+        }
+
+        public bool Equals(DS4ForceFeedbackState other)
+        {
+            return LeftHeavy == other.LeftHeavy && RightLight == other.RightLight;
+        }
+
+        public bool IsFeedbackActive()
+        {
+            return LeftHeavy != 0 || RightLight != 0;
+        }
     }
 
     public struct DS4Color : IEquatable<DS4Color>
@@ -31,6 +46,11 @@ namespace DS4MapperTest.DS4Library
             this.red = red;
             this.green = green;
             this.blue = blue;
+        }
+
+        public void Reset()
+        {
+            red = green = blue = 0;
         }
 
         public bool Equals(DS4Color other)
@@ -117,18 +137,64 @@ namespace DS4MapperTest.DS4Library
         public ref DS4State PreviousStateRef { get => ref previousState; }
 
         private DS4ForceFeedbackState feedbackState = new DS4ForceFeedbackState();
-        public DS4ForceFeedbackState FeedbackState { get => feedbackState; }
+        public DS4ForceFeedbackState FeedbackState
+        {
+            get => feedbackState;
+            set => feedbackState = value;
+        }
         public ref DS4ForceFeedbackState FeedbackStateRef { get => ref feedbackState; }
+        private DS4ForceFeedbackState previousFeedbackState = new DS4ForceFeedbackState();
+        public DS4ForceFeedbackState PreviousFeedbackState
+        {
+            get => previousFeedbackState;
+            set => previousFeedbackState = value;
+        }
+        public ref DS4ForceFeedbackState PreviousFeedbackStateRef => ref previousFeedbackState;
+        private DS4ForceFeedbackState testFeedbackstate = new DS4ForceFeedbackState();
+        public DS4ForceFeedbackState TestFeedbackState
+        {
+            get => testFeedbackstate;
+            set => testFeedbackstate = value;
+        }
+        public ref DS4ForceFeedbackState TestFeedbackStateRef => ref testFeedbackstate;
 
         private DS4Color lightbarColor = new DS4Color();
-        public DS4Color LightbarColor { get => lightbarColor; }
+        public DS4Color LightbarColor
+        {
+            get => lightbarColor;
+            set => lightbarColor = value;
+        }
         public ref DS4Color LightbarColorRef { get => ref lightbarColor; }
+
+        private DS4Color previousLightbarColor = new DS4Color();
+        public DS4Color PreviousLightbarColor
+        {
+            get => previousLightbarColor;
+            set => previousLightbarColor = value;
+        }
+        public ref DS4Color PreviousLightbarColorRef => ref previousLightbarColor;
 
         private bool hapticsDirty = false;
         public bool HapticsDirty
         {
             get => hapticsDirty;
             set => hapticsDirty = value;
+        }
+
+        public const long HAPTICS_DURATION_DEFAULT = 80; // ms
+        public const long HAPTICS_EMPTY_DURATION = 0; // ms
+        private long hapticsDuration = HAPTICS_EMPTY_DURATION;
+        public long HapticsDuration
+        {
+            get => hapticsDuration;
+            set => hapticsDuration = value;
+        }
+
+        private bool rumbleDirty;
+        public bool RumbleDirty
+        {
+            get => rumbleDirty;
+            set => rumbleDirty = value;
         }
 
         private int inputReportLen;
@@ -431,8 +497,13 @@ namespace DS4MapperTest.DS4Library
 
         public void SetLightbarColor(ref DS4Color color)
         {
+            if (!lightbarColor.Equals(color))
+            {
+                hapticsDirty = true;
+            }
+
             lightbarColor = color;
-            hapticsDirty = true;
+            //hapticsDirty = true;
         }
 
         public void SetForceFeedbackState(ref DS4ForceFeedbackState state)

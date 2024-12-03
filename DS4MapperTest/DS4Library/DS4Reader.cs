@@ -13,6 +13,7 @@ namespace DS4MapperTest.DS4Library
 {
     public class DS4Reader : DeviceReaderBase
     {
+        private const int RUMBLE_CONTINUOUS_DURATION = 4000;
         private DS4Device device;
         public DS4Device Device => device;
 
@@ -23,6 +24,8 @@ namespace DS4MapperTest.DS4Library
         //private byte[] rumbleReportBuffer;
         private GyroCalibration gyroCalibrationUtil = new GyroCalibration();
         private bool started;
+        private Stopwatch hapticsStopwatch = new Stopwatch();
+        private Stopwatch rumbleStopwatch = new Stopwatch();
 
         public delegate void DS4DeviceReportDelegate(DS4Reader sender,
             DS4Device device);
@@ -73,6 +76,8 @@ namespace DS4MapperTest.DS4Library
             }
 
             started = false;
+            hapticsStopwatch.Reset();
+            rumbleStopwatch.Reset();
         }
 
         private void ReadInput()
@@ -319,15 +324,120 @@ namespace DS4MapperTest.DS4Library
 
                     Report?.Invoke(this, device);
 
-                    if (device.HapticsDirty)
+                    CheckFeedbackStatus();
+                    if (device.HapticsDirty || device.RumbleDirty)
                     {
                         WriteRumbleReport();
                         device.HapticsDirty = false;
+                        device.RumbleDirty = false;
+                        device.PreviousFeedbackState = device.FeedbackStateRef;
+                        device.PreviousLightbarColor = device.LightbarColorRef;
                     }
 
                     device.SyncStates();
 
                     firstReport = false;
+                }
+            }
+        }
+
+        private void CheckFeedbackStatus()
+        {
+            if (device.HapticsDirty && device.RumbleDirty)
+            {
+                // Let haptics take priority
+                device.RumbleDirty = false;
+                if (rumbleStopwatch.IsRunning)
+                {
+                    rumbleStopwatch.Reset();
+                }
+            }
+
+            bool feedbackSet = device.FeedbackStateRef.IsFeedbackActive();
+            if (device.HapticsDirty)
+            {
+                if (rumbleStopwatch.IsRunning)
+                {
+                    rumbleStopwatch.Reset();
+                }
+
+                if (feedbackSet &&
+                    !device.FeedbackStateRef.Equals(device.PreviousFeedbackStateRef))
+                {
+                    // Should indicate new feedback state. Restart timer
+#if DEBUG
+                Trace.WriteLine("RESTART RUMBLE TIMER");
+#endif
+                    hapticsStopwatch.Restart();
+                    //if (!device.HapticsDirty && !device.RumbleDirty)
+                    //{
+                    //    device.RumbleDirty = true;
+                    //}
+                }
+                else if (!feedbackSet && hapticsStopwatch.IsRunning)
+                {
+                    hapticsStopwatch.Reset();
+                }
+            }
+            else if (hapticsStopwatch.IsRunning)
+            {
+                // Check if haptics is already engaged
+                if (hapticsStopwatch.ElapsedMilliseconds >=
+                    DS4Device.HAPTICS_DURATION_DEFAULT)
+                {
+#if DEBUG
+                    Trace.WriteLine($"STOP RUMBLE TIMER {hapticsStopwatch.ElapsedMilliseconds}");
+#endif
+
+                    device.HapticsDirty = true;
+                    device.FeedbackStateRef.Reset();
+                    device.HapticsDuration = DS4Device.HAPTICS_EMPTY_DURATION;
+                    hapticsStopwatch.Reset();
+                }
+            }
+
+            //if (!device.HapticsDirty &&
+            //    !device.LightbarColorRef.Equals(device.PreviousLightbarColorRef))
+            //{
+            //    device.HapticsDirty = true;
+            //}
+
+            if (device.RumbleDirty)
+            {
+                if (hapticsStopwatch.IsRunning)
+                {
+                    hapticsStopwatch.Reset();
+                }
+
+                if (!device.FeedbackStateRef.Equals(device.PreviousFeedbackStateRef))
+                {
+                    // Should indicate new feedback state. Restart timer
+#if DEBUG
+                Trace.WriteLine("RESTART RUMBLE TIMER");
+#endif
+                    rumbleStopwatch.Restart();
+                    //if (!device.HapticsDirty && !device.RumbleDirty)
+                    //{
+                    //    device.RumbleDirty = true;
+                    //}
+                }
+            }
+            else if (rumbleStopwatch.IsRunning)
+            {
+                // Check if haptics is already engaged
+                if (feedbackSet && rumbleStopwatch.ElapsedMilliseconds >=
+                    RUMBLE_CONTINUOUS_DURATION)
+                {
+#if DEBUG
+                    Trace.WriteLine("STOP RUMBLE TIMER");
+#endif
+
+                    device.RumbleDirty = true;
+                    rumbleStopwatch.Restart();
+                }
+                else if (!feedbackSet)
+                {
+                    rumbleStopwatch.Reset();
                 }
             }
         }

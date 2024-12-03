@@ -9,6 +9,26 @@ namespace DS4MapperTest
 {
     public abstract class MapAction
     {
+        public enum HapticsIntensity : ushort
+        {
+            Off,
+            Light,
+            Medium,
+            Heavy,
+            Full,
+            //Custom,
+        }
+
+        public enum HapticsSide : ushort
+        {
+            Default, // Make Default mean let the mapper decide to choose a side or use all motors
+            All, // Use all available motors
+            Rumble1,
+            Left = Rumble1,
+            Rumble2,
+            Right = Rumble2,
+        }
+
         public const int DEFAULT_UNBOUND_ID = -1;
         protected int id = DEFAULT_UNBOUND_ID;
         public int Id

@@ -22,6 +22,7 @@ using Nefarius.ViGEm.Client.Targets;
 using Nefarius.ViGEm.Client.Targets.Xbox360;
 using Nefarius.ViGEm.Client.Targets.DualShock4;
 using System.Runtime.CompilerServices;
+using static DS4MapperTest.MapAction;
 
 namespace DS4MapperTest
 {
@@ -1471,7 +1472,7 @@ namespace DS4MapperTest
             mouseX = mouseY = 0.0;
         }
 
-        protected double remainderCutoff(double dividend, double divisor)
+        public double remainderCutoff(double dividend, double divisor)
         {
             return dividend - (divisor * (int)(dividend / divisor));
         }
@@ -2876,6 +2877,15 @@ namespace DS4MapperTest
                 default:
                     break;
             }
+        }
+
+        public virtual void SetFeedback(string mappingId, double ratio,
+            MapAction.HapticsSide side = MapAction.HapticsSide.Default)
+        {
+        }
+
+        public virtual void SetRumble(double ratioLeft, double ratioRight)
+        {
         }
 
         public virtual void Stop(bool finalSync = false)

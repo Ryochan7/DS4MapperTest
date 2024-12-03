@@ -186,7 +186,12 @@ namespace DS4MapperTest
 
         public override TouchJoystickActionValues GrabTouchJoystickDefaults()
         {
-            TouchJoystickActionValues result = new TouchJoystickActionValues();
+            TouchJoystickActionValues result = new TouchJoystickActionValues()
+            {
+                deadZone = 0.1,
+                maxZone = 1.0,
+            };
+
             return result;
         }
 
@@ -303,6 +308,18 @@ namespace DS4MapperTest
 
     public class SteamControllerDeviceDefaults : DummyActionDefaultsCreator
     {
+        public override TouchJoystickActionValues GrabTouchJoystickDefaults()
+        {
+            TouchJoystickActionValues result = new TouchJoystickActionValues()
+            {
+                deadZone = 0.05,
+                antiDeadZone = 0.0,
+                maxZone = 0.7,
+            };
+
+            return result;
+        }
+
         public override TouchMouseActionValues GrabTouchMouseDefaults()
         {
             TouchMouseActionValues result = new TouchMouseActionValues()

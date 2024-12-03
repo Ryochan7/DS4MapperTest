@@ -2738,6 +2738,53 @@ namespace DS4MapperTest
                 return touchStickAction.ChangedProperties.Contains(TouchpadStickAction.PropertyKeyStrings.FORCED_CENTER);
             }
 
+            public bool SmoothingEnabled
+            {
+                get => touchStickAction.Smoothing;
+                set
+                {
+                    touchStickAction.Smoothing = value;
+                    SmoothingEnabledChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler SmoothingEnabledChanged;
+            public bool ShouldSerializeSmoothingEnabled()
+            {
+                return touchStickAction.ChangedProperties.Contains(TouchpadStickAction.PropertyKeyStrings.SMOOTHING_ENABLED);
+            }
+
+            public double SmoothingMinCutoff
+            {
+                get => touchStickAction.SmoothingFilterSettingsDataRef.minCutOff;
+                set
+                {
+                    touchStickAction.SmoothingFilterSettingsDataRef.minCutOff = Math.Clamp(value, 0.0, 10.0);
+                    touchStickAction.SmoothingFilterSettingsDataRef.UpdateSmoothingFilters();
+                    SmoothingMinCutoffChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler SmoothingMinCutoffChanged;
+            public bool ShouldSerializeSmoothingMinCutoff()
+            {
+                return touchStickAction.ChangedProperties.Contains(TouchpadStickAction.PropertyKeyStrings.SMOOTHING_FILTER);
+            }
+
+            public double SmoothingBeta
+            {
+                get => touchStickAction.SmoothingFilterSettingsDataRef.beta;
+                set
+                {
+                    touchStickAction.SmoothingFilterSettingsDataRef.beta = Math.Clamp(value, 0.0, 1.0);
+                    touchStickAction.SmoothingFilterSettingsDataRef.UpdateSmoothingFilters();
+                    SmoothingBetaChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler SmoothingBetaChanged;
+            public bool ShouldSerializeSmoothingBeta()
+            {
+                return touchStickAction.ChangedProperties.Contains(TouchpadStickAction.PropertyKeyStrings.SMOOTHING_FILTER);
+            }
+
             public TouchStickActionSettings(TouchpadStickAction action)
             {
                 this.touchStickAction = action;
@@ -2774,6 +2821,25 @@ namespace DS4MapperTest
             settings.SquareStickRoundnessChanged += Settings_SquareStickRoundnessChanged;
             settings.DeadZoneTypeChanged += Settings_DeadZoneTypeChanged;
             settings.ForcedCenterChanged += Settings_ForcedCenterChanged;
+
+            settings.SmoothingEnabledChanged += Settings_SmoothingEnabledChanged;
+            settings.SmoothingMinCutoffChanged += Settings_SmoothingMinCutoffChanged;
+            settings.SmoothingBetaChanged += Settings_SmoothingBetaChanged;
+        }
+
+        private void Settings_SmoothingBetaChanged(object sender, EventArgs e)
+        {
+            touchStickAction.ChangedProperties.Add(TouchpadStickAction.PropertyKeyStrings.SMOOTHING_FILTER);
+        }
+
+        private void Settings_SmoothingMinCutoffChanged(object sender, EventArgs e)
+        {
+            touchStickAction.ChangedProperties.Add(TouchpadStickAction.PropertyKeyStrings.SMOOTHING_FILTER);
+        }
+
+        private void Settings_SmoothingEnabledChanged(object sender, EventArgs e)
+        {
+            touchStickAction.ChangedProperties.Add(TouchpadStickAction.PropertyKeyStrings.SMOOTHING_ENABLED);
         }
 
         private void Settings_ForcedCenterChanged(object sender, EventArgs e)

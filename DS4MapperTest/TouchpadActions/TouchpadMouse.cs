@@ -400,7 +400,7 @@ namespace DS4MapperTest.TouchpadActions
                     trackData.trackballActive = true;
 
                     //Debug.WriteLine("START TRACK {0}", dist);
-                    ProcessTrackballFrame(ref touchFrame);
+                    ProcessTrackballFrame(mapper, ref touchFrame);
                 }
                 else
                 {
@@ -412,7 +412,7 @@ namespace DS4MapperTest.TouchpadActions
             {
                 //Console.WriteLine("CONTINUE TRACK");
                 // Trackball Running
-                ProcessTrackballFrame(ref touchFrame);
+                ProcessTrackballFrame(mapper, ref touchFrame);
             }
             else if (!touchFrame.Touch)
             {
@@ -442,10 +442,10 @@ namespace DS4MapperTest.TouchpadActions
                     trackData.trackballBufferHead = (trackData.trackballBufferHead + 1) % TRACKBALL_BUFFER_LEN;
             }
 
-            TouchMoveMouse(dx, dy, ref touchFrame);
+            TouchMoveMouse(mapper, dx, dy, ref touchFrame);
         }
 
-        private void TouchMoveMouse(int dx, int dy, ref TouchEventFrame touchFrame)
+        private void TouchMoveMouse(Mapper mapper, int dx, int dy, ref TouchEventFrame touchFrame)
         {
             //const int deadZone = 18;
             //const int deadZone = 12;
@@ -459,6 +459,8 @@ namespace DS4MapperTest.TouchpadActions
             int signY = Math.Sign(dy);
 
             double timeElapsed = touchFrame.timeElapsed;
+            double oldTimeElapsed = timeElapsed;
+            timeElapsed = timeElapsed - (mapper.remainderCutoff(timeElapsed * 10000.0, 1.0) / 10000.0);
             //double coefficient = TOUCHPAD_COEFFICIENT;
             double coefficient = touchpadDefinition.mouseScale;
             if (sensitivity != DEFAULT_SENSITIVITY)
@@ -534,7 +536,7 @@ namespace DS4MapperTest.TouchpadActions
             this.xMotion = xMotion; this.yMotion = yMotion;
         }
 
-        private void ProcessTrackballFrame(ref TouchEventFrame touchFrame)
+        private void ProcessTrackballFrame(Mapper mapper, ref TouchEventFrame touchFrame)
         {
             double tempAngle = Math.Atan2(-trackData.trackballYVel, trackData.trackballXVel);
             double normX = Math.Abs(Math.Cos(tempAngle));
@@ -585,7 +587,7 @@ namespace DS4MapperTest.TouchpadActions
             }
             else
             {
-                TouchMoveMouse(dx, dy, ref touchFrame);
+                TouchMoveMouse(mapper, dx, dy, ref touchFrame);
             }
         }
 

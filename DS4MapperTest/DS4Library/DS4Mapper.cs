@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Net.NetworkInformation;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -690,6 +691,102 @@ namespace DS4MapperTest.DS4Library
             return result;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void CheckLeftHapticSide(double ratio, MapAction.HapticsSide side,
+            bool checkDefault = true)
+        {
+            if ((checkDefault && side == MapAction.HapticsSide.Default) ||
+                side == MapAction.HapticsSide.Left ||
+                side == MapAction.HapticsSide.All)
+            {
+                device.FeedbackStateRef.LeftHeavy = (byte)(ratio * 255.0);
+                device.HapticsDuration = DS4Device.HAPTICS_DURATION_DEFAULT;
+                device.HapticsDirty = true;
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void CheckRightHapticSide(double ratio, MapAction.HapticsSide side,
+            bool checkDefault = true)
+        {
+            if ((checkDefault && side == MapAction.HapticsSide.Default) ||
+                side == MapAction.HapticsSide.Right ||
+                side == MapAction.HapticsSide.All)
+            {
+                device.FeedbackStateRef.RightLight = (byte)(ratio * 255.0);
+                device.HapticsDuration = DS4Device.HAPTICS_DURATION_DEFAULT;
+                device.HapticsDirty = true;
+            }
+        }
+
+        public override void SetFeedback(string mappingId, double ratio,
+            MapAction.HapticsSide side = MapAction.HapticsSide.Default)
+        {
+            switch(mappingId)
+            {
+                case "LS":
+                    CheckLeftHapticSide(ratio, side);
+                    CheckRightHapticSide(ratio, side, false);
+                    device.HapticsDirty = true;
+                    break;
+                case "RS":
+                    CheckLeftHapticSide(ratio, side, false);
+                    CheckRightHapticSide(ratio, side);
+                    device.HapticsDirty = true;
+#if DEBUG
+                    Trace.WriteLine("NEW HAPTIC EVENT");
+#endif
+                    break;
+                case "Cross":
+                case "Cirlce":
+                case "Square":
+                case "Triangle":
+                case "PS":
+                    CheckLeftHapticSide(ratio, side);
+                    CheckRightHapticSide(ratio, side);
+                    device.HapticsDirty = true;
+                    break;
+                case "L1":
+                    CheckLeftHapticSide(ratio, side, true);
+                    CheckRightHapticSide(ratio, side, false);
+                    device.HapticsDirty = true;
+                    break;
+                case "R1":
+                    CheckLeftHapticSide(ratio, side, false);
+                    CheckRightHapticSide(ratio, side);
+                    device.HapticsDirty = true;
+                    break;
+                case "L2":
+                    CheckLeftHapticSide(ratio, side, true);
+                    CheckRightHapticSide(ratio, side, false);
+                    device.HapticsDirty = true;
+                    break;
+                case "R2":
+                    CheckLeftHapticSide(ratio, side, false);
+                    CheckRightHapticSide(ratio, side);
+                    device.HapticsDirty = true;
+                    break;
+                case "L3":
+                    CheckLeftHapticSide(ratio, side, true);
+                    CheckRightHapticSide(ratio, side, false);
+                    device.HapticsDirty = true;
+                    break;
+                case "R3":
+                    CheckLeftHapticSide(ratio, side, false);
+                    CheckRightHapticSide(ratio, side);
+                    device.HapticsDirty = true;
+                    break;
+                default: break;
+            }
+        }
+
+        public override void SetRumble(double ratioLeft, double ratioRight)
+        {
+            device.FeedbackStateRef.LeftHeavy = (byte)(ratioLeft * 255.0);
+            device.FeedbackStateRef.RightLight = (byte)(ratioRight * 255.0);
+            device.RumbleDirty = true;
+        }
+
         public override void EstablishForceFeedback()
         {
             if (outputControlType == OutputContType.Xbox360)
@@ -698,7 +795,7 @@ namespace DS4MapperTest.DS4Library
                 {
                     device.FeedbackStateRef.LeftHeavy = e.LargeMotor;
                     device.FeedbackStateRef.RightLight = e.SmallMotor;
-                    device.HapticsDirty = true;
+                    device.RumbleDirty = true;
                     //reader.WriteRumbleReport();
                 };
             }

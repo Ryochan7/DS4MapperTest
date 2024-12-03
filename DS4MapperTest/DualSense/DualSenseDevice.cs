@@ -427,8 +427,12 @@ namespace DS4MapperTest.DualSense
 
         public void SetLightbarColor(ref DS4Color color)
         {
+            if (!lightbarColor.Equals(color))
+            {
+                hapticsDirty = true;
+            }
+
             lightbarColor = color;
-            hapticsDirty = true;
         }
 
         public void SetForceFeedbackState(ref DS4ForceFeedbackState state)

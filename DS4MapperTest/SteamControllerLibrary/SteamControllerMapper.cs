@@ -8,6 +8,7 @@ using Nefarius.ViGEm.Client;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -48,6 +49,7 @@ namespace DS4MapperTest.SteamControllerLibrary
         private double TRACKBALL_SCALE = 0.000023;
 
         private double trackballAccel = 0.0;
+        private bool hapticsEvent;
 
         public SteamControllerMapper(SteamControllerDevice device, SteamControllerReader reader,
             AppGlobalData appGlobal)
@@ -516,6 +518,17 @@ namespace DS4MapperTest.SteamControllerLibrary
 
                 ProcessActionSetLayerChecks();
 
+                if (hapticsEvent)
+                {
+                    reader.WriteHapticsReport();
+                    hapticsEvent = false;
+                }
+                else if (device.rumbleDirty)
+                {
+                    reader.WriteRumbleReport();
+                    device.rumbleDirty = false;
+                }
+
                 // Make copy of state data as the previous state
                 previousMapperState = currentMapperState;
 
@@ -692,6 +705,116 @@ namespace DS4MapperTest.SteamControllerLibrary
             }
 
             return ref previousTouchFrameLeftPad;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void CheckLeftHapticSide(double ratio, MapAction.HapticsSide side,
+            bool checkDefault = true)
+        {
+            if ((checkDefault && side == MapAction.HapticsSide.Default) ||
+                side == MapAction.HapticsSide.Left ||
+                side == MapAction.HapticsSide.All)
+            {
+                device.hapticInfo.leftActuatorAmpRatio = ratio;
+                device.hapticInfo.countLeft = 1;
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void CheckRightHapticSide(double ratio, MapAction.HapticsSide side,
+            bool checkDefault = true)
+        {
+            if ((checkDefault && side == MapAction.HapticsSide.Default) ||
+                side == MapAction.HapticsSide.Right ||
+                side == MapAction.HapticsSide.All)
+            {
+                device.hapticInfo.rightActuatorAmpRatio = ratio;
+                device.hapticInfo.countRight = 1;
+            }
+        }
+
+        public override void SetFeedback(string mappingId, double ratio,
+            MapAction.HapticsSide side = MapAction.HapticsSide.Default)
+        {
+            unchecked
+            {
+                switch (mappingId)
+                {
+                    case "Stick":
+                        CheckLeftHapticSide(ratio, side, true);
+                        CheckRightHapticSide(ratio, side, false);
+                        device.hapticInfo.dirty = true;
+                        //hapticAmps[0] = 1.0;
+                        //device.hapticsLeftAmpRatio = ratio;
+                        //device.hapticsPeriodLeftRatio = 1.0;
+                        //device.hapticsDurationLeft = 0.004;
+                        hapticsEvent = true;
+                        break;
+                    case "LeftTouchpad":
+                        CheckLeftHapticSide(ratio, side);
+                        CheckRightHapticSide(ratio, side, false);
+                        //device.hapticInfo.leftActuatorAmpRatio = ratio;
+                        //device.hapticInfo.countLeft = 1;
+                        device.hapticInfo.dirty = true;
+                        hapticsEvent = true;
+                        break;
+                    case "RightTouchpad":
+                        CheckLeftHapticSide(ratio, side, false);
+                        CheckRightHapticSide(ratio, side);
+                        //device.hapticInfo.rightActuatorAmpRatio = ratio;
+                        //device.hapticInfo.countRight = 1;
+                        device.hapticInfo.dirty = true;
+                        hapticsEvent = true;
+                        break;
+                    case "A":
+                    case "B":
+                    case "X":
+                    case "Y":
+                    case "Back":
+                    case "Start":
+                        CheckLeftHapticSide(ratio, side, true);
+                        CheckRightHapticSide(ratio, side, true);
+                        //device.hapticInfo.leftActuatorAmpRatio = ratio;
+                        //device.hapticInfo.rightActuatorAmpRatio = ratio;
+                        //device.hapticInfo.countLeft = 1;
+                        //device.hapticInfo.countRight = 1;
+                        device.hapticInfo.dirty = true;
+                        hapticsEvent = true;
+                        break;
+                    case "LB":
+                    case "LT":
+                        CheckLeftHapticSide(ratio, side, true);
+                        CheckRightHapticSide(ratio, side, false);
+                        //device.hapticInfo.leftActuatorAmpRatio = ratio;
+                        //device.hapticInfo.countLeft = 1;
+                        device.hapticInfo.dirty = true;
+                        hapticsEvent = true;
+                        break;
+                    case "RB":
+                    case "RT":
+                        CheckLeftHapticSide(ratio, side);
+                        CheckRightHapticSide(ratio, side, true);
+                        //device.hapticInfo.rightActuatorAmpRatio = ratio;
+                        //device.hapticInfo.countRight = 1;
+                        device.hapticInfo.dirty = true;
+                        hapticsEvent = true;
+                        break;
+
+                    default: break;
+                }
+            }
+        }
+
+        public override void SetRumble(double ratioLeft, double ratioRight)
+        {
+            device.currentLeftAmpRatio = ratioLeft;
+            device.currentRightAmpRatio = ratioRight;
+
+            //device.hapticInfo.leftActuatorAmpRatio = ratioLeft;
+            //device.hapticInfo.leftPeriodRatio = ratioLeft;
+            //device.hapticInfo.rightActuatorAmpRatio = ratioRight;
+            //device.hapticInfo.rightPeriodRatio = ratioRight;
+            //device.hapticInfo.
         }
     }
 }
