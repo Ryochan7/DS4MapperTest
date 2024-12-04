@@ -50,6 +50,8 @@ namespace DS4MapperTest.SteamControllerLibrary
 
         private double trackballAccel = 0.0;
         private bool hapticsEvent;
+        private SteamControllerDevice.HapticFeedbackInfo hapticsInfo =
+            new SteamControllerDevice.HapticFeedbackInfo();
 
         public SteamControllerMapper(SteamControllerDevice device, SteamControllerReader reader,
             AppGlobalData appGlobal)
@@ -535,6 +537,7 @@ namespace DS4MapperTest.SteamControllerLibrary
 
                 ProcessActionSetLayerChecks();
 
+                // Prefer haptics event over rumble
                 if (hapticsEvent)
                 {
                     reader.WriteHapticsReport();
@@ -545,6 +548,9 @@ namespace DS4MapperTest.SteamControllerLibrary
                     reader.WriteRumbleReport();
                     device.rumbleDirty = false;
                 }
+
+                hapticsEvent = false;
+                device.rumbleDirty = false;
 
                 // Make copy of state data as the previous state
                 previousMapperState = currentMapperState;
@@ -566,7 +572,8 @@ namespace DS4MapperTest.SteamControllerLibrary
                 {
                     device.currentLeftAmpRatio = e.LargeMotor / 255.0;
                     device.currentRightAmpRatio = e.SmallMotor / 255.0;
-                    reader.WriteRumbleReport();
+                    // Wait until next gamepad poll finished before pushing rumble state
+                    //reader.WriteRumbleReport();
                 };
             }
         }
@@ -826,6 +833,7 @@ namespace DS4MapperTest.SteamControllerLibrary
         {
             device.currentLeftAmpRatio = ratioLeft;
             device.currentRightAmpRatio = ratioRight;
+            device.rumbleDirty = true;
 
             //device.hapticInfo.leftActuatorAmpRatio = ratioLeft;
             //device.hapticInfo.leftPeriodRatio = ratioLeft;

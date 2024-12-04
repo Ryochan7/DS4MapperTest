@@ -138,6 +138,8 @@ namespace DS4MapperTest.SteamControllerLibrary
 
         public double currentLeftAmpRatio = 0.0;
         public double currentRightAmpRatio = 0.0;
+        public double activeLeftAmpRatio = 0.0;
+        public double activeRightAmpRatio = 0.0;
 
         //private SteamControllerControllerOptions deviceOptions;
         //public SteamControllerControllerOptions DeviceOptions

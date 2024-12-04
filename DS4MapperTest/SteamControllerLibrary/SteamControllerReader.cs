@@ -373,6 +373,7 @@ namespace DS4MapperTest.SteamControllerLibrary
 
         public override void WriteRumbleReport()
         {
+            // Ignore rumble request if haptics are active
             if (device.hapticInfo.dirty)
             {
                 return;
@@ -385,6 +386,9 @@ namespace DS4MapperTest.SteamControllerLibrary
             // Send Right Haptic rumble
             device.PrepareRumbleData(rumbleReportBuffer, SteamControllerDevice.HAPTIC_POS_RIGHT);
             device.SendRumbleReport(rumbleReportBuffer);
+
+            device.activeLeftAmpRatio = device.currentLeftAmpRatio;
+            device.activeRightAmpRatio = device.currentRightAmpRatio;
         }
 
         public void WriteHapticsReport()
