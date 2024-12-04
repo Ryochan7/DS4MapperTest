@@ -21,7 +21,9 @@
             </StackPanel>
             <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
                 <Label Content="Hold Time" />
-                <TextBox Text="{Binding HoldMs, UpdateSourceTrigger=LostFocus}" Width="300" Margin="8,0,0,0" />
+                <hc:NumericUpDown Value="{Binding HoldMs, UpdateSourceTrigger=LostFocus}" ValueFormat="0 ms" DecimalPlaces="0"
+                                  Minimum="0" Maximum="60000" Increment="10"
+                                  Width="300" Margin="8,0,0,0" />
                 <!--<Slider Value="{Binding HoldMs}" Minimum="0" Maximum="10000" Width="200" Margin="8,0,0,0" />
                 <TextBlock Text="{Binding HoldMs,FallbackValue=0}" Width="50" Margin="8,0,0,0" />-->
             </StackPanel>
