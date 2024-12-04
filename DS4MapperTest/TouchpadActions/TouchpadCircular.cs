@@ -46,6 +46,8 @@ namespace DS4MapperTest.TouchpadActions
         //private double remainderAngle;
         private double travelAngleChangeRad;
         private bool activeTicks;
+        private bool feedbackActive;
+        private bool actionActive;
         private ClickDirection currentClickDir;
         private ClickDirection previousClickDir;
 
@@ -132,6 +134,7 @@ namespace DS4MapperTest.TouchpadActions
                 out double xNorm, out double yNorm);
 
             bool inSafeZone = xNorm != 0.0 || yNorm != 0.0;
+            actionActive = inSafeZone;
 
             if (!inSafeZone)
             {
@@ -218,6 +221,12 @@ namespace DS4MapperTest.TouchpadActions
                 activeCircBtn = null;
             }
 
+            if (!actionActive && feedbackActive)
+            {
+                mapper.SetFeedback(mappingId, 0.0);
+                feedbackActive = false;
+            }
+
             if (activeTicks)
             {
                 //Trace.WriteLine($"OUTPUT EVENT {DateTime.UtcNow.ToString("fff")}");
@@ -237,11 +246,13 @@ namespace DS4MapperTest.TouchpadActions
                 tempBtn.PrepareCircular(mapper, ticksSpeed);
                 tempBtn.Event(mapper);
                 activeCircBtn = tempBtn;
+                mapper.SetFeedback(mappingId, 0.3);
 
                 travelAngleChangeRad = travelAngleChangeRad > 0 ?
                     travelAngleChangeRad - (ticksSpeed * CLICK_RAD_THRESHOLD) : travelAngleChangeRad + (ticksSpeed * CLICK_RAD_THRESHOLD);
 
                 activeTicks = false;
+                feedbackActive = true;
             }
 
             active = false;
@@ -253,6 +264,12 @@ namespace DS4MapperTest.TouchpadActions
             if (activeCircBtn != null && activeCircBtn.active)
             {
                 activeCircBtn.Release(mapper, resetState, ignoreReleaseActions);
+            }
+
+            if (feedbackActive)
+            {
+                mapper.SetFeedback(mappingId, 0.0);
+                feedbackActive = false;
             }
 
             startAngleRad = 0;
@@ -268,6 +285,11 @@ namespace DS4MapperTest.TouchpadActions
                 !useParentCircButtons[(int)currentClickDir])
             {
                 activeCircBtn.Release(mapper, resetState);
+                if (feedbackActive)
+                {
+                    mapper.SetFeedback(mappingId, 0.0);
+                    feedbackActive = false;
+                }
             }
         }
 
