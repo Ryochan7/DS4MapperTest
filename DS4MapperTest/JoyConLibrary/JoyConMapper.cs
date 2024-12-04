@@ -69,6 +69,7 @@ namespace DS4MapperTest.JoyConLibrary
         public JoyConMapper(JoyConDevice device, JoyConReader reader, AppGlobalData appGlobal)
         {
             this.device = device;
+            this.baseDevice = device;
             this.reader = reader;
             this.appGlobal = appGlobal;
 

@@ -36,6 +36,7 @@ namespace DS4MapperTest.SwitchProLibrary
         public SwitchProMapper(SwitchProDevice device, SwitchProReader reader, AppGlobalData appGlobal)
         {
             this.device = device;
+            this.baseDevice = device;
             this.reader = reader;
             this.appGlobal = appGlobal;
 

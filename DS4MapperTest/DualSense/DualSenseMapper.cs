@@ -44,6 +44,7 @@ namespace DS4MapperTest.DualSense
         {
             this.appGlobal = appGlobal;
             this.device = device;
+            this.baseDevice = device;
             this.reader = reader;
 
             deviceActionDefaults = new DS4ActionDefaultsCreator();

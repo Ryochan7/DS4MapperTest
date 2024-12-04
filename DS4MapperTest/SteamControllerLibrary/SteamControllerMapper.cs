@@ -55,6 +55,7 @@ namespace DS4MapperTest.SteamControllerLibrary
             AppGlobalData appGlobal)
         {
             this.device = device;
+            this.baseDevice = device;
             this.reader = reader;
             this.appGlobal = appGlobal;
 

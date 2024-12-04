@@ -173,6 +173,7 @@ namespace DS4MapperTest
         {
             get;
         }
+        protected InputDeviceBase baseDevice;
 
         protected bool quit = false;
         public bool Quit { get => quit; set => quit = value; }
@@ -1550,6 +1551,7 @@ namespace DS4MapperTest
                             double absValue = Math.Abs(outputValue);
                             bool xDir = false;
                             bool yDir = false;
+
                             switch (actionData.mouseDir)
                             {
                                 case OutputActionData.RelativeMouseDir.MouseUp:
@@ -1581,7 +1583,7 @@ namespace DS4MapperTest
 
                             const int MOUSESPEEDFACTOR = 20;
                             const double MOUSE_VELOCITY_OFFSET = 0.013;
-                            double timeDelta = CurrentLatency;
+                            double timeDelta = currentLatency - (remainderCutoff(currentLatency * 10000.0, 1.0) / 10000.0);
                             int mouseVelocity = xDir ? xSpeed * MOUSESPEEDFACTOR : ySpeed * MOUSESPEEDFACTOR;
                             double mouseOffset = MOUSE_VELOCITY_OFFSET * mouseVelocity;
                             double tempMouseOffset = mouseOffset;
@@ -1751,7 +1753,7 @@ namespace DS4MapperTest
 
                             const int MOUSESPEEDFACTOR = 20;
                             const double MOUSE_VELOCITY_OFFSET = 0.013;
-                            double timeDelta = CurrentLatency;
+                            double timeDelta = currentLatency - (remainderCutoff(currentLatency * 10000.0, 1.0) / 10000.0);
                             int mouseVelocity = xDir ? xSpeed * MOUSESPEEDFACTOR : ySpeed * MOUSESPEEDFACTOR;
                             double mouseOffset = MOUSE_VELOCITY_OFFSET * mouseVelocity;
                             double tempMouseOffset = axisUnit * mouseOffset;
@@ -1905,6 +1907,7 @@ namespace DS4MapperTest
                             double distance = 0.0;
                             bool xDir = false;
                             bool yDir = false;
+
                             switch (actionData.mouseDir)
                             {
                                 case OutputActionData.RelativeMouseDir.MouseUp:
@@ -1936,7 +1939,7 @@ namespace DS4MapperTest
 
                             const int MOUSESPEEDFACTOR = 20;
                             const double MOUSE_VELOCITY_OFFSET = 0.013;
-                            double timeDelta = CurrentLatency;
+                            double timeDelta = currentLatency - (remainderCutoff(currentLatency * 10000.0, 1.0) / 10000.0);
                             int mouseXVelocity = xSpeed * MOUSESPEEDFACTOR;
                             int mouseYVelocity = ySpeed * MOUSESPEEDFACTOR;
                             double mouseXOffset = MOUSE_VELOCITY_OFFSET * mouseXVelocity;
