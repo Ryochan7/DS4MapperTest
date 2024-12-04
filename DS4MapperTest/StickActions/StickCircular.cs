@@ -290,6 +290,7 @@ namespace DS4MapperTest.StickActions
             if (feedbackActive)
             {
                 mapper.SetFeedback(mappingId, 0.0);
+                feedbackActive = false;
             }
 
             startAngleRad = 0;
@@ -309,6 +310,7 @@ namespace DS4MapperTest.StickActions
                 if (feedbackActive)
                 {
                     mapper.SetFeedback(mappingId, 0.0);
+                    feedbackActive = false;
                 }
 
                 xNorm = yNorm = 0.0;
