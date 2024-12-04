@@ -2199,6 +2199,7 @@ namespace DS4MapperTest
                 try
                 {
                     ChangeProfile(profileFile);
+                    actionProfile.ControllerType = baseDevice.DeviceType.ToString();
                 }
                 catch (JsonException)
                 {

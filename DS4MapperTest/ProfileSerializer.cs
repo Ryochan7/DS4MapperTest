@@ -138,7 +138,7 @@ namespace DS4MapperTest
         //[JsonProperty(Required = Required.Always)]
         public DateTime CreationDate { get => tempProfile.CreationDate; set => tempProfile.CreationDate = value; }
 
-        [JsonIgnore]
+        //[JsonIgnore]
         public string ControllerType { get => tempProfile.ControllerType; set => tempProfile.ControllerType = value; }
         public bool ShouldSerializeControllerType()
         {
