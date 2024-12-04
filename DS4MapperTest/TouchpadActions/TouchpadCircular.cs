@@ -108,6 +108,7 @@ namespace DS4MapperTest.TouchpadActions
             });
 
             deadMod = new StickDeadZone(DEFAULT_DEADZONE, 1.0, 0.0);
+            hapticsIntensityRatio = GetHapticsIntensityRatio(HapticsIntensity.Light);
         }
 
         public override void Prepare(Mapper mapper, ref TouchEventFrame touchFrame, bool alterState = true)
@@ -223,7 +224,7 @@ namespace DS4MapperTest.TouchpadActions
 
             if (!actionActive && feedbackActive)
             {
-                mapper.SetFeedback(mappingId, 0.0);
+                mapper.SetFeedback(mappingId, OFF_HAPTICS_INTENSITY_RATIO);
                 feedbackActive = false;
             }
 
@@ -246,7 +247,7 @@ namespace DS4MapperTest.TouchpadActions
                 tempBtn.PrepareCircular(mapper, ticksSpeed);
                 tempBtn.Event(mapper);
                 activeCircBtn = tempBtn;
-                mapper.SetFeedback(mappingId, 0.3);
+                mapper.SetFeedback(mappingId, hapticsIntensityRatio);
 
                 travelAngleChangeRad = travelAngleChangeRad > 0 ?
                     travelAngleChangeRad - (ticksSpeed * CLICK_RAD_THRESHOLD) : travelAngleChangeRad + (ticksSpeed * CLICK_RAD_THRESHOLD);
@@ -268,7 +269,7 @@ namespace DS4MapperTest.TouchpadActions
 
             if (feedbackActive)
             {
-                mapper.SetFeedback(mappingId, 0.0);
+                mapper.SetFeedback(mappingId, OFF_HAPTICS_INTENSITY_RATIO);
                 feedbackActive = false;
             }
 
@@ -287,7 +288,7 @@ namespace DS4MapperTest.TouchpadActions
                 activeCircBtn.Release(mapper, resetState);
                 if (feedbackActive)
                 {
-                    mapper.SetFeedback(mappingId, 0.0);
+                    mapper.SetFeedback(mappingId, OFF_HAPTICS_INTENSITY_RATIO);
                     feedbackActive = false;
                 }
             }
