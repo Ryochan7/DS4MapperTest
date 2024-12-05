@@ -50,6 +50,11 @@ namespace DS4MapperTest.SteamControllerLibrary
 
         private double trackballAccel = 0.0;
         private bool hapticsEvent;
+        private double pendingHapticsLeftAmpRatio = 0.0;
+        private double pendingHapticsRightAmpRatio = 0.0;
+        private double pendingRumbleLeftAmpRatio = 0.0;
+        private double pendingRumbleRightAmpRatio = 0.0;
+
         private SteamControllerDevice.HapticFeedbackInfo hapticsInfo =
             new SteamControllerDevice.HapticFeedbackInfo();
 
@@ -551,6 +556,8 @@ namespace DS4MapperTest.SteamControllerLibrary
 
                 hapticsEvent = false;
                 device.rumbleDirty = false;
+                pendingHapticsLeftAmpRatio = pendingHapticsRightAmpRatio = 0.0;
+                pendingRumbleLeftAmpRatio = pendingRumbleRightAmpRatio = 0.0;
 
                 // Make copy of state data as the previous state
                 previousMapperState = currentMapperState;
@@ -739,8 +746,15 @@ namespace DS4MapperTest.SteamControllerLibrary
                 side == MapAction.HapticsSide.Left ||
                 side == MapAction.HapticsSide.All)
             {
-                device.hapticInfo.leftActuatorAmpRatio = ratio;
-                device.hapticInfo.countLeft = 1;
+                if (pendingHapticsLeftAmpRatio < ratio)
+                {
+                    pendingHapticsLeftAmpRatio = ratio;
+
+                    device.hapticInfo.leftActuatorAmpRatio = ratio;
+                    device.hapticInfo.countLeft = 1;
+                    device.hapticInfo.dirty = true;
+                    hapticsEvent = true;
+                }
             }
         }
 
@@ -752,8 +766,15 @@ namespace DS4MapperTest.SteamControllerLibrary
                 side == MapAction.HapticsSide.Right ||
                 side == MapAction.HapticsSide.All)
             {
-                device.hapticInfo.rightActuatorAmpRatio = ratio;
-                device.hapticInfo.countRight = 1;
+                if (pendingHapticsRightAmpRatio < ratio)
+                {
+                    pendingHapticsRightAmpRatio = ratio;
+
+                    device.hapticInfo.rightActuatorAmpRatio = ratio;
+                    device.hapticInfo.countRight = 1;
+                    device.hapticInfo.dirty = true;
+                    hapticsEvent = true;
+                }
             }
         }
 
@@ -767,28 +788,22 @@ namespace DS4MapperTest.SteamControllerLibrary
                     case "Stick":
                         CheckLeftHapticSide(ratio, side, true);
                         CheckRightHapticSide(ratio, side, false);
-                        device.hapticInfo.dirty = true;
                         //hapticAmps[0] = 1.0;
                         //device.hapticsLeftAmpRatio = ratio;
                         //device.hapticsPeriodLeftRatio = 1.0;
                         //device.hapticsDurationLeft = 0.004;
-                        hapticsEvent = true;
                         break;
                     case "LeftTouchpad":
                         CheckLeftHapticSide(ratio, side);
                         CheckRightHapticSide(ratio, side, false);
                         //device.hapticInfo.leftActuatorAmpRatio = ratio;
                         //device.hapticInfo.countLeft = 1;
-                        device.hapticInfo.dirty = true;
-                        hapticsEvent = true;
                         break;
                     case "RightTouchpad":
                         CheckLeftHapticSide(ratio, side, false);
                         CheckRightHapticSide(ratio, side);
                         //device.hapticInfo.rightActuatorAmpRatio = ratio;
                         //device.hapticInfo.countRight = 1;
-                        device.hapticInfo.dirty = true;
-                        hapticsEvent = true;
                         break;
                     case "A":
                     case "B":
@@ -802,8 +817,6 @@ namespace DS4MapperTest.SteamControllerLibrary
                         //device.hapticInfo.rightActuatorAmpRatio = ratio;
                         //device.hapticInfo.countLeft = 1;
                         //device.hapticInfo.countRight = 1;
-                        device.hapticInfo.dirty = true;
-                        hapticsEvent = true;
                         break;
                     case "LB":
                     case "LT":
@@ -811,8 +824,6 @@ namespace DS4MapperTest.SteamControllerLibrary
                         CheckRightHapticSide(ratio, side, false);
                         //device.hapticInfo.leftActuatorAmpRatio = ratio;
                         //device.hapticInfo.countLeft = 1;
-                        device.hapticInfo.dirty = true;
-                        hapticsEvent = true;
                         break;
                     case "RB":
                     case "RT":
@@ -820,8 +831,6 @@ namespace DS4MapperTest.SteamControllerLibrary
                         CheckRightHapticSide(ratio, side, true);
                         //device.hapticInfo.rightActuatorAmpRatio = ratio;
                         //device.hapticInfo.countRight = 1;
-                        device.hapticInfo.dirty = true;
-                        hapticsEvent = true;
                         break;
 
                     default: break;
@@ -831,9 +840,23 @@ namespace DS4MapperTest.SteamControllerLibrary
 
         public override void SetRumble(double ratioLeft, double ratioRight)
         {
-            device.currentLeftAmpRatio = ratioLeft;
-            device.currentRightAmpRatio = ratioRight;
-            device.rumbleDirty = true;
+            bool changed = false;
+            if (pendingRumbleLeftAmpRatio < ratioLeft)
+            {
+                device.currentLeftAmpRatio = ratioLeft;
+                changed = true;
+            }
+
+            if (pendingRumbleRightAmpRatio < ratioRight)
+            {
+                device.currentRightAmpRatio = ratioRight;
+                changed = true;
+            }
+
+            if (changed)
+            {
+                device.rumbleDirty = true;
+            }
 
             //device.hapticInfo.leftActuatorAmpRatio = ratioLeft;
             //device.hapticInfo.leftPeriodRatio = ratioLeft;
