@@ -493,6 +493,11 @@ namespace DS4MapperTest.SteamControllerLibrary
             hidDevice.WriteFeatureReport(buffer);
         }
 
+        public void ResetRumbleData()
+        {
+            currentLeftAmpRatio = currentRightAmpRatio = 0.0;
+        }
+
         public void RaiseRemoval()
         {
             Removal?.Invoke(this, EventArgs.Empty);

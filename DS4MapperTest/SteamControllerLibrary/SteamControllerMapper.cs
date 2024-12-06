@@ -7,6 +7,7 @@ using DS4MapperTest.TriggerActions;
 using Nefarius.ViGEm.Client;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -57,6 +58,7 @@ namespace DS4MapperTest.SteamControllerLibrary
 
         private SteamControllerDevice.HapticFeedbackInfo hapticsInfo =
             new SteamControllerDevice.HapticFeedbackInfo();
+        private Stopwatch standBySw = new Stopwatch();
 
         public SteamControllerMapper(SteamControllerDevice device, SteamControllerReader reader,
             AppGlobalData appGlobal)
@@ -547,11 +549,53 @@ namespace DS4MapperTest.SteamControllerLibrary
                 {
                     reader.WriteHapticsReport();
                     hapticsEvent = false;
+
+                    bool rumbleActive = device.currentLeftAmpRatio != 0.0 || device.currentRightAmpRatio != 0.0;
+                    if (rumbleActive)
+                    {
+                        device.ResetRumbleData();
+                    }
+
+                    if (standBySw.IsRunning)
+                    {
+                        standBySw.Reset();
+                    }
                 }
                 else if (device.rumbleDirty)
                 {
                     reader.WriteRumbleReport();
                     device.rumbleDirty = false;
+
+                    bool rumbleActive = device.currentLeftAmpRatio != 0.0 ||
+                        device.currentRightAmpRatio != 0.0;
+                    if (rumbleActive)
+                    {
+                        standBySw.Restart();
+                    }
+                    else
+                    {
+                        standBySw.Reset();
+                    }
+                }
+                else if (!device.rumbleDirty)
+                {
+                    bool rumbleActive = device.currentLeftAmpRatio != 0.0 ||
+                        device.currentRightAmpRatio != 0.0;
+                    if (standBySw.ElapsedMilliseconds >= 3000L && rumbleActive)
+                    {
+                        // Write new rumble report before currently running rumble ends
+                        reader.WriteRumbleReport();
+                        standBySw.Restart();
+                    }
+                    else
+                    {
+                        //Trace.WriteLine("FAIL NOW");
+                    }
+
+                    if (!rumbleActive && standBySw.IsRunning)
+                    {
+                        standBySw.Reset();
+                    }
                 }
 
                 hapticsEvent = false;
@@ -579,6 +623,7 @@ namespace DS4MapperTest.SteamControllerLibrary
                 {
                     device.currentLeftAmpRatio = e.LargeMotor / 255.0;
                     device.currentRightAmpRatio = e.SmallMotor / 255.0;
+                    device.rumbleDirty = true;
                     // Wait until next gamepad poll finished before pushing rumble state
                     //reader.WriteRumbleReport();
                 };
