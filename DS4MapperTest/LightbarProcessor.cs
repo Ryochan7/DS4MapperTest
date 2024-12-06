@@ -100,44 +100,19 @@ namespace DS4MapperTest
             DS4Color useColor = new DS4Color();
             bool updateColor = false;
 
-            switch (profile.LightbarSettings.Mode)
+            if (useOverrideColor)
             {
-                case LightbarMode.SolidColor:
-                    {
-                        if (useOverrideColor)
-                        {
-                            if (!device.LightbarColor.Equals(overrideColor))
-                            {
-                                useColor = overrideColor;
-                                updateColor = true;
-                            }
-                        }
-                        else if (!device.LightbarColor.Equals(profile.LightbarSettings.SolidColor))
-                        {
-                            useColor = profile.LightbarSettings.SolidColor;
-                            updateColor = true;
-                        }
-                    }
-
-                    break;
-                case LightbarMode.Rainbow:
-                    {
-                        DateTime now = DateTime.UtcNow;
-                        double secsCycle = profile.LightbarSettings.rainbowSecondsCycle;
-                        if (secsCycle > 0)
-                        {
-                            if (now >= oldCheckDateTime + TimeSpan.FromMilliseconds(10.0))
-                            {
-                                int diffMs = now.Subtract(oldCheckDateTime).Milliseconds;
-                                oldCheckDateTime = now;
-
-                                rainbowCounter += 360.0 * (double)(diffMs / 1000.0 / secsCycle);
-                                rainbowCounter = rainbowCounter % 360.0;
-                                useColor = HSVToRGB((float)rainbowCounter, 1.0f, 1.0f);
-                                updateColor = true;
-                            }
-                        }
-                        else
+                if (!device.LightbarColor.Equals(overrideColor))
+                {
+                    useColor = overrideColor;
+                    updateColor = true;
+                }
+            }
+            else
+            {
+                switch (profile.LightbarSettings.Mode)
+                {
+                    case LightbarMode.SolidColor:
                         {
                             if (!device.LightbarColor.Equals(profile.LightbarSettings.SolidColor))
                             {
@@ -145,87 +120,115 @@ namespace DS4MapperTest
                                 updateColor = true;
                             }
                         }
-                    }
 
-                    break;
-                case LightbarMode.Pulse:
-                    {
-                        double ratio = 0.0;
-
-                        if (!fadewatch.IsRunning)
+                        break;
+                    case LightbarMode.Rainbow:
                         {
-                            fadewatch.Restart();
-                            switch(fadedirection)
+                            DateTime now = DateTime.UtcNow;
+                            double secsCycle = profile.LightbarSettings.rainbowSecondsCycle;
+                            if (secsCycle > 0)
                             {
-                                case FadeDirection.In:
-                                    fadedirection = FadeDirection.Out;
-                                    break;
-                                case FadeDirection.Out:
-                                    fadedirection = FadeDirection.In;
-                                    break;
-                                default: break;
-                            }
+                                if (now >= oldCheckDateTime + TimeSpan.FromMilliseconds(10.0))
+                                {
+                                    int diffMs = now.Subtract(oldCheckDateTime).Milliseconds;
+                                    oldCheckDateTime = now;
 
-                            ratio = fadedirection == FadeDirection.Out ? 100.0 : 0.0;
-                        }
-                        else
-                        {
-                            long elapsed = fadewatch.ElapsedMilliseconds;
-                            if (fadedirection == FadeDirection.In)
-                            {
-                                if (elapsed < PULSE_FLASH_DURATION)
-                                {
-                                    elapsed = elapsed / 40;
-                                    if (elapsed > PULSE_FLASH_SEGMENTS)
-                                        elapsed = (long)PULSE_FLASH_SEGMENTS;
-                                    ratio = 100.0 * (elapsed / PULSE_FLASH_SEGMENTS);
-                                }
-                                else
-                                {
-                                    ratio = 100.0;
-                                    fadewatch.Stop();
+                                    rainbowCounter += 360.0 * (double)(diffMs / 1000.0 / secsCycle);
+                                    rainbowCounter = rainbowCounter % 360.0;
+                                    useColor = HSVToRGB((float)rainbowCounter, 1.0f, 1.0f);
+                                    updateColor = true;
                                 }
                             }
                             else
                             {
-                                if (elapsed < PULSE_FLASH_DURATION)
+                                if (!device.LightbarColor.Equals(profile.LightbarSettings.SolidColor))
                                 {
-                                    elapsed = elapsed / 40;
-                                    if (elapsed > PULSE_FLASH_SEGMENTS)
-                                        elapsed = (long)PULSE_FLASH_SEGMENTS;
-                                    ratio = (0 - 100.0) * (elapsed / PULSE_FLASH_SEGMENTS) + 100.0;
-                                }
-                                else
-                                {
-                                    ratio = 0.0;
-                                    fadewatch.Stop();
+                                    useColor = profile.LightbarSettings.SolidColor;
+                                    updateColor = true;
                                 }
                             }
                         }
 
-                        useColor = RatioColor(profile.LightbarSettings.PulseColor,
-                                ratio / 100.0);
-                        if (!device.LightbarColor.Equals(useColor))
+                        break;
+                    case LightbarMode.Pulse:
                         {
-                            updateColor = true;
+                            double ratio = 0.0;
+
+                            if (!fadewatch.IsRunning)
+                            {
+                                fadewatch.Restart();
+                                switch (fadedirection)
+                                {
+                                    case FadeDirection.In:
+                                        fadedirection = FadeDirection.Out;
+                                        break;
+                                    case FadeDirection.Out:
+                                        fadedirection = FadeDirection.In;
+                                        break;
+                                    default: break;
+                                }
+
+                                ratio = fadedirection == FadeDirection.Out ? 100.0 : 0.0;
+                            }
+                            else
+                            {
+                                long elapsed = fadewatch.ElapsedMilliseconds;
+                                if (fadedirection == FadeDirection.In)
+                                {
+                                    if (elapsed < PULSE_FLASH_DURATION)
+                                    {
+                                        elapsed = elapsed / 40;
+                                        if (elapsed > PULSE_FLASH_SEGMENTS)
+                                            elapsed = (long)PULSE_FLASH_SEGMENTS;
+                                        ratio = 100.0 * (elapsed / PULSE_FLASH_SEGMENTS);
+                                    }
+                                    else
+                                    {
+                                        ratio = 100.0;
+                                        fadewatch.Stop();
+                                    }
+                                }
+                                else
+                                {
+                                    if (elapsed < PULSE_FLASH_DURATION)
+                                    {
+                                        elapsed = elapsed / 40;
+                                        if (elapsed > PULSE_FLASH_SEGMENTS)
+                                            elapsed = (long)PULSE_FLASH_SEGMENTS;
+                                        ratio = (0 - 100.0) * (elapsed / PULSE_FLASH_SEGMENTS) + 100.0;
+                                    }
+                                    else
+                                    {
+                                        ratio = 0.0;
+                                        fadewatch.Stop();
+                                    }
+                                }
+                            }
+
+                            useColor = RatioColor(profile.LightbarSettings.PulseColor,
+                                    ratio / 100.0);
+                            if (!device.LightbarColor.Equals(useColor))
+                            {
+                                updateColor = true;
+                            }
                         }
-                    }
 
-                    break;
-                case LightbarMode.Battery:
-                    {
-                        useColor =
-                            RatioColor(profile.LightbarSettings.BatteryFullColor,
-                            device.Battery / 100.0);
-
-                        if (!device.LightbarColor.Equals(useColor))
+                        break;
+                    case LightbarMode.Battery:
                         {
-                            updateColor = true;
-                        }
-                    }
+                            useColor =
+                                RatioColor(profile.LightbarSettings.BatteryFullColor,
+                                device.Battery / 100.0);
 
-                    break;
-                default: break;
+                            if (!device.LightbarColor.Equals(useColor))
+                            {
+                                updateColor = true;
+                            }
+                        }
+
+                        break;
+                    default: break;
+                }
             }
 
             if (updateColor)
