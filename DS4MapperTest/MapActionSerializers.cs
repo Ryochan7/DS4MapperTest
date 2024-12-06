@@ -2350,6 +2350,22 @@ namespace DS4MapperTest
                 return touchCircAct.ChangedProperties.Contains(TouchpadCircular.PropertyKeyStrings.SENSITIVITY);
             }
 
+            [JsonConverter(typeof(StringEnumConverter))]
+            public MapAction.HapticsIntensity HapticsIntensity
+            {
+                get => touchCircAct.ActionHapticsIntensity;
+                set
+                {
+                    touchCircAct.ActionHapticsIntensity = value;
+                    HapticsIntensityChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler HapticsIntensityChanged;
+            public bool ShouldSerializeHapticsIntensity()
+            {
+                return touchCircAct.ChangedProperties.Contains(TouchpadCircular.PropertyKeyStrings.HAPTICS_INTENSITY);
+            }
+
             public TouchpadCircularSettings(TouchpadCircular action)
             {
                 touchCircAct = action;
@@ -2399,6 +2415,12 @@ namespace DS4MapperTest
             ClockwiseChanged += TouchpadCircularSerializer_ClockwiseChanged;
             CounterClockwiseChanged += TouchpadCircularSerializer_CounterClockwiseChanged;
             settings.SensitivityChanged += Settings_SensitivityChanged;
+            settings.HapticsIntensityChanged += Settings_HapticsIntensityChanged;
+        }
+
+        private void Settings_HapticsIntensityChanged(object sender, EventArgs e)
+        {
+            touchCircAct.ChangedProperties.Add(TouchpadCircular.PropertyKeyStrings.HAPTICS_INTENSITY);
         }
 
         private void Settings_SensitivityChanged(object sender, EventArgs e)
@@ -5184,6 +5206,21 @@ namespace DS4MapperTest
                 return stickCircAct.ChangedProperties.Contains(StickCircular.PropertyKeyStrings.SENSITIVITY);
             }
 
+            [JsonConverter(typeof(StringEnumConverter))]
+            public MapAction.HapticsIntensity HapticsIntensity
+            {
+                get => stickCircAct.ActionHapticsIntensity;
+                set
+                {
+                    stickCircAct.ActionHapticsIntensity = value;
+                    HapticsIntensityChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler HapticsIntensityChanged;
+            public bool ShouldSerializeHapticsIntensity()
+            {
+                return stickCircAct.ChangedProperties.Contains(StickCircular.PropertyKeyStrings.HAPTICS_INTENSITY);
+            }
 
             public StickCircularSettings(StickCircular action)
             {
@@ -5234,6 +5271,12 @@ namespace DS4MapperTest
             ClockwiseChanged += StickCircularSerializer_ClockwiseChanged;
             CounterClockwiseChanged += StickCircularSerializer_CounterClockwiseChanged;
             settings.SensitivityChanged += Settings_SensitivityChanged;
+            settings.HapticsIntensityChanged += Settings_HapticIntensityChanged;
+        }
+
+        private void Settings_HapticIntensityChanged(object sender, EventArgs e)
+        {
+            stickCircAct.ChangedProperties.Add(StickCircular.PropertyKeyStrings.HAPTICS_INTENSITY);
         }
 
         private void Settings_SensitivityChanged(object sender, EventArgs e)

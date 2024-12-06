@@ -19,6 +19,7 @@ namespace DS4MapperTest.TouchpadActions
             public const string SCROLL_BUTTON_1 = "ScrollButton1";
             public const string SCROLL_BUTTON_2 = "ScrollButton2";
             public const string SENSITIVITY = "Sensitivity";
+            public const string HAPTICS_INTENSITY = "HapticsIntensity";
         }
 
         private HashSet<string> fullPropertySet = new HashSet<string>()
@@ -80,6 +81,17 @@ namespace DS4MapperTest.TouchpadActions
             set => sensitivity = value;
         }
 
+        private HapticsIntensity actionHapticsIntensity;
+        public HapticsIntensity ActionHapticsIntensity
+        {
+            get => actionHapticsIntensity;
+            set
+            {
+                actionHapticsIntensity = value;
+                hapticsIntensityRatio = GetHapticsIntensityRatio(value);
+            }
+        }
+
         public TouchpadCircular()
         {
             actionTypeName = ACTION_TYPE_NAME;
@@ -108,7 +120,8 @@ namespace DS4MapperTest.TouchpadActions
             });
 
             deadMod = new StickDeadZone(DEFAULT_DEADZONE, 1.0, 0.0);
-            hapticsIntensityRatio = GetHapticsIntensityRatio(HapticsIntensity.Light);
+            //hapticsIntensityRatio = GetHapticsIntensityRatio(HapticsIntensity.Light);
+            hapticsIntensityRatio = GetHapticsIntensityRatio(actionHapticsIntensity);
         }
 
         public override void Prepare(Mapper mapper, ref TouchEventFrame touchFrame, bool alterState = true)
@@ -323,6 +336,9 @@ namespace DS4MapperTest.TouchpadActions
                         case PropertyKeyStrings.SENSITIVITY:
                             sensitivity = tempCirleAction.sensitivity;
                             break;
+                        case PropertyKeyStrings.HAPTICS_INTENSITY:
+                            ActionHapticsIntensity = tempCirleAction.actionHapticsIntensity;
+                            break;
                         default:
                             break;
                     }
@@ -369,6 +385,9 @@ namespace DS4MapperTest.TouchpadActions
                     break;
                 case PropertyKeyStrings.SENSITIVITY:
                     sensitivity = tempCirleAction.sensitivity;
+                    break;
+                case PropertyKeyStrings.HAPTICS_INTENSITY:
+                    ActionHapticsIntensity = tempCirleAction.actionHapticsIntensity;
                     break;
                 default:
                     break;

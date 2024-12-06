@@ -18,6 +18,7 @@ namespace DS4MapperTest.StickActions
             public const string SCROLL_BUTTON_1 = "ScrollButton1";
             public const string SCROLL_BUTTON_2 = "ScrollButton2";
             public const string SENSITIVITY = "Sensitivity";
+            public const string HAPTICS_INTENSITY = "HapticsIntensity";
         }
 
         private HashSet<string> fullPropertySet = new HashSet<string>()
@@ -80,6 +81,16 @@ namespace DS4MapperTest.StickActions
         }
 
         private double xNorm = 0.0, yNorm = 0.0;
+        private HapticsIntensity actionHapticsIntensity;
+        public HapticsIntensity ActionHapticsIntensity
+        {
+            get => actionHapticsIntensity;
+            set
+            {
+                actionHapticsIntensity = value;
+                hapticsIntensityRatio = GetHapticsIntensityRatio(value);
+            }
+        }
 
         public StickCircular()
         {
@@ -109,7 +120,7 @@ namespace DS4MapperTest.StickActions
             });
 
             deadMod = new StickDeadZone(DEFAULT_DEADZONE, 1.0, 0.0);
-            hapticsIntensityRatio = GetHapticsIntensityRatio(HapticsIntensity.Light);
+            hapticsIntensityRatio = GetHapticsIntensityRatio(actionHapticsIntensity);
         }
 
         public StickCircular(StickDefinition definition) : this()
@@ -347,6 +358,9 @@ namespace DS4MapperTest.StickActions
                         case PropertyKeyStrings.SENSITIVITY:
                             sensitivity = tempCirleAction.sensitivity;
                             break;
+                        case PropertyKeyStrings.HAPTICS_INTENSITY:
+                            ActionHapticsIntensity = tempCirleAction.actionHapticsIntensity;
+                            break;
                         default:
                             break;
                     }
@@ -387,6 +401,9 @@ namespace DS4MapperTest.StickActions
                     break;
                 case PropertyKeyStrings.SENSITIVITY:
                     sensitivity = tempCirleAction.sensitivity;
+                    break;
+                case PropertyKeyStrings.HAPTICS_INTENSITY:
+                    ActionHapticsIntensity = tempCirleAction.actionHapticsIntensity;
                     break;
                 default:
                     break;
