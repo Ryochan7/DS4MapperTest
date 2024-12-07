@@ -240,7 +240,6 @@ namespace DS4MapperTest
             };
 
             return result;
-
         }
     }
 
@@ -283,6 +282,16 @@ namespace DS4MapperTest
             StickTranslateActionValues result = new StickTranslateActionValues()
             {
                 deadZone = 0.10,
+            };
+
+            return result;
+        }
+
+        public override StickCircularActionValues GrabStickCircularActionDefaults()
+        {
+            StickCircularActionValues result = new StickCircularActionValues()
+            {
+                hapticsIntensity = MapAction.HapticsIntensity.Medium,
             };
 
             return result;
