@@ -94,8 +94,8 @@ namespace DS4MapperTest.ViewModels
                 case 4:
                     {
                         StickCircular tempAction = new StickCircular();
-                        //var joyDefaults = mapper.DeviceActionDefaults.GrabTouchActionPadDefaults();
-                        //joyDefaults.Process(tempAction);
+                        var joyDefaults = mapper.DeviceActionDefaults.GrabStickCircularActionDefaults();
+                        joyDefaults.Process(tempAction);
                         result = tempAction;
                     }
 
