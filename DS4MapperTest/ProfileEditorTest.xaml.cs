@@ -386,6 +386,12 @@ namespace DS4MapperTest
 
         private void Window_Closed(object sender, EventArgs e)
         {
+            // Need to unregister events in advance or control will fire events when DataContext goes null.
+            // Wrong lightbar color will be set
+            this.ColorPicker.SelectedColorChanged -= this.ColorPicker_SelectedColorChanged;
+            this.ColorPickerBattery.SelectedColorChanged -= this.ColorPickerBattery_SelectedColorChanged;
+            this.ColorPickerPulse.SelectedColorChanged -= this.ColorPickerPulse_SelectedColorChanged;
+
             DataContext = null;
             editorTestVM?.UnregisterEvents();
         }
