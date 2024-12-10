@@ -42,6 +42,15 @@ namespace DS4MapperTest.DS4Library
         private TouchpadDefinition cpadDefinition;
         private GyroSensDefinition gyroSensDefinition;
 
+        private bool hapticsEvent;
+        private bool rumbleDirty;
+        private double pendingHapticsLeftAmpRatio = 0.0;
+        private double pendingHapticsRightAmpRatio = 0.0;
+        private double pendingRumbleLeftAmpRatio = 0.0;
+        private double pendingRumbleRightAmpRatio = 0.0;
+        private Stopwatch standBySw = new Stopwatch();
+        private Stopwatch hapticsSw = new Stopwatch();
+
         public DS4Mapper(DS4Device device, DS4Reader reader, AppGlobalData appGlobal)
         {
             this.appGlobal = appGlobal;
@@ -495,6 +504,94 @@ namespace DS4MapperTest.DS4Library
 
             ProcessActionSetLayerChecks();
 
+            // Prefer haptics event over rumble
+            /*if (hapticsEvent)
+            {
+                if (device.HapticsStateRef.IsFeedbackActive())
+                {
+                    var oldstate = device.HapticsState;
+                    device.HapticsStateRef.LeftHeavy = device.HapticsStateRef.RightLight = 0;
+                    //reader.WriteHapticsReport();
+                    device.HapticsState = oldstate;
+                }
+
+                reader.WriteHapticsReport();
+                hapticsSw.Restart();
+                hapticsEvent = false;
+
+                bool rumbleActive = device.FeedbackStateRef.LeftHeavy != 0 ||
+                    device.FeedbackStateRef.RightLight != 0;
+                if (rumbleActive)
+                {
+                    device.ResetRumbleData();
+                }
+
+                if (standBySw.IsRunning)
+                {
+                    standBySw.Reset();
+                }
+            }
+            else if (device.RumbleDirty)
+            {
+                if (device.HapticsStateRef.IsFeedbackActive())
+                {
+                    hapticsSw.Reset();
+                }
+
+                reader.WriteRumbleReport();
+                device.RumbleDirty = false;
+
+                bool rumbleActive = device.FeedbackStateRef.LeftHeavy != 0 ||
+                    device.FeedbackStateRef.RightLight != 0;
+                if (rumbleActive)
+                {
+                    standBySw.Restart();
+                }
+                else
+                {
+                    standBySw.Reset();
+                }
+            }
+            else if (device.HapticsStateRef.IsFeedbackActive())
+            {
+                if (hapticsSw.ElapsedMilliseconds >= 400L)
+                {
+                    device.HapticsStateRef.LeftHeavy = device.HapticsStateRef.RightLight = 0;
+                    reader.WriteHapticsReport();
+                    hapticsSw.Reset();
+                }
+                else
+                {
+                }
+            }
+            else if (!device.RumbleDirty)
+            {
+                bool rumbleActive = device.FeedbackStateRef.LeftHeavy != 0 ||
+                    device.FeedbackStateRef.RightLight != 0;
+                if (standBySw.ElapsedMilliseconds >= 3000L && rumbleActive)
+                {
+                    // Write new rumble report before currently running rumble ends
+                    reader.WriteRumbleReport();
+                    standBySw.Restart();
+                }
+                else
+                {
+                }
+
+                if (!rumbleActive && standBySw.IsRunning)
+                {
+                    standBySw.Reset();
+                }
+            }
+            */
+
+            hapticsEvent = false;
+            //device.HapticsDirty = false;
+            //device.RumbleDirty = rumbleDirty = false;
+            rumbleDirty = false;
+            pendingHapticsLeftAmpRatio = pendingHapticsRightAmpRatio = 0.0;
+            pendingRumbleLeftAmpRatio = pendingRumbleRightAmpRatio = 0.0;
+
             // Make copy of state data as the previous state
             previousMapperState = currentMapperState;
 
@@ -700,9 +797,15 @@ namespace DS4MapperTest.DS4Library
                 side == MapAction.HapticsSide.Left ||
                 side == MapAction.HapticsSide.All)
             {
-                device.FeedbackStateRef.LeftHeavy = (byte)(ratio * 255.0);
-                device.HapticsDuration = DS4Device.HAPTICS_DURATION_DEFAULT;
-                device.HapticsDirty = true;
+                if (pendingHapticsLeftAmpRatio < ratio)
+                {
+                    pendingHapticsLeftAmpRatio = ratio;
+
+                    device.HapticsStateRef.LeftHeavy = (byte)(ratio * 255.0);
+                    device.HapticsDuration = DS4Device.HAPTICS_DURATION_DEFAULT;
+                    device.HapticsDirty = true;
+                    hapticsEvent = true;
+                }
             }
         }
 
@@ -714,9 +817,15 @@ namespace DS4MapperTest.DS4Library
                 side == MapAction.HapticsSide.Right ||
                 side == MapAction.HapticsSide.All)
             {
-                device.FeedbackStateRef.RightLight = (byte)(ratio * 255.0);
-                device.HapticsDuration = DS4Device.HAPTICS_DURATION_DEFAULT;
-                device.HapticsDirty = true;
+                if (pendingHapticsRightAmpRatio < ratio)
+                {
+                    pendingHapticsRightAmpRatio = ratio;
+
+                    device.HapticsStateRef.RightLight = (byte)(ratio * 255.0);
+                    device.HapticsDuration = DS4Device.HAPTICS_DURATION_DEFAULT;
+                    device.HapticsDirty = true;
+                    hapticsEvent = true;
+                }
             }
         }
 
@@ -786,6 +895,7 @@ namespace DS4MapperTest.DS4Library
             device.FeedbackStateRef.LeftHeavy = (byte)(ratioLeft * 255.0);
             device.FeedbackStateRef.RightLight = (byte)(ratioRight * 255.0);
             device.RumbleDirty = true;
+            rumbleDirty = true;
         }
 
         public override void EstablishForceFeedback()
@@ -797,6 +907,7 @@ namespace DS4MapperTest.DS4Library
                     device.FeedbackStateRef.LeftHeavy = e.LargeMotor;
                     device.FeedbackStateRef.RightLight = e.SmallMotor;
                     device.RumbleDirty = true;
+                    rumbleDirty = true;
                     //reader.WriteRumbleReport();
                 };
             }

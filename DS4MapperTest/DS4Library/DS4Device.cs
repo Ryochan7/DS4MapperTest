@@ -143,6 +143,24 @@ namespace DS4MapperTest.DS4Library
             set => feedbackState = value;
         }
         public ref DS4ForceFeedbackState FeedbackStateRef { get => ref feedbackState; }
+
+        private DS4ForceFeedbackState hapticsState = new DS4ForceFeedbackState();
+        public DS4ForceFeedbackState HapticsState
+        {
+            get => hapticsState;
+            set => hapticsState = value;
+        }
+        public ref DS4ForceFeedbackState HapticsStateRef { get => ref hapticsState; }
+
+        private DS4ForceFeedbackState previousHapticsState = new DS4ForceFeedbackState();
+        public DS4ForceFeedbackState PreviousHapticsState
+        {
+            get => previousHapticsState;
+            set => previousHapticsState = value;
+        }
+
+        public ref DS4ForceFeedbackState PreviousHapticsStateRef => ref previousHapticsState;
+
         private DS4ForceFeedbackState previousFeedbackState = new DS4ForceFeedbackState();
         public DS4ForceFeedbackState PreviousFeedbackState
         {
@@ -436,7 +454,7 @@ namespace DS4MapperTest.DS4Library
             Removal?.Invoke(this, EventArgs.Empty);
         }
 
-        public void PrepareOutputReport(byte[] outReportBuffer)
+        public void PrepareOutputReport(byte[] outReportBuffer, bool rumble = true)
         {
             if (conType == ConnectionType.Bluetooth)
             {
@@ -451,8 +469,8 @@ namespace DS4MapperTest.DS4Library
                 outReportBuffer[3] = 0x07;
                 outReportBuffer[4] = 0x04;
 
-                outReportBuffer[6] = feedbackState.RightLight; // fast motor
-                outReportBuffer[7] = feedbackState.LeftHeavy; // slow motor
+                outReportBuffer[6] = rumble ? feedbackState.RightLight : hapticsState.RightLight; // fast motor
+                outReportBuffer[7] = rumble ? feedbackState.LeftHeavy : hapticsState.LeftHeavy; // slow motor
                 outReportBuffer[8] = lightbarColor.red; // red
                 outReportBuffer[9] = lightbarColor.green; // green
                 outReportBuffer[10] = lightbarColor.blue; // blue
@@ -477,8 +495,8 @@ namespace DS4MapperTest.DS4Library
                 // enable rumble (0x01), lightbar (0x02), flash (0x04). Default: 0x07
                 outReportBuffer[1] = 0x07;
                 outReportBuffer[2] = 0x04;
-                outReportBuffer[4] = feedbackState.RightLight; // fast motor
-                outReportBuffer[5] = feedbackState.LeftHeavy; // slow  motor
+                outReportBuffer[4] = rumble ? feedbackState.RightLight : hapticsState.RightLight; // fast motor
+                outReportBuffer[5] = rumble ? feedbackState.LeftHeavy : hapticsState.LeftHeavy; // slow  motor
                 outReportBuffer[6] = lightbarColor.red; // red
                 outReportBuffer[7] = lightbarColor.green; // green
                 outReportBuffer[8] = lightbarColor.blue; // blue
@@ -510,6 +528,11 @@ namespace DS4MapperTest.DS4Library
         {
             feedbackState = state;
             hapticsDirty = true;
+        }
+
+        public void ResetRumbleData()
+        {
+            feedbackState.LeftHeavy = feedbackState.RightLight = 0;
         }
     }
 }

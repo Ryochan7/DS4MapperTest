@@ -327,7 +327,15 @@ namespace DS4MapperTest.DS4Library
                     CheckFeedbackStatus();
                     if (device.HapticsDirty || device.RumbleDirty)
                     {
-                        WriteRumbleReport();
+                        if (device.HapticsDirty)
+                        {
+                            WriteHapticsReport();
+                        }
+                        else
+                        {
+                            WriteRumbleReport();
+                        }
+
                         device.HapticsDirty = false;
                         device.RumbleDirty = false;
                         device.PreviousFeedbackState = device.FeedbackStateRef;
@@ -353,7 +361,7 @@ namespace DS4MapperTest.DS4Library
                 }
             }
 
-            bool feedbackSet = device.FeedbackStateRef.IsFeedbackActive();
+            bool feedbackSet = device.HapticsStateRef.IsFeedbackActive();
             if (device.HapticsDirty)
             {
                 if (rumbleStopwatch.IsRunning)
@@ -362,7 +370,7 @@ namespace DS4MapperTest.DS4Library
                 }
 
                 if (feedbackSet &&
-                    !device.FeedbackStateRef.Equals(device.PreviousFeedbackStateRef))
+                    !device.PreviousFeedbackStateRef.Equals(device.HapticsStateRef))
                 {
                     // Should indicate new feedback state. Restart timer
 #if DEBUG
@@ -386,11 +394,11 @@ namespace DS4MapperTest.DS4Library
                     DS4Device.HAPTICS_DURATION_DEFAULT)
                 {
 #if DEBUG
-                    Trace.WriteLine($"STOP RUMBLE TIMER {hapticsStopwatch.ElapsedMilliseconds}");
+                    Trace.WriteLine($"STOP HAPTICS TIMER {hapticsStopwatch.ElapsedMilliseconds}");
 #endif
 
                     device.HapticsDirty = true;
-                    device.FeedbackStateRef.Reset();
+                    device.HapticsStateRef.Reset();
                     device.HapticsDuration = DS4Device.HAPTICS_EMPTY_DURATION;
                     hapticsStopwatch.Reset();
                 }
@@ -445,6 +453,12 @@ namespace DS4MapperTest.DS4Library
         public override void WriteRumbleReport()
         {
             device.PrepareOutputReport(outputReportBuffer);
+            device.WriteReport(outputReportBuffer);
+        }
+
+        public void WriteHapticsReport()
+        {
+            device.PrepareOutputReport(outputReportBuffer, rumble: false);
             device.WriteReport(outputReportBuffer);
         }
     }
