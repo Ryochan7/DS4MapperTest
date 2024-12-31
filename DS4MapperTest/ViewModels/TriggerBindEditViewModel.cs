@@ -151,7 +151,7 @@ namespace DS4MapperTest.ViewModels
             if (action.Id == MapAction.DEFAULT_UNBOUND_ID)
             {
                 // Need to create new ID for action
-                newAction.Id = mapper.ActionProfile.CurrentActionSet.RecentAppliedLayer.FindNextAvailableId();
+                newAction.Id = mapper.EditLayer.FindNextAvailableId();
             }
             else
             {
