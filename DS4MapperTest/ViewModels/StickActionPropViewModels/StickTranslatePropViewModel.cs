@@ -176,6 +176,7 @@ namespace DS4MapperTest.ViewModels.StickActionPropViewModels
             set
             {
                 if (action.OutputCurve == value) return;
+                action.OutputCurve = value;
                 OutputCurveChanged?.Invoke(this, EventArgs.Empty);
                 ActionPropertyChanged?.Invoke(this, EventArgs.Empty);
             }
