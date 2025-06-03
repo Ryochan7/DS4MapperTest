@@ -246,6 +246,9 @@ namespace DS4MapperTest.StickActions
                 if (verticalScale != 1.0)
                 {
                     yNorm *= verticalScale;
+                    
+                    //Limit the maximum range
+                    yNorm = Math.Clamp(yNorm, -1.0, 1.0);
                 }
 
                 active = true;
