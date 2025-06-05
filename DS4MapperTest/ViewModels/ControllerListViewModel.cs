@@ -209,17 +209,19 @@ namespace DS4MapperTest.ViewModels
 
             map.ProcessMappingChangeAction(() =>
             {
-                //map.UseBlankProfile();
-                //ReadProfileFailure?.Invoke(this, new ReadProfileFailException(new JsonException(), $"Failed to read profile {profilePath}"));
-                try
                 {
-                    map.ChangeProfile(profilePath);
+                    //map.UseBlankProfile();
+                    //ReadProfileFailure?.Invoke(this, new ReadProfileFailException(new JsonException(), $"Failed to read profile {profilePath}"));
+                    try
+                    {
+                        map.ChangeProfile(profilePath);
+                    }
+                    catch (JsonException e)
+                    {
+                        ReadProfileFailure?.Invoke(this, new ReadProfileFailException(e, $"Failed to read profile {profilePath}"));
+                    }
+                    //backendManager.ProfileFile = DeviceProfileList.ProfileListCol[item.ProfileIndex].ProfilePath;
                 }
-                catch (JsonException e)
-                {
-                    ReadProfileFailure?.Invoke(this, new ReadProfileFailException(e, $"Failed to read profile {profilePath}"));
-                }
-                //backendManager.ProfileFile = DeviceProfileList.ProfileListCol[item.ProfileIndex].ProfilePath;
             });
         }
 

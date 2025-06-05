@@ -22,6 +22,7 @@ using System.Runtime.CompilerServices;
 using DS4MapperTest.ViewModels.GyroActionPropViewModels;
 using DS4MapperTest.ScpVBus;
 using static DS4MapperTest.ScpVBus.Xbox360ScpOutDevice;
+using static DS4MapperTest.MapAction;
 
 namespace DS4MapperTest
 {
@@ -172,6 +173,7 @@ namespace DS4MapperTest
         {
             get;
         }
+        protected InputDeviceBase baseDevice;
 
         protected InputDeviceBase baseDevice;
 
@@ -1475,7 +1477,7 @@ namespace DS4MapperTest
             mouseX = mouseY = 0.0;
         }
 
-        protected double remainderCutoff(double dividend, double divisor)
+        public double remainderCutoff(double dividend, double divisor)
         {
             return dividend - (divisor * (int)(dividend / divisor));
         }
@@ -1553,6 +1555,7 @@ namespace DS4MapperTest
                             double absValue = Math.Abs(outputValue);
                             bool xDir = false;
                             bool yDir = false;
+
                             switch (actionData.mouseDir)
                             {
                                 case OutputActionData.RelativeMouseDir.MouseUp:
@@ -1584,7 +1587,7 @@ namespace DS4MapperTest
 
                             const int MOUSESPEEDFACTOR = 20;
                             const double MOUSE_VELOCITY_OFFSET = 0.013;
-                            double timeDelta = CurrentLatency;
+                            double timeDelta = currentLatency - (remainderCutoff(currentLatency * 10000.0, 1.0) / 10000.0);
                             int mouseVelocity = xDir ? xSpeed * MOUSESPEEDFACTOR : ySpeed * MOUSESPEEDFACTOR;
                             double mouseOffset = MOUSE_VELOCITY_OFFSET * mouseVelocity;
                             double tempMouseOffset = mouseOffset;
@@ -1754,7 +1757,7 @@ namespace DS4MapperTest
 
                             const int MOUSESPEEDFACTOR = 20;
                             const double MOUSE_VELOCITY_OFFSET = 0.013;
-                            double timeDelta = CurrentLatency;
+                            double timeDelta = currentLatency - (remainderCutoff(currentLatency * 10000.0, 1.0) / 10000.0);
                             int mouseVelocity = xDir ? xSpeed * MOUSESPEEDFACTOR : ySpeed * MOUSESPEEDFACTOR;
                             double mouseOffset = MOUSE_VELOCITY_OFFSET * mouseVelocity;
                             double tempMouseOffset = axisUnit * mouseOffset;
@@ -1908,6 +1911,7 @@ namespace DS4MapperTest
                             double distance = 0.0;
                             bool xDir = false;
                             bool yDir = false;
+
                             switch (actionData.mouseDir)
                             {
                                 case OutputActionData.RelativeMouseDir.MouseUp:
@@ -1939,7 +1943,7 @@ namespace DS4MapperTest
 
                             const int MOUSESPEEDFACTOR = 20;
                             const double MOUSE_VELOCITY_OFFSET = 0.013;
-                            double timeDelta = CurrentLatency;
+                            double timeDelta = currentLatency - (remainderCutoff(currentLatency * 10000.0, 1.0) / 10000.0);
                             int mouseXVelocity = xSpeed * MOUSESPEEDFACTOR;
                             int mouseYVelocity = ySpeed * MOUSESPEEDFACTOR;
                             double mouseXOffset = MOUSE_VELOCITY_OFFSET * mouseXVelocity;
@@ -2200,6 +2204,7 @@ namespace DS4MapperTest
                 try
                 {
                     ChangeProfile(profileFile);
+                    actionProfile.ControllerType = baseDevice.DeviceType.ToString();
                 }
                 catch (JsonException)
                 {
@@ -2877,6 +2882,15 @@ namespace DS4MapperTest
                 default:
                     break;
             }
+        }
+
+        public virtual void SetFeedback(string mappingId, double ratio,
+            MapAction.HapticsSide side = MapAction.HapticsSide.Default)
+        {
+        }
+
+        public virtual void SetRumble(double ratioLeft, double ratioRight)
+        {
         }
 
         public virtual void Stop(bool finalSync = false)

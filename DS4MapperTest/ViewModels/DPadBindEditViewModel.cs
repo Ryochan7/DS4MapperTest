@@ -109,28 +109,28 @@ namespace DS4MapperTest.ViewModels
                     //mapper.ActionProfile.CurrentActionSet.RecentAppliedLayer.AddTouchpadAction(this.action);
                     if (oldAction.Id != MapAction.DEFAULT_UNBOUND_ID)
                     {
-                        mapper.ActionProfile.CurrentActionSet.RecentAppliedLayer.ReplaceDPadAction(oldAction, newAction);
+                        mapper.EditLayer.ReplaceDPadAction(oldAction, newAction);
                     }
                     else
                     {
-                        mapper.ActionProfile.CurrentActionSet.RecentAppliedLayer.AddDPadAction(newAction);
+                        mapper.EditLayer.AddDPadAction(newAction);
                     }
 
-                    if (mapper.ActionProfile.CurrentActionSet.UsingCompositeLayer)
+                    if (mapper.EditActionSet.UsingCompositeLayer)
                     {
-                        MapAction baseLayerAction = mapper.ActionProfile.CurrentActionSet.DefaultActionLayer.normalActionDict[oldAction.MappingId];
+                        MapAction baseLayerAction = mapper.EditActionSet.DefaultActionLayer.normalActionDict[oldAction.MappingId];
                         if (MapAction.IsSameType(baseLayerAction, newAction))
                         {
                             newAction.SoftCopyFromParent(baseLayerAction as DPadMapAction);
                         }
 
-                        mapper.ActionProfile.CurrentActionSet.RecompileCompositeLayer(mapper);
+                        mapper.EditActionSet.RecompileCompositeLayer(mapper);
                     }
                     else
                     {
-                        mapper.ActionProfile.CurrentActionSet.DefaultActionLayer.SyncActions();
-                        mapper.ActionProfile.CurrentActionSet.ClearCompositeLayerActions();
-                        mapper.ActionProfile.CurrentActionSet.PrepareCompositeLayer();
+                        mapper.EditActionSet.DefaultActionLayer.SyncActions();
+                        mapper.EditActionSet.ClearCompositeLayerActions();
+                        mapper.EditActionSet.PrepareCompositeLayer();
                     }
                 }
             });
@@ -143,7 +143,7 @@ namespace DS4MapperTest.ViewModels
             if (action.Id == MapAction.DEFAULT_UNBOUND_ID)
             {
                 // Need to create new ID for action
-                newAction.Id = mapper.ActionProfile.CurrentActionSet.RecentAppliedLayer.FindNextAvailableId();
+                newAction.Id = mapper.EditLayer.FindNextAvailableId();
             }
             else
             {

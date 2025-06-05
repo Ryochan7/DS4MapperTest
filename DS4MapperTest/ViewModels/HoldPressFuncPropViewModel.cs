@@ -43,6 +43,27 @@ namespace DS4MapperTest.ViewModels
             }
         }
 
+        public bool TurboEnabled
+        {
+            get => func.TurboEnabled;
+            set
+            {
+                if (func.TurboEnabled == value) return;
+                func.TurboEnabled = value;
+                TurboEnabledChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        public event EventHandler TurboEnabledChanged;
+
+        public int TurboDurationMs
+        {
+            get => func.TurboDurationMs;
+            set
+            {
+                func.TurboDurationMs = value;
+            }
+        }
+
         public HoldPressFuncPropViewModel(Mapper mapper, ButtonAction action,
             HoldPressFunc func)
         {

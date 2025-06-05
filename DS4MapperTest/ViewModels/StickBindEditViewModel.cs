@@ -94,8 +94,8 @@ namespace DS4MapperTest.ViewModels
                 case 4:
                     {
                         StickCircular tempAction = new StickCircular();
-                        //var joyDefaults = mapper.DeviceActionDefaults.GrabTouchActionPadDefaults();
-                        //joyDefaults.Process(tempAction);
+                        var joyDefaults = mapper.DeviceActionDefaults.GrabStickCircularActionDefaults();
+                        joyDefaults.Process(tempAction);
                         result = tempAction;
                     }
 
@@ -169,7 +169,7 @@ namespace DS4MapperTest.ViewModels
             if (action.Id == MapAction.DEFAULT_UNBOUND_ID)
             {
                 // Need to create new ID for action
-                newAction.Id = mapper.ActionProfile.CurrentActionSet.RecentAppliedLayer.FindNextAvailableId();
+                newAction.Id = mapper.EditLayer.FindNextAvailableId();
             }
             else
             {

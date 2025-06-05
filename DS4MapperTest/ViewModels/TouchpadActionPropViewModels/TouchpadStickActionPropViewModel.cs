@@ -166,6 +166,7 @@ namespace DS4MapperTest.ViewModels.TouchpadActionPropViewModels
             set
             {
                 if (action.OutputCurve == value) return;
+                action.OutputCurve = value;
                 OutputCurveChanged?.Invoke(this, EventArgs.Empty);
                 ActionPropertyChanged?.Invoke(this, EventArgs.Empty);
             }
@@ -299,6 +300,45 @@ namespace DS4MapperTest.ViewModels.TouchpadActionPropViewModels
         }
         public event EventHandler ForceCenterChanged;
 
+        public bool SmoothingEnabled
+        {
+            get => action.Smoothing;
+            set
+            {
+                if (action.Smoothing == value) return;
+                action.Smoothing = value;
+                SmoothingEnabledChanged?.Invoke(this, EventArgs.Empty);
+                ActionPropertyChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        public event EventHandler SmoothingEnabledChanged;
+
+        public double SmoothingMinCutoff
+        {
+            get => action.SmoothingFilterSettingsDataRef.minCutOff;
+            set
+            {
+                if (action.SmoothingFilterSettingsDataRef.minCutOff == value) return;
+                action.SmoothingFilterSettingsDataRef.minCutOff = Math.Clamp(value, 0.0, 10.0);
+                SmoothingMinCutoffChanged?.Invoke(this, EventArgs.Empty);
+                ActionPropertyChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        public event EventHandler SmoothingMinCutoffChanged;
+
+        public double SmoothingBeta
+        {
+            get => action.SmoothingFilterSettingsDataRef.beta;
+            set
+            {
+                if (action.SmoothingFilterSettingsDataRef.beta == value) return;
+                action.SmoothingFilterSettingsDataRef.beta = Math.Clamp(value, 0.0, 1.0);
+                SmoothingBetaChanged?.Invoke(this, EventArgs.Empty);
+                ActionPropertyChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        public event EventHandler SmoothingBetaChanged;
+
 
         public event EventHandler ActionPropertyChanged;
 
@@ -403,6 +443,20 @@ namespace DS4MapperTest.ViewModels.TouchpadActionPropViewModels
         }
         public event EventHandler HighlightForceCenterChanged;
 
+        public bool HighlightSmoothingEnabled
+        {
+            get => action.ParentAction == null ||
+                action.ChangedProperties.Contains(TouchpadStickAction.PropertyKeyStrings.SMOOTHING_ENABLED);
+        }
+        public event EventHandler HighlightSmoothingEnabledChanged;
+
+        public bool HighlightSmoothingFilter
+        {
+            get => action.ParentAction == null ||
+                action.ChangedProperties.Contains(TouchpadStickAction.PropertyKeyStrings.SMOOTHING_FILTER);
+        }
+        public event EventHandler HighlightSmoothingFilterChanged;
+
         public TouchpadStickActionPropViewModel(Mapper mapper,
             TouchpadMapAction action)
         {
@@ -457,6 +511,53 @@ namespace DS4MapperTest.ViewModels.TouchpadActionPropViewModels
             SquareStickEnabledChanged += TouchpadStickActionPropViewModel_SquareStickEnabledChanged;
             SquareStickRoundnessChanged += TouchpadStickActionPropViewModel_SquareStickRoundnessChanged;
             ForceCenterChanged += TouchpadStickActionPropViewModel_ForceCenterChanged;
+
+            SmoothingEnabledChanged += TouchpadStickActionPropViewModel_SmoothingEnabledChanged;
+            SmoothingMinCutoffChanged += TouchpadStickActionPropViewModel_SmoothingMinCutoffChanged;
+            SmoothingBetaChanged += TouchpadStickActionPropViewModel_SmoothingBetaChanged;
+        }
+
+        private void TouchpadStickActionPropViewModel_SmoothingBetaChanged(object sender, EventArgs e)
+        {
+            if (!this.action.ChangedProperties.Contains(TouchpadStickAction.PropertyKeyStrings.SMOOTHING_FILTER))
+            {
+                this.action.ChangedProperties.Add(TouchpadStickAction.PropertyKeyStrings.SMOOTHING_FILTER);
+            }
+
+            //ExecuteInMapperThread(() =>
+            {
+                action.RaiseNotifyPropertyChange(mapper, TouchpadStickAction.PropertyKeyStrings.SMOOTHING_FILTER);
+                action.SmoothingFilterSettingsDataRef.UpdateSmoothingFilters();
+            }//);
+
+            HighlightSmoothingFilterChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void TouchpadStickActionPropViewModel_SmoothingMinCutoffChanged(object sender, EventArgs e)
+        {
+            if (!this.action.ChangedProperties.Contains(TouchpadStickAction.PropertyKeyStrings.SMOOTHING_FILTER))
+            {
+                this.action.ChangedProperties.Add(TouchpadStickAction.PropertyKeyStrings.SMOOTHING_FILTER);
+            }
+
+            //ExecuteInMapperThread(() =>
+            {
+                action.RaiseNotifyPropertyChange(mapper, TouchpadStickAction.PropertyKeyStrings.SMOOTHING_FILTER);
+                action.SmoothingFilterSettingsDataRef.UpdateSmoothingFilters();
+            }//);
+
+            HighlightSmoothingFilterChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void TouchpadStickActionPropViewModel_SmoothingEnabledChanged(object sender, EventArgs e)
+        {
+            if (!this.action.ChangedProperties.Contains(TouchpadStickAction.PropertyKeyStrings.SMOOTHING_ENABLED))
+            {
+                this.action.ChangedProperties.Add(TouchpadStickAction.PropertyKeyStrings.SMOOTHING_ENABLED);
+            }
+
+            action.RaiseNotifyPropertyChange(mapper, TouchpadStickAction.PropertyKeyStrings.SMOOTHING_ENABLED);
+            HighlightSmoothingEnabledChanged?.Invoke(this, EventArgs.Empty);
         }
 
         private void TouchpadStickActionPropViewModel_ForceCenterChanged(object sender, EventArgs e)

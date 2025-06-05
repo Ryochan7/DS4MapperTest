@@ -1,5 +1,6 @@
 ﻿using DS4MapperTest.ButtonActions;
 using DS4MapperTest.DPadActions;
+using DS4MapperTest.DS4Library;
 using DS4MapperTest.GyroActions;
 using DS4MapperTest.MapperUtil;
 using DS4MapperTest.ScpVBus;
@@ -9,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -19,9 +21,11 @@ namespace DS4MapperTest.JoyConLibrary
     public class JoyConMapper : Mapper
     {
         private JoyConDevice device;
+        private JoyConDevice deviceLeft;
         private JoyConReader reader;
 
         private JoyConDevice secondJoyDevice;
+        private JoyConDevice deviceRight;
         private JoyConReader secondJoyReader;
 
         public override InputDeviceType DeviceType => InputDeviceType.JoyCon;
@@ -65,6 +69,7 @@ namespace DS4MapperTest.JoyConLibrary
         public JoyConMapper(JoyConDevice device, JoyConReader reader, AppGlobalData appGlobal)
         {
             this.device = device;
+            this.baseDevice = device;
             this.reader = reader;
             this.appGlobal = appGlobal;
             this.baseDevice = device;
@@ -125,6 +130,8 @@ namespace DS4MapperTest.JoyConLibrary
                 // Use current device for placeholder data. Will replace when secondary
                 // device is detected
                 rsDefintion = new StickDefinition(lxAxis, lyAxis, StickActionCodes.RS);
+
+                deviceLeft = device;
             }
             else if (device.SideType == JoyConSide.Right)
             {
@@ -146,6 +153,8 @@ namespace DS4MapperTest.JoyConLibrary
                 // Use current device for placeholder data. Will replace when secondary
                 // device is detected
                 lsDefintion = new StickDefinition(rxAxis, ryAxis, StickActionCodes.LS);
+
+                deviceRight = device;
             }
 
             knownStickDefinitions.Add("LS", lsDefintion);
@@ -256,6 +265,13 @@ namespace DS4MapperTest.JoyConLibrary
 
         private void Reader_Report(JoyConReader sender, JoyConDevice device)
         {
+            while (pauseMapper)
+            {
+                Thread.SpinWait(500);
+            }
+
+            mapperActionActive = true;
+
             using WriteLocker locker = new WriteLocker(readerLock);
 
             ref JoyConState current = ref device.ClothOff;
@@ -590,6 +606,8 @@ namespace DS4MapperTest.JoyConLibrary
                     sideMapped = JoyConSideUsed.None;
                 }
 
+                mapperActionActive = false;
+
                 if (hasInputEvts)
                 {
                     ProcessQueuedActions();
@@ -613,7 +631,7 @@ namespace DS4MapperTest.JoyConLibrary
                         }
 
                         //Trace.WriteLine($"TEST {e.LargeMotor} {e.SmallMotor}");
-                        reader.WriteRumbleReport();
+                        //reader.WriteRumbleReport();
                     };
                     outputControllerSCP.forceFeedbacksDict.Add(device.Index, tempDel);
                 }
@@ -628,7 +646,7 @@ namespace DS4MapperTest.JoyConLibrary
                         {
                             secondJoyDevice.rumbleDirty = true;
                         }
-                        secondJoyReader.WriteRumbleReport();
+                        //secondJoyReader.WriteRumbleReport();
                     };
                     outputControllerSCP.forceFeedbacksDict.Add(secondJoyDevice.Index, tempDel);
                 }
@@ -645,7 +663,7 @@ namespace DS4MapperTest.JoyConLibrary
                 {
                     secondJoyDevice.rumbleDirty = true;
                 }
-                secondJoyReader.WriteRumbleReport();
+                //secondJoyReader.WriteRumbleReport();
             };
             outputControllerSCP.forceFeedbacksDict.Add(secondJoyDevice.Index, tempDel);
         }
@@ -690,6 +708,18 @@ namespace DS4MapperTest.JoyConLibrary
                     break;
                 case JoypadActionCodes.AxisRTrigger:
                     result = currentMapperState.ZR;
+                    break;
+                case JoypadActionCodes.BtnLSideL:
+                    result = currentMapperState.SideL;
+                    break;
+                case JoypadActionCodes.BtnLSideR:
+                    result = currentMapperState.SideR;
+                    break;
+                case JoypadActionCodes.BtnRSideL:
+                    result = currentMapperState.RightSideL;
+                    break;
+                case JoypadActionCodes.BtnRSideR:
+                    result = currentMapperState.RightSideR;
                     break;
                 default:
                     break;
@@ -743,6 +773,18 @@ namespace DS4MapperTest.JoyConLibrary
                         break;
                     case JoypadActionCodes.AxisRTrigger:
                         result = currentMapperState.ZR;
+                        break;
+                    case JoypadActionCodes.BtnLSideL:
+                        result = currentMapperState.SideL;
+                        break;
+                    case JoypadActionCodes.BtnLSideR:
+                        result = currentMapperState.SideR;
+                        break;
+                    case JoypadActionCodes.BtnRSideL:
+                        result = currentMapperState.RightSideL;
+                        break;
+                    case JoypadActionCodes.BtnRSideR:
+                        result = currentMapperState.RightSideR;
                         break;
                     default:
                         break;
@@ -801,6 +843,8 @@ namespace DS4MapperTest.JoyConLibrary
                     lsDefintion.yAxis.max = (short)device.leftStickYData.max;
                     lsDefintion.yAxis.mid = (short)device.leftStickYData.mid;
                     lsDefintion.yAxis.PostInit();
+
+                    deviceLeft = device;
                 }
                 else if (device.SideType == JoyConSide.Right)
                 {
@@ -815,6 +859,8 @@ namespace DS4MapperTest.JoyConLibrary
                     rsDefintion.yAxis.max = (short)device.rightStickYData.max;
                     rsDefintion.yAxis.mid = (short)device.rightStickYData.mid;
                     rsDefintion.yAxis.PostInit();
+
+                    deviceRight = device;
                 }
 
                 if (actionProfile.OutputGamepadSettings.ForceFeedbackEnabled &&
@@ -838,6 +884,15 @@ namespace DS4MapperTest.JoyConLibrary
             using WriteLocker locker = new WriteLocker(readerLock);
 
             secondJoyReader.Report -= Reader_Report;
+
+            if (secondJoyDevice.SideType == JoyConSide.Left)
+            {
+                deviceLeft = null;
+            }
+            else
+            {
+                deviceRight = null;
+            }
 
             secondJoyDevice = null;
             secondJoyReader = null;
@@ -925,6 +980,111 @@ namespace DS4MapperTest.JoyConLibrary
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void CheckLeftHapticSide(double ratio, MapAction.HapticsSide side,
+            bool checkDefault = true)
+        {
+            if ((checkDefault && side == MapAction.HapticsSide.Default) ||
+                side == MapAction.HapticsSide.Left ||
+                side == MapAction.HapticsSide.All)
+            {
+                if (deviceLeft != null)
+                {
+                    deviceLeft.currentLeftAmpRatio = ratio;
+                    deviceLeft.HapticsDuration = JoyConDevice.HAPTICS_DURATION_DEFAULT;
+                    deviceLeft.HapticsDirty = true;
+                }
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void CheckRightHapticSide(double ratio, MapAction.HapticsSide side,
+            bool checkDefault = true)
+        {
+            if ((checkDefault && side == MapAction.HapticsSide.Default) ||
+                side == MapAction.HapticsSide.Right ||
+                side == MapAction.HapticsSide.All)
+            {
+                if (deviceRight != null)
+                {
+                    deviceRight.currentRightAmpRatio = ratio;
+                    deviceRight.HapticsDuration = JoyConDevice.HAPTICS_DURATION_DEFAULT;
+                    deviceRight.HapticsDirty = true;
+                }
+            }
+        }
+
+        public override void SetFeedback(string mappingId, double ratio, MapAction.HapticsSide side = MapAction.HapticsSide.Default)
+        {
+            switch(mappingId)
+            {
+                case "LS":
+                    CheckLeftHapticSide(ratio, side);
+                    CheckRightHapticSide(ratio, side, false);
+                    break;
+                case "RS":
+                    CheckLeftHapticSide(ratio, side, false);
+                    CheckRightHapticSide(ratio, side);
+                    break;
+                case "A":
+                case "B":
+                case "X":
+                case "Y":
+                    CheckLeftHapticSide(ratio, side, false);
+                    CheckRightHapticSide(ratio, side);
+                    break;
+                case "Minus":
+                    CheckLeftHapticSide(ratio, side);
+                    CheckRightHapticSide(ratio, side, false);
+                    break;
+                case "Plus":
+                    CheckLeftHapticSide(ratio, side, false);
+                    CheckRightHapticSide(ratio, side);
+                    break;
+                case "LShoulder":
+                    CheckLeftHapticSide(ratio, side);
+                    CheckRightHapticSide(ratio, side, false);
+                    break;
+                case "RShoulder":
+                    CheckLeftHapticSide(ratio, side, false);
+                    CheckRightHapticSide(ratio, side);
+                    break;
+                case "ZL":
+                    CheckLeftHapticSide(ratio, side);
+                    CheckRightHapticSide(ratio, side, false);
+                    break;
+                case "ZR":
+                    CheckLeftHapticSide(ratio, side, false);
+                    CheckRightHapticSide(ratio, side);
+                    break;
+                case "LSClick":
+                    CheckLeftHapticSide(ratio, side);
+                    CheckRightHapticSide(ratio, side, false);
+                    break;
+                case "RSCLick":
+                    CheckLeftHapticSide(ratio, side, false);
+                    CheckRightHapticSide(ratio, side);
+                    break;
+                case "LSideL":
+                    CheckLeftHapticSide(ratio, side);
+                    CheckRightHapticSide(ratio, side, false);
+                    break;
+                case "LSideR":
+                    CheckLeftHapticSide(ratio, side);
+                    CheckRightHapticSide(ratio, side, false);
+                    break;
+                case "RSideL":
+                    CheckLeftHapticSide(ratio, side, false);
+                    CheckRightHapticSide(ratio, side);
+                    break;
+                case "RSideR":
+                    CheckLeftHapticSide(ratio, side, false);
+                    CheckRightHapticSide(ratio, side);
+                    break;
+                default: break;
+            }
+        }
+
         public override void Stop(bool finalSync = false)
         {
             //if (outputController != null &&
@@ -943,6 +1103,9 @@ namespace DS4MapperTest.JoyConLibrary
                 secondJoyDevice = null;
                 //secondJoyReader.StopUpdate();
             }
+
+            deviceLeft = null;
+            deviceRight = null;
         }
     }
 }
