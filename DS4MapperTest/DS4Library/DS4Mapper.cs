@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Net.NetworkInformation;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -41,10 +42,20 @@ namespace DS4MapperTest.DS4Library
         private TouchpadDefinition cpadDefinition;
         private GyroSensDefinition gyroSensDefinition;
 
+        private bool hapticsEvent;
+        private bool rumbleDirty;
+        private double pendingHapticsLeftAmpRatio = 0.0;
+        private double pendingHapticsRightAmpRatio = 0.0;
+        private double pendingRumbleLeftAmpRatio = 0.0;
+        private double pendingRumbleRightAmpRatio = 0.0;
+        private Stopwatch standBySw = new Stopwatch();
+        private Stopwatch hapticsSw = new Stopwatch();
+
         public DS4Mapper(DS4Device device, DS4Reader reader, AppGlobalData appGlobal)
         {
             this.appGlobal = appGlobal;
             this.device = device;
+            this.baseDevice = device;
             this.reader = reader;
 
             deviceActionDefaults = new DS4ActionDefaultsCreator();
@@ -493,6 +504,94 @@ namespace DS4MapperTest.DS4Library
 
             ProcessActionSetLayerChecks();
 
+            // Prefer haptics event over rumble
+            /*if (hapticsEvent)
+            {
+                if (device.HapticsStateRef.IsFeedbackActive())
+                {
+                    var oldstate = device.HapticsState;
+                    device.HapticsStateRef.LeftHeavy = device.HapticsStateRef.RightLight = 0;
+                    //reader.WriteHapticsReport();
+                    device.HapticsState = oldstate;
+                }
+
+                reader.WriteHapticsReport();
+                hapticsSw.Restart();
+                hapticsEvent = false;
+
+                bool rumbleActive = device.FeedbackStateRef.LeftHeavy != 0 ||
+                    device.FeedbackStateRef.RightLight != 0;
+                if (rumbleActive)
+                {
+                    device.ResetRumbleData();
+                }
+
+                if (standBySw.IsRunning)
+                {
+                    standBySw.Reset();
+                }
+            }
+            else if (device.RumbleDirty)
+            {
+                if (device.HapticsStateRef.IsFeedbackActive())
+                {
+                    hapticsSw.Reset();
+                }
+
+                reader.WriteRumbleReport();
+                device.RumbleDirty = false;
+
+                bool rumbleActive = device.FeedbackStateRef.LeftHeavy != 0 ||
+                    device.FeedbackStateRef.RightLight != 0;
+                if (rumbleActive)
+                {
+                    standBySw.Restart();
+                }
+                else
+                {
+                    standBySw.Reset();
+                }
+            }
+            else if (device.HapticsStateRef.IsFeedbackActive())
+            {
+                if (hapticsSw.ElapsedMilliseconds >= 400L)
+                {
+                    device.HapticsStateRef.LeftHeavy = device.HapticsStateRef.RightLight = 0;
+                    reader.WriteHapticsReport();
+                    hapticsSw.Reset();
+                }
+                else
+                {
+                }
+            }
+            else if (!device.RumbleDirty)
+            {
+                bool rumbleActive = device.FeedbackStateRef.LeftHeavy != 0 ||
+                    device.FeedbackStateRef.RightLight != 0;
+                if (standBySw.ElapsedMilliseconds >= 3000L && rumbleActive)
+                {
+                    // Write new rumble report before currently running rumble ends
+                    reader.WriteRumbleReport();
+                    standBySw.Restart();
+                }
+                else
+                {
+                }
+
+                if (!rumbleActive && standBySw.IsRunning)
+                {
+                    standBySw.Reset();
+                }
+            }
+            */
+
+            hapticsEvent = false;
+            //device.HapticsDirty = false;
+            //device.RumbleDirty = rumbleDirty = false;
+            rumbleDirty = false;
+            pendingHapticsLeftAmpRatio = pendingHapticsRightAmpRatio = 0.0;
+            pendingRumbleLeftAmpRatio = pendingRumbleRightAmpRatio = 0.0;
+
             // Make copy of state data as the previous state
             previousMapperState = currentMapperState;
 
@@ -690,6 +789,115 @@ namespace DS4MapperTest.DS4Library
             return result;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void CheckLeftHapticSide(double ratio, MapAction.HapticsSide side,
+            bool checkDefault = true)
+        {
+            if ((checkDefault && side == MapAction.HapticsSide.Default) ||
+                side == MapAction.HapticsSide.Left ||
+                side == MapAction.HapticsSide.All)
+            {
+                if (pendingHapticsLeftAmpRatio < ratio)
+                {
+                    pendingHapticsLeftAmpRatio = ratio;
+
+                    device.HapticsStateRef.LeftHeavy = (byte)(ratio * 255.0);
+                    device.HapticsDuration = DS4Device.HAPTICS_DURATION_DEFAULT;
+                    device.HapticsDirty = true;
+                    hapticsEvent = true;
+                }
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void CheckRightHapticSide(double ratio, MapAction.HapticsSide side,
+            bool checkDefault = true)
+        {
+            if ((checkDefault && side == MapAction.HapticsSide.Default) ||
+                side == MapAction.HapticsSide.Right ||
+                side == MapAction.HapticsSide.All)
+            {
+                if (pendingHapticsRightAmpRatio < ratio)
+                {
+                    pendingHapticsRightAmpRatio = ratio;
+
+                    device.HapticsStateRef.RightLight = (byte)(ratio * 255.0);
+                    device.HapticsDuration = DS4Device.HAPTICS_DURATION_DEFAULT;
+                    device.HapticsDirty = true;
+                    hapticsEvent = true;
+                }
+            }
+        }
+
+        public override void SetFeedback(string mappingId, double ratio,
+            MapAction.HapticsSide side = MapAction.HapticsSide.Default)
+        {
+            switch(mappingId)
+            {
+                case "LS":
+                    CheckLeftHapticSide(ratio, side);
+                    CheckRightHapticSide(ratio, side, false);
+                    device.HapticsDirty = true;
+                    break;
+                case "RS":
+                    CheckLeftHapticSide(ratio, side, false);
+                    CheckRightHapticSide(ratio, side);
+                    device.HapticsDirty = true;
+#if DEBUG
+                    Trace.WriteLine("NEW HAPTIC EVENT");
+#endif
+                    break;
+                case "Cross":
+                case "Cirlce":
+                case "Square":
+                case "Triangle":
+                case "PS":
+                    CheckLeftHapticSide(ratio, side);
+                    CheckRightHapticSide(ratio, side);
+                    device.HapticsDirty = true;
+                    break;
+                case "L1":
+                    CheckLeftHapticSide(ratio, side, true);
+                    CheckRightHapticSide(ratio, side, false);
+                    device.HapticsDirty = true;
+                    break;
+                case "R1":
+                    CheckLeftHapticSide(ratio, side, false);
+                    CheckRightHapticSide(ratio, side);
+                    device.HapticsDirty = true;
+                    break;
+                case "L2":
+                    CheckLeftHapticSide(ratio, side, true);
+                    CheckRightHapticSide(ratio, side, false);
+                    device.HapticsDirty = true;
+                    break;
+                case "R2":
+                    CheckLeftHapticSide(ratio, side, false);
+                    CheckRightHapticSide(ratio, side);
+                    device.HapticsDirty = true;
+                    break;
+                case "L3":
+                    CheckLeftHapticSide(ratio, side, true);
+                    CheckRightHapticSide(ratio, side, false);
+                    device.HapticsDirty = true;
+                    break;
+                case "R3":
+                    CheckLeftHapticSide(ratio, side, false);
+                    CheckRightHapticSide(ratio, side);
+                    device.HapticsDirty = true;
+                    break;
+                default: break;
+            }
+        }
+
+        public override void SetRumble(double ratioLeft, double ratioRight)
+        {
+            device.FeedbackStateRef.LeftHeavy = (byte)(ratioLeft * 255.0);
+            device.FeedbackStateRef.RightLight = (byte)(ratioRight * 255.0);
+            device.RumbleDirty = true;
+            rumbleDirty = true;
+        }
+
         public override void EstablishForceFeedback()
         {
             if (outputControlType == OutputContType.Xbox360)
@@ -698,7 +906,8 @@ namespace DS4MapperTest.DS4Library
                 {
                     device.FeedbackStateRef.LeftHeavy = e.LargeMotor;
                     device.FeedbackStateRef.RightLight = e.SmallMotor;
-                    device.HapticsDirty = true;
+                    device.RumbleDirty = true;
+                    rumbleDirty = true;
                     //reader.WriteRumbleReport();
                 };
             }

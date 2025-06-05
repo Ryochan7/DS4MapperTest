@@ -369,6 +369,7 @@ namespace DS4MapperTest.StickActions
                 }
 
                 double timeDelta = mapper.CurrentLatency;
+                timeDelta = timeDelta - (mapper.remainderCutoff(timeDelta * 10000.0, 1.0) / 10000.0);
                 int mouseVelocity = mouseSpeed * MOUSESPEEDFACTOR;
                 double mouseOffset = MOUSE_VELOCITY_OFFSET * mouseVelocity;
 

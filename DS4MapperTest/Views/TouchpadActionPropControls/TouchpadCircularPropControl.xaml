@@ -43,6 +43,22 @@
                 </hc:NumericUpDown>
             </StackPanel>
 
+            <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                <Label Content="Haptics" />
+                <ComboBox ItemsSource="{Binding HapticsIntensityItems}" DisplayMemberPath="DisplayName"
+      SelectedValuePath="ChoiceValue" SelectedValue="{Binding HapticsChoice}" MinWidth="100" Margin="8,0,0,0">
+                    <ComboBox.Style>
+                        <Style TargetType="ComboBox" BasedOn="{StaticResource ComboBoxBaseStyle}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding HighlightGyroTriggerCond}" Value="False">
+                                    <Setter Property="Opacity" Value="0.7" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ComboBox.Style>
+                </ComboBox>
+            </StackPanel>
+
         </StackPanel>
     </DockPanel>
 </UserControl>

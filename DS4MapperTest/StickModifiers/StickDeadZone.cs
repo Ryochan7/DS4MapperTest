@@ -232,11 +232,11 @@ namespace DS4MapperTest.StickModifiers
                     double antiDeadX = antiDeadZone * angCos;
                     double antiDeadY = antiDeadZone * angSin;
 
-                    int maxDeadZoneAxialX = (int)(maxDirX * 0.10);
-                    int minDeadZoneAxialX = (int)(maxDirX * 0.04);
+                    int maxDeadZoneAxialX = (int)(maxDirX * 0.15);
+                    int minDeadZoneAxialX = (int)(maxDirX * 0.08);
 
-                    int maxDeadZoneAxialY = (int)(maxDirY * 0.10);
-                    int minDeadZoneAxialY = (int)(maxDirY * 0.04);
+                    int maxDeadZoneAxialY = (int)(maxDirY * 0.15);
+                    int minDeadZoneAxialY = (int)(maxDirY * 0.08);
 
                     int absDX = Math.Abs(axisXDir);
                     int absDY = Math.Abs(axisYDir);

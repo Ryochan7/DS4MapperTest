@@ -9,6 +9,55 @@ namespace DS4MapperTest
 {
     public abstract class MapAction
     {
+        public enum HapticsIntensity : ushort
+        {
+            Off,
+            Light,
+            Medium,
+            Heavy,
+            Full,
+            //Custom,
+        }
+
+        public double GetHapticsIntensityRatio(HapticsIntensity intensity)
+        {
+            double result = 0.0;
+
+            switch(intensity)
+            {
+                case HapticsIntensity.Off:
+                    result = 0.0;
+                    break;
+                case HapticsIntensity.Light:
+                    result = 0.3;
+                    break;
+                case HapticsIntensity.Medium:
+                    result = 0.5;
+                    break;
+                case HapticsIntensity.Heavy:
+                    result = 0.8;
+                    break;
+                case HapticsIntensity.Full:
+                    result = 1.0;
+                    break;
+                default:
+                    result = 0.0;
+                    break;
+            }
+
+            return result;
+        }
+
+        public enum HapticsSide : ushort
+        {
+            Default, // Make Default mean let the mapper decide to choose a side or use all motors
+            All, // Use all available motors
+            Rumble1,
+            Left = Rumble1,
+            Rumble2,
+            Right = Rumble2,
+        }
+
         public const int DEFAULT_UNBOUND_ID = -1;
         protected int id = DEFAULT_UNBOUND_ID;
         public int Id
@@ -105,6 +154,10 @@ namespace DS4MapperTest
                 this.propertyName = propertyName;
             }
         }
+
+        protected const double OFF_HAPTICS_INTENSITY_RATIO = 0.0;
+        protected double hapticsIntensityRatio = OFF_HAPTICS_INTENSITY_RATIO;
+        public double HapticsIntensityRatio => hapticsIntensityRatio;
 
         public abstract void Event(Mapper mapper);
 

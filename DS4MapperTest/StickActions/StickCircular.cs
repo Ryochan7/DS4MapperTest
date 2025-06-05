@@ -18,6 +18,7 @@ namespace DS4MapperTest.StickActions
             public const string SCROLL_BUTTON_1 = "ScrollButton1";
             public const string SCROLL_BUTTON_2 = "ScrollButton2";
             public const string SENSITIVITY = "Sensitivity";
+            public const string HAPTICS_INTENSITY = "HapticsIntensity";
         }
 
         private HashSet<string> fullPropertySet = new HashSet<string>()
@@ -45,6 +46,8 @@ namespace DS4MapperTest.StickActions
         //private double remainderAngle;
         private double travelAngleChangeRad;
         private bool activeTicks;
+        private bool feedbackActive;
+        private bool actionActive;
         private ClickDirection currentClickDir;
         private ClickDirection previousClickDir;
 
@@ -78,6 +81,16 @@ namespace DS4MapperTest.StickActions
         }
 
         private double xNorm = 0.0, yNorm = 0.0;
+        private HapticsIntensity actionHapticsIntensity;
+        public HapticsIntensity ActionHapticsIntensity
+        {
+            get => actionHapticsIntensity;
+            set
+            {
+                actionHapticsIntensity = value;
+                hapticsIntensityRatio = GetHapticsIntensityRatio(value);
+            }
+        }
 
         public StickCircular()
         {
@@ -107,6 +120,7 @@ namespace DS4MapperTest.StickActions
             });
 
             deadMod = new StickDeadZone(DEFAULT_DEADZONE, 1.0, 0.0);
+            hapticsIntensityRatio = GetHapticsIntensityRatio(actionHapticsIntensity);
         }
 
         public StickCircular(StickDefinition definition) : this()
@@ -135,6 +149,7 @@ namespace DS4MapperTest.StickActions
 
             bool inSafeZone = xNorm != 0.0 || yNorm != 0.0;
             bool isActive = inSafeZone;
+            actionActive = isActive;
 
             if (!inSafeZone)
             {
@@ -145,7 +160,7 @@ namespace DS4MapperTest.StickActions
             else if (isActive && !wasActive)
             {
                 // Use raw axis values to find stick angle
-                double angleRad = Math.Atan2(axisXVal, axisYVal);
+                double angleRad = Math.Atan2(axisXDir, axisYDir);
                 double angleDeg = (angleRad >= 0 ? angleRad : (2 * Math.PI + angleRad)) * 180 / Math.PI;
 
                 startAngleRad = angleRad;
@@ -157,7 +172,7 @@ namespace DS4MapperTest.StickActions
                 double previousAngleRad = currentAngleRad;
 
                 // Use raw axis values to find stick angle
-                double angleRad = Math.Atan2(axisXVal, axisYVal);
+                double angleRad = Math.Atan2(axisXDir, axisYDir);
                 //double angleDeg = (angleRad >= 0 ? angleRad : (2 * Math.PI + angleRad)) * 180 / Math.PI;
 
                 currentAngleRad = angleRad >= 0 ? angleRad : (2 * Math.PI + angleRad);
@@ -201,7 +216,7 @@ namespace DS4MapperTest.StickActions
 
                 if (Math.Abs(travelAngleChangeRad) > CLICK_RAD_THRESHOLD)
                 {
-                    //Trace.WriteLine("UP IN HERE");
+                    //System.Diagnostics.Trace.WriteLine("UP IN HERE");
                     active = true;
                     activeTicks = true;
 
@@ -231,9 +246,18 @@ namespace DS4MapperTest.StickActions
                 {
                     activeCircBtn.PrepareCircular(mapper, 0.0);
                     activeCircBtn.Event(mapper);
+
+                    //if (!activeTicks)
+                    //if (previousClickDir != currentClickDir)
                 }
 
                 activeCircBtn = null;
+            }
+
+            if (!actionActive && feedbackActive)
+            {
+                mapper.SetFeedback(mappingId, OFF_HAPTICS_INTENSITY_RATIO);
+                feedbackActive = false;
             }
 
             if (activeTicks)
@@ -255,11 +279,13 @@ namespace DS4MapperTest.StickActions
                 tempBtn.PrepareCircular(mapper, ticksSpeed);
                 tempBtn.Event(mapper);
                 activeCircBtn = tempBtn;
+                mapper.SetFeedback(mappingId, hapticsIntensityRatio);
 
                 travelAngleChangeRad = travelAngleChangeRad > 0 ?
                     travelAngleChangeRad - (ticksSpeed * CLICK_RAD_THRESHOLD) : travelAngleChangeRad + (ticksSpeed * CLICK_RAD_THRESHOLD);
 
                 activeTicks = false;
+                feedbackActive = true;
             }
 
             active = false;
@@ -271,6 +297,12 @@ namespace DS4MapperTest.StickActions
             if (activeCircBtn != null && activeCircBtn.active)
             {
                 activeCircBtn.Release(mapper, resetState, ignoreReleaseActions);
+            }
+
+            if (feedbackActive)
+            {
+                mapper.SetFeedback(mappingId, OFF_HAPTICS_INTENSITY_RATIO);
+                feedbackActive = false;
             }
 
             startAngleRad = 0;
@@ -287,6 +319,12 @@ namespace DS4MapperTest.StickActions
                 !useParentCircButtons[(int)currentClickDir])
             {
                 activeCircBtn.Release(mapper, resetState);
+                if (feedbackActive)
+                {
+                    mapper.SetFeedback(mappingId, OFF_HAPTICS_INTENSITY_RATIO);
+                    feedbackActive = false;
+                }
+
                 xNorm = yNorm = 0.0;
             }
         }
@@ -319,6 +357,9 @@ namespace DS4MapperTest.StickActions
                             break;
                         case PropertyKeyStrings.SENSITIVITY:
                             sensitivity = tempCirleAction.sensitivity;
+                            break;
+                        case PropertyKeyStrings.HAPTICS_INTENSITY:
+                            ActionHapticsIntensity = tempCirleAction.actionHapticsIntensity;
                             break;
                         default:
                             break;
@@ -360,6 +401,9 @@ namespace DS4MapperTest.StickActions
                     break;
                 case PropertyKeyStrings.SENSITIVITY:
                     sensitivity = tempCirleAction.sensitivity;
+                    break;
+                case PropertyKeyStrings.HAPTICS_INTENSITY:
+                    ActionHapticsIntensity = tempCirleAction.actionHapticsIntensity;
                     break;
                 default:
                     break;

@@ -355,5 +355,11 @@ namespace DS4MapperTest.DualSense
             device.PrepareOutputReport(outputReportBuffer);
             device.WriteReport(outputReportBuffer);
         }
+
+        public void WriteHapticsReport()
+        {
+            device.PrepareOutputReport(outputReportBuffer, rumble: false);
+            device.WriteReport(outputReportBuffer);
+        }
     }
 }

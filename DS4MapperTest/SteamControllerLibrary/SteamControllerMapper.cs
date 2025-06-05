@@ -7,7 +7,9 @@ using DS4MapperTest.TriggerActions;
 using Nefarius.ViGEm.Client;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -48,11 +50,21 @@ namespace DS4MapperTest.SteamControllerLibrary
         private double TRACKBALL_SCALE = 0.000023;
 
         private double trackballAccel = 0.0;
+        private bool hapticsEvent;
+        private double pendingHapticsLeftAmpRatio = 0.0;
+        private double pendingHapticsRightAmpRatio = 0.0;
+        private double pendingRumbleLeftAmpRatio = 0.0;
+        private double pendingRumbleRightAmpRatio = 0.0;
+
+        private SteamControllerDevice.HapticFeedbackInfo hapticsInfo =
+            new SteamControllerDevice.HapticFeedbackInfo();
+        private Stopwatch standBySw = new Stopwatch();
 
         public SteamControllerMapper(SteamControllerDevice device, SteamControllerReader reader,
             AppGlobalData appGlobal)
         {
             this.device = device;
+            this.baseDevice = device;
             this.reader = reader;
             this.appGlobal = appGlobal;
 
@@ -78,7 +90,9 @@ namespace DS4MapperTest.SteamControllerLibrary
                 new InputBindingMeta("LeftTouchpad", "Left Touchpad", InputBindingMeta.InputControlType.Touchpad),
                 new InputBindingMeta("RightTouchpad", "Right Touchpad", InputBindingMeta.InputControlType.Touchpad),
                 new InputBindingMeta("LeftPadClick", "Left Pad Click", InputBindingMeta.InputControlType.Button),
+                new InputBindingMeta("LeftPadTouch", "Left Pad Touch", InputBindingMeta.InputControlType.Button),
                 new InputBindingMeta("RightPadClick", "Right Pad Click", InputBindingMeta.InputControlType.Button),
+                new InputBindingMeta("RightPadTouch", "Right Pad Touch", InputBindingMeta.InputControlType.Button),
                 new InputBindingMeta("Gyro", "Gyro", InputBindingMeta.InputControlType.Gyro),
             };
 
@@ -434,6 +448,20 @@ namespace DS4MapperTest.SteamControllerLibrary
                 }
                 if (tempBtnAct.active) tempBtnAct.Event(this);
 
+                tempBtnAct = currentLayer.buttonActionDict["LeftPadTouch"];
+                if (currentMapperState.LeftPad.Touch || currentMapperState.LeftPad.Touch != previousMapperState.LeftPad.Touch)
+                {
+                    tempBtnAct.Prepare(this, currentMapperState.LeftPad.Touch);
+                }
+                if (tempBtnAct.active) tempBtnAct.Event(this);
+
+                tempBtnAct = currentLayer.buttonActionDict["RightPadTouch"];
+                if (currentMapperState.RightPad.Touch || currentMapperState.RightPad.Touch != previousMapperState.RightPad.Touch)
+                {
+                    tempBtnAct.Prepare(this, currentMapperState.RightPad.Touch);
+                }
+                if (tempBtnAct.active) tempBtnAct.Event(this);
+
                 tempBtnAct = currentLayer.buttonActionDict["Steam"];
                 if (currentMapperState.Guide || currentMapperState.Guide != previousMapperState.Guide)
                 {
@@ -516,6 +544,65 @@ namespace DS4MapperTest.SteamControllerLibrary
 
                 ProcessActionSetLayerChecks();
 
+                // Prefer haptics event over rumble
+                if (hapticsEvent)
+                {
+                    reader.WriteHapticsReport();
+                    hapticsEvent = false;
+
+                    bool rumbleActive = device.currentLeftAmpRatio != 0.0 || device.currentRightAmpRatio != 0.0;
+                    if (rumbleActive)
+                    {
+                        device.ResetRumbleData();
+                    }
+
+                    if (standBySw.IsRunning)
+                    {
+                        standBySw.Reset();
+                    }
+                }
+                else if (device.rumbleDirty)
+                {
+                    reader.WriteRumbleReport();
+                    device.rumbleDirty = false;
+
+                    bool rumbleActive = device.currentLeftAmpRatio != 0.0 ||
+                        device.currentRightAmpRatio != 0.0;
+                    if (rumbleActive)
+                    {
+                        standBySw.Restart();
+                    }
+                    else
+                    {
+                        standBySw.Reset();
+                    }
+                }
+                else if (!device.rumbleDirty)
+                {
+                    bool rumbleActive = device.currentLeftAmpRatio != 0.0 ||
+                        device.currentRightAmpRatio != 0.0;
+                    if (standBySw.ElapsedMilliseconds >= 3000L && rumbleActive)
+                    {
+                        // Write new rumble report before currently running rumble ends
+                        reader.WriteRumbleReport();
+                        standBySw.Restart();
+                    }
+                    else
+                    {
+                        //Trace.WriteLine("FAIL NOW");
+                    }
+
+                    if (!rumbleActive && standBySw.IsRunning)
+                    {
+                        standBySw.Reset();
+                    }
+                }
+
+                hapticsEvent = false;
+                device.rumbleDirty = false;
+                pendingHapticsLeftAmpRatio = pendingHapticsRightAmpRatio = 0.0;
+                pendingRumbleLeftAmpRatio = pendingRumbleRightAmpRatio = 0.0;
+
                 // Make copy of state data as the previous state
                 previousMapperState = currentMapperState;
 
@@ -536,7 +623,9 @@ namespace DS4MapperTest.SteamControllerLibrary
                 {
                     device.currentLeftAmpRatio = e.LargeMotor / 255.0;
                     device.currentRightAmpRatio = e.SmallMotor / 255.0;
-                    reader.WriteRumbleReport();
+                    device.rumbleDirty = true;
+                    // Wait until next gamepad poll finished before pushing rumble state
+                    //reader.WriteRumbleReport();
                 };
             }
         }
@@ -692,6 +781,133 @@ namespace DS4MapperTest.SteamControllerLibrary
             }
 
             return ref previousTouchFrameLeftPad;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void CheckLeftHapticSide(double ratio, MapAction.HapticsSide side,
+            bool checkDefault = true)
+        {
+            if ((checkDefault && side == MapAction.HapticsSide.Default) ||
+                side == MapAction.HapticsSide.Left ||
+                side == MapAction.HapticsSide.All)
+            {
+                if (pendingHapticsLeftAmpRatio < ratio)
+                {
+                    pendingHapticsLeftAmpRatio = ratio;
+
+                    device.hapticInfo.leftActuatorAmpRatio = ratio;
+                    device.hapticInfo.countLeft = 1;
+                    device.hapticInfo.dirty = true;
+                    hapticsEvent = true;
+                }
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void CheckRightHapticSide(double ratio, MapAction.HapticsSide side,
+            bool checkDefault = true)
+        {
+            if ((checkDefault && side == MapAction.HapticsSide.Default) ||
+                side == MapAction.HapticsSide.Right ||
+                side == MapAction.HapticsSide.All)
+            {
+                if (pendingHapticsRightAmpRatio < ratio)
+                {
+                    pendingHapticsRightAmpRatio = ratio;
+
+                    device.hapticInfo.rightActuatorAmpRatio = ratio;
+                    device.hapticInfo.countRight = 1;
+                    device.hapticInfo.dirty = true;
+                    hapticsEvent = true;
+                }
+            }
+        }
+
+        public override void SetFeedback(string mappingId, double ratio,
+            MapAction.HapticsSide side = MapAction.HapticsSide.Default)
+        {
+            unchecked
+            {
+                switch (mappingId)
+                {
+                    case "Stick":
+                        CheckLeftHapticSide(ratio, side, true);
+                        CheckRightHapticSide(ratio, side, false);
+                        //hapticAmps[0] = 1.0;
+                        //device.hapticsLeftAmpRatio = ratio;
+                        //device.hapticsPeriodLeftRatio = 1.0;
+                        //device.hapticsDurationLeft = 0.004;
+                        break;
+                    case "LeftTouchpad":
+                        CheckLeftHapticSide(ratio, side);
+                        CheckRightHapticSide(ratio, side, false);
+                        //device.hapticInfo.leftActuatorAmpRatio = ratio;
+                        //device.hapticInfo.countLeft = 1;
+                        break;
+                    case "RightTouchpad":
+                        CheckLeftHapticSide(ratio, side, false);
+                        CheckRightHapticSide(ratio, side);
+                        //device.hapticInfo.rightActuatorAmpRatio = ratio;
+                        //device.hapticInfo.countRight = 1;
+                        break;
+                    case "A":
+                    case "B":
+                    case "X":
+                    case "Y":
+                    case "Back":
+                    case "Start":
+                        CheckLeftHapticSide(ratio, side, true);
+                        CheckRightHapticSide(ratio, side, true);
+                        //device.hapticInfo.leftActuatorAmpRatio = ratio;
+                        //device.hapticInfo.rightActuatorAmpRatio = ratio;
+                        //device.hapticInfo.countLeft = 1;
+                        //device.hapticInfo.countRight = 1;
+                        break;
+                    case "LB":
+                    case "LT":
+                        CheckLeftHapticSide(ratio, side, true);
+                        CheckRightHapticSide(ratio, side, false);
+                        //device.hapticInfo.leftActuatorAmpRatio = ratio;
+                        //device.hapticInfo.countLeft = 1;
+                        break;
+                    case "RB":
+                    case "RT":
+                        CheckLeftHapticSide(ratio, side);
+                        CheckRightHapticSide(ratio, side, true);
+                        //device.hapticInfo.rightActuatorAmpRatio = ratio;
+                        //device.hapticInfo.countRight = 1;
+                        break;
+
+                    default: break;
+                }
+            }
+        }
+
+        public override void SetRumble(double ratioLeft, double ratioRight)
+        {
+            bool changed = false;
+            if (pendingRumbleLeftAmpRatio < ratioLeft)
+            {
+                device.currentLeftAmpRatio = ratioLeft;
+                changed = true;
+            }
+
+            if (pendingRumbleRightAmpRatio < ratioRight)
+            {
+                device.currentRightAmpRatio = ratioRight;
+                changed = true;
+            }
+
+            if (changed)
+            {
+                device.rumbleDirty = true;
+            }
+
+            //device.hapticInfo.leftActuatorAmpRatio = ratioLeft;
+            //device.hapticInfo.leftPeriodRatio = ratioLeft;
+            //device.hapticInfo.rightActuatorAmpRatio = ratioRight;
+            //device.hapticInfo.rightPeriodRatio = ratioRight;
+            //device.hapticInfo.
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using DS4MapperTest.Common;
+using DS4MapperTest.DS4Library;
 using DS4MapperTest.SwitchProLibrary;
 using HidLibrary;
 using System;
@@ -30,6 +31,9 @@ namespace DS4MapperTest.JoyConLibrary
 
         private double combLatency;
         public double CombLatency { get => combLatency; set => combLatency = value; }
+        private Stopwatch hapticsStopwatch = new Stopwatch();
+        private Stopwatch rumbleStopwatch = new Stopwatch();
+        private const long RUMBLE_CONTINUOUS_DURATION = 800;
 
         public delegate void JoyConReportDelegate(JoyConReader sender,
             JoyConDevice device);
@@ -165,7 +169,6 @@ namespace DS4MapperTest.JoyConLibrary
                         deltaCheckElapsed = currentTime - previousCheckTime;
                         lastCheckElapsed = deltaCheckElapsed * (1.0 / Stopwatch.Frequency) * 1000.0;
                         lastCheckTimeElapsed = lastCheckElapsed * 0.001;
-                        previousCheckTime = currentTime;
 
                         //Trace.WriteLine("Poll Time: {0}", tempTimeElapsed);
                         //Trace.WriteLine("Last Poll Time: {0}", lastCheckTimeElapsed);
@@ -175,6 +178,7 @@ namespace DS4MapperTest.JoyConLibrary
                             continue;
                         }
 
+                        previousCheckTime = currentTime;
                         //current.timeElapsed = tempTimeElapsed;
                         current.timeElapsed = combLatency;
 
@@ -415,6 +419,20 @@ namespace DS4MapperTest.JoyConLibrary
                         }
 
                         Report?.Invoke(this, device);
+
+                        CheckFeedbackStatus();
+                        if (device.HapticsDirty || device.rumbleDirty)
+                        {
+#if DEBUG
+                            Trace.WriteLine($"SEND OUTPUT REPORT");
+#endif
+                            PrepareRumbleReport();
+                            device.previousLeftAmpRatio = device.currentLeftAmpRatio;
+                            device.previousRightAmpRatio = device.currentRightAmpRatio;
+                            device.rumbleDirty = false;
+                            device.HapticsDirty = false;
+                        }
+
                         //PrepareRumbleReport();
                         //WriteReport();
 
@@ -430,11 +448,161 @@ namespace DS4MapperTest.JoyConLibrary
             }
         }
 
+        private void CheckFeedbackStatus()
+        {
+            if (device.HapticsDirty && device.rumbleDirty)
+            {
+                // Let haptics take priority
+                device.rumbleDirty = false;
+                if (rumbleStopwatch.IsRunning)
+                {
+                    rumbleStopwatch.Reset();
+                }
+            }
+
+            bool feedbackSet = device.currentLeftAmpRatio != 0.0 ||
+                device.currentRightAmpRatio != 0.0;
+            bool feedbackStateChanged = device.currentLeftAmpRatio != device.previousLeftAmpRatio ||
+                    device.currentRightAmpRatio != device.previousRightAmpRatio;
+            if (device.HapticsDirty)
+            {
+                if (rumbleStopwatch.IsRunning)
+                {
+                    rumbleStopwatch.Reset();
+                }
+
+                if (feedbackSet && feedbackStateChanged)
+                {
+                    // Should indicate new feedback state. Restart timer
+#if DEBUG
+                Trace.WriteLine("RESTART RUMBLE TIMER");
+#endif
+                    hapticsStopwatch.Restart();
+                    device.HapticsDirty = true;
+                }
+                else if (!feedbackSet && hapticsStopwatch.IsRunning)
+                {
+                    hapticsStopwatch.Reset();
+                }
+            }
+            else if (hapticsStopwatch.IsRunning)
+            {
+                // Check if haptics is already engaged
+                if (hapticsStopwatch.ElapsedMilliseconds >=
+                    JoyConDevice.HAPTICS_DURATION_DEFAULT)
+                {
+#if DEBUG
+                    Trace.WriteLine($"STOP RUMBLE TIMER {hapticsStopwatch.ElapsedMilliseconds}");
+#endif
+
+                    device.HapticsDirty = true;
+                    device.currentLeftAmpRatio = device.currentRightAmpRatio = 0.0;
+                    device.HapticsDuration = JoyConDevice.HAPTICS_EMPTY_DURATION;
+                    hapticsStopwatch.Reset();
+                }
+            }
+
+            //if (!device.HapticsDirty &&
+            //    !device.LightbarColorRef.Equals(device.PreviousLightbarColorRef))
+            //{
+            //    device.HapticsDirty = true;
+            //}
+
+            if (device.rumbleDirty)
+            {
+                if (hapticsStopwatch.IsRunning)
+                {
+                    hapticsStopwatch.Reset();
+                }
+
+                if (feedbackSet && feedbackStateChanged)
+                {
+                    // Should indicate new feedback state. Restart timer
+#if DEBUG
+                Trace.WriteLine("RESTART RUMBLE TIMER");
+#endif
+                    rumbleStopwatch.Restart();
+                }
+                else if (!feedbackSet && rumbleStopwatch.IsRunning)
+                {
+                    rumbleStopwatch.Reset();
+                }
+            }
+            else if (rumbleStopwatch.IsRunning)
+            {
+#if DEBUG
+                Trace.WriteLine("RUMBLE RUNNING");
+#endif
+
+                // Check if haptics is already engaged
+                if (feedbackSet && rumbleStopwatch.ElapsedMilliseconds >=
+                    RUMBLE_CONTINUOUS_DURATION)
+                {
+#if DEBUG
+                    Trace.WriteLine($"STOP RUMBLE TIMER {device.currentLeftAmpRatio} {device.currentRightAmpRatio}");
+#endif
+
+                    device.rumbleDirty = true;
+                    rumbleStopwatch.Restart();
+                }
+                else if (!feedbackSet)
+                {
+                    rumbleStopwatch.Reset();
+                }
+            }
+
+
+            //            if (device.currentLeftAmpRatio != device.previousLeftAmpRatio ||
+            //                device.currentRightAmpRatio != device.previousRightAmpRatio)
+            //            {
+            //                // Should indicate new feedback state. Restart timer
+            //                hapticsStopwatch.Restart();
+            //                device.HapticsDirty = true;
+            //            }
+            //            else
+            //            {
+            //                if (hapticsStopwatch.IsRunning)
+            //                {
+            //                    if (hapticsStopwatch.ElapsedMilliseconds >=
+            //                        JoyConDevice.HAPTICS_DURATION_DEFAULT)
+            //                    {
+            //#if DEBUG
+            //                        Trace.WriteLine("STOP RUMBLE TIMER");
+            //#endif
+
+            //                        device.HapticsDirty = true;
+            //                        device.currentLeftAmpRatio = device.currentRightAmpRatio = 0.0;
+            //                        device.HapticsDuration = JoyConDevice.HAPTICS_EMPTY_DURATION;
+            //                        hapticsStopwatch.Reset();
+            //                    }
+            //                }
+
+            //                //if (!rumbleStopwatch.IsRunning)
+            //                //{
+            //                //    rumbleStopwatch.Start();
+            //                //}
+            //            }
+
+            //if (device.rumbleDirty)
+            //{
+            //    return;
+            //}
+
+            //if (device.currentLeftAmpRatio != device.previousLeftAmpRatio)
+            //{
+            //    device.rumbleDirty = true;
+            //}
+            //else if (device.currentRightAmpRatio != device.previousRightAmpRatio)
+            //{
+            //    device.rumbleDirty = true;
+            //}
+        }
+
         private void PrepareRumbleReport()
         {
             unchecked
             {
-                if (device.rumbleDirty)
+                //if (device.rumbleDirty)
                 {
                     WriteRumbleReport();
                     using (WriteLocker locker = new WriteLocker(device.rumbleDataLock))
@@ -447,7 +615,7 @@ namespace DS4MapperTest.JoyConLibrary
 
         public override void WriteRumbleReport()
         {
-            if (activeInputLoop && device.rumbleDirty)
+            if (activeInputLoop && (device.rumbleDirty || device.HapticsDirty))
             {
                 //byte[] tmpbuff = new byte[SwitchProDevice.RUMBLE_REPORT_LEN];
                 device.PrepareRumbleData(rumbleReportBuffer);

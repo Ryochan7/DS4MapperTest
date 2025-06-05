@@ -6,6 +6,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using DS4MapperTest.StickActions;
 using DS4MapperTest.ButtonActions;
+using DS4MapperTest.ViewModels.Common;
+using DS4MapperTest.TouchpadActions;
 
 namespace DS4MapperTest.ViewModels.StickActionPropViewModels
 {
@@ -58,6 +60,26 @@ namespace DS4MapperTest.ViewModels.StickActionPropViewModels
         }
         public event EventHandler SensitivityChanged;
 
+        private List<EnumChoiceSelection<MapAction.HapticsIntensity>> hapticsIntensityItems = new List<EnumChoiceSelection<MapAction.HapticsIntensity>>()
+        {
+            new EnumChoiceSelection<MapAction.HapticsIntensity>("Off", MapAction.HapticsIntensity.Off),
+            new EnumChoiceSelection<MapAction.HapticsIntensity>("Light", MapAction.HapticsIntensity.Light),
+            new EnumChoiceSelection<MapAction.HapticsIntensity>("Medium", MapAction.HapticsIntensity.Medium),
+            new EnumChoiceSelection<MapAction.HapticsIntensity>("Heavy", MapAction.HapticsIntensity.Heavy),
+            new EnumChoiceSelection<MapAction.HapticsIntensity>("Full", MapAction.HapticsIntensity.Full),
+        };
+        public List<EnumChoiceSelection<MapAction.HapticsIntensity>> HapticsIntensityItems => hapticsIntensityItems;
+        public MapAction.HapticsIntensity HapticsChoice
+        {
+            get => action.ActionHapticsIntensity;
+            set
+            {
+                action.ActionHapticsIntensity = value;
+                HapticsChoiceChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        public event EventHandler HapticsChoiceChanged;
+
         public bool HighlightName
         {
             get => action.ParentAction == null ||
@@ -71,6 +93,13 @@ namespace DS4MapperTest.ViewModels.StickActionPropViewModels
                 action.ChangedProperties.Contains(StickCircular.PropertyKeyStrings.SENSITIVITY);
         }
         public event EventHandler HighlightSensitivityChanged;
+
+        public bool HighlightHapticsIntensity
+        {
+            get => action.ParentAction == null ||
+                action.ChangedProperties.Contains(TouchpadCircular.PropertyKeyStrings.HAPTICS_INTENSITY);
+        }
+        public event EventHandler HighlightHapticsIntensityChanged;
 
         public event EventHandler ActionPropertyChanged;
         public event EventHandler<StickMapAction> ActionChanged;
@@ -107,6 +136,18 @@ namespace DS4MapperTest.ViewModels.StickActionPropViewModels
 
             NameChanged += StickCircularPropViewModel_NameChanged;
             SensitivityChanged += StickCircularPropViewModel_SensitivityChanged;
+            HapticsChoiceChanged += StickCircularPropViewModel_HapticsChoiceChanged;
+        }
+
+        private void StickCircularPropViewModel_HapticsChoiceChanged(object sender, EventArgs e)
+        {
+            if (!action.ChangedProperties.Contains(StickCircular.PropertyKeyStrings.HAPTICS_INTENSITY))
+            {
+                action.ChangedProperties.Add(StickCircular.PropertyKeyStrings.HAPTICS_INTENSITY);
+            }
+
+            action.RaiseNotifyPropertyChange(mapper, StickCircular.PropertyKeyStrings.HAPTICS_INTENSITY);
+            HighlightHapticsIntensityChanged?.Invoke(this, EventArgs.Empty);
         }
 
         private void StickCircularPropViewModel_SensitivityChanged(object sender, EventArgs e)

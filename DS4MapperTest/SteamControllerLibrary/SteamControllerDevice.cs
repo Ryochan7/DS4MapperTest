@@ -62,6 +62,35 @@ namespace DS4MapperTest.SteamControllerLibrary
             public short min;
         };
 
+        public struct RumbleInfo
+        {
+            public double leftRumbleRatio;
+            public double rightRumbleRatio;
+        }
+
+        public struct HapticFeedbackInfo
+        {
+            public double leftActuatorAmpRatio;
+            public double rightActuatorAmpRatio;
+            public double durationLeft;
+            public double durationRight;
+            public uint countLeft;
+            public uint countRight;
+            public double leftPeriodRatio;
+            public double rightPeriodRatio;
+            public bool dirty;
+        };
+
+        public struct LightLEDInfo
+        {
+            public ushort brightness;
+        }
+
+        public HapticFeedbackInfo hapticInfo = new HapticFeedbackInfo();
+        public HapticFeedbackInfo previousHapticInfo = new HapticFeedbackInfo();
+        public bool rumbleDirty;
+
+
         public enum ConnectionType : uint
         {
             USB,
@@ -109,6 +138,8 @@ namespace DS4MapperTest.SteamControllerLibrary
 
         public double currentLeftAmpRatio = 0.0;
         public double currentRightAmpRatio = 0.0;
+        public double activeLeftAmpRatio = 0.0;
+        public double activeRightAmpRatio = 0.0;
 
         //private SteamControllerControllerOptions deviceOptions;
         //public SteamControllerControllerOptions DeviceOptions
@@ -387,9 +418,84 @@ namespace DS4MapperTest.SteamControllerLibrary
             buffer[9] = (byte)(count >> 8);
         }
 
+        public virtual void PrepareHapticsData(byte[] buffer, byte position)
+        {
+            // Taken from SteamControllerSinger app
+            // https://gitlab.com/Pilatomic/SteamControllerSinger
+            const double STEAM_CONTROLLER_MAGIC_PERIOD_RATIO = 495483.0;
+
+            double tempRatio = (position == HAPTIC_POS_RIGHT) ?
+                hapticInfo.rightActuatorAmpRatio : hapticInfo.leftActuatorAmpRatio;
+
+            ushort amplitude = 0;
+            if (tempRatio != 0.0)
+            {
+                amplitude = (ushort)((1200 - 200) * tempRatio + 200);
+                //amplitude = 800;
+                //amplitude = (ushort)((1400 - 1000) * tempRatio + 1000);
+                //amplitude = 1000;
+                //amplitude = (ushort)((1200 - 100) * tempRatio + 100);
+                //amplitude = (ushort)((2000 - 1400) * tempRatio + 1400);
+                //amplitude = (ushort)((1400 - 2800) * tempRatio + 2800);
+            }
+
+            /*if (tempRatio != 0.0)
+            {
+                amplitude = 500;
+            }
+            */
+
+            ushort tmp_period_command = 15000;
+            //ushort period_command = 15000;
+            ushort period_command = 0;
+            if (tempRatio != 0.0)
+            {
+                //period_command = (ushort)((6000 - 25000) * tempRatio + 25000);
+                //period_command = 600;
+                period_command = 600;
+            }
+
+            ushort count = (position == HAPTIC_POS_RIGHT) ? (ushort)hapticInfo.countRight : (ushort)hapticInfo.countLeft;
+            if (count == 0)
+            {
+                double raw_period = period_command / STEAM_CONTROLLER_MAGIC_PERIOD_RATIO;
+                //raw_period = period_command;
+                double duration = (position == HAPTIC_POS_RIGHT) ? hapticInfo.durationRight : hapticInfo.durationLeft;
+
+                if (raw_period != 0)
+                {
+                    count = (ushort)(Math.Min((int)(duration * 1.5 / raw_period),
+                        0x7FFF));
+                }
+            }
+
+            //count = 1;
+
+            buffer[1] = SCPacketType.PT_FEEDBACK;
+            buffer[2] = SCPacketLength.PL_FEEDBACK;
+            buffer[3] = position; // Left or Right Haptic actuator
+
+            // Amplitude
+            buffer[4] = (byte)amplitude;
+            buffer[5] = (byte)(amplitude >> 8);
+
+            // Period
+            buffer[6] = (byte)period_command;
+            buffer[7] = (byte)(period_command >> 8);
+
+            // Repeat count
+            buffer[8] = (byte)count;
+            buffer[9] = (byte)(count >> 8);
+        }
+
         public virtual void SendRumbleReport(byte[] buffer)
         {
             hidDevice.WriteFeatureReport(buffer);
+        }
+
+        public void ResetRumbleData()
+        {
+            currentLeftAmpRatio = currentRightAmpRatio = 0.0;
         }
 
         public void RaiseRemoval()

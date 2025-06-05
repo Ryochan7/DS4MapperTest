@@ -70,10 +70,14 @@ namespace DS4MapperTest
         public struct TouchCircularActionValues
         {
             public double deadZone;
+            public MapAction.HapticsIntensity hapticsIntensity;
 
             public void Process(TouchpadCircular action)
             {
                 action.DeadMod.DeadZone = deadZone;
+                action.ActionHapticsIntensity = hapticsIntensity;
+
+                action.ChangedProperties.Add(TouchpadCircular.PropertyKeyStrings.HAPTICS_INTENSITY);
 
                 //action.ChangedProperties.Add(TouchpadCircular.PropertyKeyStrings.DEAD_ZONE);
             }
@@ -133,6 +137,22 @@ namespace DS4MapperTest
             }
         }
 
+        public struct StickCircularActionValues
+        {
+            public double deadZone;
+            public MapAction.HapticsIntensity hapticsIntensity;
+
+            public void Process(StickCircular action)
+            {
+                action.DeadMod.DeadZone = deadZone;
+                action.ActionHapticsIntensity = hapticsIntensity;
+
+                action.ChangedProperties.Add(StickCircular.PropertyKeyStrings.HAPTICS_INTENSITY);
+
+                //action.ChangedProperties.Add(StickCircular.PropertyKeyStrings.DEAD_ZONE);
+            }
+        }
+
         public abstract TouchJoystickActionValues GrabTouchJoystickDefaults();
         public abstract TouchMouseActionValues GrabTouchMouseDefaults();
         public abstract TouchMouseJoystickActionValues GrabTouchMouseJoystickDefaults();
@@ -143,6 +163,7 @@ namespace DS4MapperTest
         public abstract StickTranslateActionValues GrabStickTranslateActionDefaults();
         public abstract StickMouseActionValues GrabStickMouseActionDefaults();
         public abstract StickPadActionActionValues GrabStickPadActionActionDefaults();
+        public abstract StickCircularActionValues GrabStickCircularActionDefaults();
     }
 
     public class DummyActionDefaultsCreator : DeviceActionDefaultsCreator
@@ -179,14 +200,23 @@ namespace DS4MapperTest
 
         public override TouchCircularActionValues GrabTouchCircularActionDefaults()
         {
-            TouchCircularActionValues result = new TouchCircularActionValues();
+            TouchCircularActionValues result = new TouchCircularActionValues()
+            {
+                hapticsIntensity = MapAction.HapticsIntensity.Medium,
+            };
+
             return result;
 
         }
 
         public override TouchJoystickActionValues GrabTouchJoystickDefaults()
         {
-            TouchJoystickActionValues result = new TouchJoystickActionValues();
+            TouchJoystickActionValues result = new TouchJoystickActionValues()
+            {
+                deadZone = 0.1,
+                maxZone = 1.0,
+            };
+
             return result;
         }
 
@@ -199,6 +229,16 @@ namespace DS4MapperTest
         public override TouchMouseJoystickActionValues GrabTouchMouseJoystickDefaults()
         {
             TouchMouseJoystickActionValues result = new TouchMouseJoystickActionValues();
+            return result;
+        }
+
+        public override StickCircularActionValues GrabStickCircularActionDefaults()
+        {
+            StickCircularActionValues result = new StickCircularActionValues()
+            {
+                hapticsIntensity = MapAction.HapticsIntensity.Medium,
+            };
+
             return result;
         }
     }
@@ -247,6 +287,16 @@ namespace DS4MapperTest
             return result;
         }
 
+        public override StickCircularActionValues GrabStickCircularActionDefaults()
+        {
+            StickCircularActionValues result = new StickCircularActionValues()
+            {
+                hapticsIntensity = MapAction.HapticsIntensity.Medium,
+            };
+
+            return result;
+        }
+
         public override TouchActionPadActionValues GrabTouchActionPadDefaults()
         {
             TouchActionPadActionValues result = new TouchActionPadActionValues()
@@ -262,6 +312,7 @@ namespace DS4MapperTest
             TouchCircularActionValues result = new TouchCircularActionValues()
             {
                 deadZone = 0.2,
+                hapticsIntensity = MapAction.HapticsIntensity.Medium,
             };
 
             return result;
@@ -303,6 +354,18 @@ namespace DS4MapperTest
 
     public class SteamControllerDeviceDefaults : DummyActionDefaultsCreator
     {
+        public override TouchJoystickActionValues GrabTouchJoystickDefaults()
+        {
+            TouchJoystickActionValues result = new TouchJoystickActionValues()
+            {
+                deadZone = 0.05,
+                antiDeadZone = 0.0,
+                maxZone = 0.7,
+            };
+
+            return result;
+        }
+
         public override TouchMouseActionValues GrabTouchMouseDefaults()
         {
             TouchMouseActionValues result = new TouchMouseActionValues()

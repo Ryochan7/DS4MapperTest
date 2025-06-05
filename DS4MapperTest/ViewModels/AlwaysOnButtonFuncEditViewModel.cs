@@ -45,11 +45,11 @@ namespace DS4MapperTest.ViewModels
                     bool exists = mapper.ActionProfile.CurrentActionSet.RecentAppliedLayer.LayerActions.Contains(oldAction);
                     if (exists)
                     {
-                        mapper.ActionProfile.CurrentActionSet.RecentAppliedLayer.ReplaceActionSetButtonAction(oldAction, newAction);
+                        mapper.EditLayer.ReplaceActionSetButtonAction(oldAction, newAction);
                     }
                     else
                     {
-                        mapper.ActionProfile.CurrentActionSet.RecentAppliedLayer.AddActionSetButtonMapAction(newAction);
+                        mapper.EditLayer.AddActionSetButtonMapAction(newAction);
                     }
 
                     if (mapper.ActionProfile.CurrentActionSet.UsingCompositeLayer)
@@ -63,13 +63,13 @@ namespace DS4MapperTest.ViewModels
                             }
                         }
 
-                        mapper.ActionProfile.CurrentActionSet.RecompileCompositeLayer(mapper);
+                        mapper.EditActionSet.RecompileCompositeLayer(mapper);
                     }
                     else
                     {
-                        mapper.ActionProfile.CurrentActionSet.DefaultActionLayer.SyncActions();
-                        mapper.ActionProfile.CurrentActionSet.ClearCompositeLayerActions();
-                        mapper.ActionProfile.CurrentActionSet.PrepareCompositeLayer();
+                        mapper.EditActionSet.DefaultActionLayer.SyncActions();
+                        mapper.EditActionSet.ClearCompositeLayerActions();
+                        mapper.EditActionSet.PrepareCompositeLayer();
                     }
                 }
             });

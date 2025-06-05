@@ -2350,6 +2350,22 @@ namespace DS4MapperTest
                 return touchCircAct.ChangedProperties.Contains(TouchpadCircular.PropertyKeyStrings.SENSITIVITY);
             }
 
+            [JsonConverter(typeof(StringEnumConverter))]
+            public MapAction.HapticsIntensity HapticsIntensity
+            {
+                get => touchCircAct.ActionHapticsIntensity;
+                set
+                {
+                    touchCircAct.ActionHapticsIntensity = value;
+                    HapticsIntensityChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler HapticsIntensityChanged;
+            public bool ShouldSerializeHapticsIntensity()
+            {
+                return touchCircAct.ChangedProperties.Contains(TouchpadCircular.PropertyKeyStrings.HAPTICS_INTENSITY);
+            }
+
             public TouchpadCircularSettings(TouchpadCircular action)
             {
                 touchCircAct = action;
@@ -2399,6 +2415,12 @@ namespace DS4MapperTest
             ClockwiseChanged += TouchpadCircularSerializer_ClockwiseChanged;
             CounterClockwiseChanged += TouchpadCircularSerializer_CounterClockwiseChanged;
             settings.SensitivityChanged += Settings_SensitivityChanged;
+            settings.HapticsIntensityChanged += Settings_HapticsIntensityChanged;
+        }
+
+        private void Settings_HapticsIntensityChanged(object sender, EventArgs e)
+        {
+            touchCircAct.ChangedProperties.Add(TouchpadCircular.PropertyKeyStrings.HAPTICS_INTENSITY);
         }
 
         private void Settings_SensitivityChanged(object sender, EventArgs e)
@@ -2738,6 +2760,53 @@ namespace DS4MapperTest
                 return touchStickAction.ChangedProperties.Contains(TouchpadStickAction.PropertyKeyStrings.FORCED_CENTER);
             }
 
+            public bool SmoothingEnabled
+            {
+                get => touchStickAction.Smoothing;
+                set
+                {
+                    touchStickAction.Smoothing = value;
+                    SmoothingEnabledChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler SmoothingEnabledChanged;
+            public bool ShouldSerializeSmoothingEnabled()
+            {
+                return touchStickAction.ChangedProperties.Contains(TouchpadStickAction.PropertyKeyStrings.SMOOTHING_ENABLED);
+            }
+
+            public double SmoothingMinCutoff
+            {
+                get => touchStickAction.SmoothingFilterSettingsDataRef.minCutOff;
+                set
+                {
+                    touchStickAction.SmoothingFilterSettingsDataRef.minCutOff = Math.Clamp(value, 0.0, 10.0);
+                    touchStickAction.SmoothingFilterSettingsDataRef.UpdateSmoothingFilters();
+                    SmoothingMinCutoffChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler SmoothingMinCutoffChanged;
+            public bool ShouldSerializeSmoothingMinCutoff()
+            {
+                return touchStickAction.ChangedProperties.Contains(TouchpadStickAction.PropertyKeyStrings.SMOOTHING_FILTER);
+            }
+
+            public double SmoothingBeta
+            {
+                get => touchStickAction.SmoothingFilterSettingsDataRef.beta;
+                set
+                {
+                    touchStickAction.SmoothingFilterSettingsDataRef.beta = Math.Clamp(value, 0.0, 1.0);
+                    touchStickAction.SmoothingFilterSettingsDataRef.UpdateSmoothingFilters();
+                    SmoothingBetaChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler SmoothingBetaChanged;
+            public bool ShouldSerializeSmoothingBeta()
+            {
+                return touchStickAction.ChangedProperties.Contains(TouchpadStickAction.PropertyKeyStrings.SMOOTHING_FILTER);
+            }
+
             public TouchStickActionSettings(TouchpadStickAction action)
             {
                 this.touchStickAction = action;
@@ -2774,6 +2843,25 @@ namespace DS4MapperTest
             settings.SquareStickRoundnessChanged += Settings_SquareStickRoundnessChanged;
             settings.DeadZoneTypeChanged += Settings_DeadZoneTypeChanged;
             settings.ForcedCenterChanged += Settings_ForcedCenterChanged;
+
+            settings.SmoothingEnabledChanged += Settings_SmoothingEnabledChanged;
+            settings.SmoothingMinCutoffChanged += Settings_SmoothingMinCutoffChanged;
+            settings.SmoothingBetaChanged += Settings_SmoothingBetaChanged;
+        }
+
+        private void Settings_SmoothingBetaChanged(object sender, EventArgs e)
+        {
+            touchStickAction.ChangedProperties.Add(TouchpadStickAction.PropertyKeyStrings.SMOOTHING_FILTER);
+        }
+
+        private void Settings_SmoothingMinCutoffChanged(object sender, EventArgs e)
+        {
+            touchStickAction.ChangedProperties.Add(TouchpadStickAction.PropertyKeyStrings.SMOOTHING_FILTER);
+        }
+
+        private void Settings_SmoothingEnabledChanged(object sender, EventArgs e)
+        {
+            touchStickAction.ChangedProperties.Add(TouchpadStickAction.PropertyKeyStrings.SMOOTHING_ENABLED);
         }
 
         private void Settings_ForcedCenterChanged(object sender, EventArgs e)
@@ -5118,6 +5206,21 @@ namespace DS4MapperTest
                 return stickCircAct.ChangedProperties.Contains(StickCircular.PropertyKeyStrings.SENSITIVITY);
             }
 
+            [JsonConverter(typeof(StringEnumConverter))]
+            public MapAction.HapticsIntensity HapticsIntensity
+            {
+                get => stickCircAct.ActionHapticsIntensity;
+                set
+                {
+                    stickCircAct.ActionHapticsIntensity = value;
+                    HapticsIntensityChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler HapticsIntensityChanged;
+            public bool ShouldSerializeHapticsIntensity()
+            {
+                return stickCircAct.ChangedProperties.Contains(StickCircular.PropertyKeyStrings.HAPTICS_INTENSITY);
+            }
 
             public StickCircularSettings(StickCircular action)
             {
@@ -5168,6 +5271,12 @@ namespace DS4MapperTest
             ClockwiseChanged += StickCircularSerializer_ClockwiseChanged;
             CounterClockwiseChanged += StickCircularSerializer_CounterClockwiseChanged;
             settings.SensitivityChanged += Settings_SensitivityChanged;
+            settings.HapticsIntensityChanged += Settings_HapticIntensityChanged;
+        }
+
+        private void Settings_HapticIntensityChanged(object sender, EventArgs e)
+        {
+            stickCircAct.ChangedProperties.Add(StickCircular.PropertyKeyStrings.HAPTICS_INTENSITY);
         }
 
         private void Settings_SensitivityChanged(object sender, EventArgs e)

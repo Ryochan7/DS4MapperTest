@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using DS4MapperTest.MapperUtil;
 using DS4MapperTest.StickModifiers;
+using Sensorit.Base;
 
 namespace DS4MapperTest.TouchpadActions
 {
@@ -28,6 +29,9 @@ namespace DS4MapperTest.TouchpadActions
             public const string SQUARE_STICK_ENABLED = "SquareStickEnabled";
             public const string SQUARE_STICK_ROUNDNESS = "SquareStickRoundness";
             public const string FORCED_CENTER = "ForcedCenter";
+
+            public const string SMOOTHING_ENABLED = "SmoothingEnabled";
+            public const string SMOOTHING_FILTER = "SmoothingFilter";
         }
 
         private HashSet<string> fullPropertySet = new HashSet<string>()
@@ -48,9 +52,53 @@ namespace DS4MapperTest.TouchpadActions
             PropertyKeyStrings.SQUARE_STICK_ENABLED,
             PropertyKeyStrings.SQUARE_STICK_ROUNDNESS,
             PropertyKeyStrings.FORCED_CENTER,
+
+            PropertyKeyStrings.SMOOTHING_ENABLED,
+            PropertyKeyStrings.SMOOTHING_FILTER,
         };
 
         public const string ACTION_TYPE_NAME = "TouchStickTranslateAction";
+
+        public struct SmoothingFilterSettings
+        {
+            public const double DEFAULT_MIN_CUTOFF = 0.4;
+            public const double DEFAULT_BETA = 0.6;
+
+            public OneEuroFilter filterX;
+            public OneEuroFilter filterY;
+
+            public double minCutOff;
+            public double beta;
+
+            public void Init()
+            {
+                minCutOff = DEFAULT_MIN_CUTOFF;
+                beta = DEFAULT_BETA;
+
+                filterX = new OneEuroFilter(minCutoff: minCutOff,
+                    beta: beta);
+                filterY = new OneEuroFilter(minCutoff: minCutOff,
+                    beta: beta);
+            }
+
+            public void ResetFilters()
+            {
+                filterX.Reset();
+                filterY.Reset();
+            }
+
+            public void UpdateSmoothingFilters()
+            {
+                filterX.MinCutoff = minCutOff;
+                filterX.Beta = beta;
+                filterX.Reset();
+
+                filterY.MinCutoff = minCutOff;
+                filterY.Beta = beta;
+                filterY.Reset();
+            }
+        }
+
 
         private double xNorm = 0.0, yNorm = 0.0;
         private double prevXNorm = 0.0, prevYNorm = 0.0;
@@ -67,6 +115,27 @@ namespace DS4MapperTest.TouchpadActions
         private bool squareStickEnabled;
         private double squareStickRoundness = 5.0;
         private SquareStick squaredStick = new SquareStick();
+
+        private bool smoothing;
+        private SmoothingFilterSettings smoothingFilterSettings;
+
+        public bool Smoothing
+        {
+            get => smoothing;
+            set => smoothing = value;
+        }
+
+        public SmoothingFilterSettings SmoothingFilterSettingsData
+        {
+            get => smoothingFilterSettings;
+        }
+
+        public ref SmoothingFilterSettings SmoothingFilterSettingsDataRef
+        {
+            get => ref smoothingFilterSettings;
+        }
+
+        private bool useParentSmoothingFilter;
 
         // TODO: Check on state transfer when switching Action Layer instances
         private bool forcedCenter;
@@ -142,11 +211,14 @@ namespace DS4MapperTest.TouchpadActions
             set => forcedCenter = value;
         }
 
+        bool touchingActive;
         public TouchpadStickAction()
         {
             this.outputAction = new OutputActionData(OutputActionData.ActionType.GamepadControl, StickActionCodes.X360_LS);
             this.deadMod = new StickDeadZone(0.00, 1.00, 0.00);
             deadMod.DeadZoneType = StickDeadZone.DeadZoneTypes.Radial;
+            smoothingFilterSettings.Init();
+
             actionTypeName = ACTION_TYPE_NAME;
         }
 
@@ -182,7 +254,7 @@ namespace DS4MapperTest.TouchpadActions
             //if (xNegative) xNorm *= -1.0;
             //if (yNegative) yNorm *= -1.0;
             bool inSafeZone = xNorm != 0.0 || yNorm != 0.0;
-            bool touchingActive = touchFrame.Touch;
+            touchingActive = touchFrame.Touch;
             if (touchingActive)
             {
                 if (forcedCenter)
@@ -244,6 +316,12 @@ namespace DS4MapperTest.TouchpadActions
             else
             {
                 xNorm = yNorm = 0.0;
+
+                if (smoothing)
+                {
+                    //smoothingFilterSettings.filterX.Filter(0.0, mapper.CurrentRate);
+                    //smoothingFilterSettings.filterY.Filter(0.0, mapper.CurrentRate);
+                }
             }
 
             active = true;
@@ -254,6 +332,24 @@ namespace DS4MapperTest.TouchpadActions
         {
             double outXNorm = xNorm;
             double outYNorm = yNorm;
+
+            if (smoothing)
+            {
+                double tempXNorm = smoothingFilterSettings.filterX.Filter(outXNorm * 1.001, mapper.CurrentRate);
+                double tempYNorm = smoothingFilterSettings.filterY.Filter(outYNorm * 1.001, mapper.CurrentRate);
+
+                // Filter does not go back to absolute zero for reasons. Check
+                // for low number and reset to zero
+                if (Math.Abs(tempXNorm) < 0.0001) tempXNorm = 0.0;
+                if (Math.Abs(tempYNorm) < 0.0001) tempYNorm = 0.0;
+
+                // Need to check bounds again
+                tempXNorm = Math.Clamp(tempXNorm, -1.0, 1.0);
+                tempYNorm = Math.Clamp(tempYNorm, -1.0, 1.0);
+
+                outXNorm = tempXNorm;
+                outYNorm = tempYNorm;
+            }
 
             mapper.GamepadFromStickInput(outputAction, outXNorm, outYNorm);
 
@@ -311,6 +407,11 @@ namespace DS4MapperTest.TouchpadActions
             else
             {
                 wasCenterHit = false;
+            }
+
+            if (!useParentSmoothingFilter)
+            {
+                smoothingFilterSettings.ResetFilters();
             }
 
             xNorm = yNorm = 0.0;
@@ -390,6 +491,13 @@ namespace DS4MapperTest.TouchpadActions
                         case PropertyKeyStrings.FORCED_CENTER:
                             forcedCenter = tempStickAction.forcedCenter;
                             break;
+                        case PropertyKeyStrings.SMOOTHING_ENABLED:
+                            smoothing = tempStickAction.smoothing;
+                            break;
+                        case PropertyKeyStrings.SMOOTHING_FILTER:
+                            smoothingFilterSettings = tempStickAction.smoothingFilterSettings;
+                            useParentSmoothingFilter = true;
+                            break;
                         default:
                             break;
                     }
@@ -466,6 +574,13 @@ namespace DS4MapperTest.TouchpadActions
                     break;
                 case PropertyKeyStrings.FORCED_CENTER:
                     forcedCenter = tempStickAction.forcedCenter;
+                    break;
+                case PropertyKeyStrings.SMOOTHING_ENABLED:
+                    smoothing = tempStickAction.smoothing;
+                    break;
+                case PropertyKeyStrings.SMOOTHING_FILTER:
+                    smoothingFilterSettings = tempStickAction.smoothingFilterSettings;
+                    useParentSmoothingFilter = true;
                     break;
                 default:
                     break;

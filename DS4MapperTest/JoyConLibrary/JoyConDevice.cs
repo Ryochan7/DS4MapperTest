@@ -191,8 +191,8 @@ namespace DS4MapperTest.JoyConLibrary
 
         public double currentLeftAmpRatio;
         public double currentRightAmpRatio;
-        //public double previousLeftAmpRatio;
-        //public double previousRightAmpRatio;
+        public double previousLeftAmpRatio;
+        public double previousRightAmpRatio;
         public bool rumbleDirty;
         public ReaderWriterLockSlim rumbleDataLock = new ReaderWriterLockSlim();
 
@@ -250,6 +250,23 @@ namespace DS4MapperTest.JoyConLibrary
         {
             get => ref previousState;
         }
+
+        private bool hapticsDirty = false;
+        public bool HapticsDirty
+        {
+            get => hapticsDirty;
+            set => hapticsDirty = value;
+        }
+
+        public const long HAPTICS_DURATION_DEFAULT = 80; // ms
+        public const long HAPTICS_EMPTY_DURATION = 0; // ms
+        private long hapticsDuration = HAPTICS_EMPTY_DURATION;
+        public long HapticsDuration
+        {
+            get => hapticsDuration;
+            set => hapticsDuration = value;
+        }
+
 
         private byte frameCount = 0;
         public byte FrameCount { get => frameCount; set => frameCount = value; }

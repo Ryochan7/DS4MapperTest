@@ -230,6 +230,9 @@ namespace DS4MapperTest.GyroActions
             int deadZone = mouseParams.deadzone;
 
             double timeElapsed = gyroFrame.timeElapsed;
+            double oldTimeElapsed = timeElapsed;
+            timeElapsed = timeElapsed - (mapper.remainderCutoff(timeElapsed * 10000.0, 1.0) / 10000.0);
+            //Trace.WriteLine($"BEFORE: {oldTimeElapsed} | AFTER {timeElapsed}");
             //Trace.WriteLine(timeElapsed);
             //double timeElapsed = current.timeElapsed;
             // Take possible lag state into account. Main routine will make sure to skip this method

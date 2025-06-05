@@ -74,12 +74,28 @@ namespace DS4MapperTest.DualSense
         public ref DualSenseState CurrentStateRef { get => ref currentState; }
 
         protected DualSenseState previousState;
-        public DualSenseState PreviousState { get => previousState; }
+        public DualSenseState PreviousState
+        {
+            get => previousState;
+            set => previousState = value;
+        }
         public ref DualSenseState PreviousStateRef { get => ref previousState; }
 
         private DS4ForceFeedbackState feedbackState = new DS4ForceFeedbackState();
-        public DS4ForceFeedbackState FeedbackState { get => feedbackState; }
+        public DS4ForceFeedbackState FeedbackState
+        {
+            get => feedbackState;
+            set => feedbackState = value;
+        }
         public ref DS4ForceFeedbackState FeedbackStateRef { get => ref feedbackState; }
+
+        private DS4ForceFeedbackState hapticsState = new DS4ForceFeedbackState();
+        public DS4ForceFeedbackState HapticsState
+        {
+            get => hapticsState;
+            set => hapticsState = value;
+        }
+        public ref DS4ForceFeedbackState HapticsStateRef { get => ref hapticsState; }
 
         private DS4Color lightbarColor = new DS4Color();
         public DS4Color LightbarColor { get => lightbarColor; }
@@ -90,6 +106,13 @@ namespace DS4MapperTest.DualSense
         {
             get => hapticsDirty;
             set => hapticsDirty = value;
+        }
+
+        private bool rumbleDirty = false;
+        public bool RumbleDirty
+        {
+            get => rumbleDirty;
+            set => rumbleDirty = value;
         }
 
         private int inputReportLen;
@@ -326,7 +349,7 @@ namespace DS4MapperTest.DualSense
             hidDevice.CloseDevice();
         }
 
-        public void PrepareOutputReport(byte[] outReportBuffer)
+        public void PrepareOutputReport(byte[] outReportBuffer, bool rumble = true)
         {
             if (conType == ConnectionType.Bluetooth)
             {
@@ -350,9 +373,9 @@ namespace DS4MapperTest.DualSense
                 outReportBuffer[3] = 0x55;
 
                 // Right? High Freq Motor
-                outReportBuffer[4] = feedbackState.RightLight;
+                outReportBuffer[4] = rumble ? feedbackState.RightLight : hapticsState.RightLight;
                 // Left? Low Freq Motor
-                outReportBuffer[5] = feedbackState.LeftHeavy;
+                outReportBuffer[5] = rumble ? feedbackState.LeftHeavy : hapticsState.LeftHeavy;
 
                 // Mute button LED. 0x01 = Solid. 0x02 = Pulsating
                 outReportBuffer[10] = 0x01;
@@ -391,9 +414,9 @@ namespace DS4MapperTest.DualSense
                 // 0x40 Adjust overall motor/effect power, 0x80 ???
                 outReportBuffer[2] = 0x55;
                 // Right? High Freq Motor
-                outReportBuffer[3] = feedbackState.RightLight;
+                outReportBuffer[3] = rumble ? feedbackState.RightLight : hapticsState.RightLight;
                 // Left? Low Freq Motor
-                outReportBuffer[4] = feedbackState.LeftHeavy;
+                outReportBuffer[4] = rumble ? feedbackState.LeftHeavy : hapticsState.LeftHeavy;
 
                 // Mute button LED. 0x01 = Solid. 0x02 = Pulsating
                 outReportBuffer[9] = 0x01;
@@ -427,8 +450,12 @@ namespace DS4MapperTest.DualSense
 
         public void SetLightbarColor(ref DS4Color color)
         {
+            if (!lightbarColor.Equals(color))
+            {
+                hapticsDirty = true;
+            }
+
             lightbarColor = color;
-            hapticsDirty = true;
         }
 
         public void SetForceFeedbackState(ref DS4ForceFeedbackState state)
@@ -450,6 +477,11 @@ namespace DS4MapperTest.DualSense
         public void RaiseRemoval()
         {
             Removal?.Invoke(this, EventArgs.Empty);
+        }
+
+        public void ResetRumbleData()
+        {
+            feedbackState.LeftHeavy = feedbackState.RightLight = 0;
         }
     }
 }
