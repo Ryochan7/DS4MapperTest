@@ -6,6 +6,9 @@ jobs:
   build:
     runs-on: windows-latest
 
+    env:
+      version: 0.0.x.y
+
     steps:
     - uses: actions/checkout@v2
     
@@ -29,4 +32,9 @@ jobs:
     - name: Build Solution
       run: |
         msbuild.exe DS4MapperTest.sln /p:DeleteExistingFiles=True /p:platform="x64" /p:configuration="Release" /p:PublishUrl="../_build"
- 
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: DS4MapperTest_${{ env.version }}
+        path: "${{ github.workspace }}./_build"
