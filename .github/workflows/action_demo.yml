@@ -11,7 +11,13 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    
+
+    # Install the .NET Core workload
+    - name: Install .NET Core
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x
+
     - name: Setup MSBuild
       uses: microsoft/setup-msbuild@v2
       with:
