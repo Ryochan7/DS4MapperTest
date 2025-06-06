@@ -30,7 +30,7 @@ jobs:
       run: cd $GITHUB_WORKSPACE
 
     - name: Create Build Directory
-      run: mkdir _build
+      run: mkdir build
       
     - name: Restore Packages
       run: nuget restore DS4MapperTest.sln
@@ -43,4 +43,4 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: DS4MapperTest_${{ env.test_version }}
-        path: "${{ github.workspace }}\_build"
+        path: "${{ github.workspace }}\build"
