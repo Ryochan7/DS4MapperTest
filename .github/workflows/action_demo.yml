@@ -7,7 +7,7 @@ jobs:
     runs-on: windows-latest
 
     env:
-      version: 0.0.x.y
+      test_version: 0.0.x.y
 
     steps:
     - uses: actions/checkout@v2
@@ -42,5 +42,5 @@ jobs:
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
-        name: DS4MapperTest_${{ env.version }}
+        name: DS4MapperTest_${{ env.test_version }}
         path: "${{ github.workspace }}./_build"
