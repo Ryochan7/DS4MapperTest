@@ -37,10 +37,13 @@ jobs:
 
     - name: Build Solution
       run: |
-        msbuild.exe DS4MapperTest.sln /p:DeleteExistingFiles=True /p:platform="x64" /p:configuration="Release" /p:PublishUrl="../build"
+        msbuild.exe DS4MapperTest.sln /p:DeleteExistingFiles=True /p:platform="x64" /p:configuration="Release" /p:PublishDir="${{ github.workspace }}\build"
+    
+    - name: Run ls
+      run: ls build/*
 
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
         name: DS4MapperTest_${{ env.test_version }}
-        path: ${{ github.workspace }}\\build
+        path: ${{ github.workspace }}\build
