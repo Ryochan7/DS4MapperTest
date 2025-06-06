@@ -37,7 +37,7 @@ jobs:
 
     - name: Build Solution
       run: |
-        msbuild.exe DS4MapperTest.sln /t:Clean;Build;Publish /p:DeleteExistingFiles=True /p:platform="x64" /p:configuration="Release" /p:PublishDir="..\build"
+        msbuild.exe DS4MapperTest.sln /t:Clean;Compile;Publish /p:DeleteExistingFiles=True /p:platform="x64" /p:configuration="Release" /p:PublishDir="..\build"
     
     - name: Run ls
       run: ls build/*
