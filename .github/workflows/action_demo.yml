@@ -43,4 +43,4 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: DS4MapperTest_${{ env.test_version }}
-        path: "${{ github.workspace }}\build"
+        path: ${{ github.workspace }}\\build
