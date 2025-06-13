@@ -12,6 +12,7 @@ using DS4MapperTest.SwitchProLibrary;
 using DS4MapperTest.DualSense;
 using DS4MapperTest.JoyConLibrary;
 using DS4MapperTest.SteamControllerLibrary;
+using DS4MapperTest.InputDevices.EightBitDoLibrary;
 
 namespace DS4MapperTest
 {
@@ -70,6 +71,9 @@ namespace DS4MapperTest
         private const int STEAM_DONGLE_CONTROLLER_PRODUCT_ID = 0x1142;
         private const int STEAM_BT_CONTROLLER_PRODUCT_ID = 0x1106;
 
+        private const int EIGHTBITDO_VID = 0x2DC8;
+        private const int EIGHTBITDO_ULTIMATE_2_WIRELESS_PID = 0x6012;
+
         internal delegate bool HidDeviceCheckHandler(HidDevice device, VidPidMeta meta);
 
         private HashSet<string> foundDevicePaths;
@@ -105,6 +109,8 @@ namespace DS4MapperTest
             new VidPidMeta(STEAM_CONTROLLER_VENDOR_ID, STEAM_DONGLE_CONTROLLER_PRODUCT_ID, "Steam Controller", InputDeviceType.SteamController,
                 VidPidMeta.UsedConnectionBus.HID),
             new VidPidMeta(STEAM_CONTROLLER_VENDOR_ID, STEAM_BT_CONTROLLER_PRODUCT_ID, "Steam Controller", InputDeviceType.SteamController,
+                VidPidMeta.UsedConnectionBus.HID),
+            new VidPidMeta(EIGHTBITDO_VID, EIGHTBITDO_ULTIMATE_2_WIRELESS_PID, "8BitDo Ultimate 2 Wireless BT Controller", InputDeviceType.EightBitDoUltimate2Wireless,
                 VidPidMeta.UsedConnectionBus.HID)
         };
 
@@ -146,6 +152,11 @@ namespace DS4MapperTest
                 else if (meta.inputDevType == InputDeviceType.SteamController)
                 {
                     meta.testDelUnion.hidHandler = SteamControllerDeviceCheckHandler;
+                    vidPidMetaDict.Add($"VID_{meta.vid}&PID_{meta.pid}", meta);
+                }
+                else if (meta.inputDevType == InputDeviceType.EightBitDoUltimate2Wireless)
+                {
+                    meta.testDelUnion.hidHandler = EightBitDoUlt2WirelessDeviceCheckHandler;
                     vidPidMetaDict.Add($"VID_{meta.vid}&PID_{meta.pid}", meta);
                 }
             }
@@ -234,6 +245,10 @@ namespace DS4MapperTest
                             value.testDelUnion.hidHandler?.Invoke(hidDev, value);
                         }
                         else if (value.inputDevType == InputDeviceType.SteamController)
+                        {
+                            value.testDelUnion.hidHandler?.Invoke(hidDev, value);
+                        }
+                        else if (value.inputDevType == InputDeviceType.EightBitDoUltimate2Wireless)
                         {
                             value.testDelUnion.hidHandler?.Invoke(hidDev, value);
                         }
@@ -431,6 +446,22 @@ namespace DS4MapperTest
             return result;
         }
 
+        private bool EightBitDoUlt2WirelessDeviceCheckHandler(HidDevice hidDev, VidPidMeta meta)
+        {
+            bool result = false;
+
+            if (meta != null)
+            {
+                Ultimate2WirelessDevice tempDev = new Ultimate2WirelessDevice(hidDev, meta.displayName);
+                foundKnownDevices.Add(hidDev.DevicePath, tempDev);
+                revFoundKnownDevices.Add(tempDev, hidDev.DevicePath);
+                newKnownDevices.Add(hidDev.DevicePath, tempDev);
+                result = true;
+            }
+
+            return result;
+        }
+
         // TODO: Possibly move to BackendManager. Mainly to deal with possible Joined JoyCon
         // Mapper type in the future
         public Mapper PrepareDeviceMapper(InputDeviceBase device, AppGlobalData appGlobal)
@@ -485,6 +516,13 @@ namespace DS4MapperTest
                             result = new SteamControllerMapper(btSteamDevice, reader, appGlobal);
                         }
 
+                        break;
+                    }
+                case Ultimate2WirelessDevice:
+                    {
+                        Ultimate2WirelessDevice ultDevice = device as Ultimate2WirelessDevice;
+                        Ultimate2WirelessReader reader = new Ultimate2WirelessReader(ultDevice);
+                        result = new Ultimate2WirelessMapper(ultDevice, reader, appGlobal);
                         break;
                     }
                 default: break;

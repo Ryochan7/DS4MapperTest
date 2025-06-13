@@ -29,6 +29,7 @@ namespace DS4MapperTest
         public const string DUALSENSE_PROFILE_DIR = "DualSense";
         public const string SWITCH_PRO_PROFILE_DIR = "SwitchPro";
         public const string JOYCON_PROFILE_DIR = "JoyCon";
+        public const string EIGHTBITDO_ULT2WIRELESS_PROFILE_DIR = "EightBitDoUlt2Wireless";
         public const string TEMPLATE_PROFILES_DIRNAME = "template_profiles";
 
         public static string exelocation = Process.GetCurrentProcess().MainModule.FileName;
@@ -88,6 +89,7 @@ namespace DS4MapperTest
                 DUALSENSE_PROFILE_DIR,
                 SWITCH_PRO_PROFILE_DIR,
                 JOYCON_PROFILE_DIR,
+                EIGHTBITDO_ULT2WIRELESS_PROFILE_DIR,
             };
 
         public AppGlobalData()
@@ -692,6 +694,9 @@ namespace DS4MapperTest
                 case InputDeviceType.JoyCon:
                     result = Path.Combine(baseProfilesPath, JOYCON_PROFILE_DIR);
                     break;
+                case InputDeviceType.EightBitDoUltimate2Wireless:
+                    result = Path.Combine(baseProfilesPath, EIGHTBITDO_ULT2WIRELESS_PROFILE_DIR);
+                    break;
                 default:
                     break;
             }
@@ -815,6 +820,7 @@ namespace DS4MapperTest
         DS4,
         DualSense,
         JoyCon,
+        EightBitDoUltimate2Wireless
     }
 
     public static class AppGlobalDataSingleton

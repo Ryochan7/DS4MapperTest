@@ -129,6 +129,11 @@ namespace DS4MapperTest
             ProfileList steamControllerDeviceProfileList = new ProfileList(InputDeviceType.SteamController);
             steamControllerDeviceProfileList.Refresh();
             deviceProfileListDict.Add(InputDeviceType.SteamController, steamControllerDeviceProfileList);
+
+            ProfileList ult2WirelessDeviceProfileList = new ProfileList(InputDeviceType.EightBitDoUltimate2Wireless);
+            ult2WirelessDeviceProfileList.Refresh();
+            deviceProfileListDict.Add(InputDeviceType.EightBitDoUltimate2Wireless, ult2WirelessDeviceProfileList);
+
             //enumeratorList = new List<DeviceEnumeratorBase>()
             //{
             //    new DS4Enumerator(),
