@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using DS4MapperTest.Common;
 using HidLibrary;
 
 namespace DS4MapperTest.InputDevices.EightBitDoLibrary
@@ -16,6 +17,7 @@ namespace DS4MapperTest.InputDevices.EightBitDoLibrary
         private bool activeInputLoop = false;
         private byte[] inputReportBuffer;
         private byte[] outputReportBuffer;
+        private GyroCalibration gyroCalibrationUtil = new GyroCalibration();
         private bool started;
 
         public delegate void Ultimate2WirelessDeviceReportDelegate(Ultimate2WirelessReader sender,
@@ -63,6 +65,9 @@ namespace DS4MapperTest.InputDevices.EightBitDoLibrary
             double tempTimeElapsed;
             DateTime utcNow = DateTime.UtcNow;
             bool firstReport = true;
+
+            // Run continuous calibration on Gyro when starting input loop
+            gyroCalibrationUtil.ResetContinuousCalibration();
 
             unchecked
             {
@@ -153,6 +158,16 @@ namespace DS4MapperTest.InputDevices.EightBitDoLibrary
                     //Trace.WriteLine($"X: {AccelX} | Y: {AccelY} | Z: {AccelZ}");
                     //Trace.WriteLine($"P: {currentPitch} | Y: {currentYaw} | R: {currentRoll}");
                     //Trace.WriteLine("");
+
+                    if (gyroCalibrationUtil.gyroAverageTimer.IsRunning)
+                    {
+                        gyroCalibrationUtil.CalcSensorCamples(ref currentYaw, ref currentPitch, ref currentRoll,
+                            ref AccelX, ref AccelY, ref AccelZ);
+                    }
+
+                    currentYaw -= gyroCalibrationUtil.gyro_offset_x;
+                    currentPitch -= gyroCalibrationUtil.gyro_offset_y;
+                    currentRoll -= gyroCalibrationUtil.gyro_offset_z;
 
                     current.Motion.GyroYaw = (short)-currentYaw;
                     current.Motion.GyroPitch = (short)-currentPitch;
