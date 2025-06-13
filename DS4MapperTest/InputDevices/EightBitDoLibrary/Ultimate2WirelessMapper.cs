@@ -439,8 +439,17 @@ namespace DS4MapperTest.InputDevices.EightBitDoLibrary
 
         public override void EstablishForceFeedback()
         {
-            // Do nothing for now
-            //throw new NotImplementedException();
+            if (outputControlType == OutputContType.Xbox360)
+            {
+                outputForceFeedbackDel = (sender, e) =>
+                {
+                    device.FeedbackStateRef.LeftHeavy = e.LargeMotor;
+                    device.FeedbackStateRef.RightLight = e.SmallMotor;
+                    device.RumbleDirty = true;
+                    //rumbleDirty = true;
+                    //reader.WriteRumbleReport();
+                };
+            }
         }
 
         public override bool IsButtonActive(JoypadActionCodes code)

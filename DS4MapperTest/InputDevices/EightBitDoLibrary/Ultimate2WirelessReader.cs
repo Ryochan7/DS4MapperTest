@@ -15,6 +15,7 @@ namespace DS4MapperTest.InputDevices.EightBitDoLibrary
         private Thread inputThread;
         private bool activeInputLoop = false;
         private byte[] inputReportBuffer;
+        private byte[] outputReportBuffer;
         private bool started;
 
         public delegate void Ultimate2WirelessDeviceReportDelegate(Ultimate2WirelessReader sender,
@@ -25,6 +26,7 @@ namespace DS4MapperTest.InputDevices.EightBitDoLibrary
         {
             this.device = device;
             inputReportBuffer = new byte[device.InputReportLen];
+            outputReportBuffer = new byte[device.OutputReportLen];
         }
 
         public override void StartUpdate()
@@ -168,6 +170,12 @@ namespace DS4MapperTest.InputDevices.EightBitDoLibrary
 
                     Report?.Invoke(this, device);
 
+                    if (device.RumbleDirty)
+                    {
+                        WriteRumbleReport();
+                        device.RumbleDirty = false;
+                    }
+
                     firstReport = false;
                 }
             }
@@ -197,7 +205,8 @@ namespace DS4MapperTest.InputDevices.EightBitDoLibrary
 
         public override void WriteRumbleReport()
         {
-            //throw new NotImplementedException();
+            device.PrepareOutputReport(outputReportBuffer);
+            device.WriteReport(outputReportBuffer);
         }
     }
 }
