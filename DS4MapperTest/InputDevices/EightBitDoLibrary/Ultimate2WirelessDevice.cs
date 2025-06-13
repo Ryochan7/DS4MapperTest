@@ -64,6 +64,8 @@ namespace DS4MapperTest.InputDevices.EightBitDoLibrary
         private int inputReportLen;
         private int outputReportLen;
 
+        public override event EventHandler Removal;
+
         public Ultimate2WirelessDevice(HidDevice device, string displayName)
         {
             this.hidDevice = device;
@@ -92,6 +94,16 @@ namespace DS4MapperTest.InputDevices.EightBitDoLibrary
             }
 
             NativeMethods.HidD_SetNumInputBuffers(hidDevice.safeReadHandle.DangerousGetHandle(), 3);
+        }
+
+        public void PurgeRemoval()
+        {
+            Removal = null;
+        }
+
+        public void RaiseRemoval()
+        {
+            Removal?.Invoke(this, EventArgs.Empty);
         }
 
         public void PrepareOutputReport(byte[] outReportBuffer, bool rumble = true)

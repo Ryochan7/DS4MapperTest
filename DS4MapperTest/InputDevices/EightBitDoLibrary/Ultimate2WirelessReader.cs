@@ -77,7 +77,7 @@ namespace DS4MapperTest.InputDevices.EightBitDoLibrary
                     if (res != HidDevice.ReadStatus.Success)
                     {
                         activeInputLoop = false;
-                        //device.RaiseRemoval();
+                        device.RaiseRemoval();
                         continue;
                     }
 
@@ -207,7 +207,7 @@ namespace DS4MapperTest.InputDevices.EightBitDoLibrary
 
             activeInputLoop = false;
 
-            //device.PurgeRemoval();
+            device.PurgeRemoval();
             device.HidDevice.CancelIO();
             if (inputThread != null && inputThread.IsAlive &&
                 Thread.CurrentThread != inputThread)
