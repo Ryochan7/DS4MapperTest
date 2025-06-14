@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DS4MapperTest.GyroActions;
 using DS4MapperTest.StickActions;
 using DS4MapperTest.TouchpadActions;
 
@@ -153,6 +154,16 @@ namespace DS4MapperTest
             }
         }
 
+        public struct GyroMouseActionValues
+        {
+            public int deadzone;
+
+            public void Process(GyroMouse action)
+            {
+                action.mouseParams.deadzone = deadzone;
+            }
+        }
+
         public abstract TouchJoystickActionValues GrabTouchJoystickDefaults();
         public abstract TouchMouseActionValues GrabTouchMouseDefaults();
         public abstract TouchMouseJoystickActionValues GrabTouchMouseJoystickDefaults();
@@ -164,6 +175,7 @@ namespace DS4MapperTest
         public abstract StickMouseActionValues GrabStickMouseActionDefaults();
         public abstract StickPadActionActionValues GrabStickPadActionActionDefaults();
         public abstract StickCircularActionValues GrabStickCircularActionDefaults();
+        public abstract GyroMouseActionValues GrabGyroMouseActionDefaults();
     }
 
     public class DummyActionDefaultsCreator : DeviceActionDefaultsCreator
@@ -237,6 +249,16 @@ namespace DS4MapperTest
             StickCircularActionValues result = new StickCircularActionValues()
             {
                 hapticsIntensity = MapAction.HapticsIntensity.Medium,
+            };
+
+            return result;
+        }
+
+        public override GyroMouseActionValues GrabGyroMouseActionDefaults()
+        {
+            GyroMouseActionValues result = new GyroMouseActionValues()
+            {
+                deadzone = 10,
             };
 
             return result;
@@ -347,6 +369,27 @@ namespace DS4MapperTest
                 deadZone = 0,
                 maxZone = 8,
             };
+
+            return result;
+        }
+
+        public override GyroMouseActionValues GrabGyroMouseActionDefaults()
+        {
+            GyroMouseActionValues result = new GyroMouseActionValues()
+            {
+                deadzone = 10,
+            };
+
+            return result;
+        }
+    }
+
+    public class Ultimate2WirelessDeviceDefaults: DummyActionDefaultsCreator
+    {
+        public override GyroMouseActionValues GrabGyroMouseActionDefaults()
+        {
+            GyroMouseActionValues result = base.GrabGyroMouseActionDefaults();
+            result.deadzone = 20;
 
             return result;
         }

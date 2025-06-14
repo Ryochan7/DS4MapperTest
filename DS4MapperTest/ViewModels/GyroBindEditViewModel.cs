@@ -65,7 +65,11 @@ namespace DS4MapperTest.ViewModels
                     result = new GyroNoMapAction();
                     break;
                 case 1:
-                    result = new GyroMouse();
+                    GyroMouse tempAction = new GyroMouse();
+
+                    var joyDefaults = mapper.DeviceActionDefaults.GrabGyroMouseActionDefaults();
+                    joyDefaults.Process(tempAction);
+                    result = tempAction;
                     break;
                 case 2:
                     result = new GyroMouseJoystick();
