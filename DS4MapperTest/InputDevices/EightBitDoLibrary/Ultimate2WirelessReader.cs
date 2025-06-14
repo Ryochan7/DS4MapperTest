@@ -147,6 +147,42 @@ namespace DS4MapperTest.InputDevices.EightBitDoLibrary
                     current.L4 = (tempByte & (1 << 0)) != 0;
                     current.R4 = (tempByte & (1 << 1)) != 0;
 
+                    tempByte = inputReportBuffer[14];
+
+                    bool charging = false;
+                    int chargeStatus = tempByte >> 7;
+                    int batteryLevel = (tempByte & 0x7F);
+                    int batteryPercent = 0;
+                    switch(chargeStatus)
+                    {
+                        case 0:
+                            // On battery
+                            charging = false;
+                            batteryPercent = batteryLevel;
+                            break;
+                        case 1:
+                            // Charging
+                            charging = true;
+                            batteryPercent = batteryLevel;
+                            break;
+                        case 2:
+                            // Fully charged
+                            charging = false;
+                            batteryPercent = 100;
+                            break;
+                        default:
+                            charging = false;
+                            batteryPercent = 0;
+                            break;
+                    }
+
+                    current.Battery = (byte)batteryPercent;
+                    if (current.Battery != previous.Battery)
+                    {
+                        // Send the BatteryChanged event
+                        device.Battery = current.Battery;
+                    }
+
                     int AccelY = (short)((ushort)(inputReportBuffer[16] << 8) | inputReportBuffer[15]); // Pitch
                     int AccelX = (short)((ushort)(inputReportBuffer[18] << 8) | inputReportBuffer[17]); // Yaw
                     int AccelZ = (short)((ushort)(inputReportBuffer[20] << 8) | inputReportBuffer[19]); // Roll
