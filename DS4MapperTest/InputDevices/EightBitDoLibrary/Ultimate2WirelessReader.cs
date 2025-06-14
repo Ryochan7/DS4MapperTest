@@ -227,6 +227,8 @@ namespace DS4MapperTest.InputDevices.EightBitDoLibrary
                         device.RumbleDirty = false;
                     }
 
+                    device.SyncStates();
+
                     firstReport = false;
                 }
             }

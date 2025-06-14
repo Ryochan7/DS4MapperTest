@@ -109,6 +109,11 @@ namespace DS4MapperTest.InputDevices.EightBitDoLibrary
             Removal?.Invoke(this, EventArgs.Empty);
         }
 
+        public void SyncStates()
+        {
+            previousState = currentState;
+        }
+
         public void PrepareOutputReport(byte[] outReportBuffer, bool rumble = true)
         {
             outReportBuffer[0] = 0x05;
