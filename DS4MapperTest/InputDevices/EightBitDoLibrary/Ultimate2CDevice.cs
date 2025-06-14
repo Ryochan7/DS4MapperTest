@@ -14,7 +14,7 @@ namespace DS4MapperTest.InputDevices.EightBitDoLibrary
         private const int USB_OUTPUT_REPORT_LEN = 64;
 
         private const int READ_STREAM_TIMEOUT = 100;
-        private byte OUTPUT_REPORT_ID = 0x01;
+        private const byte OUTPUT_REPORT_ID = 0x01;
 
         public struct Ult2CForceFeedbackState : IEquatable<Ult2CForceFeedbackState>
         {
