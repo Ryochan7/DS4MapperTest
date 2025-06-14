@@ -32,6 +32,8 @@ namespace DS4MapperTest
         public const string EIGHTBITDO_ULT2WIRELESS_PROFILE_DIR = "EightBitDoUlt2Wireless";
         public const string TEMPLATE_PROFILES_DIRNAME = "template_profiles";
 
+        public const int RESET_WAIT_TIMEOUT = 500; // 500 ms
+
         public static string exelocation = Process.GetCurrentProcess().MainModule.FileName;
         public static string exedirpath = Directory.GetParent(exelocation).FullName;
         public static string exeFileName = Path.GetFileName(exelocation);

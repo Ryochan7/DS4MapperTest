@@ -75,6 +75,9 @@ namespace DS4MapperTest.InputDevices.EightBitDoLibrary
 
             inputReportLen = BT_INPUT_REPORT_LEN;
             outputReportLen = BT_OUTPUT_REPORT_LEN;
+
+            serial = hidDevice.GenerateFakeHwSerial();
+            deviceOptions = new Ultimate2WirelessControllerOptions(deviceType);
             synced = true;
         }
 

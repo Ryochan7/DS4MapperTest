@@ -618,8 +618,6 @@ namespace DS4MapperTest
             }
 
             //tempProfile.CurrentActionSet.SwitchActionLayer(this, 1);
-
-            Trace.WriteLine("IT IS FINISHED");
         }
 
         public void UseBlankProfile()
@@ -2546,13 +2544,14 @@ namespace DS4MapperTest
         {
             using (WriteLocker locker = new WriteLocker(mapperActiveEditLock))
             {
+                // Set flag to halt mapper when entered
+                pauseMapper = true;
+
+                // Make sure mapper is not active
                 while (mapperActionActive)
                 {
                     Thread.SpinWait(500);
                 }
-
-                // Mapping is not active. Set flag to halt mapper when entered
-                pauseMapper = true;
 
                 // Run call
                 tempAct.Invoke();

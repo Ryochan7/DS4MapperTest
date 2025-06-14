@@ -51,6 +51,22 @@ namespace DS4MapperTest
         public abstract void LoadSettings(JObject controllerJObj);
     }
 
+    public class DummyControllerOptions : ControllerOptionsStore
+    {
+        public DummyControllerOptions(InputDeviceType deviceType) :
+            base(deviceType)
+        {
+        }
+
+        public override void LoadSettings(JObject controllerJObj)
+        {
+        }
+
+        public override void PersistSettings(JObject controllerJObj)
+        {
+        }
+    }
+
     public class DS4ControllerOptions : ControllerOptionsStore
     {
         public DS4ControllerOptions(InputDeviceType deviceType) :
@@ -180,6 +196,22 @@ namespace DS4MapperTest
                 string json = settingsToken.ToString();
                 JsonConvert.PopulateObject(json, this);
             }
+        }
+    }
+
+    public class Ultimate2WirelessControllerOptions : ControllerOptionsStore
+    {
+        public Ultimate2WirelessControllerOptions(InputDeviceType deviceType) :
+            base(deviceType)
+        {
+        }
+
+        public override void LoadSettings(JObject controllerJObj)
+        {
+        }
+
+        public override void PersistSettings(JObject controllerJObj)
+        {
         }
     }
 }

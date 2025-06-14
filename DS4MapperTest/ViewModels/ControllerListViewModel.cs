@@ -207,7 +207,8 @@ namespace DS4MapperTest.ViewModels
             Mapper map = backendManager.MapperDict[item.Device.Index];
             string profilePath = backendManager.DeviceProfileListDict[item.Device.DeviceType].ProfileListCol[item.ProfileIndex].ProfilePath;
 
-            map.ProcessMappingChangeAction(() =>
+            ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
+            map.QueueEvent(() =>
             {
                 {
                     //map.UseBlankProfile();
@@ -222,7 +223,11 @@ namespace DS4MapperTest.ViewModels
                     }
                     //backendManager.ProfileFile = DeviceProfileList.ProfileListCol[item.ProfileIndex].ProfilePath;
                 }
+
+                resetEvent.Set();
             });
+
+            resetEvent.Wait(AppGlobalData.RESET_WAIT_TIMEOUT);
         }
 
         private void ColLockCallback(IEnumerable collection, object context,
