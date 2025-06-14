@@ -214,4 +214,20 @@ namespace DS4MapperTest
         {
         }
     }
+
+    public class Ultimate2CControllerOptions : ControllerOptionsStore
+    {
+        public Ultimate2CControllerOptions(InputDeviceType deviceType) :
+            base(deviceType)
+        {
+        }
+
+        public override void LoadSettings(JObject controllerJObj)
+        {
+        }
+
+        public override void PersistSettings(JObject controllerJObj)
+        {
+        }
+    }
 }

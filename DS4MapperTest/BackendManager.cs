@@ -134,6 +134,10 @@ namespace DS4MapperTest
             ult2WirelessDeviceProfileList.Refresh();
             deviceProfileListDict.Add(InputDeviceType.EightBitDoUltimate2Wireless, ult2WirelessDeviceProfileList);
 
+            ProfileList ult2CDeviceProfileList = new ProfileList(InputDeviceType.EightBitDoUltimate2C);
+            ult2CDeviceProfileList.Refresh();
+            deviceProfileListDict.Add(InputDeviceType.EightBitDoUltimate2C, ult2CDeviceProfileList);
+
             //enumeratorList = new List<DeviceEnumeratorBase>()
             //{
             //    new DS4Enumerator(),

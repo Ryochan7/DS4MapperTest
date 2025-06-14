@@ -73,6 +73,7 @@ namespace DS4MapperTest
 
         private const int EIGHTBITDO_VID = 0x2DC8;
         private const int EIGHTBITDO_ULTIMATE_2_WIRELESS_PID = 0x6012;
+        private const int EIGHTBITDO_ULTIMATE_2C_PID = 0x301D;
 
         internal delegate bool HidDeviceCheckHandler(HidDevice device, VidPidMeta meta);
 
@@ -110,7 +111,9 @@ namespace DS4MapperTest
                 VidPidMeta.UsedConnectionBus.HID),
             new VidPidMeta(STEAM_CONTROLLER_VENDOR_ID, STEAM_BT_CONTROLLER_PRODUCT_ID, "Steam Controller", InputDeviceType.SteamController,
                 VidPidMeta.UsedConnectionBus.HID),
-            new VidPidMeta(EIGHTBITDO_VID, EIGHTBITDO_ULTIMATE_2_WIRELESS_PID, "8BitDo Ultimate 2 Wireless BT Controller", InputDeviceType.EightBitDoUltimate2Wireless,
+            new VidPidMeta(EIGHTBITDO_VID, EIGHTBITDO_ULTIMATE_2_WIRELESS_PID, "8BitDo Ultimate 2 Wireless BT", InputDeviceType.EightBitDoUltimate2Wireless,
+                VidPidMeta.UsedConnectionBus.HID),
+            new VidPidMeta(EIGHTBITDO_VID, EIGHTBITDO_ULTIMATE_2C_PID, "8BitDo Ultimate 2C Wired", InputDeviceType.EightBitDoUltimate2C,
                 VidPidMeta.UsedConnectionBus.HID)
         };
 
@@ -157,6 +160,11 @@ namespace DS4MapperTest
                 else if (meta.inputDevType == InputDeviceType.EightBitDoUltimate2Wireless)
                 {
                     meta.testDelUnion.hidHandler = EightBitDoUlt2WirelessDeviceCheckHandler;
+                    vidPidMetaDict.Add($"VID_{meta.vid}&PID_{meta.pid}", meta);
+                }
+                else if (meta.inputDevType == InputDeviceType.EightBitDoUltimate2C)
+                {
+                    meta.testDelUnion.hidHandler = EightBitDoUlt2CDeviceCheckHandler;
                     vidPidMetaDict.Add($"VID_{meta.vid}&PID_{meta.pid}", meta);
                 }
             }
@@ -248,7 +256,8 @@ namespace DS4MapperTest
                         {
                             value.testDelUnion.hidHandler?.Invoke(hidDev, value);
                         }
-                        else if (value.inputDevType == InputDeviceType.EightBitDoUltimate2Wireless)
+                        else if (value.inputDevType == InputDeviceType.EightBitDoUltimate2Wireless ||
+                            value.inputDevType == InputDeviceType.EightBitDoUltimate2C)
                         {
                             value.testDelUnion.hidHandler?.Invoke(hidDev, value);
                         }
@@ -462,6 +471,22 @@ namespace DS4MapperTest
             return result;
         }
 
+        private bool EightBitDoUlt2CDeviceCheckHandler(HidDevice hidDev, VidPidMeta meta)
+        {
+            bool result = false;
+
+            if (meta != null)
+            {
+                Ultimate2CDevice tempDev = new Ultimate2CDevice(hidDev, meta.displayName);
+                foundKnownDevices.Add(hidDev.DevicePath, tempDev);
+                revFoundKnownDevices.Add(tempDev, hidDev.DevicePath);
+                newKnownDevices.Add(hidDev.DevicePath, tempDev);
+                result = true;
+            }
+
+            return result;
+        }
+
         // TODO: Possibly move to BackendManager. Mainly to deal with possible Joined JoyCon
         // Mapper type in the future
         public Mapper PrepareDeviceMapper(InputDeviceBase device, AppGlobalData appGlobal)
@@ -523,6 +548,13 @@ namespace DS4MapperTest
                         Ultimate2WirelessDevice ultDevice = device as Ultimate2WirelessDevice;
                         Ultimate2WirelessReader reader = new Ultimate2WirelessReader(ultDevice);
                         result = new Ultimate2WirelessMapper(ultDevice, reader, appGlobal);
+                        break;
+                    }
+                case Ultimate2CDevice:
+                    {
+                        Ultimate2CDevice ultDevice = device as Ultimate2CDevice;
+                        Ultimate2CReader reader = new Ultimate2CReader(ultDevice);
+                        result = new Ultimate2CMapper(ultDevice, reader, appGlobal);
                         break;
                     }
                 default: break;
