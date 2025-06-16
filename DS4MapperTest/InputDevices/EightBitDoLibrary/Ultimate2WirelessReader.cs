@@ -146,8 +146,8 @@ namespace DS4MapperTest.InputDevices.EightBitDoLibrary
                     current.Minus = (tempByte & (1 << 2)) != 0;
                     current.Plus = (tempByte & (1 << 3)) != 0;
                     current.Guide = (tempByte & (1 << 4)) != 0;
-                    current.L3 = (tempByte & (1 << 5)) != 0;
-                    current.R3 = (tempByte & (1 << 6)) != 0;
+                    current.LSClick = (tempByte & (1 << 5)) != 0;
+                    current.RSClick = (tempByte & (1 << 6)) != 0;
 
                     tempByte = inputReportBuffer[10];
                     current.L4 = (tempByte & (1 << 0)) != 0;

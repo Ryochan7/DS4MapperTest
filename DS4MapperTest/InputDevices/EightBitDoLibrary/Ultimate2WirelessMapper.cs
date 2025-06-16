@@ -49,12 +49,12 @@ namespace DS4MapperTest.InputDevices.EightBitDoLibrary
                 new InputBindingMeta("B", "B", InputBindingMeta.InputControlType.Button),
                 new InputBindingMeta("X", "X", InputBindingMeta.InputControlType.Button),
                 new InputBindingMeta("Y", "Y", InputBindingMeta.InputControlType.Button),
-                new InputBindingMeta("L1", "L1", InputBindingMeta.InputControlType.Button),
-                new InputBindingMeta("R1", "R1", InputBindingMeta.InputControlType.Button),
+                new InputBindingMeta("LB", "LB", InputBindingMeta.InputControlType.Button),
+                new InputBindingMeta("RB", "RB", InputBindingMeta.InputControlType.Button),
                 new InputBindingMeta("LT", "LT", InputBindingMeta.InputControlType.Trigger),
                 new InputBindingMeta("RT", "RT", InputBindingMeta.InputControlType.Trigger),
-                new InputBindingMeta("L3", "L3", InputBindingMeta.InputControlType.Button),
-                new InputBindingMeta("R3", "R3", InputBindingMeta.InputControlType.Button),
+                new InputBindingMeta("LSClick", "LSClick", InputBindingMeta.InputControlType.Button),
+                new InputBindingMeta("RSClick", "RSClick", InputBindingMeta.InputControlType.Button),
                 new InputBindingMeta("L4", "L4", InputBindingMeta.InputControlType.Button),
                 new InputBindingMeta("R4", "R4", InputBindingMeta.InputControlType.Button),
                 new InputBindingMeta("PL", "PL", InputBindingMeta.InputControlType.Button),
@@ -147,8 +147,8 @@ namespace DS4MapperTest.InputDevices.EightBitDoLibrary
                 new ActionTriggerItem("R2", JoypadActionCodes.BtnRShoulder),
                 new ActionTriggerItem("LT", JoypadActionCodes.AxisLTrigger),
                 new ActionTriggerItem("RT", JoypadActionCodes.AxisRTrigger),
-                new ActionTriggerItem("L3", JoypadActionCodes.BtnThumbL),
-                new ActionTriggerItem("R3", JoypadActionCodes.BtnThumbR),
+                new ActionTriggerItem("LSClick", JoypadActionCodes.BtnThumbL),
+                new ActionTriggerItem("RSClick", JoypadActionCodes.BtnThumbR),
 
                 new ActionTriggerItem("L4", JoypadActionCodes.BtnLSideL),
                 new ActionTriggerItem("R4", JoypadActionCodes.BtnLSideR),
@@ -348,17 +348,17 @@ namespace DS4MapperTest.InputDevices.EightBitDoLibrary
                 }
                 if (tempBtnAct.active) tempBtnAct.Event(this);
 
-                tempBtnAct = currentLayer.buttonActionDict["L3"];
-                if (currentMapperState.L3 || currentMapperState.L3 != previousMapperState.L3)
+                tempBtnAct = currentLayer.buttonActionDict["LSClick"];
+                if (currentMapperState.LSClick || currentMapperState.LSClick != previousMapperState.LSClick)
                 {
-                    tempBtnAct.Prepare(this, currentMapperState.L3);
+                    tempBtnAct.Prepare(this, currentMapperState.LSClick);
                 }
                 if (tempBtnAct.active) tempBtnAct.Event(this);
 
-                tempBtnAct = currentLayer.buttonActionDict["R3"];
-                if (currentMapperState.R3 || currentMapperState.R3 != previousMapperState.R3)
+                tempBtnAct = currentLayer.buttonActionDict["RSClick"];
+                if (currentMapperState.RSClick || currentMapperState.RSClick != previousMapperState.RSClick)
                 {
-                    tempBtnAct.Prepare(this, currentMapperState.R3);
+                    tempBtnAct.Prepare(this, currentMapperState.RSClick);
                 }
                 if (tempBtnAct.active) tempBtnAct.Event(this);
 
@@ -494,10 +494,10 @@ namespace DS4MapperTest.InputDevices.EightBitDoLibrary
                     result = currentMapperState.RT > 0;
                     break;
                 case JoypadActionCodes.BtnThumbL:
-                    result = currentMapperState.L3;
+                    result = currentMapperState.LSClick;
                     break;
                 case JoypadActionCodes.BtnThumbR:
-                    result = currentMapperState.R3;
+                    result = currentMapperState.RSClick;
                     break;
                 case JoypadActionCodes.BtnLSideL:
                     result = currentMapperState.L4;
@@ -574,10 +574,10 @@ namespace DS4MapperTest.InputDevices.EightBitDoLibrary
                         result = currentMapperState.RT > 0;
                         break;
                     case JoypadActionCodes.BtnThumbL:
-                        result = currentMapperState.L3;
+                        result = currentMapperState.LSClick;
                         break;
                     case JoypadActionCodes.BtnThumbR:
-                        result = currentMapperState.R3;
+                        result = currentMapperState.RSClick;
                         break;
                     case JoypadActionCodes.BtnLSideL:
                         result = currentMapperState.L4;
