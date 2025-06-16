@@ -393,6 +393,16 @@ namespace DS4MapperTest
 
             return result;
         }
+
+        public override StickPadActionActionValues GrabStickPadActionActionDefaults()
+        {
+            StickPadActionActionValues result = new StickPadActionActionValues()
+            {
+                deadZone = 0.10,
+            };
+
+            return result;
+        }
     }
 
     public class SteamControllerDeviceDefaults : DummyActionDefaultsCreator
