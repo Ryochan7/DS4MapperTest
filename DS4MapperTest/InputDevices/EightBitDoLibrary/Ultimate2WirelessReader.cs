@@ -73,13 +73,19 @@ namespace DS4MapperTest.InputDevices.EightBitDoLibrary
             {
                 while(activeInputLoop)
                 {
+                    readWaitEv.Set();
+
                     HidDevice.ReadStatus res = device.HidDevice.ReadWithFileStream(inputReportBuffer);
                     if (res != HidDevice.ReadStatus.Success)
                     {
                         activeInputLoop = false;
+                        readWaitEv.Reset();
                         device.RaiseRemoval();
                         continue;
                     }
+
+                    readWaitEv.Wait();
+                    readWaitEv.Reset();
 
                     ref Ultimate2WirelessState current = ref device.CurrentStateRef;
                     ref Ultimate2WirelessState previous = ref device.PreviousStateRef;
@@ -219,7 +225,10 @@ namespace DS4MapperTest.InputDevices.EightBitDoLibrary
                     current.Motion.AccelYG = current.Motion.AccelY / Ultimate2WirelessState.Ult2Motion.F_ACC_RES_PER_G;
                     current.Motion.AccelZG = current.Motion.AccelZ / Ultimate2WirelessState.Ult2Motion.F_ACC_RES_PER_G;
 
-                    Report?.Invoke(this, device);
+                    if (fireReport)
+                    {
+                        Report?.Invoke(this, device);
+                    }
 
                     if (device.RumbleDirty)
                     {
@@ -234,6 +243,7 @@ namespace DS4MapperTest.InputDevices.EightBitDoLibrary
             }
 
             activeInputLoop = false;
+            readWaitEv.Reset();
         }
 
         public override void StopUpdate()

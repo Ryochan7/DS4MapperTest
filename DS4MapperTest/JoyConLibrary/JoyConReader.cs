@@ -117,6 +117,8 @@ namespace DS4MapperTest.JoyConLibrary
             {
                 while (activeInputLoop)
                 {
+                    readWaitEv.Set();
+
                     HidDevice.ReadStatus res = device.HidDevice.ReadWithFileStream(inputReportBuffer);
                     if (res == HidDevice.ReadStatus.Success)
                     {
@@ -152,6 +154,9 @@ namespace DS4MapperTest.JoyConLibrary
                         {
                             Console.WriteLine("CAN READ REPORTS. NICE");
                         }
+
+                        readWaitEv.Wait();
+                        readWaitEv.Reset();
 
                         ref JoyConState current = ref device.ClothOff;
                         ref JoyConState previous = ref device.ClothOff2;
@@ -418,7 +423,10 @@ namespace DS4MapperTest.JoyConLibrary
                             device.Battery = (uint)current.Battery;
                         }
 
-                        Report?.Invoke(this, device);
+                        if (fireReport)
+                        {
+                            Report?.Invoke(this, device);
+                        }
 
                         CheckFeedbackStatus();
                         if (device.HapticsDirty || device.rumbleDirty)
@@ -442,10 +450,14 @@ namespace DS4MapperTest.JoyConLibrary
                     else
                     {
                         activeInputLoop = false;
+                        readWaitEv.Reset();
                         device.RaiseRemoval();
                     }
                 }
             }
+
+            activeInputLoop = false;
+            readWaitEv.Reset();
         }
 
         private void CheckFeedbackStatus()

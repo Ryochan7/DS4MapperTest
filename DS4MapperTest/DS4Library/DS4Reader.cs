@@ -124,12 +124,15 @@ namespace DS4MapperTest.DS4Library
             {
                 while(activeInputLoop)
                 {
+                    readWaitEv.Set();
+
                     if (device.DevConnectionType == DS4Device.ConnectionType.Bluetooth)
                     {
                         HidDevice.ReadStatus res = device.HidDevice.ReadWithFileStream(inputReportBuffer);
                         if (res != HidDevice.ReadStatus.Success)
                         {
                             activeInputLoop = false;
+                            readWaitEv.Reset();
                             device.RaiseRemoval();
                             continue;
                         }
@@ -140,10 +143,14 @@ namespace DS4MapperTest.DS4Library
                         if (res != HidDevice.ReadStatus.Success)
                         {
                             activeInputLoop = false;
+                            readWaitEv.Reset();
                             device.RaiseRemoval();
                             continue;
                         }
                     }
+
+                    readWaitEv.Wait();
+                    readWaitEv.Reset();
 
                     //Trace.WriteLine("BRING BACK THE PLAGUE");
 
@@ -322,7 +329,10 @@ namespace DS4MapperTest.DS4Library
                         device.Battery = (uint)tempBattery;
                     }
 
-                    Report?.Invoke(this, device);
+                    if (fireReport)
+                    {
+                        Report?.Invoke(this, device);
+                    }
 
                     CheckFeedbackStatus();
                     if (device.HapticsDirty || device.RumbleDirty)
@@ -347,6 +357,9 @@ namespace DS4MapperTest.DS4Library
                     firstReport = false;
                 }
             }
+
+            activeInputLoop = false;
+            readWaitEv.Reset();
         }
 
         private void CheckFeedbackStatus()

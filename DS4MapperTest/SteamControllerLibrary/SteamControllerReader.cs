@@ -118,12 +118,17 @@ namespace DS4MapperTest.SteamControllerLibrary
             {
                 while (activeInputLoop)
                 {
+                    readWaitEv.Set();
+
                     HidDevice.ReadStatus res = device.HidDevice.ReadWithFileStream(inputReportBuffer);
                     if (res == HidDevice.ReadStatus.Success)
                     {
                         //Trace.WriteLine(string.Format("{0}", string.Join(" ", inputReportBuffer)));
                         tempByte = inputReportBuffer[3];
                         //Trace.WriteLine($"{inputReportBuffer[0]} {inputReportBuffer[2]} {inputReportBuffer[3]} {inputReportBuffer[4]}");
+
+                        readWaitEv.Wait();
+                        readWaitEv.Reset();
 
                         ref SteamControllerState current = ref device.CurrentStateRef;
                         ref SteamControllerState previous = ref device.PreviousStateRef;
@@ -357,7 +362,11 @@ namespace DS4MapperTest.SteamControllerLibrary
                         current.Motion.QuaternionZ = (short)(-1 * ((inputReportBuffer[46] << 8) | inputReportBuffer[45]));
                         current.Motion.QuaternionW = (short)(-1 * ((inputReportBuffer[48] << 8) | inputReportBuffer[47]));
 
-                        Report?.Invoke(this, device);
+                        if (fireReport)
+                        {
+                            Report?.Invoke(this, device);
+                        }
+
                         device.SyncStates();
 
                         firstReport = false;
@@ -365,6 +374,7 @@ namespace DS4MapperTest.SteamControllerLibrary
                     else
                     {
                         activeInputLoop = false;
+                        readWaitEv.Reset();
                         device.RaiseRemoval();
                     }
                 }

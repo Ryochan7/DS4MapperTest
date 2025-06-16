@@ -93,12 +93,15 @@ namespace DS4MapperTest.DualSense
             {
                 while (activeInputLoop)
                 {
+                    readWaitEv.Set();
+
                     if (device.DevConnectionType == DualSenseDevice.ConnectionType.Bluetooth)
                     {
                         HidDevice.ReadStatus res = device.HidDevice.ReadWithFileStream(inputReportBuffer);
                         if (res != HidDevice.ReadStatus.Success)
                         {
                             activeInputLoop = false;
+                            readWaitEv.Reset();
                             device.RaiseRemoval();
                             continue;
                         }
@@ -109,10 +112,14 @@ namespace DS4MapperTest.DualSense
                         if (res != HidDevice.ReadStatus.Success)
                         {
                             activeInputLoop = false;
+                            readWaitEv.Reset();
                             device.RaiseRemoval();
                             continue;
                         }
                     }
+
+                    readWaitEv.Wait();
+                    readWaitEv.Reset();
 
                     ref DualSenseState current = ref device.CurrentStateRef;
                     ref DualSenseState previous = ref device.PreviousStateRef;
@@ -314,7 +321,11 @@ namespace DS4MapperTest.DualSense
                         device.Battery = (uint)tempBattery;
                     }
 
-                    Report?.Invoke(this, device);
+                    if (fireReport)
+                    {
+                        Report?.Invoke(this, device);
+                    }
+
                     if (device.HapticsDirty)
                     {
                         WriteRumbleReport();
@@ -328,6 +339,7 @@ namespace DS4MapperTest.DualSense
             }
 
             activeInputLoop = false;
+            readWaitEv.Reset();
         }
 
         public override void StopUpdate()

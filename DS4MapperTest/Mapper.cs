@@ -2542,7 +2542,7 @@ namespace DS4MapperTest
         /// <param name="tempAct">Action to call when mapping routine is not running.</param>
         public void ProcessMappingChangeAction(Action tempAct)
         {
-            using (WriteLocker locker = new WriteLocker(mapperActiveEditLock))
+            /*using (WriteLocker locker = new WriteLocker(mapperActiveEditLock))
             {
                 // Set flag to halt mapper when entered
                 pauseMapper = true;
@@ -2559,6 +2559,9 @@ namespace DS4MapperTest
                 // Let mapper continue
                 pauseMapper = false;
             }
+            */
+
+            BaseReader.HaltReportingRunAction(tempAct);
         }
 
         public abstract void EstablishForceFeedback();

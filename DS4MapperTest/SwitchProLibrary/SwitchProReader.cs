@@ -113,6 +113,8 @@ namespace DS4MapperTest.SwitchProLibrary
             {
                 while (activeInputLoop)
                 {
+                    readWaitEv.Set();
+
                     HidDevice.ReadStatus res = device.HidDevice.ReadWithFileStream(inputReportBuffer);
                     if (res == HidDevice.ReadStatus.Success)
                     {
@@ -127,6 +129,9 @@ namespace DS4MapperTest.SwitchProLibrary
                         {
                             Console.WriteLine("CAN READ REPORTS. NICE");
                         }
+
+                        readWaitEv.Wait();
+                        readWaitEv.Reset();
 
                         //Console.WriteLine("GOT INPUT REPORT {0} 0x{1:X2}", res, inputReportBuffer[0]);
                         ref SwitchProState current = ref device.ClothOff;
@@ -400,7 +405,10 @@ namespace DS4MapperTest.SwitchProLibrary
                             device.Battery = (uint)current.Battery;
                         }
 
-                        Report?.Invoke(this, device);
+                        if (fireReport)
+                        {
+                            Report?.Invoke(this, device);
+                        }
                         //WriteReport();
 
                         device.SyncStates();
@@ -409,12 +417,16 @@ namespace DS4MapperTest.SwitchProLibrary
                     else
                     {
                         activeInputLoop = false;
+                        readWaitEv.Reset();
                         device.RaiseRemoval();
                     }
 
                     //Thread.Sleep(16);
                 }
             }
+
+            activeInputLoop = false;
+            readWaitEv.Reset();
         }
 
         // Attempt to inline method
