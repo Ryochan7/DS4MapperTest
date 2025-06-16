@@ -105,12 +105,15 @@ namespace DS4MapperTest
         public struct StickTranslateActionValues
         {
             public double deadZone;
+            public double antiDeadZone;
 
             public void Process(StickTranslate action)
             {
                 action.DeadMod.DeadZone = deadZone;
+                action.DeadMod.AntiDeadZone = antiDeadZone;
 
                 action.ChangedProperties.Add(StickTranslate.PropertyKeyStrings.DEAD_ZONE);
+                action.ChangedProperties.Add(StickTranslate.PropertyKeyStrings.ANTIDEAD_ZONE);
             }
         }
 
@@ -399,6 +402,17 @@ namespace DS4MapperTest
             StickPadActionActionValues result = new StickPadActionActionValues()
             {
                 deadZone = 0.10,
+            };
+
+            return result;
+        }
+
+        public override StickTranslateActionValues GrabStickTranslateActionDefaults()
+        {
+            StickTranslateActionValues result = new StickTranslateActionValues()
+            {
+                deadZone = 0.10,
+                antiDeadZone = 0.20,
             };
 
             return result;
