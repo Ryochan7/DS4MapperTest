@@ -79,6 +79,11 @@ namespace DS4MapperTest.ViewModels
         private List<TriggerBindingItemsTest> triggerBindings = new List<TriggerBindingItemsTest>();
         public List<TriggerBindingItemsTest> TriggerBindings => triggerBindings;
 
+        public bool HasTriggerBindings
+        {
+            get => triggerBindings.Count > 0;
+        }
+
         private int selectedTouchBindIndex = -1;
         public int SelectTouchBindIndex
         {
@@ -125,6 +130,12 @@ namespace DS4MapperTest.ViewModels
         private List<GyroBindingItemsTest> gyroBindings = new List<GyroBindingItemsTest>();
         public List<GyroBindingItemsTest> GyroBindings => gyroBindings;
 
+        public bool HasGyroBindings
+        {
+            get => gyroBindings.Count > 0;
+        }
+
+
         private int selectGyroBindIndex = -1;
         public int SelectGyroBindIndex
         {
@@ -160,6 +171,11 @@ namespace DS4MapperTest.ViewModels
 
         private List<DPadBindingItemsTest> dpadBindings = new List<DPadBindingItemsTest>();
         public List<DPadBindingItemsTest> DPadBindings => dpadBindings;
+
+        public bool HasDPadBindings
+        {
+            get => dpadBindings.Count > 0;
+        }
 
         private int selectDPadBindIndex = -1;
         public int SelectDPadBindIndex

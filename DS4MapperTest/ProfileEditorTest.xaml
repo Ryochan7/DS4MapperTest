@@ -149,7 +149,7 @@
                     </ListView.View>
                 </ListView>
             </TabItem>
-            <TabItem Header="Triggers">
+            <TabItem Header="Triggers" Visibility="{Binding HasTriggerBindings, Converter={StaticResource Boolean2VisibilityConverter}}">
                 <ListView ItemsSource="{Binding TriggerBindings}" SelectedIndex="{Binding SelectTriggerBindIndex}">
                     <ListView.View>
                         <GridView>
@@ -211,7 +211,7 @@
                     </ListView.View>
                 </ListView>
             </TabItem>
-            <TabItem Header="DPads">
+            <TabItem Header="DPads" Visibility="{Binding HasDPadBindings, Converter={StaticResource Boolean2VisibilityConverter}}">
                 <ListView ItemsSource="{Binding DPadBindings}" SelectedIndex="{Binding SelectDPadBindIndex}">
                     <ListView.View>
                         <GridView>
@@ -242,7 +242,7 @@
                     </ListView.View>
                 </ListView>
             </TabItem>
-            <TabItem Header="Gyros">
+            <TabItem Header="Gyros" Visibility="{Binding HasGyroBindings, Converter={StaticResource Boolean2VisibilityConverter}}">
                 <ListView ItemsSource="{Binding GyroBindings}" SelectedIndex="{Binding SelectGyroBindIndex}">
                     <ListView.View>
                         <GridView>
