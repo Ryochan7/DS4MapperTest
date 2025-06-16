@@ -71,6 +71,11 @@ namespace DS4MapperTest.ViewModels
             get => touchpadBindings;
         }
 
+        public bool HasTouchpadBindings
+        {
+            get => touchpadBindings.Count > 0;
+        }
+
         private List<TriggerBindingItemsTest> triggerBindings = new List<TriggerBindingItemsTest>();
         public List<TriggerBindingItemsTest> TriggerBindings => triggerBindings;
 

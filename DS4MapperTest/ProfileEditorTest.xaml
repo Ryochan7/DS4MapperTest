@@ -118,7 +118,7 @@
                 </ScrollViewer>
 
             </TabItem>
-            <TabItem Header="Touchpads">
+            <TabItem Header="Touchpads" Visibility="{Binding HasTouchpadBindings, Converter={StaticResource Boolean2VisibilityConverter}}">
                 <ListView ItemsSource="{Binding TouchpadBindings}" SelectedIndex="{Binding SelectTouchBindIndex}">
                     <ListView.View>
                         <GridView>
