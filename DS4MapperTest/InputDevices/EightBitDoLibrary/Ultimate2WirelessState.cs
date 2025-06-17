@@ -36,13 +36,13 @@ namespace DS4MapperTest.InputDevices.EightBitDoLibrary
         public byte LY;
         public byte RX;
         public byte RY;
-        public bool L1;
+        public bool LB;
         public byte LT;
         public bool LTBtn;
         public bool LSClick;
         public bool L4;
         public bool PL;
-        public bool R1;
+        public bool RB;
         public byte RT;
         public bool RTBtn;
         public bool RSClick;

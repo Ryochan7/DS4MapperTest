@@ -292,17 +292,17 @@ namespace DS4MapperTest.InputDevices.EightBitDoLibrary
                 }
                 if (tempBtnAct.active) tempBtnAct.Event(this);
 
-                tempBtnAct = currentLayer.buttonActionDict["L1"];
-                if (currentMapperState.L1 || currentMapperState.L1 != previousMapperState.L1)
+                tempBtnAct = currentLayer.buttonActionDict["LB"];
+                if (currentMapperState.LB || currentMapperState.LB != previousMapperState.LB)
                 {
-                    tempBtnAct.Prepare(this, currentMapperState.L1);
+                    tempBtnAct.Prepare(this, currentMapperState.LB);
                 }
                 if (tempBtnAct.active) tempBtnAct.Event(this);
 
-                tempBtnAct = currentLayer.buttonActionDict["R1"];
-                if (currentMapperState.R1 || currentMapperState.R1 != previousMapperState.R1)
+                tempBtnAct = currentLayer.buttonActionDict["RB"];
+                if (currentMapperState.RB || currentMapperState.RB != previousMapperState.RB)
                 {
-                    tempBtnAct.Prepare(this, currentMapperState.R1);
+                    tempBtnAct.Prepare(this, currentMapperState.RB);
                 }
                 if (tempBtnAct.active) tempBtnAct.Event(this);
 
@@ -473,10 +473,10 @@ namespace DS4MapperTest.InputDevices.EightBitDoLibrary
                     result = currentMapperState.X;
                     break;
                 case JoypadActionCodes.BtnLShoulder:
-                    result = currentMapperState.L1;
+                    result = currentMapperState.LB;
                     break;
                 case JoypadActionCodes.BtnRShoulder:
-                    result = currentMapperState.R1;
+                    result = currentMapperState.RB;
                     break;
                 case JoypadActionCodes.BtnSelect:
                     result = currentMapperState.Minus;
@@ -553,10 +553,10 @@ namespace DS4MapperTest.InputDevices.EightBitDoLibrary
                         result = currentMapperState.X;
                         break;
                     case JoypadActionCodes.BtnLShoulder:
-                        result = currentMapperState.L1;
+                        result = currentMapperState.LB;
                         break;
                     case JoypadActionCodes.BtnRShoulder:
-                        result = currentMapperState.R1;
+                        result = currentMapperState.RB;
                         break;
                     case JoypadActionCodes.BtnSelect:
                         result = currentMapperState.Minus;
