@@ -106,13 +106,16 @@ namespace DS4MapperTest
         {
             public double deadZone;
             public double antiDeadZone;
+            public double maxZone;
 
             public void Process(StickTranslate action)
             {
                 action.DeadMod.DeadZone = deadZone;
                 action.DeadMod.AntiDeadZone = antiDeadZone;
+                action.DeadMod.MaxZone = maxZone;
 
                 action.ChangedProperties.Add(StickTranslate.PropertyKeyStrings.DEAD_ZONE);
+                action.ChangedProperties.Add(StickTranslate.PropertyKeyStrings.MAX_ZONE);
                 action.ChangedProperties.Add(StickTranslate.PropertyKeyStrings.ANTIDEAD_ZONE);
             }
         }
@@ -413,6 +416,7 @@ namespace DS4MapperTest
             {
                 deadZone = 0.10,
                 antiDeadZone = 0.20,
+                maxZone = 0.95,
             };
 
             return result;
