@@ -64,6 +64,15 @@ namespace DS4MapperTest.ViewModels
             }
         }
 
+        public int FireDelayMs
+        {
+            get => func.FireDelayMs;
+            set
+            {
+                func.FireDelayMs = value;
+            }
+        }
+
         public NormalPressFuncPropViewModel(Mapper mapper, ButtonAction action,
             NormalPressFunc func)
         {

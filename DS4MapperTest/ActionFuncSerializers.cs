@@ -101,11 +101,18 @@ namespace DS4MapperTest
                 return pressFunc.TurboDurationMs != NormalPressFunc.DEFAULT_TURBO_DURATION_MS;
             }
 
+            public int FireDelayMs
+            {
+                get => pressFunc.FireDelayMs;
+                set => pressFunc.FireDelayMs = value;
+            }
+
             public bool IsDefault()
             {
                 return pressFunc.toggleEnabled == false &&
                     pressFunc.TurboEnabled == false &&
-                    pressFunc.TurboDurationMs == NormalPressFunc.DEFAULT_TURBO_DURATION_MS;
+                    pressFunc.TurboDurationMs == NormalPressFunc.DEFAULT_TURBO_DURATION_MS &&
+                    pressFunc.FireDelayMs == NormalPressFunc.FIRE_DELAY_MS_DEFAULT;
             }
 
             public NormalPressSettings(NormalPressFunc actionFunc)

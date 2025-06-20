@@ -11,6 +11,7 @@ namespace DS4MapperTest.ActionUtil
     public class NormalPressFunc : ActionFunc
     {
         public const int DEFAULT_TURBO_DURATION_MS = 0;
+        public const int FIRE_DELAY_MS_DEFAULT = 0;
 
         private bool inputStatus;
         private bool inToggleState;
@@ -22,6 +23,12 @@ namespace DS4MapperTest.ActionUtil
         public int TurboDurationMs { get => turboDurationMs; set => turboDurationMs = value; }
 
         private Stopwatch turboStopwatch = new Stopwatch();
+
+        private int fireDelayMs;
+        public int FireDelayMs { get => fireDelayMs; set => fireDelayMs = value; }
+
+        private Stopwatch fireDelaySw = new Stopwatch();
+        private bool fireDelayPassed;
 
         /*private bool cycleEnabled;
         public bool CycleEnabled
@@ -80,6 +87,7 @@ namespace DS4MapperTest.ActionUtil
                 activeEvent = true;
                 if (inputStatus)
                 {
+                    bool fireDelayEnabled = fireDelayMs > FIRE_DELAY_MS_DEFAULT;
                     if (!toggleEnabled)
                     {
                         active = true;
@@ -88,6 +96,12 @@ namespace DS4MapperTest.ActionUtil
                         if (turboEnabled)
                         {
                             turboStopwatch.Restart();
+                        }
+
+                        if (fireDelayEnabled)
+                        {
+                            outputActive = false;
+                            fireDelaySw.Restart();
                         }
                     }
                     else
@@ -100,10 +114,16 @@ namespace DS4MapperTest.ActionUtil
                         {
                             turboStopwatch.Restart();
                         }
+
+                        if (fireDelayEnabled)
+                        {
+                            fireDelaySw.Restart();
+                        }
                     }
                 }
                 else
                 {
+                    bool fireDelayEnabled = fireDelayMs > FIRE_DELAY_MS_DEFAULT;
                     if (!toggleEnabled)
                     {
                         active = false;
@@ -112,6 +132,11 @@ namespace DS4MapperTest.ActionUtil
                         if (turboEnabled && turboStopwatch.IsRunning)
                         {
                             turboStopwatch.Reset();
+                        }
+
+                        if (fireDelayEnabled && fireDelaySw.IsRunning)
+                        {
+                            fireDelaySw.Reset();
                         }
                     }
                     else if (inToggleState)
@@ -124,13 +149,20 @@ namespace DS4MapperTest.ActionUtil
                         {
                             turboStopwatch.Reset();
                         }
+
+                        if (fireDelayEnabled && fireDelaySw.IsRunning)
+                        {
+                            fireDelaySw.Reset();
+                        }
                     }
                     else
                     {
+                        // TODO. What does this clause do?
                         active = true;
                         outputActive = active;
                         finished = false;
                         inToggleState = true;
+                        fireDelaySw.Restart();
                     }
                 }
             }
@@ -140,22 +172,43 @@ namespace DS4MapperTest.ActionUtil
         {
             if (!turboEnabled)
             {
-                outputActive = active;
+                if (fireDelayMs == FIRE_DELAY_MS_DEFAULT)
+                {
+                    outputActive = active;
+                }
+                else if (fireDelaySw.IsRunning && fireDelaySw.ElapsedMilliseconds >= fireDelayMs)
+                {
+                    fireDelaySw.Reset();
+                    fireDelayPassed = true;
+                    outputActive = active;
+                }
             }
             else
             {
                 if (active)
                 {
-                    if (turboStopwatch.ElapsedMilliseconds >= turboDurationMs)
+                    bool fireDelayEnabled = fireDelayMs > 0;
+                    if (!fireDelayEnabled || (fireDelayEnabled && fireDelayPassed))
                     {
-                        // Make state change occur
-                        turboStopwatch.Restart();
-                        outputActive = !outputActive;
+                        if (turboStopwatch.ElapsedMilliseconds >= turboDurationMs)
+                        {
+                            // Make state change occur
+                            turboStopwatch.Restart();
+                            outputActive = !outputActive;
+                        }
+                    }
+                    else if (fireDelayEnabled && fireDelaySw.IsRunning &&
+                        fireDelaySw.ElapsedMilliseconds >= fireDelayMs)
+                    {
+                        fireDelaySw.Reset();
+                        fireDelayPassed = true;
                     }
                 }
                 else if (!active)
                 {
                     turboStopwatch.Reset();
+                    fireDelaySw.Reset();
+                    fireDelayPassed = false;
                     outputActive = false;
                 }
             }
@@ -171,10 +224,16 @@ namespace DS4MapperTest.ActionUtil
             outputActive = false;
             finished = true;
             inToggleState = false;
+            fireDelayPassed = false;
 
             if (turboEnabled && turboStopwatch.IsRunning)
             {
                 turboStopwatch.Reset();
+            }
+
+            if (fireDelaySw.IsRunning)
+            {
+                fireDelaySw.Reset();
             }
         }
 

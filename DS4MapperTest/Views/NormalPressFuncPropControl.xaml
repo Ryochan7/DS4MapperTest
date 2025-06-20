@@ -34,6 +34,15 @@
                 </CheckBox>
             </StackPanel>
 
+            <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                <Label Content="Fire Delay" />
+                <hc:NumericUpDown Minimum="0" Maximum="60000.0" DecimalPlaces="0" Increment="10"
+                  Value="{Binding FireDelayMs,FallbackValue='0',UpdateSourceTrigger=LostFocus}"
+                  ValueFormat="0 ms" ToolTip="Set delay time before binding is executed"
+                  Margin="8,0,0,0">
+                </hc:NumericUpDown>
+            </StackPanel>
+
             <StackPanel Orientation="Horizontal" Margin="0,8,0,0" Visibility="{Binding TurboEnabled, Converter={StaticResource Boolean2VisibilityConverter}}">
                 <Label Content="Repeat Time" />
                 <hc:NumericUpDown Minimum="0.0" Maximum="60000.0" DecimalPlaces="0" Increment="10"
