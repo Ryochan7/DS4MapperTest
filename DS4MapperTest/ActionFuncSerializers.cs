@@ -107,6 +107,11 @@ namespace DS4MapperTest
                 set => pressFunc.FireDelayMs = value;
             }
 
+            public bool ShouldSerializeFireDelayMs
+            {
+                get => pressFunc.FireDelayMs != NormalPressFunc.FIRE_DELAY_MS_DEFAULT;
+            }
+
             public bool IsDefault()
             {
                 return pressFunc.toggleEnabled == false &&
