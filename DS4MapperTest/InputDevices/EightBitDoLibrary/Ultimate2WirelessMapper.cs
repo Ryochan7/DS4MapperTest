@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -455,6 +456,25 @@ namespace DS4MapperTest.InputDevices.EightBitDoLibrary
         public override bool IsButtonActive(JoypadActionCodes code)
         {
             bool result = false;
+            result = CheckButtonActive(code, result);
+            return result;
+        }
+
+        public override bool IsButtonsActiveDraft(IEnumerable<JoypadActionCodes> codes, bool andEval = true)
+        {
+            bool result = false;
+            foreach (JoypadActionCodes code in codes)
+            {
+                result = CheckButtonActive(code, result);
+            }
+
+            return result;
+        }
+
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private bool CheckButtonActive(JoypadActionCodes code, bool result)
+        {
             switch (code)
             {
                 case JoypadActionCodes.AlwaysOn:
@@ -525,87 +545,6 @@ namespace DS4MapperTest.InputDevices.EightBitDoLibrary
                     break;
                 default:
                     break;
-            }
-
-            return result;
-        }
-
-        public override bool IsButtonsActiveDraft(IEnumerable<JoypadActionCodes> codes, bool andEval = true)
-        {
-            bool result = false;
-            foreach (JoypadActionCodes code in codes)
-            {
-                switch (code)
-                {
-                    case JoypadActionCodes.AlwaysOn:
-                        result = true;
-                        break;
-                    case JoypadActionCodes.BtnSouth:
-                        result = currentMapperState.A;
-                        break;
-                    case JoypadActionCodes.BtnEast:
-                        result = currentMapperState.B;
-                        break;
-                    case JoypadActionCodes.BtnNorth:
-                        result = currentMapperState.Y;
-                        break;
-                    case JoypadActionCodes.BtnWest:
-                        result = currentMapperState.X;
-                        break;
-                    case JoypadActionCodes.BtnLShoulder:
-                        result = currentMapperState.LB;
-                        break;
-                    case JoypadActionCodes.BtnRShoulder:
-                        result = currentMapperState.RB;
-                        break;
-                    case JoypadActionCodes.BtnSelect:
-                        result = currentMapperState.Minus;
-                        break;
-                    case JoypadActionCodes.BtnStart:
-                        result = currentMapperState.Plus;
-                        break;
-                    case JoypadActionCodes.BtnMode:
-                        result = currentMapperState.Guide;
-                        break;
-                    case JoypadActionCodes.AxisLTrigger:
-                        result = currentMapperState.LT > 0;
-                        break;
-                    case JoypadActionCodes.AxisRTrigger:
-                        result = currentMapperState.RT > 0;
-                        break;
-                    case JoypadActionCodes.BtnThumbL:
-                        result = currentMapperState.LSClick;
-                        break;
-                    case JoypadActionCodes.BtnThumbR:
-                        result = currentMapperState.RSClick;
-                        break;
-                    case JoypadActionCodes.BtnLSideL:
-                        result = currentMapperState.L4;
-                        break;
-                    case JoypadActionCodes.BtnLSideR:
-                        result = currentMapperState.R4;
-                        break;
-                    case JoypadActionCodes.BtnLGrip:
-                        result = currentMapperState.PL;
-                        break;
-                    case JoypadActionCodes.BtnRGrip:
-                        result = currentMapperState.PR;
-                        break;
-                    case JoypadActionCodes.BtnDPadUp:
-                        result = currentMapperState.DpadUp;
-                        break;
-                    case JoypadActionCodes.BtnDPadDown:
-                        result = currentMapperState.DpadDown;
-                        break;
-                    case JoypadActionCodes.BtnDPadLeft:
-                        result = currentMapperState.DpadLeft;
-                        break;
-                    case JoypadActionCodes.BtnDPadRight:
-                        result = currentMapperState.DpadRight;
-                        break;
-                    default:
-                        break;
-                }
             }
 
             return result;
