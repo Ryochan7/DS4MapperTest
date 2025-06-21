@@ -15,7 +15,7 @@ HidHide - [https://vigem.org/projects/HidHide/](https://vigem.org/projects/HidHi
 
 ## Current Beta
 
-https://github.com/Ryochan7/DS4MapperTest/releases/tag/v0.0.18
+https://github.com/Ryochan7/DS4MapperTest/releases/tag/v0.0.19
 
 ## Screenshots
 
