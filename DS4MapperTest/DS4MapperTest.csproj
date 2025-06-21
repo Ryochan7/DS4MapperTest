@@ -10,9 +10,9 @@
     <EnableNETAnalyzers>False</EnableNETAnalyzers>
     <RunAnalyzersDuringLiveAnalysis>False</RunAnalyzersDuringLiveAnalysis>
     <ServerGarbageCollection>true</ServerGarbageCollection>
-    <AssemblyVersion>0.0.18</AssemblyVersion>
-    <FileVersion>0.0.18</FileVersion>
-    <Version>0.0.18</Version>
+    <AssemblyVersion>0.0.19</AssemblyVersion>
+    <FileVersion>0.0.19</FileVersion>
+    <Version>0.0.19</Version>
     <Configuration Condition="'$(Configuration)' == ''">Debug</Configuration>
     <Platform Condition="'$(Platform)' == ''">x64</Platform>
     <Configurations>Debug;Release;Debug Tests;Release Tests</Configurations>
