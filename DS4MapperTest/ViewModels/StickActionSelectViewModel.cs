@@ -53,6 +53,9 @@ namespace DS4MapperTest.ViewModels
                 case StickAbsMouse:
                     selectedIndex = 5;
                     break;
+                case StickFlickStick:
+                    selectedIndex = 6;
+                    break;
                 default:
                     selectedIndex = -1;
                     break;

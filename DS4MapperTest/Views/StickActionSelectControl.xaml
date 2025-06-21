@@ -16,6 +16,7 @@
                 <ComboBoxItem>Mouse</ComboBoxItem>
                 <ComboBoxItem>Circular</ComboBoxItem>
                 <ComboBoxItem>Absolute Mouse</ComboBoxItem>
+                <ComboBoxItem>Flick Stick</ComboBoxItem>
             </ComboBox>
         </StackPanel>
     </DockPanel>

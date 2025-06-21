@@ -109,6 +109,13 @@ namespace DS4MapperTest.ViewModels
                     }
 
                     break;
+                case 6:
+                    {
+                        StickFlickStick tempAction = new StickFlickStick();
+                        result = tempAction;
+                    }
+
+                    break;
                 default:
                     break;
             }

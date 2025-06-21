@@ -3821,6 +3821,157 @@ namespace DS4MapperTest
         }
     }
 
+    public class StickFlickStickActionSerializer : MapActionSerializer
+    {
+        public class FlickStickSettings
+        {
+            public double RealWorldCalibration
+            {
+                get => flickAction.RealWorldCalibration;
+                set
+                {
+                    flickAction.RealWorldCalibration = value;
+                    RealWorldCalibrationChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler RealWorldCalibrationChanged;
+
+            public bool ShouldSerializeRealWorldCalibration()
+            {
+                return flickAction.ChangedProperties.Contains(StickFlickStick.PropertyKeyStrings.REAL_WORLD_CALIBRATION);
+            }
+
+            public double FlickThreshold
+            {
+                get => flickAction.FlickThreshold;
+                set
+                {
+                    flickAction.FlickThreshold = value;
+                    FlickThresholdChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler FlickThresholdChanged;
+
+            public bool ShouldSerializeFlickThreshold()
+            {
+                return flickAction.ChangedProperties.Contains(StickFlickStick.PropertyKeyStrings.FLICK_THRESHOLD);
+            }
+
+            public double FlickTime
+            {
+                get => flickAction.FlickTime;
+                set
+                {
+                    flickAction.FlickTime = value;
+                    FlickTimeChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler FlickTimeChanged;
+
+            public bool ShouldSerializeFlickTime()
+            {
+                return flickAction.ChangedProperties.Contains(StickFlickStick.PropertyKeyStrings.FLICK_TIME);
+            }
+
+            public double MinAngleThreshold
+            {
+                get => flickAction.MinAngleThreshold;
+                set
+                {
+                    flickAction.MinAngleThreshold = value;
+                    MinAngleThresholdChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler MinAngleThresholdChanged;
+
+            public bool ShouldSerializeMinAngleThreshold()
+            {
+                return flickAction.ChangedProperties.Contains(StickFlickStick.PropertyKeyStrings.MIN_ANGLE_THRESHOLD);
+            }
+
+            public double InGameSens
+            {
+                get => flickAction.InGameSens;
+                set
+                {
+                    flickAction.MinAngleThreshold = value;
+                    InGameSensChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler InGameSensChanged;
+
+            public bool ShouldSerializeInGameSens()
+            {
+                return flickAction.ChangedProperties.Contains(StickFlickStick.PropertyKeyStrings.IN_GAME_SENS);
+            }
+
+            public FlickStickSettings(StickFlickStick flickAction)
+            {
+                this.flickAction = flickAction;
+            }
+
+            private StickFlickStick flickAction;
+        }
+
+        private StickFlickStick flickAction = new StickFlickStick();
+        private FlickStickSettings settings;
+        public FlickStickSettings Settings { get => settings; set => settings = value; }
+
+        public StickFlickStickActionSerializer() : base()
+        {
+            mapAction = flickAction;
+            settings = new FlickStickSettings(flickAction);
+
+            NameChanged += StickFlickStickActionSerializer_NameChanged;
+            settings.RealWorldCalibrationChanged += Settings_RealWorldCalibrationChanged;
+            settings.FlickThresholdChanged += Settings_FlickThresholdChanged;
+            settings.FlickTimeChanged += Settings_FlickTimeChanged;
+            settings.MinAngleThresholdChanged += Settings_MinAngleThresholdChanged;
+            settings.InGameSensChanged += Settings_InGameSensChanged;
+        }
+
+        public StickFlickStickActionSerializer(ActionLayer tempLayer, MapAction action) :
+            base(tempLayer, action)
+        {
+            if (action is StickFlickStick temp)
+            {
+                flickAction = temp;
+                mapAction = flickAction;
+                settings = new FlickStickSettings(flickAction);
+            }
+        }
+
+        private void StickFlickStickActionSerializer_NameChanged(object sender, EventArgs e)
+        {
+            flickAction.ChangedProperties.Add(StickFlickStick.PropertyKeyStrings.NAME);
+        }
+
+        private void Settings_RealWorldCalibrationChanged(object sender, EventArgs e)
+        {
+            flickAction.ChangedProperties.Add(StickFlickStick.PropertyKeyStrings.REAL_WORLD_CALIBRATION);
+        }
+
+        private void Settings_InGameSensChanged(object sender, EventArgs e)
+        {
+            flickAction.ChangedProperties.Add(StickFlickStick.PropertyKeyStrings.IN_GAME_SENS);
+        }
+
+        private void Settings_MinAngleThresholdChanged(object sender, EventArgs e)
+        {
+            flickAction.ChangedProperties.Add(StickFlickStick.PropertyKeyStrings.MIN_ANGLE_THRESHOLD);
+        }
+
+        private void Settings_FlickTimeChanged(object sender, EventArgs e)
+        {
+            flickAction.ChangedProperties.Add(StickFlickStick.PropertyKeyStrings.FLICK_TIME);
+        }
+
+        private void Settings_FlickThresholdChanged(object sender, EventArgs e)
+        {
+            flickAction.ChangedProperties.Add(StickFlickStick.PropertyKeyStrings.FLICK_THRESHOLD);
+        }
+    }
+
     public class StickNoActionSerializer : MapActionSerializer
     {
         private StickNoAction stickNoAction = new StickNoAction();
@@ -6890,6 +7041,11 @@ namespace DS4MapperTest
                     StickCircularSerializer stickCircActInstance = new StickCircularSerializer();
                     JsonConvert.PopulateObject(j.ToString(), stickCircActInstance);
                     resultInstance = stickCircActInstance;
+                    break;
+                case "StickFlickStickAction":
+                    StickFlickStickActionSerializer flickInstance = new StickFlickStickActionSerializer();
+                    JsonConvert.PopulateObject(j.ToString(), flickInstance);
+                    resultInstance = flickInstance;
                     break;
                 case "StickNoAction":
                     StickNoActionSerializer stickNoActinstance = new StickNoActionSerializer();

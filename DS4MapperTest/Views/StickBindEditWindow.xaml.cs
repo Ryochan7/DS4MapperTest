@@ -102,6 +102,15 @@ namespace DS4MapperTest.Views
                     }
 
                     break;
+                case StickFlickStick:
+                    {
+                        StickFlickStickPropControl propControl = new StickFlickStickPropControl();
+                        propControl.PostInit(stickBindEditVM.Mapper, stickBindEditVM.Action);
+                        propControl.ActionTypeIndexChanged += PropControl_ActionTypeIndexChanged;
+                        stickBindEditVM.DisplayControl = propControl;
+                    }
+
+                    break;
                 default:
                     break;
             }

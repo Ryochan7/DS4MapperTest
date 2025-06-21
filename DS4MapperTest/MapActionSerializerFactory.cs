@@ -34,6 +34,9 @@ namespace DS4MapperTest
                 case "StickCircularAction":
                     serializer = new StickCircularSerializer(layer, action);
                     break;
+                case "StickFlickStickAction":
+                    serializer = new StickFlickStickActionSerializer(layer, action);
+                    break;
                 case "StickNoAction":
                     serializer = new StickNoActionSerializer(layer, action);
                     break;
