@@ -324,6 +324,14 @@
           "Action": 3
         },
         {
+          "Input": "LB",
+          "Action": 4
+        },
+        {
+          "Input": "RB",
+          "Action": 5
+        },
+        {
           "Input": "LSClick",
           "Action": 6
         },
