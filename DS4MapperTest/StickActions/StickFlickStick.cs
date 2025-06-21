@@ -1,6 +1,4 @@
-﻿using DS4MapperTest.StickModifiers;
-using Sensorit.Base;
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -8,6 +6,7 @@ using System.Linq;
 using System.Net.NetworkInformation;
 using System.Text;
 using System.Threading.Tasks;
+using DS4MapperTest.StickModifiers;
 
 namespace DS4MapperTest.StickActions
 {
@@ -87,9 +86,6 @@ namespace DS4MapperTest.StickActions
             set => inGameSens = Math.Clamp(value, 0.1, 10.0);
         }
 
-        private StickDeadZone deadMod;
-        public StickDeadZone DeadMod => deadMod;
-
         private FlickStickMappingData tempFlickData;
 
         private int prevAxisXVal;
@@ -102,7 +98,6 @@ namespace DS4MapperTest.StickActions
             actionTypeName = ACTION_TYPE_NAME;
 
             tempFlickData = new FlickStickMappingData();
-            deadMod = new StickDeadZone(DEFAULT_DEADZONE, 1.0, 0.0);
         }
 
         public StickFlickStick(StickDefinition definition) : this()
