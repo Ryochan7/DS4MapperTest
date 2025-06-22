@@ -7,7 +7,7 @@ jobs:
     runs-on: windows-latest
 
     env:
-      test_version: 0.0.19
+      test_version: 0.0.20
 
     steps:
     - uses: actions/checkout@v2
