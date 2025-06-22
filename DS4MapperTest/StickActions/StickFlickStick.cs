@@ -185,7 +185,7 @@ namespace DS4MapperTest.StickActions
 
             if (length >= testLength)
             {
-                int axisYScale = (!this.stickDefinition.yAxis.invert ? -1 : 1);
+                int axisYScale = (!this.stickDefinition.yAxis.invert ? 1 : -1);
 
                 if (lastLength < testLength)
                 {

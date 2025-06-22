@@ -86,7 +86,6 @@ namespace DS4MapperTest.InputDevices.EightBitDoLibrary
                 min = 0,
                 max = 255,
                 mid = 128,
-                invert = true,
                 hard_min = 0,
                 hard_max = 255,
             };
