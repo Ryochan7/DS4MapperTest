@@ -139,6 +139,15 @@ namespace DS4MapperTest.Views
                     }
 
                     break;
+                case TouchpadFlickStick:
+                    {
+                        TouchpadFlickStickPropControl propControl = new TouchpadFlickStickPropControl();
+                        propControl.PostInit(touchBindEditVM.Mapper, touchBindEditVM.Action);
+                        touchBindEditVM.DisplayControl = propControl;
+                        touchBindEditVM.ActionBaseDisplayControl = propControl;
+                    }
+
+                    break;
                 default:
                     touchBindEditVM.DisplayControl = null;
                     touchBindEditVM.ActionBaseDisplayControl = null;

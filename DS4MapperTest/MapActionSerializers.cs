@@ -3767,6 +3767,159 @@ namespace DS4MapperTest
         }
     }
 
+
+    public class TouchpadFlickStickActionSerializer : MapActionSerializer
+    {
+        public class FlickStickSettings
+        {
+            public double RealWorldCalibration
+            {
+                get => flickAction.RealWorldCalibration;
+                set
+                {
+                    flickAction.RealWorldCalibration = value;
+                    RealWorldCalibrationChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler RealWorldCalibrationChanged;
+
+            public bool ShouldSerializeRealWorldCalibration()
+            {
+                return flickAction.ChangedProperties.Contains(TouchpadFlickStick.PropertyKeyStrings.REAL_WORLD_CALIBRATION);
+            }
+
+            public double FlickThreshold
+            {
+                get => flickAction.FlickThreshold;
+                set
+                {
+                    flickAction.FlickThreshold = value;
+                    FlickThresholdChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler FlickThresholdChanged;
+
+            public bool ShouldSerializeFlickThreshold()
+            {
+                return flickAction.ChangedProperties.Contains(TouchpadFlickStick.PropertyKeyStrings.FLICK_THRESHOLD);
+            }
+
+            public double FlickTime
+            {
+                get => flickAction.FlickTime;
+                set
+                {
+                    flickAction.FlickTime = value;
+                    FlickTimeChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler FlickTimeChanged;
+
+            public bool ShouldSerializeFlickTime()
+            {
+                return flickAction.ChangedProperties.Contains(TouchpadFlickStick.PropertyKeyStrings.FLICK_TIME);
+            }
+
+            public double MinAngleThreshold
+            {
+                get => flickAction.MinAngleThreshold;
+                set
+                {
+                    flickAction.MinAngleThreshold = value;
+                    MinAngleThresholdChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler MinAngleThresholdChanged;
+
+            public bool ShouldSerializeMinAngleThreshold()
+            {
+                return flickAction.ChangedProperties.Contains(TouchpadFlickStick.PropertyKeyStrings.MIN_ANGLE_THRESHOLD);
+            }
+
+            public double InGameSens
+            {
+                get => flickAction.InGameSens;
+                set
+                {
+                    flickAction.MinAngleThreshold = value;
+                    InGameSensChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler InGameSensChanged;
+
+            public bool ShouldSerializeInGameSens()
+            {
+                return flickAction.ChangedProperties.Contains(TouchpadFlickStick.PropertyKeyStrings.IN_GAME_SENS);
+            }
+
+            public FlickStickSettings(StickFlickStick flickAction)
+            {
+                this.flickAction = flickAction;
+            }
+
+            private StickFlickStick flickAction;
+        }
+
+        private StickFlickStick flickAction = new StickFlickStick();
+        private FlickStickSettings settings;
+        public FlickStickSettings Settings { get => settings; set => settings = value; }
+
+        public TouchpadFlickStickActionSerializer() : base()
+        {
+            mapAction = flickAction;
+            settings = new FlickStickSettings(flickAction);
+
+            NameChanged += TouchpadFlickStickActionSerializer_NameChanged;
+            settings.RealWorldCalibrationChanged += Settings_RealWorldCalibrationChanged;
+            settings.FlickThresholdChanged += Settings_FlickThresholdChanged;
+            settings.FlickTimeChanged += Settings_FlickTimeChanged;
+            settings.MinAngleThresholdChanged += Settings_MinAngleThresholdChanged;
+            settings.InGameSensChanged += Settings_InGameSensChanged;
+        }
+
+        public TouchpadFlickStickActionSerializer(ActionLayer tempLayer, MapAction action) :
+            base(tempLayer, action)
+        {
+            if (action is StickFlickStick temp)
+            {
+                flickAction = temp;
+                mapAction = flickAction;
+                settings = new FlickStickSettings(flickAction);
+            }
+        }
+
+        private void TouchpadFlickStickActionSerializer_NameChanged(object sender, EventArgs e)
+        {
+            flickAction.ChangedProperties.Add(TouchpadFlickStick.PropertyKeyStrings.NAME);
+        }
+
+        private void Settings_RealWorldCalibrationChanged(object sender, EventArgs e)
+        {
+            flickAction.ChangedProperties.Add(TouchpadFlickStick.PropertyKeyStrings.REAL_WORLD_CALIBRATION);
+        }
+
+        private void Settings_InGameSensChanged(object sender, EventArgs e)
+        {
+            flickAction.ChangedProperties.Add(TouchpadFlickStick.PropertyKeyStrings.IN_GAME_SENS);
+        }
+
+        private void Settings_MinAngleThresholdChanged(object sender, EventArgs e)
+        {
+            flickAction.ChangedProperties.Add(TouchpadFlickStick.PropertyKeyStrings.MIN_ANGLE_THRESHOLD);
+        }
+
+        private void Settings_FlickTimeChanged(object sender, EventArgs e)
+        {
+            flickAction.ChangedProperties.Add(TouchpadFlickStick.PropertyKeyStrings.FLICK_TIME);
+        }
+
+        private void Settings_FlickThresholdChanged(object sender, EventArgs e)
+        {
+            flickAction.ChangedProperties.Add(TouchpadFlickStick.PropertyKeyStrings.FLICK_THRESHOLD);
+        }
+    }
+
+
     public class AxisDirButtonSerializer : MapActionSerializer
     {
         private ButtonActions.AxisDirButton axisDirButton =
@@ -7111,6 +7264,11 @@ namespace DS4MapperTest
                     TouchpadSingleButtonSerializer touchSingleBtnActInstance = new TouchpadSingleButtonSerializer();
                     JsonConvert.PopulateObject(j.ToString(), touchSingleBtnActInstance);
                     resultInstance = touchSingleBtnActInstance;
+                    break;
+                case "TouchFlickStickAction":
+                    TouchpadFlickStickActionSerializer touchFlickInstance = new TouchpadFlickStickActionSerializer();
+                    JsonConvert.PopulateObject(j.ToString(), touchFlickInstance);
+                    resultInstance = touchFlickInstance;
                     break;
                 case "TouchNoAction":
                     TouchpadNoActionSerializer touchNoActinstance = new TouchpadNoActionSerializer();

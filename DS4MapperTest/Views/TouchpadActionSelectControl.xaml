@@ -19,6 +19,7 @@
                 <ComboBoxItem>Absolute Mouse</ComboBoxItem>
                 <ComboBoxItem>Directional Swipes</ComboBoxItem>
                 <ComboBoxItem>Single Button</ComboBoxItem>
+                <ComboBoxItem>Flick Stick</ComboBoxItem>
             </ComboBox>
         </StackPanel>
     </DockPanel>

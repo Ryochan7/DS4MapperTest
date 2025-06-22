@@ -502,6 +502,7 @@ namespace DS4MapperTest.SteamControllerLibrary
                         timeElapsed = currentMapperState.timeElapsed,
                     };
 
+                    //Trace.WriteLine($"RY: {eventFrame.Y}");
                     tempTouchAction.Prepare(this, ref eventFrame);
                     if (tempTouchAction.active) tempTouchAction.Event(this);
 

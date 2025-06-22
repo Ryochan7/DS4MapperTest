@@ -63,6 +63,9 @@ namespace DS4MapperTest.ViewModels
                 case TouchpadSingleButton:
                     selectedIndex = 8;
                     break;
+                case TouchpadFlickStick:
+                    selectedIndex = 9;
+                    break;
                 default:
                     selectedIndex = -1;
                     break;
