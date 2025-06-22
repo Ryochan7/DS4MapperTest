@@ -52,7 +52,6 @@ namespace DS4MapperTest.StickActions
             }
         }
 
-        private const double DEFAULT_DEADZONE = 0.70;
         private const double IN_GAME_SENS_DEFAULT = 1.0;
 
         private double realWorldCalibration = 5.00;
