@@ -108,6 +108,11 @@ namespace DS4MapperTest
             public double antiDeadZone;
             public double maxZone;
 
+            public StickTranslateActionValues()
+            {
+                maxZone = 1.0;
+            }
+
             public void Process(StickTranslate action)
             {
                 action.DeadMod.DeadZone = deadZone;
