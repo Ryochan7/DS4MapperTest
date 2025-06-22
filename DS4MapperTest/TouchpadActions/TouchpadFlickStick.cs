@@ -297,20 +297,18 @@ namespace DS4MapperTest.TouchpadActions
 
             if (length >= testLength)
             {
-                int axisYScale = (!this.touchpadDefinition.yAxis.invert ? 1 : -1);
-
                 if (lastLength < testLength)
                 {
                     // Start new Flick
                     flickData.flickProgress = 0.0; // Reset Flick progress
-                    flickData.flickSize = Math.Atan2((axisXVal - axisXMid), axisYScale * (axisYVal - axisYMid));
+                    flickData.flickSize = Math.Atan2((axisXVal - axisXMid), (axisYVal - axisYMid));
                     //flickData.flickFilter.Filter(0.0, mapper.CurrentLatency);
                 }
                 else
                 {
                     // Turn camera
-                    double stickAngle = Math.Atan2((axisXVal - axisXMid), axisYScale * (axisYVal - axisYMid));
-                    double lastStickAngle = Math.Atan2((prevXVal - axisXMid), axisYScale * (prevYVal - axisYMid));
+                    double stickAngle = Math.Atan2((axisXVal - axisXMid), (axisYVal - axisYMid));
+                    double lastStickAngle = Math.Atan2((prevXVal - axisXMid), (prevYVal - axisYMid));
                     double angleChange = (stickAngle - lastStickAngle);
                     double rawAngleChange = angleChange;
                     angleChange = (angleChange + Math.PI) % (2 * Math.PI);

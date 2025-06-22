@@ -19,7 +19,7 @@ namespace DS4MapperTest.TouchpadActions
             // Real hardware limits
             public int hard_max;
             public int hard_min;
-            public bool invert;
+            public bool hard_invert; // Neg is Up (Y axis). Neg is Right (X axis)
 
             public double reciprocalInputResolution;
             public short outputResolution;

@@ -15,11 +15,11 @@ namespace DS4MapperTest.StickActions
             public short max;
             public short mid;
             public short min;
-            public bool invert;
 
             // Real hardware limits
             public int hard_max;
             public int hard_min;
+            public bool hard_invert; // Neg is Up (Y axis). Neg is Right (X axis)
 
             public double reciprocalInputResolution;
             public short outputResolution;

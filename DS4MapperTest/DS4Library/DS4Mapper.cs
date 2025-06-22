@@ -102,6 +102,7 @@ namespace DS4MapperTest.DS4Library
                 mid = 128,
                 hard_min = 0,
                 hard_max = 255,
+                hard_invert = true,
             };
             lyAxis.PostInit();
 

@@ -113,6 +113,7 @@ namespace DS4MapperTest.DualSense
                 mid = 128,
                 hard_min = 0,
                 hard_max = 255,
+                hard_invert = true,
             };
             lyAxis.PostInit();
 
