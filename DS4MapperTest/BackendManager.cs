@@ -176,7 +176,7 @@ namespace DS4MapperTest
                 vigemTestClient = new ViGEmClient();
             });
 
-            vbusThr.Priority = ThreadPriority.AboveNormal;
+            vbusThr.Priority = ThreadPriority.Normal;
             vbusThr.IsBackground = true;
             vbusThr.Start();
             vbusThr.Join(); // Wait for bus object start
