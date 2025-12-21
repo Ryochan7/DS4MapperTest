@@ -382,7 +382,7 @@ namespace DS4MapperTest.ViewModels
             int tempKeyInd = 0;
             keyboardComboItems.ForEach((item) =>
             {
-                uint tempCode = ProfileSerializer.FakerInputMapper.GetRealEventKey((uint)item.Code);
+                uint tempCode = ProfileSerializer.EventInputMapper.GetRealEventKey((uint)item.Code);
                 revKeyCodeDict.Add(tempCode, tempKeyInd++);
             });
 
@@ -962,7 +962,7 @@ namespace DS4MapperTest.ViewModels
                 {
                     tempData.Reset();
 
-                    uint tempCode = ProfileSerializer.FakerInputMapper.GetRealEventKey((uint)item.Code);
+                    uint tempCode = ProfileSerializer.EventInputMapper.GetRealEventKey((uint)item.Code);
                     tempData.Prepare(OutputActionData.ActionType.Keyboard, (int)tempCode);
                     tempData.OutputCodeStr = item.CodeAlias;
                     tempData.OutputCodeAlias = tempCode;
@@ -971,7 +971,7 @@ namespace DS4MapperTest.ViewModels
                 {
                     tempData.Reset();
 
-                    uint tempCode = ProfileSerializer.FakerInputMapper.GetRealEventKey((uint)item.Code);
+                    uint tempCode = ProfileSerializer.EventInputMapper.GetRealEventKey((uint)item.Code);
                     //tempData = new OutputActionData(OutputActionData.ActionType.Keyboard, tempCode);
                     tempData.Prepare(OutputActionData.ActionType.Keyboard, (int)tempCode);
                     tempData.OutputCodeStr = item.CodeAlias;

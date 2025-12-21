@@ -226,12 +226,12 @@ namespace DS4MapperTest.DualSense
             }
         }
 
-        public override void Start(ViGEmClient vigemTestClient, FakerInputHandler fakerInputHandler)
+        public override void Start(ViGEmClient vigemTestClient, VirtualKBMBase eventInputHandler)
         {
             PostProfileChange += DualSenseMapper_PostProfileChange;
             lightProcess.Reset();
 
-            base.Start(vigemTestClient, fakerInputHandler);
+            base.Start(vigemTestClient, eventInputHandler);
             // Update current lightbar status before sending first output packet
             lightProcess.UpdateLightbarDS(device, actionProfile);
 

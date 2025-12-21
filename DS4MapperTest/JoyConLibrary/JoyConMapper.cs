@@ -221,9 +221,9 @@ namespace DS4MapperTest.JoyConLibrary
             };
         }
 
-        public override void Start(ViGEmClient vigemTestClient, FakerInputHandler fakerInputHandler)
+        public override void Start(ViGEmClient vigemTestClient, VirtualKBMBase eventInputHandler)
         {
-            base.Start(vigemTestClient, fakerInputHandler);
+            base.Start(vigemTestClient, eventInputHandler);
 
             reader.Report += Reader_Report;
             reader.LeftStickCalibUpdated += Reader_LeftStickCalibUpdated;

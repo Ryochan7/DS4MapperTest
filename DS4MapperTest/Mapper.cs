@@ -210,7 +210,7 @@ namespace DS4MapperTest
         };
         public List<ActionTriggerItem> ActionTriggerItems => actionTriggerItems;
 
-        protected FakerInputHandler fakerInputHandler;
+        protected VirtualKBMBase eventInputHandler;
 
         protected ViGEmClient vigemTestClient = null;
         //protected IXbox360Controller outputX360 = null;
@@ -1045,7 +1045,7 @@ namespace DS4MapperTest
                 // Relay changes to event systems
                 SyncKeyboard();
                 SyncMouseButtons();
-                fakerInputHandler.Sync();
+                eventInputHandler.Sync();
 
                 // Might use this info later. Output controller device switch?
                 EmulatedControllerSettings oldEmuControlSettings =
@@ -1227,7 +1227,7 @@ namespace DS4MapperTest
                     if (refCount <= 0)
                     {
 #if !MAKE_TESTS
-                        fakerInputHandler.PerformKeyRelease(vk);
+                        eventInputHandler.PerformKeyRelease(vk);
 #endif
                         //keyboardReport.KeyUp((KeyboardKey)vk);
                         //InputMethods.performKeyRelease((ushort)vk);
@@ -1245,7 +1245,7 @@ namespace DS4MapperTest
                 if (!keyReferenceCountDict.TryGetValue(vk, out int refCount))
                 {
 #if !MAKE_TESTS
-                    fakerInputHandler.PerformKeyPress(vk);
+                    eventInputHandler.PerformKeyPress(vk);
 #endif
                     //keyboardReport.KeyDown((KeyboardKey)vk);
                     //InputMethods.performKeyPress((ushort)vk);
@@ -1291,7 +1291,7 @@ namespace DS4MapperTest
 
                     if (mouseButton != 0)
                     {
-                        fakerInputHandler.PerformMouseButtonEvent(mouseButton);
+                        eventInputHandler.PerformMouseButtonEvent(mouseButton);
                         //mouseReport.ButtonUp((FakerInputWrapper.MouseButton)mouseButton);
                         //InputMethods.MouseEvent(mouseButton);
                         currentMouseButtons.Remove(mouseCode);
@@ -1324,7 +1324,7 @@ namespace DS4MapperTest
 
                     if (mouseButton != 0)
                     {
-                        fakerInputHandler.PerformMouseButtonPress(mouseButton);
+                        eventInputHandler.PerformMouseButtonPress(mouseButton);
                         //mouseReport.ButtonDown((FakerInputWrapper.MouseButton)mouseCode);
                         //InputMethods.MouseEvent(mouseButton);
                         currentMouseButtons.Add(mouseCode);
@@ -1398,7 +1398,7 @@ namespace DS4MapperTest
                 double mouseYTemp = mouseY - (remainderCutoff(mouseY * 100.0, 1.0) / 100.0);
                 int mouseYInt = (int)(mouseYTemp);
                 mouseYRemainder = mouseYTemp - mouseYInt;
-                fakerInputHandler.MoveRelativeMouse(mouseXInt, mouseYInt);
+                eventInputHandler.MoveRelativeMouse(mouseXInt, mouseYInt);
                 //mouseReport.MouseX = (short)mouseXInt;
                 //mouseReport.MouseY = (short)mouseYInt;
                 //InputMethods.MoveCursorBy(mouseXInt, mouseYInt);
@@ -1454,7 +1454,7 @@ namespace DS4MapperTest
                 double mouseYTemp = mouseY - (remainderCutoff(mouseY * 100.0, 1.0) / 100.0);
                 int mouseYInt = (int)(mouseYTemp);
                 mouseYRemainder = mouseYTemp - mouseYInt;
-                fakerInputHandler.MoveRelativeMouse(mouseXInt, mouseYInt);
+                eventInputHandler.MoveRelativeMouse(mouseXInt, mouseYInt);
                 //mouseReport.MouseX = (short)mouseXInt;
                 //mouseReport.MouseY = (short)mouseYInt;
                 //InputMethods.MoveCursorBy(mouseXInt, mouseYInt);
@@ -2187,10 +2187,10 @@ namespace DS4MapperTest
         }
 
         public virtual void Start(ViGEmClient vigemTestClient,
-            FakerInputHandler fakerInputHandler)
+            VirtualKBMBase fakerInputHandler)
         {
             this.vigemTestClient = vigemTestClient;
-            this.fakerInputHandler = fakerInputHandler;
+            this.eventInputHandler = fakerInputHandler;
 
             if (!string.IsNullOrEmpty(profileFile))
             {
@@ -2410,13 +2410,13 @@ namespace DS4MapperTest
                 //        ref appGlobal.fullDesktopBounds, out outX, out outY);
                 //}
 
-                fakerInputHandler.MoveAbsoluteMouse(outX, outY);
+                eventInputHandler.MoveAbsoluteMouse(outX, outY);
                 absMouseSync = false;
             }
 
             if (mouseWheelSync)
             {
-                fakerInputHandler.PerformMouseWheelEvent(vertical: mouseWheelY,
+                eventInputHandler.PerformMouseWheelEvent(vertical: mouseWheelY,
                     horizontal: mouseWheelX);
                 mouseWheelSync = false;
             }
@@ -2426,7 +2426,7 @@ namespace DS4MapperTest
 
             SyncKeyboard();
             //fakerInputDev.UpdateKeyboard(keyboardReport);
-            fakerInputHandler.Sync();
+            eventInputHandler.Sync();
 
             if (gamepadSync && intermediateState.Dirty)
             {
@@ -2908,7 +2908,7 @@ namespace DS4MapperTest
             SyncMouseButtons();
             if (finalSync)
             {
-                fakerInputHandler.Sync();
+                eventInputHandler.Sync();
             }
 
             outputController?.Disconnect();

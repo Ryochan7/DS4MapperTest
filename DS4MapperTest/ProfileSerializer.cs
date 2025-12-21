@@ -104,21 +104,12 @@ namespace DS4MapperTest
         //    }
         //}
 
-        private static FakerInputMapping fakerInputMapper = new FakerInputMapping();
-        private static bool mapperPopulated;
-
-        public static FakerInputMapping FakerInputMapper
+        public static VirtualKBMMapping EventInputMapper
         {
             get
             {
-                if (!mapperPopulated)
-                {
-                    fakerInputMapper.PopulateConstants();
-                    fakerInputMapper.PopulateMappings();
-                    mapperPopulated = true;
-                }
-
-                return fakerInputMapper;
+                BackendManager manager = (App.Current as App).Manager;
+                return manager.EventInputMapping;
             }
         }
 

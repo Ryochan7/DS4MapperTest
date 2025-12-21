@@ -7747,7 +7747,7 @@ namespace DS4MapperTest
                         {
                             // String parses to a uint. Assume native code
                             tempInstance.OutputCode = (int)temp;
-                            tempInstance.OutputCodeAlias = ProfileSerializer.FakerInputMapper.GetRealEventKey(temp);
+                            tempInstance.OutputCodeAlias = ProfileSerializer.EventInputMapper.GetRealEventKey(temp);
                             tempInstance.OutputCodeStr = tempKeyAlias;
                             //tempInstance.OutputCode = temp;
                         }
@@ -7761,7 +7761,7 @@ namespace DS4MapperTest
                                 {
                                     // alias is a hex number (copied from MS docs?)
                                     tempInstance.OutputCode = (int)temp;
-                                    tempInstance.OutputCodeAlias = ProfileSerializer.FakerInputMapper.GetRealEventKey(temp);
+                                    tempInstance.OutputCodeAlias = ProfileSerializer.EventInputMapper.GetRealEventKey(temp);
                                     tempInstance.OutputCodeStr = tempKeyAlias;
                                 }
                                 else
@@ -7770,7 +7770,7 @@ namespace DS4MapperTest
                                     temp = OutputActionDataSerializer.ParseKeyboardCodeString(tempKeyAlias);
                                     if (temp > 0)
                                     {
-                                        temp = ProfileSerializer.FakerInputMapper.GetRealEventKey(temp);
+                                        temp = ProfileSerializer.EventInputMapper.GetRealEventKey(temp);
                                         tempInstance.OutputCode = (int)temp;
                                         tempInstance.OutputCodeAlias = temp;
                                         tempInstance.OutputCodeStr = tempKeyAlias;

@@ -15,6 +15,9 @@ namespace DS4MapperTest
             get => profilePath;
         }
 
+        private string virtualkbmHandler = string.Empty;
+        public string VirtualkbmHandler { get => virtualkbmHandler; }
+
         private Dictionary<string, string> errors =
             new Dictionary<string, string>();
 
@@ -30,6 +33,16 @@ namespace DS4MapperTest
                 string arg = args[i];
                 switch(arg)
                 {
+                    case "-virtualkbm":
+                        if (i + 1 < args.Length)
+                        {
+                            i++;
+                            string temp = args[i];
+                            virtualkbmHandler = temp;
+                        }
+
+                        break;
+
                     default:
                         if (i+1 == args.Length && File.Exists(arg))
                         {

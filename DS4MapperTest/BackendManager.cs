@@ -37,6 +37,7 @@ namespace DS4MapperTest
     {
         public const int CONTROLLER_LIMIT = 8;
         private const bool JOYCON_JOINED = true;
+        private const string DEFAULT_VKBM_IDENTIFIER = SendInputHandler.IDENTIFIER;
 
         private Thread vbusThr;
         private bool isRunning;
@@ -56,7 +57,11 @@ namespace DS4MapperTest
         public event EventHandler ServiceStopped;
         //public event EventHandler HotplugFinished;
 
-        private FakerInputHandler fakerInputHandler = new FakerInputHandler();
+        private VirtualKBMBase virtualEventHandler;// = new FakerInputHandler();
+        public VirtualKBMBase EventInputHandler => virtualEventHandler;
+
+        private VirtualKBMMapping eventInputMapping;// = new FakerInputMapping();
+        public VirtualKBMMapping EventInputMapping => eventInputMapping;
 
         private Dictionary<int, Mapper> mapperDict;
         public Dictionary<int, Mapper> MapperDict
@@ -165,9 +170,9 @@ namespace DS4MapperTest
         public void Start()
         {
             LogDebug("Starting service");
-
             changingService = true;
-            bool checkConnect = fakerInputHandler.Connect();
+
+            InitOutputKBMHandler();
 
             // Change thread affinity of bus object to not be tied
             // to GUI thread
@@ -269,8 +274,9 @@ namespace DS4MapperTest
                 }
 
                 int tempInd = ind;
-                testMapper.Start(vigemTestClient, fakerInputHandler);
-                testMapper.ProfileChanged += (object sender, string e) => {
+                testMapper.Start(vigemTestClient, virtualEventHandler);
+                testMapper.ProfileChanged += (object sender, string e) =>
+                {
                     appGlobal.activeProfiles[tempInd] = e;
                     appGlobal.SaveControllerDeviceSettings(device, device.DeviceOptions);
                 };
@@ -291,6 +297,50 @@ namespace DS4MapperTest
             ServiceStarted?.Invoke(this, EventArgs.Empty);
 
             LogDebug("Service started");
+        }
+
+        private void InitOutputKBMHandler()
+        {
+            if (!string.IsNullOrEmpty(_argParser.VirtualkbmHandler))
+            {
+                switch (_argParser.VirtualkbmHandler)
+                {
+                    case "fakerinput":
+                        virtualEventHandler = new FakerInputHandler();
+                        break;
+                    case "sendinput":
+                    default:
+                        virtualEventHandler = new SendInputHandler();
+                        break;
+                }
+            }
+            else
+            {
+                // Use fallback handler
+                virtualEventHandler = new SendInputHandler();
+            }
+
+            bool checkConnect = virtualEventHandler.Connect();
+            if (!checkConnect)
+            {
+                virtualEventHandler.Disconnect();
+                // Use fallback handler
+                virtualEventHandler = new SendInputHandler();
+            }
+
+            switch (virtualEventHandler.GetIdentifier())
+            {
+                case FakerInputHandler.IDENTIFIER:
+                    eventInputMapping = new FakerInputMapping();
+                    break;
+                case SendInputHandler.IDENTIFIER:
+                    eventInputMapping = new SendInputMapping();
+                    break;
+                default: break;
+            }
+
+            eventInputMapping.PopulateConstants();
+            eventInputMapping.PopulateMappings();
         }
 
         private void Device_SyncedChanged(object sender, EventArgs e)
@@ -398,7 +448,7 @@ namespace DS4MapperTest
                 }
 
                 //testMapper.Start(device, reader);
-                testMapper.Start(vigemTestClient, fakerInputHandler);
+                testMapper.Start(vigemTestClient, virtualEventHandler);
                 //testMapper.RequestOSD += TestMapper_RequestOSD;
                 int tempInd = ind;
                 testMapper.ProfileChanged += (object sender, string e) => {
@@ -503,11 +553,11 @@ namespace DS4MapperTest
             vigemTestClient?.Dispose();
             vigemTestClient = null;
 
-            fakerInputHandler.Sync();
+            virtualEventHandler.Sync();
             Thread.Sleep(100);
             try
             {
-                fakerInputHandler.Disconnect();
+                virtualEventHandler.Disconnect();
             }
             catch (SEHException)
             {
@@ -678,7 +728,7 @@ namespace DS4MapperTest
             }
 
             int tempInd = ind;
-            mapper.Start(vigemTestClient, fakerInputHandler);
+            mapper.Start(vigemTestClient, virtualEventHandler);
             mapper.ProfileChanged += (object sender, string e) => {
                 appGlobal.activeProfiles[tempInd] = e;
                 appGlobal.SaveControllerDeviceSettings(device, device.DeviceOptions);

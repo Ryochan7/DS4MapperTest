@@ -247,9 +247,9 @@ namespace DS4MapperTest.SteamControllerLibrary
             };
         }
 
-        public override void Start(ViGEmClient vigemTestClient, FakerInputHandler fakerInputHandler)
+        public override void Start(ViGEmClient vigemTestClient, VirtualKBMBase eventInputHandler)
         {
-            base.Start(vigemTestClient, fakerInputHandler);
+            base.Start(vigemTestClient, eventInputHandler);
 
             reader.Report += Reader_Report;
             reader.StartUpdate();
