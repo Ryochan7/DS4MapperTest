@@ -402,3 +402,4 @@ FodyWeavers.xsd
 #
 !DS4MapperTest/libs/x64/
 !DS4MapperTest/libs/x86/
+DS4MapperTest/Properties/launchSettings.json
