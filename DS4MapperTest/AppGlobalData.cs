@@ -186,6 +186,7 @@ namespace DS4MapperTest
         public void RefreshBaseDriverInfo()
         {
             RefreshViGEmBusInfo();
+            fakerInputInstalled = IsFakerInputInstalled();
             fakerInputVersion = FakerInputVersion();
             hidHideInstalled = IsHidHideInstalled();
         }

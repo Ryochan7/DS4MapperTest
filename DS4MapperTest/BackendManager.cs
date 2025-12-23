@@ -307,6 +307,7 @@ namespace DS4MapperTest
                 {
                     case "fakerinput":
                         virtualEventHandler = new FakerInputHandler();
+                        virtualEventHandler.version = new Version(appGlobal.fakerInputVersion);
                         break;
                     case "sendinput":
                     default:
@@ -316,8 +317,16 @@ namespace DS4MapperTest
             }
             else
             {
-                // Use fallback handler
-                virtualEventHandler = new SendInputHandler();
+                if (appGlobal.fakerInputInstalled)
+                {
+                    virtualEventHandler = new FakerInputHandler();
+                    virtualEventHandler.version = new Version(appGlobal.fakerInputVersion);
+                }
+                else
+                {
+                    // Use fallback handler
+                    virtualEventHandler = GetFallbackKBMHandler();
+                }
             }
 
             bool checkConnect = virtualEventHandler.Connect();
@@ -325,7 +334,7 @@ namespace DS4MapperTest
             {
                 virtualEventHandler.Disconnect();
                 // Use fallback handler
-                virtualEventHandler = new SendInputHandler();
+                virtualEventHandler = GetFallbackKBMHandler();
             }
 
             switch (virtualEventHandler.GetIdentifier())
@@ -341,6 +350,13 @@ namespace DS4MapperTest
 
             eventInputMapping.PopulateConstants();
             eventInputMapping.PopulateMappings();
+
+            LogDebug($"KBM Event Handler: {virtualEventHandler.GetFullDisplayName()}");
+        }
+
+        private VirtualKBMBase GetFallbackKBMHandler()
+        {
+            return new SendInputHandler();
         }
 
         private void Device_SyncedChanged(object sender, EventArgs e)
