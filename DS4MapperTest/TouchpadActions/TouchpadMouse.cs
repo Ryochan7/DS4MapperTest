@@ -251,19 +251,23 @@ namespace DS4MapperTest.TouchpadActions
         {
             if (xMotion != 0.0 || yMotion != 0.0)
             {
-                mapper.MouseX = xMotion; mapper.MouseY = yMotion;
+                //mapper.MouseX = xMotion; mapper.MouseY = yMotion;
 
                 if (smoothingEnabled)
                 {
-                    mapper.GenerateMouseEventFiltered(smoothingFilterSettings.filterX,
-                        smoothingFilterSettings.filterY);
-                    mapper.MouseEventFired = true;
+                    mapper.GenerateMouseEventFilteredV2(smoothingFilterSettings.filterX,
+                        smoothingFilterSettings.filterY,
+                        ref xMotion, ref yMotion);
+                    mapper.MouseSync = true;
+                    //mapper.MouseEventFired = true;
                 }
                 else
                 {
                     // Allow mapper to handle event
                     mapper.MouseSync = true;
                 }
+
+                mapper.MouseX += xMotion; mapper.MouseY += yMotion;
 
                 active = true;
             }
@@ -271,19 +275,21 @@ namespace DS4MapperTest.TouchpadActions
             {
                 active = false;
 
-                mapper.MouseX = xMotion; mapper.MouseY = yMotion;
-
                 if (smoothingEnabled)
                 {
-                    mapper.GenerateMouseEventFiltered(smoothingFilterSettings.filterX,
-                        smoothingFilterSettings.filterY);
-                    mapper.MouseEventFired = true;
+                    mapper.GenerateMouseEventFilteredV2(smoothingFilterSettings.filterX,
+                        smoothingFilterSettings.filterY,
+                        ref xMotion, ref yMotion);
+                    mapper.MouseSync = true;
+                    //mapper.MouseEventFired = true;
                 }
                 else
                 {
                     // Allow mapper to handle event
                     mapper.MouseSync = true;
                 }
+
+                mapper.MouseX += xMotion; mapper.MouseY += yMotion;
 
                 //mapper.MouseX = xMotion; mapper.MouseY = yMotion;
                 //mapper.MouseXRemainder = mapper.MouseYRemainder = 0.0;

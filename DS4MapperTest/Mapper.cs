@@ -1415,6 +1415,7 @@ namespace DS4MapperTest
             mouseX = mouseY = 0.0;
         }
 
+        // TODO: Possibly remove
         public void GenerateMouseEventFiltered(OneEuroFilter filterX, OneEuroFilter filterY)
         {
             if (mouseX != 0.0 || mouseY != 0.0)
@@ -1471,8 +1472,7 @@ namespace DS4MapperTest
             mouseX = mouseY = 0.0;
         }
 
-        // Keep for now. Testing with GyroMouse. Now that no mapper data is being used,
-        // this method can probably be moved
+        // TODO: Maybe make new version
         public void GenerateMouseEventFilteredV2(OneEuroFilter filterX, OneEuroFilter filterY,
             ref double mouseX, ref double mouseY)
         {
