@@ -786,85 +786,100 @@ namespace DS4MapperTest.DualSense
             bool result = false;
             foreach (JoypadActionCodes code in codes)
             {
+                bool btnActive = false;
+
                 switch (code)
                 {
                     case JoypadActionCodes.AlwaysOn:
-                        result = true;
+                        btnActive = true;
                         break;
                     case JoypadActionCodes.BtnNorth:
-                        result = currentMapperState.Triangle;
+                        btnActive = currentMapperState.Triangle;
                         break;
                     case JoypadActionCodes.BtnSouth:
-                        result = currentMapperState.Cross;
+                        btnActive = currentMapperState.Cross;
                         break;
                     case JoypadActionCodes.BtnEast:
-                        result = currentMapperState.Circle;
+                        btnActive = currentMapperState.Circle;
                         break;
                     case JoypadActionCodes.BtnWest:
-                        result = currentMapperState.Square;
+                        btnActive = currentMapperState.Square;
                         break;
                     case JoypadActionCodes.BtnLShoulder:
-                        result = currentMapperState.L1;
+                        btnActive = currentMapperState.L1;
                         break;
                     case JoypadActionCodes.BtnRShoulder:
-                        result = currentMapperState.R1;
+                        btnActive = currentMapperState.R1;
                         break;
                     case JoypadActionCodes.AxisLTrigger:
-                        result = currentMapperState.L2Btn;
+                        btnActive = currentMapperState.L2Btn;
                         break;
                     case JoypadActionCodes.AxisRTrigger:
-                        result = currentMapperState.R2Btn;
+                        btnActive = currentMapperState.R2Btn;
                         break;
                     case JoypadActionCodes.BtnThumbL:
-                        result = currentMapperState.L3;
+                        btnActive = currentMapperState.L3;
                         break;
                     case JoypadActionCodes.BtnThumbR:
-                        result = currentMapperState.R3;
+                        btnActive = currentMapperState.R3;
                         break;
                     case JoypadActionCodes.BtnSelect:
-                        result = currentMapperState.Create;
+                        btnActive = currentMapperState.Create;
                         break;
                     case JoypadActionCodes.BtnStart:
-                        result = currentMapperState.Options;
+                        btnActive = currentMapperState.Options;
                         break;
                     case JoypadActionCodes.BtnHome:
-                        result = currentMapperState.PS;
+                        btnActive = currentMapperState.PS;
                         break;
                     case JoypadActionCodes.BtnMode:
-                        result = currentMapperState.Mute;
+                        btnActive = currentMapperState.Mute;
                         break;
                     case JoypadActionCodes.BtnMode2:
-                        result = currentMapperState.FnL;
+                        btnActive = currentMapperState.FnL;
                         break;
                     case JoypadActionCodes.BtnMode3:
-                        result = currentMapperState.FnR;
+                        btnActive = currentMapperState.FnR;
                         break;
                     case JoypadActionCodes.BtnLGrip:
-                        result = currentMapperState.BLP;
+                        btnActive = currentMapperState.BLP;
                         break;
                     case JoypadActionCodes.BtnRGrip:
-                        result = currentMapperState.BRP;
+                        btnActive = currentMapperState.BRP;
                         break;
                     case JoypadActionCodes.BtnDPadUp:
-                        result = currentMapperState.DpadUp;
+                        btnActive = currentMapperState.DpadUp;
                         break;
                     case JoypadActionCodes.BtnDPadDown:
-                        result = currentMapperState.DpadDown;
+                        btnActive = currentMapperState.DpadDown;
                         break;
                     case JoypadActionCodes.BtnDPadLeft:
-                        result = currentMapperState.DpadLeft;
+                        btnActive = currentMapperState.DpadLeft;
                         break;
                     case JoypadActionCodes.BtnDPadRight:
-                        result = currentMapperState.DpadRight;
+                        btnActive = currentMapperState.DpadRight;
                         break;
                     case JoypadActionCodes.LPadClick:
-                        result = currentMapperState.TouchClickButton;
+                        btnActive = currentMapperState.TouchClickButton;
                         break;
                     case JoypadActionCodes.LPadTouch:
-                        result = currentMapperState.NumTouches > 0;
+                        btnActive = currentMapperState.NumTouches > 0;
                         break;
 
                     default: break;
+                }
+
+                if (andEval && !btnActive)
+                {
+                    // All buttons in the list must be active
+                    result = false;
+                    break;
+                }
+                else if (!andEval && btnActive)
+                {
+                    // Only care if any button in the list is active
+                    result = true;
+                    break;
                 }
             }
 
