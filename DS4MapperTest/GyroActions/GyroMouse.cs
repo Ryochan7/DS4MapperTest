@@ -355,10 +355,14 @@ namespace DS4MapperTest.GyroActions
 
             if (mouseParams.smoothing)
             {
-                mapper.MouseX = outXMotion; mapper.MouseY = outYMotion;
-                mapper.GenerateMouseEventFiltered(mouseParams.smoothingFilterSettings.filterX,
-                    mouseParams.smoothingFilterSettings.filterY);
-                mapper.MouseEventFired = true;
+                //mapper.MouseX = outXMotion; mapper.MouseY = outYMotion;
+                mapper.GenerateMouseEventFilteredV2(mouseParams.smoothingFilterSettings.filterX,
+                    mouseParams.smoothingFilterSettings.filterY,
+                    ref outXMotion, ref outYMotion);
+
+                mapper.MouseX += outXMotion; mapper.MouseY += outYMotion;
+                mapper.MouseSync = mouseSync;
+                //mapper.MouseEventFired = true;
 
                 //tempX = mouseParams.smoothingFilterSettings.filterX.Filter(tempX,
                 //    mapper.CurrentRate);
@@ -369,7 +373,7 @@ namespace DS4MapperTest.GyroActions
             else
             {
                 // Allow mapper to handle event
-                mapper.MouseX = outXMotion; mapper.MouseY = outYMotion;
+                mapper.MouseX += outXMotion; mapper.MouseY += outYMotion;
                 mapper.MouseSync = mouseSync;
             }
 

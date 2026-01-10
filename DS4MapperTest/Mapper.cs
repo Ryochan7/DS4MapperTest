@@ -1471,6 +1471,67 @@ namespace DS4MapperTest
             mouseX = mouseY = 0.0;
         }
 
+        // Keep for now. Testing with GyroMouse. Now that no mapper data is being used,
+        // this method can probably be moved
+        public void GenerateMouseEventFilteredV2(OneEuroFilter filterX, OneEuroFilter filterY,
+            ref double mouseX, ref double mouseY)
+        {
+            if (mouseX != 0.0 || mouseY != 0.0)
+            {
+                //if ((mouseX > 0.0 && mouseXRemainder > 0.0) || (mouseX < 0.0 && mouseXRemainder < 0.0))
+                //{
+                //    mouseX += mouseXRemainder;
+                //}
+                //else
+                //{
+                //    mouseXRemainder = 0.0;
+                //}
+
+                //if ((mouseY > 0.0 && mouseYRemainder > 0.0) || (mouseY < 0.0 && mouseYRemainder < 0.0))
+                //{
+                //    mouseY += mouseYRemainder;
+                //}
+                //else
+                //{
+                //    mouseYRemainder = 0.0;
+                //}
+
+                //mouseX = filterX.Filter(mouseX, 1.0 / 0.016);
+                //mouseY = filterY.Filter(mouseY, 1.0 / 0.016);
+                mouseX = filterX.Filter(mouseX, currentRate);
+                mouseY = filterY.Filter(mouseY, currentRate);
+
+                // Filter does not go back to absolute zero for reasons.Check
+                // for low number and reset to zero
+                if (Math.Abs(mouseX) < 0.0001) mouseX = 0.0;
+                if (Math.Abs(mouseY) < 0.0001) mouseY = 0.0;
+
+                //double mouseXTemp = mouseX - (remainderCutoff(mouseX * 100.0, 1.0) / 100.0);
+                //int mouseXInt = (int)(mouseXTemp);
+                //mouseXRemainder = mouseXTemp - mouseXInt;
+
+                //double mouseYTemp = mouseY - (remainderCutoff(mouseY * 100.0, 1.0) / 100.0);
+                //int mouseYInt = (int)(mouseYTemp);
+                //mouseYRemainder = mouseYTemp - mouseYInt;
+
+                //eventInputHandler.MoveRelativeMouse(mouseXInt, mouseYInt);
+
+                //mouseReport.MouseX = (short)mouseXInt;
+                //mouseReport.MouseY = (short)mouseYInt;
+                //InputMethods.MoveCursorBy(mouseXInt, mouseYInt);
+            }
+            else
+            {
+                //mouseXRemainder = mouseYRemainder = 0.0;
+                //mouseX = filterX.Filter(0.0, 1.0 / 0.016);
+                //mouseY = filterY.Filter(0.0, 1.0 / 0.016);
+                filterX.Filter(mouseX, currentRate);
+                filterY.Filter(mouseY, currentRate);
+            }
+
+            //mouseX = mouseY = 0.0;
+        }
+
         public double remainderCutoff(double dividend, double divisor)
         {
             return dividend - (divisor * (int)(dividend / divisor));
