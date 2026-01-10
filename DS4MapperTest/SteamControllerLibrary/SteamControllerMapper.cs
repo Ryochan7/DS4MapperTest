@@ -758,10 +758,12 @@ namespace DS4MapperTest.SteamControllerLibrary
 
                 if (andEval && !result)
                 {
+                    // All buttons in the list must be active
                     break;
                 }
                 else if (!andEval && result)
                 {
+                    // Only care if any button in the list is active
                     break;
                 }
             }

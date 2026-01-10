@@ -465,7 +465,23 @@ namespace DS4MapperTest.InputDevices.EightBitDoLibrary
             bool result = false;
             foreach (JoypadActionCodes code in codes)
             {
-                result = CheckButtonActive(code, result);
+                bool btnActive = CheckButtonActive(code, result);
+                if (andEval && !btnActive)
+                {
+                    // All buttons in the list must be active
+                    result = false;
+                    break;
+                }
+                else if (!andEval && btnActive)
+                {
+                    // Only care if any button in the list is active
+                    result = true;
+                    break;
+                }
+                else
+                {
+                    result = btnActive;
+                }
             }
 
             return result;

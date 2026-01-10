@@ -881,6 +881,10 @@ namespace DS4MapperTest.DualSense
                     result = true;
                     break;
                 }
+                else
+                {
+                    result = btnActive;
+                }
             }
 
             return result;

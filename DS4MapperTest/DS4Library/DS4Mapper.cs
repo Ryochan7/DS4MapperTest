@@ -811,6 +811,10 @@ namespace DS4MapperTest.DS4Library
                     result = true;
                     break;
                 }
+                else
+                {
+                    result = btnActive;
+                }
             }
 
             return result;
