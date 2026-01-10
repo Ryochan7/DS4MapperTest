@@ -197,7 +197,7 @@ namespace DS4MapperTest.DualSense
                 new ActionTriggerItem("Square", JoypadActionCodes.BtnWest),
                 new ActionTriggerItem("Triangle", JoypadActionCodes.BtnNorth),
                 new ActionTriggerItem("L1", JoypadActionCodes.BtnLShoulder),
-                new ActionTriggerItem("R2", JoypadActionCodes.BtnRShoulder),
+                new ActionTriggerItem("R1", JoypadActionCodes.BtnRShoulder),
                 new ActionTriggerItem("L2", JoypadActionCodes.AxisLTrigger),
                 new ActionTriggerItem("R2", JoypadActionCodes.AxisRTrigger),
                 new ActionTriggerItem("L3", JoypadActionCodes.BtnThumbL),
@@ -723,6 +723,12 @@ namespace DS4MapperTest.DualSense
                 case JoypadActionCodes.BtnRShoulder:
                     result = currentMapperState.R1;
                     break;
+                case JoypadActionCodes.AxisLTrigger:
+                    result = currentMapperState.L2Btn;
+                    break;
+                case JoypadActionCodes.AxisRTrigger:
+                    result = currentMapperState.R2Btn;
+                    break;
                 case JoypadActionCodes.BtnThumbL:
                     result = currentMapperState.L3;
                     break;
@@ -802,6 +808,12 @@ namespace DS4MapperTest.DualSense
                         break;
                     case JoypadActionCodes.BtnRShoulder:
                         result = currentMapperState.R1;
+                        break;
+                    case JoypadActionCodes.AxisLTrigger:
+                        result = currentMapperState.L2Btn;
+                        break;
+                    case JoypadActionCodes.AxisRTrigger:
+                        result = currentMapperState.R2Btn;
                         break;
                     case JoypadActionCodes.BtnThumbL:
                         result = currentMapperState.L3;
