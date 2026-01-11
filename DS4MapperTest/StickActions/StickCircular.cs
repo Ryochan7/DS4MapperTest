@@ -45,6 +45,10 @@ namespace DS4MapperTest.StickActions
         private double currentAngleRad;
         //private double remainderAngle;
         private double travelAngleChangeRad;
+        private double partialFeedAngleChangedRad;
+        private bool partialAngleFeedEngage;
+        private bool partialAngleFeedDone;
+
         private bool activeTicks;
         private bool feedbackActive;
         private bool actionActive;
@@ -208,13 +212,14 @@ namespace DS4MapperTest.StickActions
                 //}
 
                 travelAngleChangeRad += diffAngle;
+                partialFeedAngleChangedRad = travelAngleChangeRad;
                 //System.Diagnostics.Trace.WriteLine($"DIFF {diffAngle} RAD: {angleRad} Previous: {previousAngleRad} CURRENT ANG: {currentAngleRad} TRAVEL ANG: {travelAngleChangeRad}");
                 //if (Math.Abs(travelAngleChangeRad) > 5 * CLICK_RAD_THRESHOLD)
                 //{
                 //    Trace.WriteLine($"OUT OF WHACK {travelAngleChangeRad} {diffAngle}");
                 //}
 
-                if (Math.Abs(travelAngleChangeRad) > CLICK_RAD_THRESHOLD)
+                if (Math.Abs(travelAngleChangeRad) >= CLICK_RAD_THRESHOLD)
                 {
                     //System.Diagnostics.Trace.WriteLine("UP IN HERE");
                     active = true;
@@ -224,12 +229,22 @@ namespace DS4MapperTest.StickActions
                     //travelAngleChangeRad = travelAngleChangeRad > 0 ?
                     //    travelAngleChangeRad - CLICK_RAD_THRESHOLD : travelAngleChangeRad + CLICK_RAD_THRESHOLD;
                 }
+                else if (!partialAngleFeedEngage &&
+                    Math.Abs(partialFeedAngleChangedRad) >= (CLICK_RAD_THRESHOLD * 0.8))
+                {
+                    active = true;
+                    partialAngleFeedEngage = true;
+                    partialAngleFeedDone = false;
+                }
             }
             else
             {
                 startAngleRad = 0;
                 currentAngleRad = 0;
                 travelAngleChangeRad = 0;
+                partialFeedAngleChangedRad = 0.0;
+                partialAngleFeedEngage = false;
+                partialAngleFeedDone = false;
             }
 
             this.xNorm = xNorm; this.yNorm = yNorm;
@@ -283,9 +298,18 @@ namespace DS4MapperTest.StickActions
 
                 travelAngleChangeRad = travelAngleChangeRad > 0 ?
                     travelAngleChangeRad - (ticksSpeed * CLICK_RAD_THRESHOLD) : travelAngleChangeRad + (ticksSpeed * CLICK_RAD_THRESHOLD);
+                partialFeedAngleChangedRad = travelAngleChangeRad;
 
                 activeTicks = false;
                 feedbackActive = true;
+                partialAngleFeedEngage = false;
+                partialAngleFeedDone = false;
+            }
+            else if (partialAngleFeedEngage && !partialAngleFeedDone)
+            {
+                // Push a small bit of feedback for simulated resistance
+                mapper.SetFeedback(mappingId, hapticsIntensityRatio * 0.25);
+                partialAngleFeedDone = true;
             }
 
             active = false;
@@ -308,6 +332,9 @@ namespace DS4MapperTest.StickActions
             startAngleRad = 0;
             currentAngleRad = 0;
             travelAngleChangeRad = 0;
+            partialAngleFeedEngage = false;
+            partialFeedAngleChangedRad = 0.0;
+            partialAngleFeedDone = false;
             currentClickDir = ClickDirection.Clockwise;
             xNorm = yNorm = 0.0;
             active = activeEvent = false;
@@ -326,6 +353,14 @@ namespace DS4MapperTest.StickActions
                 }
 
                 xNorm = yNorm = 0.0;
+
+                startAngleRad = 0;
+                currentAngleRad = 0;
+                travelAngleChangeRad = 0;
+                partialAngleFeedEngage = false;
+                partialFeedAngleChangedRad = 0.0;
+                partialAngleFeedDone = false;
+                currentClickDir = ClickDirection.Clockwise;
             }
         }
 
