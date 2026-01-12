@@ -35,9 +35,9 @@ namespace DS4MapperTest.StickActions
             CounterClockwise,
         }
 
-        private const double CLICK_ANGLE_THRESHOLD = 26.0;
+        private const double CLICK_ANGLE_THRESHOLD = 30.0;
         private const double CLICK_RAD_THRESHOLD = CLICK_ANGLE_THRESHOLD * Math.PI / 180.0;
-        private const double DEFAULT_DEADZONE = 0.70;
+        private const double DEFAULT_DEADZONE = 0.90;
         private const double DEFAULT_SENSITIVITY = 1.0;
         public const string ACTION_TYPE_NAME = "StickCircularAction";
 
@@ -230,7 +230,7 @@ namespace DS4MapperTest.StickActions
                     //    travelAngleChangeRad - CLICK_RAD_THRESHOLD : travelAngleChangeRad + CLICK_RAD_THRESHOLD;
                 }
                 else if (!partialAngleFeedEngage &&
-                    Math.Abs(partialFeedAngleChangedRad) >= (CLICK_RAD_THRESHOLD * 0.8))
+                    Math.Abs(partialFeedAngleChangedRad) >= (CLICK_RAD_THRESHOLD * 0.9))
                 {
                     active = true;
                     partialAngleFeedEngage = true;
