@@ -12,10 +12,9 @@ namespace DS4MapperTest.InputDevices.EightBitDoLibrary
         {
             public const int ACC_RES_PER_G = 4096;
             public const float F_ACC_RES_PER_G = ACC_RES_PER_G;
-            // Cannot remember how real values should be determined
-            //public const int GYRO_RES_IN_DEG_SEC = 16;
-            //public const float F_GYRO_RES_IN_DEG_SEC = GYRO_RES_IN_DEG_SEC;
-
+            // Value found in SDL source code for device reader
+            public const float F_GYRO_SCALE = 14.2824f;
+            
             public short AccelX;
             public short AccelY;
             public short AccelZ;

@@ -214,9 +214,9 @@ namespace DS4MapperTest.InputDevices.EightBitDoLibrary
                     current.Motion.GyroYaw = (short)-currentYaw;
                     current.Motion.GyroPitch = (short)-currentPitch;
                     current.Motion.GyroRoll = (short)currentRoll;
-                    //current.Motion.AngGyroYaw = current.Motion.GyroYaw / Ultimate2WirelessState.Ult2Motion.F_GYRO_RES_IN_DEG_SEC;
-                    //current.Motion.AngGyroPitch = current.Motion.GyroPitch / Ultimate2WirelessState.Ult2Motion.F_GYRO_RES_IN_DEG_SEC;
-                    //current.Motion.AngGyroRoll = current.Motion.GyroRoll / Ultimate2WirelessState.Ult2Motion.F_GYRO_RES_IN_DEG_SEC;
+                    current.Motion.AngGyroYaw = current.Motion.GyroYaw * Ultimate2WirelessState.Ult2Motion.F_GYRO_SCALE;
+                    current.Motion.AngGyroPitch = current.Motion.GyroPitch * Ultimate2WirelessState.Ult2Motion.F_GYRO_SCALE;
+                    current.Motion.AngGyroRoll = current.Motion.GyroRoll * Ultimate2WirelessState.Ult2Motion.F_GYRO_SCALE;
 
                     current.Motion.AccelX = (short)AccelX;
                     current.Motion.AccelY = (short)AccelY;
