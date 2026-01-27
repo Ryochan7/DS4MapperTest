@@ -32,6 +32,38 @@ namespace DS4MapperTest.ViewModels.GyroActionPropViewModels
         }
     }
 
+    public enum SmoothPresetChoices
+    {
+        None,
+        Stiff,
+        Normie,
+        Loose,
+    }
+
+    public class SmoothPresetChoiceItem
+    {
+        private string displayName;
+        public string DisplayName => displayName;
+
+        private SmoothPresetChoices choice;
+        public SmoothPresetChoices Choice => choice;
+
+        private double minCutoffValue = 1.0;
+        public double MinCutoffValue => minCutoffValue;
+
+        private double betaValue = 1.0;
+        public double BetaValue => betaValue;
+
+        public SmoothPresetChoiceItem(string displayName, SmoothPresetChoices choice,
+            double minCutoff, double beta)
+        {
+            this.displayName = displayName;
+            this.choice = choice;
+            this.minCutoffValue = minCutoff;
+            this.betaValue = beta;
+        }
+    }
+
     public class GyroActionPropVMBase
     {
         protected const string DEFAULT_EMPTY_TRIGGER_STR = "None";
