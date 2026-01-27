@@ -44,6 +44,8 @@ namespace DS4MapperTest.InputDevices.EightBitDoLibrary
             this.baseDevice = device;
             this.reader = reader;
 
+            deviceActionDefaults = new Ultimate2WirelessDeviceDefaults();
+
             bindingList = new List<InputBindingMeta>()
             {
                 new InputBindingMeta("A", "A", InputBindingMeta.InputControlType.Button),
