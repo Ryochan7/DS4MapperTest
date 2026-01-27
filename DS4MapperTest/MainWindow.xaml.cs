@@ -303,7 +303,7 @@ namespace DS4MapperTest
                         if (Type == DBT_DEVICEARRIVAL ||
                             Type == DBT_DEVICEREMOVECOMPLETE)
                         {
-                            Trace.WriteLine($"IN THIS {System.Threading.Thread.CurrentThread.ManagedThreadId.ToString()}");
+                            //Trace.WriteLine($"IN THIS {System.Threading.Thread.CurrentThread.ManagedThreadId.ToString()}");
 
                             using (WriteLocker locker = new WriteLocker(hotplugCounterLock))
                             {
