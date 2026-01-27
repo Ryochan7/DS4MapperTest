@@ -129,6 +129,11 @@ namespace DS4MapperTest
         {
             public double deadZone;
 
+            public StickMouseActionValues()
+            {
+                deadZone = 0.1;
+            }
+
             public void Process(StickMouse action)
             {
                 action.DeadMod.DeadZone = deadZone;
@@ -140,6 +145,11 @@ namespace DS4MapperTest
         public struct StickPadActionActionValues
         {
             public double deadZone;
+
+            public StickPadActionActionValues()
+            {
+                deadZone = 0.2;
+            }
 
             public void Process(StickPadAction action)
             {
