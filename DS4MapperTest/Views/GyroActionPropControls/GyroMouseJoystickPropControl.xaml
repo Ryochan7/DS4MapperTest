@@ -230,6 +230,14 @@
 
                         <StackPanel IsEnabled="{Binding SmoothingEnabled}">
                             <StackPanel Orientation="Horizontal">
+                                <Label Content="Presets" />
+
+                                <ComboBox ItemsSource="{Binding SmoothPresetChoiceItems}" DisplayMemberPath="DisplayName"
+SelectedValuePath="Choice" SelectedValue="{Binding SmoothPresetChoice}" MinWidth="100" Margin="8,0,0,0">
+                                </ComboBox>
+                            </StackPanel>
+
+                            <StackPanel Orientation="Horizontal">
                                 <Label Content="1&#x20ac; MinCutoff" />
                                 <hc:NumericUpDown Minimum="0.0" Maximum="10.0" DecimalPlaces="1" Increment="0.1"
                                   Value="{Binding SmoothingMinCutoff,FallbackValue='1.0'}" Margin="8,0,0,0">
