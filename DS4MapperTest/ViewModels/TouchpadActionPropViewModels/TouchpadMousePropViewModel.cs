@@ -94,6 +94,32 @@ namespace DS4MapperTest.ViewModels.TouchpadActionPropViewModels
         }
         public event EventHandler SmoothingEnabledChanged;
 
+        private List<SmoothPresetChoiceItem> smoothPresetChoiceItems = new List<SmoothPresetChoiceItem>()
+        {
+            new SmoothPresetChoiceItem("", SmoothPresetChoices.None, 1.0, 1.0),
+            new SmoothPresetChoiceItem("Stiff", SmoothPresetChoices.Stiff, 0.4, 0.6),
+            new SmoothPresetChoiceItem("Normie", SmoothPresetChoices.Normie, 1.0, 1.0),
+            new SmoothPresetChoiceItem("Loose", SmoothPresetChoices.Loose, 1.5, 0.8),
+        };
+        public List<SmoothPresetChoiceItem> SmoothPresetChoiceItems => smoothPresetChoiceItems;
+
+        private SmoothPresetChoices smoothPresetChoice = SmoothPresetChoices.None;
+        public SmoothPresetChoices SmoothPresetChoice
+        {
+            get => smoothPresetChoice;
+            set
+            {
+                smoothPresetChoice = value;
+                SmoothPresetChoiceItem currentItem =
+                    smoothPresetChoiceItems.FirstOrDefault(t => t.Choice == value);
+                if (currentItem != null)
+                {
+                    SmoothingMinCutoff = currentItem.MinCutoffValue;
+                    SmoothingBeta = currentItem.BetaValue;
+                }
+            }
+        }
+
         public double SmoothingMinCutoff
         {
             get => action.ActionSmoothingSettings.minCutOff;
