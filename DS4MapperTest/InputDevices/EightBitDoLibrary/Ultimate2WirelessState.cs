@@ -13,7 +13,7 @@ namespace DS4MapperTest.InputDevices.EightBitDoLibrary
             public const int ACC_RES_PER_G = 4096;
             public const float F_ACC_RES_PER_G = ACC_RES_PER_G;
             // Value found in SDL source code for device reader
-            public const float F_GYRO_SCALE = 14.2824f;
+            public const float F_GYRO_DPS_SCALE = 14.2824f;
             
             public short AccelX;
             public short AccelY;
