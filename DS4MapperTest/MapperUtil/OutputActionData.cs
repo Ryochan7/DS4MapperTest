@@ -476,7 +476,8 @@ namespace DS4MapperTest.MapperUtil
             switch (outputType)
             {
                 case ActionType.Keyboard:
-                    result = OutputDataAliasUtil.GetStringForKeyboardKey(outputCodeAlias);
+                    //result = OutputDataAliasUtil.GetStringForKeyboardKey(outputCodeAlias);
+                    result = OutputCodeStr;
                     break;
                 case ActionType.MouseButton:
                     result = OutputDataAliasUtil.GetStringForMouseButton(outputCode);
