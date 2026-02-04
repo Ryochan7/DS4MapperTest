@@ -274,7 +274,7 @@ namespace DS4MapperTest
                 }
 
                 int tempInd = ind;
-                testMapper.Start(vigemTestClient, virtualEventHandler);
+                testMapper.Start(vigemTestClient, virtualEventHandler, eventInputMapping);
                 testMapper.ProfileChanged += (object sender, string e) =>
                 {
                     appGlobal.activeProfiles[tempInd] = e;
@@ -464,7 +464,7 @@ namespace DS4MapperTest
                 }
 
                 //testMapper.Start(device, reader);
-                testMapper.Start(vigemTestClient, virtualEventHandler);
+                testMapper.Start(vigemTestClient, virtualEventHandler, eventInputMapping);
                 //testMapper.RequestOSD += TestMapper_RequestOSD;
                 int tempInd = ind;
                 testMapper.ProfileChanged += (object sender, string e) => {
@@ -744,7 +744,7 @@ namespace DS4MapperTest
             }
 
             int tempInd = ind;
-            mapper.Start(vigemTestClient, virtualEventHandler);
+            mapper.Start(vigemTestClient, virtualEventHandler, eventInputMapping);
             mapper.ProfileChanged += (object sender, string e) => {
                 appGlobal.activeProfiles[tempInd] = e;
                 appGlobal.SaveControllerDeviceSettings(device, device.DeviceOptions);

@@ -211,6 +211,7 @@ namespace DS4MapperTest
         public List<ActionTriggerItem> ActionTriggerItems => actionTriggerItems;
 
         protected VirtualKBMBase eventInputHandler;
+        protected VirtualKBMMapping eventInputMapping;
 
         protected ViGEmClient vigemTestClient = null;
         //protected IXbox360Controller outputX360 = null;
@@ -1274,15 +1275,15 @@ namespace DS4MapperTest
                     switch (mouseCode)
                     {
                         case MouseButtonCodes.MOUSE_LEFT_BUTTON:
-                            mouseButton = (uint)FakerInputWrapper.MouseButton.LeftButton;
+                            mouseButton = eventInputMapping.MOUSEEVENTF_LEFTUP;
                             //mouseButton = InputMethods.MOUSEEVENTF_LEFTUP;
                             break;
                         case MouseButtonCodes.MOUSE_MIDDLE_BUTTON:
-                            mouseButton = (uint)FakerInputWrapper.MouseButton.MiddleButton;
+                            mouseButton = eventInputMapping.MOUSEEVENTF_MIDDLEUP;
                             //mouseButton = InputMethods.MOUSEEVENTF_MIDDLEUP;
                             break;
                         case MouseButtonCodes.MOUSE_RIGHT_BUTTON:
-                            mouseButton = (uint)FakerInputWrapper.MouseButton.RightButton;
+                            mouseButton = eventInputMapping.MOUSEEVENTF_RIGHTUP;
                             //mouseButton = InputMethods.MOUSEEVENTF_RIGHTUP;
                             break;
                         default:
@@ -1307,15 +1308,15 @@ namespace DS4MapperTest
                     switch (mouseCode)
                     {
                         case MouseButtonCodes.MOUSE_LEFT_BUTTON:
-                            mouseButton = (uint)FakerInputWrapper.MouseButton.LeftButton;
+                            mouseButton = eventInputMapping.MOUSEEVENTF_LEFTDOWN;
                             //mouseButton = InputMethods.MOUSEEVENTF_LEFTDOWN;
                             break;
                         case MouseButtonCodes.MOUSE_MIDDLE_BUTTON:
-                            mouseButton = (uint)FakerInputWrapper.MouseButton.MiddleButton;
+                            mouseButton = eventInputMapping.MOUSEEVENTF_MIDDLEDOWN;
                             //mouseButton = InputMethods.MOUSEEVENTF_MIDDLEDOWN;
                             break;
                         case MouseButtonCodes.MOUSE_RIGHT_BUTTON:
-                            mouseButton = (uint)FakerInputWrapper.MouseButton.RightButton;
+                            mouseButton = eventInputMapping.MOUSEEVENTF_RIGHTDOWN;
                             //mouseButton = InputMethods.MOUSEEVENTF_RIGHTDOWN;
                             break;
                         default:
@@ -2248,10 +2249,11 @@ namespace DS4MapperTest
         }
 
         public virtual void Start(ViGEmClient vigemTestClient,
-            VirtualKBMBase fakerInputHandler)
+            VirtualKBMBase fakerInputHandler, VirtualKBMMapping eventInputMapping)
         {
             this.vigemTestClient = vigemTestClient;
             this.eventInputHandler = fakerInputHandler;
+            this.eventInputMapping = eventInputMapping;
 
             if (!string.IsNullOrEmpty(profileFile))
             {

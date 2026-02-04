@@ -168,9 +168,10 @@ namespace DS4MapperTest.InputDevices.EightBitDoLibrary
             };
         }
 
-        public override void Start(ViGEmClient vigemTestClient, VirtualKBMBase eventInputHandler)
+        public override void Start(ViGEmClient vigemTestClient,
+            VirtualKBMBase eventInputHandler, VirtualKBMMapping eventInputMapping)
         {
-            base.Start(vigemTestClient, eventInputHandler);
+            base.Start(vigemTestClient, eventInputHandler, eventInputMapping);
 
             reader.Report += Reader_Report;
             reader.StartUpdate();

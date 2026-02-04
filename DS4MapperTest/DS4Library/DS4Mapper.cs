@@ -204,14 +204,14 @@ namespace DS4MapperTest.DS4Library
         }
 
         public override void Start(ViGEmClient vigemTestClient,
-            VirtualKBMBase eventInputHandler)
+            VirtualKBMBase eventInputHandler, VirtualKBMMapping eventInputMapping)
         {
             //profileFile = "C:\\Users\\ryoch\\source\\repos\\DS4MapperTest\\DS4MapperTest\\bin\\x64\\Debug\\net6.0-windows\\Profiles\\XInput.json";
 
             PostProfileChange += DS4Mapper_PostProfileChange;
             lightProcess.Reset();
 
-            base.Start(vigemTestClient, eventInputHandler);
+            base.Start(vigemTestClient, eventInputHandler, eventInputMapping);
             // Update current lightbar status before sending first output packet
             lightProcess.UpdateLightbarDS4(device, actionProfile);
 
