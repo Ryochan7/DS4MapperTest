@@ -442,10 +442,10 @@ namespace DS4MapperTest.DS4Library
                     GyroEventFrame gyroFrame = new GyroEventFrame
                     {
                         GyroYaw = currentMapperState.Motion.GyroYaw,
-                        GyroPitch = (short)-currentMapperState.Motion.GyroPitch,
+                        GyroPitch = (short)(-currentMapperState.Motion.GyroPitch),
                         GyroRoll = currentMapperState.Motion.GyroRoll,
                         AngGyroYaw = currentMapperState.Motion.AngGyroYaw,
-                        AngGyroPitch = currentMapperState.Motion.AngGyroPitch,
+                        AngGyroPitch = -currentMapperState.Motion.AngGyroPitch,
                         AngGyroRoll = currentMapperState.Motion.AngGyroRoll,
                         AccelX = currentMapperState.Motion.AccelX,
                         AccelY = currentMapperState.Motion.AccelY,
