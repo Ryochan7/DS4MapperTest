@@ -279,6 +279,21 @@ namespace DS4MapperTest.GyroActions
                 deltaY = 0;
             }
 
+            //double slope = (1.0 - 0.40) / (180.0 - 0.0);
+            //double intercept = slope - 0.40;
+            //double dps_test = 180.0 / 16.0;
+
+            //if (deltaX != 0 && (gyroFrame.AngGyroYaw * signX) < (dps_test * normX))
+            //{
+            //    deltaX = (int)((slope * Math.Abs(deltaX) - intercept) * deltaX);
+            //    //Trace.WriteLine($"DANGEROUS: {deltaX}");
+            //}
+
+            //if (deltaY != 0 && (gyroFrame.AngGyroPitch * signY) < (dps_test * normY))
+            //{
+            //    deltaY = (int)((slope * Math.Abs(deltaY) - intercept) * deltaY);
+            //}
+
             xMotion = deltaX != 0 ? coefficient * (deltaX * tempDouble)
                 + (normX * (offset * signX)) : 0;
 
