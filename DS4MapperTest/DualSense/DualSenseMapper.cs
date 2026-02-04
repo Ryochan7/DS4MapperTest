@@ -510,7 +510,7 @@ namespace DS4MapperTest.DualSense
                         GyroPitch = (short)(-currentMapperState.Motion.GyroPitch),
                         GyroRoll = currentMapperState.Motion.GyroRoll,
                         AngGyroYaw = currentMapperState.Motion.AngGyroYaw,
-                        AngGyroPitch = currentMapperState.Motion.AngGyroPitch,
+                        AngGyroPitch = -currentMapperState.Motion.AngGyroPitch,
                         AngGyroRoll = currentMapperState.Motion.AngGyroRoll,
                         AccelX = currentMapperState.Motion.AccelX,
                         AccelY = currentMapperState.Motion.AccelY,
