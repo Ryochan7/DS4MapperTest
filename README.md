@@ -1,6 +1,8 @@
 # DS4MapperTest
 
-Mainly used as a test ground for trying out different mapping ideas
+Mainly used as a test ground for trying out different mapping ideas. The application can currently
+support using a DualShock 4, DualSense, 8BitDo Ultimate 2 Wireless, Steam Controller, JoyCon,
+and Switch Pro.
 
 ## Runtime Dependencies
 
