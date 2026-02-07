@@ -313,6 +313,7 @@ namespace DS4MapperTest.GyroActions
                 deltaAngVelY = ((slope * Math.Abs(deltaAngVelY) - intercept) * deltaAngVelY);
             }
 
+            // Find degress displacement for gamepad poll
             double xAng = deltaAngVelX * timeElapsed;
             double yAng = deltaAngVelY * timeElapsed;
 
