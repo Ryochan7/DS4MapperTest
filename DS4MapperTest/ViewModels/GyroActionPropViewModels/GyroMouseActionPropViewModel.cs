@@ -18,7 +18,7 @@ namespace DS4MapperTest.ViewModels.GyroActionPropViewModels
             get => action;
         }
 
-        public int DeadZone
+        public double DeadZone
         {
             get => action.mouseParams.deadzone;
             set

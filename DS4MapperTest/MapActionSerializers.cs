@@ -5697,7 +5697,7 @@ namespace DS4MapperTest
         {
             private GyroMouse gyroMouseAction;
 
-            public int DeadZone
+            public double DeadZone
             {
                 get => gyroMouseAction.mouseParams.deadzone;
                 set

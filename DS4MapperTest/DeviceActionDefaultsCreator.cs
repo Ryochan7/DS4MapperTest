@@ -177,7 +177,12 @@ namespace DS4MapperTest
 
         public struct GyroMouseActionValues
         {
-            public int deadzone;
+            public double deadzone;
+
+            public GyroMouseActionValues()
+            {
+                deadzone = 0.6;
+            }
 
             public void Process(GyroMouse action)
             {
@@ -279,7 +284,7 @@ namespace DS4MapperTest
         {
             GyroMouseActionValues result = new GyroMouseActionValues()
             {
-                deadzone = 10,
+                deadzone = 1.0,
             };
 
             return result;
@@ -398,7 +403,7 @@ namespace DS4MapperTest
         {
             GyroMouseActionValues result = new GyroMouseActionValues()
             {
-                deadzone = 10,
+                deadzone = 0.6,
             };
 
             return result;
@@ -410,7 +415,7 @@ namespace DS4MapperTest
         public override GyroMouseActionValues GrabGyroMouseActionDefaults()
         {
             GyroMouseActionValues result = base.GrabGyroMouseActionDefaults();
-            result.deadzone = 20;
+            result.deadzone = 0.6;
 
             return result;
         }

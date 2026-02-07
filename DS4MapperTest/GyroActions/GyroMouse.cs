@@ -60,7 +60,7 @@ namespace DS4MapperTest.GyroActions
     {
         public const bool JITTER_COMPENSATION_DEFAULT = true;
 
-        public int deadzone;
+        public double deadzone;
         public JoypadActionCodes[] gyroTriggerButtons;
         public bool andCond;
         public bool triggerActivates;
@@ -91,6 +91,8 @@ namespace DS4MapperTest.GyroActions
             public const string X_AXIS = "XAxis";
             public const string MIN_THRESHOLD = "MinThreshold";
             //public const string OUTPUT_CURVE = "OutputCurve";
+            //public const string REAL_WORLD_CALIBRATION = "RealWorldCalibration";
+            //public const string IN_GAME_SENS = "InGameSens";
 
             public const string TRIGGER_BUTTONS = "Triggers";
             public const string TRIGGER_ACTIVATE = "TriggersActivate";
@@ -113,6 +115,8 @@ namespace DS4MapperTest.GyroActions
             PropertyKeyStrings.INVERT_Y,
             PropertyKeyStrings.X_AXIS,
             PropertyKeyStrings.MIN_THRESHOLD,
+            //PropertyKeyStrings.REAL_WORLD_CALIBRATION,
+            //PropertyKeyStrings.IN_GAME_SENS,
             PropertyKeyStrings.TRIGGER_BUTTONS,
             PropertyKeyStrings.TRIGGER_ACTIVATE,
             PropertyKeyStrings.TRIGGER_EVAL_COND,
@@ -141,7 +145,7 @@ namespace DS4MapperTest.GyroActions
             mouseParams = new GyroMouseParams()
             {
                 sensitivity = 1.0,
-                deadzone = 10,
+                deadzone = 1.0,
                 verticalScale = 1.0,
                 triggerActivates = true,
                 andCond = true,
@@ -226,8 +230,9 @@ namespace DS4MapperTest.GyroActions
             }
 
             double offset = gyroSensDefinition.mouseOffset;
-            double coefficient = gyroSensDefinition.mouseCoefficient * mouseParams.sensitivity;
-            int deadZone = mouseParams.deadzone;
+            //double coefficient = gyroSensDefinition.mouseCoefficient * mouseParams.sensitivity;
+            double coefficient = (120.0 / 3.0) * mouseParams.sensitivity; // RWC / InGameSens * sens multiplier
+            double deadZone = mouseParams.deadzone;
 
             double timeElapsed = gyroFrame.timeElapsed;
             double oldTimeElapsed = timeElapsed;
@@ -256,48 +261,57 @@ namespace DS4MapperTest.GyroActions
             int signX = Math.Sign(deltaX);
             int signY = Math.Sign(deltaY);
 
+            double deltaAngVelX = (mouseParams.useForXAxis == GyroMouseXAxisChoice.Yaw ?
+                gyroFrame.AngGyroYaw : gyroFrame.AngGyroRoll);
+            double deltaAngVelY = gyroFrame.AngGyroPitch;
+
             //Trace.WriteLine($"{deltaX} {deltaY}");
 
-            int deadzoneX = (int)Math.Abs(normX * deadZone);
-            int deadzoneY = (int)Math.Abs(normY * deadZone);
+            double deadzoneX = Math.Abs(normX * deadZone);
+            double deadzoneY = Math.Abs(normY * deadZone);
 
-            if (Math.Abs(deltaX) > deadzoneX)
+            //Trace.WriteLine($"{gyroFrame.AngGyroYaw} {deltaX} {deadZone}");
+
+            if (Math.Abs(deltaAngVelX) > deadzoneX)
             {
-                deltaX -= signX * deadzoneX;
+                deltaAngVelX -= signX * deadzoneX;
             }
             else
             {
-                deltaX = 0;
+                deltaAngVelX = 0;
             }
 
-            if (Math.Abs(deltaY) > deadzoneY)
+            if (Math.Abs(deltaAngVelY) > deadzoneY)
             {
-                deltaY -= signY * deadzoneY;
+                deltaAngVelY -= signY * deadzoneY;
             }
             else
             {
-                deltaY = 0;
+                deltaAngVelY = 0;
             }
 
-            //double slope = (1.0 - 0.40) / (180.0 - 0.0);
-            //double intercept = slope - 0.40;
-            //double dps_test = 180.0 / 16.0;
+            double slope = (1.0 - 0.40) / (11.25 - 0.0);
+            double intercept = slope - 0.40;
+            double dps_test = 180.0 / 16.0;
 
-            //if (deltaX != 0 && (gyroFrame.AngGyroYaw * signX) < (dps_test * normX))
-            //{
-            //    deltaX = (int)((slope * Math.Abs(deltaX) - intercept) * deltaX);
-            //    //Trace.WriteLine($"DANGEROUS: {deltaX}");
-            //}
+            if (deltaAngVelX != 0 && (deltaAngVelX * signX) < (dps_test * normX))
+            {
+                deltaAngVelX = ((slope * Math.Abs(deltaAngVelX) - intercept) * deltaAngVelX);
+                //Trace.WriteLine($"DANGEROUS: {deltaAngVelX}");
+            }
 
-            //if (deltaY != 0 && (gyroFrame.AngGyroPitch * signY) < (dps_test * normY))
-            //{
-            //    deltaY = (int)((slope * Math.Abs(deltaY) - intercept) * deltaY);
-            //}
+            if (deltaAngVelY != 0 && (deltaAngVelY * signY) < (dps_test * normY))
+            {
+                deltaAngVelY = ((slope * Math.Abs(deltaAngVelY) - intercept) * deltaAngVelY);
+            }
 
-            xMotion = deltaX != 0 ? coefficient * (deltaX * tempDouble)
+            double xAng = deltaAngVelX * timeElapsed;
+            double yAng = deltaAngVelY * timeElapsed;
+
+            xMotion = deltaX != 0 ? coefficient * (xAng * tempDouble)
                 + (normX * (offset * signX)) : 0;
 
-            yMotion = deltaY != 0 ? coefficient * (deltaY * tempDouble)
+            yMotion = deltaY != 0 ? coefficient * (yAng * tempDouble)
                 + (normY * (offset * signY)) : 0;
 
             if (mouseParams.verticalScale != 1.0)

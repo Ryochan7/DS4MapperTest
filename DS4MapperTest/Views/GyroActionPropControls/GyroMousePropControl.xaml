@@ -30,7 +30,7 @@
 
                 <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
                     <Label Content="_Dead Zone" />
-                    <TextBox Text="{Binding DeadZone, UpdateSourceTrigger=LostFocus}" Width="100" Margin="8,0,0,0">
+                    <TextBox Text="{Binding DeadZone, UpdateSourceTrigger=LostFocus, StringFormat='F2'}" Width="100" Margin="8,0,0,0">
                         <TextBox.Style>
                             <Style TargetType="TextBox" BasedOn="{StaticResource TextBoxBaseStyle}">
                                 <Style.Triggers>
