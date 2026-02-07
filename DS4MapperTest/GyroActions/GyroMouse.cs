@@ -145,7 +145,7 @@ namespace DS4MapperTest.GyroActions
             mouseParams = new GyroMouseParams()
             {
                 sensitivity = 1.0,
-                deadzone = 1.0,
+                deadzone = 0.6,
                 verticalScale = 1.0,
                 triggerActivates = true,
                 andCond = true,
@@ -231,7 +231,7 @@ namespace DS4MapperTest.GyroActions
 
             double offset = gyroSensDefinition.mouseOffset;
             //double coefficient = gyroSensDefinition.mouseCoefficient * mouseParams.sensitivity;
-            double coefficient = (120.0 / 3.0) * mouseParams.sensitivity; // RWC / InGameSens * sens multiplier
+            double coefficient = (120.0 / 3.0) * mouseParams.sensitivity; // RWC / InGameSens * sens_multiplier
             double deadZone = mouseParams.deadzone;
 
             double timeElapsed = gyroFrame.timeElapsed;

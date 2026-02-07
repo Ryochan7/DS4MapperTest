@@ -284,7 +284,7 @@ namespace DS4MapperTest
         {
             GyroMouseActionValues result = new GyroMouseActionValues()
             {
-                deadzone = 1.0,
+                deadzone = 0.6,
             };
 
             return result;
