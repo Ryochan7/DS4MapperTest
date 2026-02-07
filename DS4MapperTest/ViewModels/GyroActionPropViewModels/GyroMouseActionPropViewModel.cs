@@ -1,12 +1,13 @@
-﻿using System;
+﻿using DS4MapperTest.GyroActions;
+using DS4MapperTest.MapperUtil;
+using DS4MapperTest.StickActions;
+using DS4MapperTest.ViewModels.Common;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using DS4MapperTest.ViewModels.Common;
-using DS4MapperTest.GyroActions;
-using DS4MapperTest.MapperUtil;
 
 namespace DS4MapperTest.ViewModels.GyroActionPropViewModels
 {
@@ -85,6 +86,32 @@ namespace DS4MapperTest.ViewModels.GyroActionPropViewModels
             }
         }
         public event EventHandler GyroTriggerActivatesChanged;
+
+        public double RealWorldCalibration
+        {
+            get => action.mouseParams.realWorldCalibration;
+            set
+            {
+                if (action.mouseParams.realWorldCalibration == value) return;
+                action.mouseParams.realWorldCalibration = value;
+                RealWorldCalibrationChanged?.Invoke(this, EventArgs.Empty);
+                ActionPropertyChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        public event EventHandler RealWorldCalibrationChanged;
+
+        public double InGameSens
+        {
+            get => action.mouseParams.inGameSens;
+            set
+            {
+                if (action.mouseParams.inGameSens == value) return;
+                action.mouseParams.inGameSens = value;
+                InGameSensChanged?.Invoke(this, EventArgs.Empty);
+                ActionPropertyChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        public event EventHandler InGameSensChanged;
 
         public double Sensitivity
         {
@@ -282,6 +309,20 @@ namespace DS4MapperTest.ViewModels.GyroActionPropViewModels
         }
         public event EventHandler HighlightGyroTriggerActivatesChanged;
 
+        public bool HighlightRealWorldCalibration
+        {
+            get => action.ParentAction == null ||
+                action.ChangedProperties.Contains(GyroMouse.PropertyKeyStrings.REAL_WORLD_CALIBRATION);
+        }
+        public event EventHandler HighlightRealWorldCalibrationChanged;
+
+        public bool HighlightInGameSens
+        {
+            get => action.ParentAction == null ||
+                action.ChangedProperties.Contains(GyroMouse.PropertyKeyStrings.IN_GAME_SENS);
+        }
+        public event EventHandler HighlightInGameSensChanged;
+
         public bool HighlightSensitivity
         {
             get => action.ParentAction == null ||
@@ -362,6 +403,8 @@ namespace DS4MapperTest.ViewModels.GyroActionPropViewModels
             DeadZoneChanged += GyroMouseActionPropViewModel_DeadZoneChanged;
             GyroTriggerCondChoiceChanged += GyroMouseActionPropViewModel_GyroTriggerCondChoiceChanged;
             GyroTriggerActivatesChanged += GyroMouseActionPropViewModel_TriggerActivatesChanged;
+            RealWorldCalibrationChanged += GyroMouseActionPropViewModel_RealWorldCalibrationChanged;
+            InGameSensChanged += GyroMouseActionPropViewModel_InGameSensChanged;
             SensitivityChanged += GyroMouseActionPropViewModel_SensitivityChanged;
             VerticalScaleChanged += GyroMouseActionPropViewModel_VerticalScaleChanged;
             InvertChoicesChanged += GyroMouseActionPropViewModel_InvertChoicesChanged;
@@ -369,6 +412,28 @@ namespace DS4MapperTest.ViewModels.GyroActionPropViewModels
             SmoothingEnabledChanged += GyroMouseActionPropViewModel_SmoothingEnabledChanged;
             SmoothingMinCutoffChanged += GyroMouseActionPropViewModel_SmoothingMinCutoffChanged;
             SmoothingBetaChanged += GyroMouseActionPropViewModel_SmoothingBetaChanged;
+        }
+
+        private void GyroMouseActionPropViewModel_InGameSensChanged(object sender, EventArgs e)
+        {
+            if (!this.action.ChangedProperties.Contains(GyroMouse.PropertyKeyStrings.IN_GAME_SENS))
+            {
+                this.action.ChangedProperties.Add(GyroMouse.PropertyKeyStrings.IN_GAME_SENS);
+            }
+
+            action.RaiseNotifyPropertyChange(mapper, GyroMouse.PropertyKeyStrings.IN_GAME_SENS);
+            HighlightInGameSensChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void GyroMouseActionPropViewModel_RealWorldCalibrationChanged(object sender, EventArgs e)
+        {
+            if (!this.action.ChangedProperties.Contains(GyroMouse.PropertyKeyStrings.REAL_WORLD_CALIBRATION))
+            {
+                this.action.ChangedProperties.Add(GyroMouse.PropertyKeyStrings.REAL_WORLD_CALIBRATION);
+            }
+
+            action.RaiseNotifyPropertyChange(mapper, GyroMouse.PropertyKeyStrings.REAL_WORLD_CALIBRATION);
+            HighlightRealWorldCalibrationChanged?.Invoke(this, EventArgs.Empty);
         }
 
         private void GyroMouseActionPropViewModel_GyroJitterCompensationChanged(object sender, EventArgs e)

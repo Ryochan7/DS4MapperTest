@@ -59,11 +59,14 @@ namespace DS4MapperTest.GyroActions
     public struct GyroMouseParams
     {
         public const bool JITTER_COMPENSATION_DEFAULT = true;
+        public const double IN_GAME_SENS_DEFAULT = 1.0;
 
         public double deadzone;
         public JoypadActionCodes[] gyroTriggerButtons;
         public bool andCond;
         public bool triggerActivates;
+        public double realWorldCalibration;
+        public double inGameSens;
         public double sensitivity;
         public double verticalScale;
         public bool invertX;
@@ -91,8 +94,8 @@ namespace DS4MapperTest.GyroActions
             public const string X_AXIS = "XAxis";
             public const string MIN_THRESHOLD = "MinThreshold";
             //public const string OUTPUT_CURVE = "OutputCurve";
-            //public const string REAL_WORLD_CALIBRATION = "RealWorldCalibration";
-            //public const string IN_GAME_SENS = "InGameSens";
+            public const string REAL_WORLD_CALIBRATION = "RealWorldCalibration";
+            public const string IN_GAME_SENS = "InGameSens";
 
             public const string TRIGGER_BUTTONS = "Triggers";
             public const string TRIGGER_ACTIVATE = "TriggersActivate";
@@ -115,8 +118,8 @@ namespace DS4MapperTest.GyroActions
             PropertyKeyStrings.INVERT_Y,
             PropertyKeyStrings.X_AXIS,
             PropertyKeyStrings.MIN_THRESHOLD,
-            //PropertyKeyStrings.REAL_WORLD_CALIBRATION,
-            //PropertyKeyStrings.IN_GAME_SENS,
+            PropertyKeyStrings.REAL_WORLD_CALIBRATION,
+            PropertyKeyStrings.IN_GAME_SENS,
             PropertyKeyStrings.TRIGGER_BUTTONS,
             PropertyKeyStrings.TRIGGER_ACTIVATE,
             PropertyKeyStrings.TRIGGER_EVAL_COND,
@@ -146,6 +149,8 @@ namespace DS4MapperTest.GyroActions
             {
                 sensitivity = 1.0,
                 deadzone = 0.6,
+                realWorldCalibration = 5.00,
+                inGameSens = GyroMouseParams.IN_GAME_SENS_DEFAULT,
                 verticalScale = 1.0,
                 triggerActivates = true,
                 andCond = true,
@@ -231,7 +236,10 @@ namespace DS4MapperTest.GyroActions
 
             double offset = gyroSensDefinition.mouseOffset;
             //double coefficient = gyroSensDefinition.mouseCoefficient * mouseParams.sensitivity;
-            double coefficient = (120.0 / 3.0) * mouseParams.sensitivity; // RWC / InGameSens * sens_multiplier
+            //double coefficient = (120.0 / 3.0) * mouseParams.sensitivity; // RWC / InGameSens * sens_multiplier
+
+            // RWC / InGameSens * sens_multiplier
+            double coefficient = (mouseParams.realWorldCalibration / mouseParams.inGameSens) * mouseParams.sensitivity;
             double deadZone = mouseParams.deadzone;
 
             double timeElapsed = gyroFrame.timeElapsed;
@@ -506,6 +514,12 @@ namespace DS4MapperTest.GyroActions
                         case PropertyKeyStrings.TRIGGER_EVAL_COND:
                             mouseParams.andCond = tempMouseAction.mouseParams.andCond;
                             break;
+                        case PropertyKeyStrings.REAL_WORLD_CALIBRATION:
+                            mouseParams.realWorldCalibration = tempMouseAction.mouseParams.realWorldCalibration;
+                            break;
+                        case PropertyKeyStrings.IN_GAME_SENS:
+                            mouseParams.inGameSens = tempMouseAction.mouseParams.inGameSens;
+                            break;
                         case PropertyKeyStrings.SENSITIVITY:
                             mouseParams.sensitivity = tempMouseAction.mouseParams.sensitivity;
                             break;
@@ -595,6 +609,12 @@ namespace DS4MapperTest.GyroActions
                     break;
                 case PropertyKeyStrings.TRIGGER_EVAL_COND:
                     mouseParams.andCond = tempMouseAction.mouseParams.andCond;
+                    break;
+                case PropertyKeyStrings.REAL_WORLD_CALIBRATION:
+                    mouseParams.realWorldCalibration = tempMouseAction.mouseParams.realWorldCalibration;
+                    break;
+                case PropertyKeyStrings.IN_GAME_SENS:
+                    mouseParams.inGameSens = tempMouseAction.mouseParams.inGameSens;
                     break;
                 case PropertyKeyStrings.SENSITIVITY:
                     mouseParams.sensitivity = tempMouseAction.mouseParams.sensitivity;

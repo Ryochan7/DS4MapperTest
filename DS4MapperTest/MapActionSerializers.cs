@@ -5708,6 +5708,28 @@ namespace DS4MapperTest
             }
             public event EventHandler DeadZoneChanged;
 
+            public double RealWorlCalibration
+            {
+                get => gyroMouseAction.mouseParams.realWorldCalibration;
+                set
+                {
+                    gyroMouseAction.mouseParams.realWorldCalibration = value;
+                    RealWorldCalibrationChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler RealWorldCalibrationChanged;
+
+            public double InGameSens
+            {
+                get => gyroMouseAction.mouseParams.inGameSens;
+                set
+                {
+                    gyroMouseAction.mouseParams.inGameSens = value;
+                    InGameSensChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler InGameSensChanged;
+
             public double Sensitivity
             {
                 get => gyroMouseAction.mouseParams.sensitivity;
@@ -5909,6 +5931,8 @@ namespace DS4MapperTest
 
             NameChanged += GyroMouseSerializer_NameChanged;
             settings.DeadZoneChanged += Settings_DeadZoneChanged;
+            settings.RealWorldCalibrationChanged += Settings_RealWorldCalibrationChanged;
+            settings.InGameSensChanged += Settings_InGameSensChanged;
             settings.SensitivityChanged += Settings_SensitivityChanged;
             settings.VerticalScaleChanged += Settings_VerticalScaleChanged;
             settings.InvertXChanged += Settings_InvertXChanged;
@@ -5923,6 +5947,16 @@ namespace DS4MapperTest
             settings.SmoothingEnabledChanged += Settings_SmoothingEnabledChanged;
             settings.SmoothingMinCutoffChanged += Settings_SmoothingMinCutoffChanged;
             settings.SmoothingBetaChanged += Settings_SmoothingMinBetaChanged;
+        }
+
+        private void Settings_InGameSensChanged(object sender, EventArgs e)
+        {
+            gyroMouseAction.ChangedProperties.Add(GyroMouse.PropertyKeyStrings.IN_GAME_SENS);
+        }
+
+        private void Settings_RealWorldCalibrationChanged(object sender, EventArgs e)
+        {
+            gyroMouseAction.ChangedProperties.Add(GyroMouse.PropertyKeyStrings.REAL_WORLD_CALIBRATION);
         }
 
         private void Settings_JitterCompensationChanged(object sender, EventArgs e)
