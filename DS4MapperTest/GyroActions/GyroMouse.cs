@@ -239,7 +239,9 @@ namespace DS4MapperTest.GyroActions
             //double coefficient = (120.0 / 3.0) * mouseParams.sensitivity; // RWC / InGameSens * sens_multiplier
 
             // RWC / InGameSens * sens_multiplier
-            double coefficient = (mouseParams.realWorldCalibration / mouseParams.inGameSens) * mouseParams.sensitivity;
+            //double coefficient = (mouseParams.realWorldCalibration / mouseParams.inGameSens) * mouseParams.sensitivity;
+            double coefficient = (mouseParams.realWorldCalibration / mouseParams.inGameSens);
+            double sensMulti = mouseParams.sensitivity;
             double deadZone = mouseParams.deadzone;
 
             double timeElapsed = gyroFrame.timeElapsed;
@@ -278,7 +280,7 @@ namespace DS4MapperTest.GyroActions
             double deadzoneX = Math.Abs(normX * deadZone);
             double deadzoneY = Math.Abs(normY * deadZone);
 
-            //Trace.WriteLine($"{gyroFrame.AngGyroYaw} {deltaX} {deadZone}");
+            //Trace.WriteLine($"{gyroFrame.AngGyroYaw} {deltaX} {deadZone} {deadzoneX} {deadzoneY}");
 
             if (Math.Abs(deltaAngVelX) > deadzoneX)
             {
@@ -313,14 +315,30 @@ namespace DS4MapperTest.GyroActions
             //    deltaAngVelY = ((slope * Math.Abs(deltaAngVelY) - intercept) * deltaAngVelY);
             //}
 
+            //double finalCoefficient = coefficient * sensMulti;
+            double modSensMulti = 1.0;
+            double dps_test = 180.0 / 16.0; // ~11.25
+            double dpsTestSquared = dps_test * dps_test;
+            double distSquared = (deltaAngVelX * deltaAngVelX) + (deltaAngVelY * deltaAngVelY);
+            if (distSquared < dpsTestSquared)
+            {
+                //double alphaX = deltaAngVelX / dps_test;
+                //double alphaY = deltaAngVelY / dps_test;
+                double alpha = distSquared / dpsTestSquared;
+                //Trace.WriteLine($"{deltaAngVelX} {deltaAngVelY} {distSquared} {alpha}");
+                modSensMulti = 0.4 + (1.0 - 0.4) * alpha;
+            }
+
             // Find degrees displacement for gamepad poll
             double xAng = deltaAngVelX * timeElapsed;
             double yAng = deltaAngVelY * timeElapsed;
 
-            xMotion = deltaX != 0 ? coefficient * (xAng * tempDouble)
+            double finalCoefficient = coefficient * sensMulti * modSensMulti;
+
+            xMotion = deltaAngVelX != 0 ? finalCoefficient * (xAng * tempDouble)
                 + (normX * (offset * signX)) : 0;
 
-            yMotion = deltaY != 0 ? coefficient * (yAng * tempDouble)
+            yMotion = deltaAngVelY != 0 ? finalCoefficient * (yAng * tempDouble)
                 + (normY * (offset * signY)) : 0;
 
             if (mouseParams.verticalScale != 1.0)
