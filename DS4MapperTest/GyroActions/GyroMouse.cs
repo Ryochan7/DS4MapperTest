@@ -298,20 +298,20 @@ namespace DS4MapperTest.GyroActions
                 deltaAngVelY = 0;
             }
 
-            double slope = (1.0 - 0.40) / (11.25 - 0.0);
-            double intercept = slope - 0.40;
-            double dps_test = 180.0 / 16.0;
+            //double slope = (1.0 - 0.40) / (11.25 - 0.0);
+            //double intercept = slope - 0.40;
+            //double dps_test = 180.0 / 16.0;
 
-            if (deltaAngVelX != 0 && (deltaAngVelX * signX) < (dps_test * normX))
-            {
-                deltaAngVelX = ((slope * Math.Abs(deltaAngVelX) - intercept) * deltaAngVelX);
-                //Trace.WriteLine($"DANGEROUS: {deltaAngVelX}");
-            }
+            //if (deltaAngVelX != 0 && (deltaAngVelX * signX) < (dps_test * normX))
+            //{
+            //    deltaAngVelX = ((slope * Math.Abs(deltaAngVelX) - intercept) * deltaAngVelX);
+            //    //Trace.WriteLine($"DANGEROUS: {deltaAngVelX}");
+            //}
 
-            if (deltaAngVelY != 0 && (deltaAngVelY * signY) < (dps_test * normY))
-            {
-                deltaAngVelY = ((slope * Math.Abs(deltaAngVelY) - intercept) * deltaAngVelY);
-            }
+            //if (deltaAngVelY != 0 && (deltaAngVelY * signY) < (dps_test * normY))
+            //{
+            //    deltaAngVelY = ((slope * Math.Abs(deltaAngVelY) - intercept) * deltaAngVelY);
+            //}
 
             // Find degress displacement for gamepad poll
             double xAng = deltaAngVelX * timeElapsed;
