@@ -316,8 +316,12 @@ namespace DS4MapperTest.GyroActions
             //}
 
             //double finalCoefficient = coefficient * sensMulti;
-            double modSensMulti = 1.0;
-            double dps_test = 180.0 / 16.0; // ~11.25
+            const double minThreshold = 0.0; // dps
+            const double maxThreshold = 11.25; // dps
+            //double modSensMulti = 1.0;
+            double modSensMulti = 3.0;
+            //double dps_test = 180.0 / 16.0; // ~11.25 dps
+            double dps_test = maxThreshold - minThreshold;
             double dpsTestSquared = dps_test * dps_test;
             double distSquared = (deltaAngVelX * deltaAngVelX) + (deltaAngVelY * deltaAngVelY);
             if (distSquared < dpsTestSquared)
@@ -326,14 +330,16 @@ namespace DS4MapperTest.GyroActions
                 //double alphaY = deltaAngVelY / dps_test;
                 double alpha = distSquared / dpsTestSquared;
                 //Trace.WriteLine($"{deltaAngVelX} {deltaAngVelY} {distSquared} {alpha}");
-                modSensMulti = 0.4 + (1.0 - 0.4) * alpha;
+                //modSensMulti = 0.4 + (1.0 - 0.4) * alpha;
+                modSensMulti = 1.2 + (3.0 - 1.2) * alpha;
             }
 
             // Find degrees displacement for gamepad poll
             double xAng = deltaAngVelX * timeElapsed;
             double yAng = deltaAngVelY * timeElapsed;
 
-            double finalCoefficient = coefficient * sensMulti * modSensMulti;
+            //double finalCoefficient = coefficient * sensMulti * modSensMulti;
+            double finalCoefficient = coefficient * modSensMulti;
 
             xMotion = deltaAngVelX != 0 ? finalCoefficient * (xAng * tempDouble)
                 + (normX * (offset * signX)) : 0;
