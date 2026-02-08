@@ -140,6 +140,95 @@ Increment="0.1" Width="100" Margin="8,0,0,0">
                 </StackPanel>
 
                 <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                    <Label Content="Acceleration Curve" />
+                    <ComboBox ItemsSource="{Binding AccelCurveChoiceItems}" DisplayMemberPath="DisplayName"
+      SelectedValuePath="Choice" SelectedValue="{Binding AccelCurveChoice}" MinWidth="200" Margin="8,0,0,0">
+                        <ComboBox.Style>
+                            <Style TargetType="ComboBox" BasedOn="{StaticResource ComboBoxBaseStyle}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding HighlightAccelCurve}" Value="False">
+                                        <Setter Property="Opacity" Value="0.7" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </ComboBox.Style>
+                    </ComboBox>
+                </StackPanel>
+
+                <StackPanel Orientation="Vertical" Margin="0,8,0,0"
+                            Visibility="{Binding AccelCurveUsed, Converter={StaticResource Boolean2VisibilityConverter}}">
+
+                    <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                        <UniformGrid Rows="1" Columns="2">
+                            <Label Content="Min Sens" HorizontalAlignment="Left" />
+                            <hc:NumericUpDown Minimum="0.0" Maximum="100.0" DecimalPlaces="2" Increment="0.1"
+Value="{Binding MinAccelSens,FallbackValue='0.0'}" Margin="8,0,0,0">
+                                <hc:NumericUpDown.Style>
+                                    <Style TargetType="hc:NumericUpDown" BasedOn="{StaticResource NumericUpDownBaseStyle}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding HighlightMinAccelSens}" Value="False">
+                                                <Setter Property="Opacity" Value="0.7" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </hc:NumericUpDown.Style>
+                            </hc:NumericUpDown>
+                        </UniformGrid>
+
+                        <UniformGrid Rows="1" Columns="2" Margin="16,0,0,0">
+                            <Label Content="Max Sens" />
+                            <hc:NumericUpDown Minimum="0.0" Maximum="100.0" DecimalPlaces="2" Increment="0.1"
+Value="{Binding MaxAccelSens,FallbackValue='1.0'}" Margin="8,0,0,0">
+                                <hc:NumericUpDown.Style>
+                                    <Style TargetType="hc:NumericUpDown" BasedOn="{StaticResource NumericUpDownBaseStyle}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding HighlightMaxAccelSens}" Value="False">
+                                                <Setter Property="Opacity" Value="0.7" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </hc:NumericUpDown.Style>
+                            </hc:NumericUpDown>
+                        </UniformGrid>
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                        <UniformGrid Rows="1" Columns="2">
+                            <Label Content="Min Threshold" />
+                            <hc:NumericUpDown Minimum="0.0" Maximum="500.0" DecimalPlaces="2" Increment="0.5"
+Value="{Binding MinGyroThreshold,FallbackValue='0.0'}" Margin="8,0,0,0">
+                                <hc:NumericUpDown.Style>
+                                    <Style TargetType="hc:NumericUpDown" BasedOn="{StaticResource NumericUpDownBaseStyle}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding HighlightMinGyroThreshold}" Value="False">
+                                                <Setter Property="Opacity" Value="0.7" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </hc:NumericUpDown.Style>
+                            </hc:NumericUpDown>
+                        </UniformGrid>
+
+                        <UniformGrid Rows="1" Columns="2" Margin="16,0,0,0">
+                            <Label Content="Max Threshold" />
+                            <hc:NumericUpDown Minimum="0.0" Maximum="500.0" DecimalPlaces="2" Increment="0.5"
+Value="{Binding MaxGyroThreshold,FallbackValue='1.0'}" Margin="8,0,0,0">
+                                <hc:NumericUpDown.Style>
+                                    <Style TargetType="hc:NumericUpDown" BasedOn="{StaticResource NumericUpDownBaseStyle}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding HighlightMinGyroThreshold}" Value="False">
+                                                <Setter Property="Opacity" Value="0.7" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </hc:NumericUpDown.Style>
+                            </hc:NumericUpDown>
+                        </UniformGrid>
+                    </StackPanel>
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal" Margin="0,8,0,0"
+                            Visibility="{Binding StaticSensUsed, Converter={StaticResource Boolean2VisibilityConverter}}">
                     <Label Content="Sensitivity" />
                     <hc:NumericUpDown Minimum="0.0" Maximum="10.0" DecimalPlaces="1" Increment="0.1"
                                   Value="{Binding Sensitivity,FallbackValue='1.0'}" Margin="8,0,0,0">

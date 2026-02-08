@@ -64,6 +64,21 @@ namespace DS4MapperTest.ViewModels.GyroActionPropViewModels
         }
     }
 
+    public class AccelCurveChoiceItem
+    {
+        private string displayName;
+        public string DisplayName => displayName;
+
+        private GyroMouseAccelCurveChoice choice;
+        public GyroMouseAccelCurveChoice Choice => choice;
+
+        public AccelCurveChoiceItem(string displayName, GyroMouseAccelCurveChoice choice)
+        {
+            this.displayName = displayName;
+            this.choice = choice;
+        }
+    }
+
     public class GyroActionPropVMBase
     {
         protected const string DEFAULT_EMPTY_TRIGGER_STR = "None";

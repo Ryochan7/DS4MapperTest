@@ -5730,6 +5730,87 @@ namespace DS4MapperTest
             }
             public event EventHandler InGameSensChanged;
 
+            [JsonConverter(typeof(StringEnumConverter))]
+            public GyroMouseAccelCurveChoice AccelCurve
+            {
+                get => gyroMouseAction.mouseParams.accelCurve;
+                set
+                {
+                    gyroMouseAction.mouseParams.accelCurve = value;
+                    AccelCurveChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler AccelCurveChanged;
+            public bool ShouldSerializeAccelCurve()
+            {
+                //return gyroMouseAction.ChangedProperties.Contains(GyroMouse.PropertyKeyStrings.ACCEL_CURVE);
+                return gyroMouseAction.mouseParams.accelCurve != GyroMouseAccelCurveChoice.None;
+            }
+
+            public double MinAccelSens
+            {
+                get => gyroMouseAction.mouseParams.minAccelSens;
+                set
+                {
+                    gyroMouseAction.mouseParams.minAccelSens = Math.Clamp(value, 0.0, 100.0);
+                    MinAccelSensChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler MinAccelSensChanged;
+
+            public bool ShouldSerializeMinAccelSens()
+            {
+                return gyroMouseAction.ChangedProperties.Contains(GyroMouse.PropertyKeyStrings.MIN_ACCEL_SENS);
+            }
+
+            public double MaxAccelSens
+            {
+                get => gyroMouseAction.mouseParams.maxAccelSens;
+                set
+                {
+                    gyroMouseAction.mouseParams.maxAccelSens = Math.Clamp(value, 0.0, 100.0);
+                    MaxAccelSensChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler MaxAccelSensChanged;
+
+            public bool ShouldSerializeMaxAccelSens()
+            {
+                return gyroMouseAction.ChangedProperties.Contains(GyroMouse.PropertyKeyStrings.MAX_ACCEL_SENS);
+            }
+
+            public double MinGyroThreshold
+            {
+                get => gyroMouseAction.mouseParams.minGyroThreshold;
+                set
+                {
+                    gyroMouseAction.mouseParams.minGyroThreshold = Math.Clamp(value, 0.0, 500.0);
+                    MinGyroThresholdChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler MinGyroThresholdChanged;
+
+            public bool ShouldSerializeMinGyroThreshold()
+            {
+                return gyroMouseAction.ChangedProperties.Contains(GyroMouse.PropertyKeyStrings.MIN_GYRO_THRESHOLD);
+            }
+
+            public double MaxGyroThreshold
+            {
+                get => gyroMouseAction.mouseParams.maxGyroThreshold;
+                set
+                {
+                    gyroMouseAction.mouseParams.maxGyroThreshold = Math.Clamp(value, 0.0, 500.0);
+                    MaxGyroThresholdChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler MaxGyroThresholdChanged;
+
+            public bool ShouldSerializeMaxGyroThreshold()
+            {
+                return gyroMouseAction.ChangedProperties.Contains(GyroMouse.PropertyKeyStrings.MAX_GYRO_THRESHOLD);
+            }
+
             public double Sensitivity
             {
                 get => gyroMouseAction.mouseParams.sensitivity;
@@ -5740,6 +5821,10 @@ namespace DS4MapperTest
                 }
             }
             public event EventHandler SensitivityChanged;
+            public bool ShouldSerializeSensitivityd()
+            {
+                return gyroMouseAction.ChangedProperties.Contains(GyroMouse.PropertyKeyStrings.SENSITIVITY);
+            }
 
             public double VerticalScale
             {
@@ -5933,6 +6018,11 @@ namespace DS4MapperTest
             settings.DeadZoneChanged += Settings_DeadZoneChanged;
             settings.RealWorldCalibrationChanged += Settings_RealWorldCalibrationChanged;
             settings.InGameSensChanged += Settings_InGameSensChanged;
+            settings.AccelCurveChanged += Settings_AccelCurveChanged;
+            settings.MinAccelSensChanged += Settings_MinAccelSensChanged;
+            settings.MaxAccelSensChanged += Settings_MaxAccelSensChanged;
+            settings.MinGyroThresholdChanged += Settings_MinGyroThresholdChanged;
+            settings.MaxGyroThresholdChanged += Settings_MaxGyroThresholdChanged;
             settings.SensitivityChanged += Settings_SensitivityChanged;
             settings.VerticalScaleChanged += Settings_VerticalScaleChanged;
             settings.InvertXChanged += Settings_InvertXChanged;
@@ -5947,6 +6037,31 @@ namespace DS4MapperTest
             settings.SmoothingEnabledChanged += Settings_SmoothingEnabledChanged;
             settings.SmoothingMinCutoffChanged += Settings_SmoothingMinCutoffChanged;
             settings.SmoothingBetaChanged += Settings_SmoothingMinBetaChanged;
+        }
+
+        private void Settings_MaxGyroThresholdChanged(object sender, EventArgs e)
+        {
+            gyroMouseAction.ChangedProperties.Add(GyroMouse.PropertyKeyStrings.MAX_GYRO_THRESHOLD);
+        }
+
+        private void Settings_MinGyroThresholdChanged(object sender, EventArgs e)
+        {
+            gyroMouseAction.ChangedProperties.Add(GyroMouse.PropertyKeyStrings.MIN_GYRO_THRESHOLD);
+        }
+
+        private void Settings_MaxAccelSensChanged(object sender, EventArgs e)
+        {
+            gyroMouseAction.ChangedProperties.Add(GyroMouse.PropertyKeyStrings.MAX_ACCEL_SENS);
+        }
+
+        private void Settings_MinAccelSensChanged(object sender, EventArgs e)
+        {
+            gyroMouseAction.ChangedProperties.Add(GyroMouse.PropertyKeyStrings.MIN_ACCEL_SENS);
+        }
+
+        private void Settings_AccelCurveChanged(object sender, EventArgs e)
+        {
+            gyroMouseAction.ChangedProperties.Add(GyroMouse.PropertyKeyStrings.ACCEL_CURVE);
         }
 
         private void Settings_InGameSensChanged(object sender, EventArgs e)

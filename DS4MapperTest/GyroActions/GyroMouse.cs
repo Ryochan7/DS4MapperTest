@@ -16,6 +16,12 @@ namespace DS4MapperTest.GyroActions
         Roll,
     }
 
+    public enum GyroMouseAccelCurveChoice
+    {
+        None,
+        Linear,
+    }
+
     public struct SmoothingFilterSettings
     {
         public const double DEFAULT_MIN_CUTOFF = 0.4;
@@ -67,6 +73,7 @@ namespace DS4MapperTest.GyroActions
         public bool triggerActivates;
         public double realWorldCalibration;
         public double inGameSens;
+        public GyroMouseAccelCurveChoice accelCurve;
         public double minGyroThreshold;
         public double maxGyroThreshold;
         public double minAccelSens;
@@ -97,13 +104,13 @@ namespace DS4MapperTest.GyroActions
             public const string INVERT_Y = "InvertY";
             public const string X_AXIS = "XAxis";
             public const string MIN_THRESHOLD = "MinThreshold";
-            //public const string OUTPUT_CURVE = "OutputCurve";
             public const string REAL_WORLD_CALIBRATION = "RealWorldCalibration";
+            public const string ACCEL_CURVE = "AccelCurve";
             public const string IN_GAME_SENS = "InGameSens";
-            public const string MIN_GYRO_THRESHOLD = "MinGyroThreshold";
-            public const string MAX_GYRO_THRESHOLD = "MaxGyroThreshold";
             public const string MIN_ACCEL_SENS = "MinAccelSens";
             public const string MAX_ACCEL_SENS = "MaxAccelSens";
+            public const string MIN_GYRO_THRESHOLD = "MinGyroThreshold";
+            public const string MAX_GYRO_THRESHOLD = "MaxGyroThreshold";
 
             public const string TRIGGER_BUTTONS = "Triggers";
             public const string TRIGGER_ACTIVATE = "TriggersActivate";
@@ -128,10 +135,11 @@ namespace DS4MapperTest.GyroActions
             PropertyKeyStrings.MIN_THRESHOLD,
             PropertyKeyStrings.REAL_WORLD_CALIBRATION,
             PropertyKeyStrings.IN_GAME_SENS,
-            PropertyKeyStrings.MIN_GYRO_THRESHOLD,
-            PropertyKeyStrings.MAX_GYRO_THRESHOLD,
+            PropertyKeyStrings.ACCEL_CURVE,
             PropertyKeyStrings.MIN_ACCEL_SENS,
             PropertyKeyStrings.MAX_ACCEL_SENS,
+            PropertyKeyStrings.MIN_GYRO_THRESHOLD,
+            PropertyKeyStrings.MAX_GYRO_THRESHOLD,
             PropertyKeyStrings.TRIGGER_BUTTONS,
             PropertyKeyStrings.TRIGGER_ACTIVATE,
             PropertyKeyStrings.TRIGGER_EVAL_COND,
@@ -335,33 +343,42 @@ namespace DS4MapperTest.GyroActions
             const double minThreshold = 0.0; // dps
             const double maxThreshold = 11.25; // dps
 
-            double activeMinThreshold = mouseParams.minThreshold < mouseParams.maxGyroThreshold ?
-                mouseParams.minThreshold : mouseParams.maxGyroThreshold;
-            double activeMaxThreshold = mouseParams.maxGyroThreshold > mouseParams.minThreshold ?
-                mouseParams.maxGyroThreshold : mouseParams.minGyroThreshold;
-            double minSens = mouseParams.minAccelSens;
-            double maxSens = mouseParams.maxAccelSens;
-
-            //double modSensMulti = 1.0;
-            double modSensMulti = minSens;
-            //double dps_test = 180.0 / 16.0; // ~11.25 dps
-            double dps_test = activeMaxThreshold - activeMinThreshold;
-            double dpsTestSquared = dps_test * dps_test;
-            double minThresSquared = activeMinThreshold * activeMinThreshold;
-            double distSquared = (deltaAngVelX * deltaAngVelX) + (deltaAngVelY * deltaAngVelY);
-            bool pastMinThreshold = distSquared >= activeMinThreshold;
-            if (pastMinThreshold && distSquared < dpsTestSquared)
+            double modSensMulti = 1.0;
+            if (mouseParams.accelCurve == GyroMouseAccelCurveChoice.None)
             {
-                //double alphaX = deltaAngVelX / dps_test;
-                //double alphaY = deltaAngVelY / dps_test;
-                double alpha = distSquared / dpsTestSquared;
-                //Trace.WriteLine($"{deltaAngVelX} {deltaAngVelY} {distSquared} {alpha}");
-                //modSensMulti = 0.4 + (1.0 - 0.4) * alpha;
-                modSensMulti = minSens + (maxSens - minSens) * alpha;
+                modSensMulti = mouseParams.sensitivity;
             }
-            else if (pastMinThreshold)
+            else if (mouseParams.accelCurve == GyroMouseAccelCurveChoice.Linear)
             {
-                modSensMulti = maxSens;
+                double activeMinThreshold = mouseParams.minThreshold < mouseParams.maxGyroThreshold ?
+                mouseParams.minThreshold : mouseParams.maxGyroThreshold;
+                double activeMaxThreshold = mouseParams.maxGyroThreshold > mouseParams.minThreshold ?
+                    mouseParams.maxGyroThreshold : mouseParams.minGyroThreshold;
+                double minSens = mouseParams.minAccelSens;
+                double maxSens = mouseParams.maxAccelSens;
+
+                //double modSensMulti = 1.0;
+                //double modSensMulti = minSens;
+                modSensMulti = minSens;
+                //double dps_test = 180.0 / 16.0; // ~11.25 dps
+                double dps_test = activeMaxThreshold - activeMinThreshold;
+                double dpsTestSquared = dps_test * dps_test;
+                double minThresSquared = activeMinThreshold * activeMinThreshold;
+                double distSquared = (deltaAngVelX * deltaAngVelX) + (deltaAngVelY * deltaAngVelY);
+                bool pastMinThreshold = distSquared >= activeMinThreshold;
+                if (pastMinThreshold && distSquared < dpsTestSquared)
+                {
+                    //double alphaX = deltaAngVelX / dps_test;
+                    //double alphaY = deltaAngVelY / dps_test;
+                    double alpha = distSquared / dpsTestSquared;
+                    //Trace.WriteLine($"{deltaAngVelX} {deltaAngVelY} {distSquared} {alpha}");
+                    //modSensMulti = 0.4 + (1.0 - 0.4) * alpha;
+                    modSensMulti = minSens + (maxSens - minSens) * alpha;
+                }
+                else if (pastMinThreshold)
+                {
+                    modSensMulti = maxSens;
+                }
             }
 
             // Find degrees displacement for gamepad poll
@@ -575,6 +592,21 @@ namespace DS4MapperTest.GyroActions
                         case PropertyKeyStrings.IN_GAME_SENS:
                             mouseParams.inGameSens = tempMouseAction.mouseParams.inGameSens;
                             break;
+                        case PropertyKeyStrings.ACCEL_CURVE:
+                            mouseParams.accelCurve = tempMouseAction.mouseParams.accelCurve;
+                            break;
+                        case PropertyKeyStrings.MIN_ACCEL_SENS:
+                            mouseParams.minAccelSens = tempMouseAction.mouseParams.minAccelSens;
+                            break;
+                        case PropertyKeyStrings.MAX_ACCEL_SENS:
+                            mouseParams.maxAccelSens = tempMouseAction.mouseParams.maxAccelSens;
+                            break;
+                        case PropertyKeyStrings.MIN_GYRO_THRESHOLD:
+                            mouseParams.minGyroThreshold = tempMouseAction.mouseParams.minGyroThreshold;
+                            break;
+                        case PropertyKeyStrings.MAX_GYRO_THRESHOLD:
+                            mouseParams.maxGyroThreshold = tempMouseAction.mouseParams.maxGyroThreshold;
+                            break;
                         case PropertyKeyStrings.SENSITIVITY:
                             mouseParams.sensitivity = tempMouseAction.mouseParams.sensitivity;
                             break;
@@ -670,6 +702,21 @@ namespace DS4MapperTest.GyroActions
                     break;
                 case PropertyKeyStrings.IN_GAME_SENS:
                     mouseParams.inGameSens = tempMouseAction.mouseParams.inGameSens;
+                    break;
+                case PropertyKeyStrings.ACCEL_CURVE:
+                    mouseParams.accelCurve = tempMouseAction.mouseParams.accelCurve;
+                    break;
+                case PropertyKeyStrings.MIN_ACCEL_SENS:
+                    mouseParams.minAccelSens = tempMouseAction.mouseParams.minAccelSens;
+                    break;
+                case PropertyKeyStrings.MAX_ACCEL_SENS:
+                    mouseParams.maxAccelSens = tempMouseAction.mouseParams.maxAccelSens;
+                    break;
+                case PropertyKeyStrings.MIN_GYRO_THRESHOLD:
+                    mouseParams.minGyroThreshold = tempMouseAction.mouseParams.minGyroThreshold;
+                    break;
+                case PropertyKeyStrings.MAX_GYRO_THRESHOLD:
+                    mouseParams.maxGyroThreshold = tempMouseAction.mouseParams.maxGyroThreshold;
                     break;
                 case PropertyKeyStrings.SENSITIVITY:
                     mouseParams.sensitivity = tempMouseAction.mouseParams.sensitivity;
