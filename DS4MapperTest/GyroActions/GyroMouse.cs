@@ -67,6 +67,10 @@ namespace DS4MapperTest.GyroActions
         public bool triggerActivates;
         public double realWorldCalibration;
         public double inGameSens;
+        public double minGyroThreshold;
+        public double maxGyroThreshold;
+        public double minAccelSens;
+        public double maxAccelSens;
         public double sensitivity;
         public double verticalScale;
         public bool invertX;
@@ -96,6 +100,10 @@ namespace DS4MapperTest.GyroActions
             //public const string OUTPUT_CURVE = "OutputCurve";
             public const string REAL_WORLD_CALIBRATION = "RealWorldCalibration";
             public const string IN_GAME_SENS = "InGameSens";
+            public const string MIN_GYRO_THRESHOLD = "MinGyroThreshold";
+            public const string MAX_GYRO_THRESHOLD = "MaxGyroThreshold";
+            public const string MIN_ACCEL_SENS = "MinAccelSens";
+            public const string MAX_ACCEL_SENS = "MaxAccelSens";
 
             public const string TRIGGER_BUTTONS = "Triggers";
             public const string TRIGGER_ACTIVATE = "TriggersActivate";
@@ -120,6 +128,10 @@ namespace DS4MapperTest.GyroActions
             PropertyKeyStrings.MIN_THRESHOLD,
             PropertyKeyStrings.REAL_WORLD_CALIBRATION,
             PropertyKeyStrings.IN_GAME_SENS,
+            PropertyKeyStrings.MIN_GYRO_THRESHOLD,
+            PropertyKeyStrings.MAX_GYRO_THRESHOLD,
+            PropertyKeyStrings.MIN_ACCEL_SENS,
+            PropertyKeyStrings.MAX_ACCEL_SENS,
             PropertyKeyStrings.TRIGGER_BUTTONS,
             PropertyKeyStrings.TRIGGER_ACTIVATE,
             PropertyKeyStrings.TRIGGER_EVAL_COND,
@@ -151,6 +163,10 @@ namespace DS4MapperTest.GyroActions
                 deadzone = 0.6,
                 realWorldCalibration = 5.00,
                 inGameSens = GyroMouseParams.IN_GAME_SENS_DEFAULT,
+                minGyroThreshold = 0.0,
+                maxGyroThreshold = 11.25,
+                minAccelSens = 1.2,
+                maxAccelSens = 3.0,
                 verticalScale = 1.0,
                 triggerActivates = true,
                 andCond = true,
@@ -318,20 +334,34 @@ namespace DS4MapperTest.GyroActions
             //double finalCoefficient = coefficient * sensMulti;
             const double minThreshold = 0.0; // dps
             const double maxThreshold = 11.25; // dps
+
+            double activeMinThreshold = mouseParams.minThreshold < mouseParams.maxGyroThreshold ?
+                mouseParams.minThreshold : mouseParams.maxGyroThreshold;
+            double activeMaxThreshold = mouseParams.maxGyroThreshold > mouseParams.minThreshold ?
+                mouseParams.maxGyroThreshold : mouseParams.minGyroThreshold;
+            double minSens = mouseParams.minAccelSens;
+            double maxSens = mouseParams.maxAccelSens;
+
             //double modSensMulti = 1.0;
-            double modSensMulti = 3.0;
+            double modSensMulti = minSens;
             //double dps_test = 180.0 / 16.0; // ~11.25 dps
-            double dps_test = maxThreshold - minThreshold;
+            double dps_test = activeMaxThreshold - activeMinThreshold;
             double dpsTestSquared = dps_test * dps_test;
+            double minThresSquared = activeMinThreshold * activeMinThreshold;
             double distSquared = (deltaAngVelX * deltaAngVelX) + (deltaAngVelY * deltaAngVelY);
-            if (distSquared < dpsTestSquared)
+            bool pastMinThreshold = distSquared >= activeMinThreshold;
+            if (pastMinThreshold && distSquared < dpsTestSquared)
             {
                 //double alphaX = deltaAngVelX / dps_test;
                 //double alphaY = deltaAngVelY / dps_test;
                 double alpha = distSquared / dpsTestSquared;
                 //Trace.WriteLine($"{deltaAngVelX} {deltaAngVelY} {distSquared} {alpha}");
                 //modSensMulti = 0.4 + (1.0 - 0.4) * alpha;
-                modSensMulti = 1.2 + (3.0 - 1.2) * alpha;
+                modSensMulti = minSens + (maxSens - minSens) * alpha;
+            }
+            else if (pastMinThreshold)
+            {
+                modSensMulti = maxSens;
             }
 
             // Find degrees displacement for gamepad poll
