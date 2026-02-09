@@ -159,8 +159,9 @@ Increment="0.1" Width="100" Margin="8,0,0,0">
                             Visibility="{Binding AccelCurveUsed, Converter={StaticResource Boolean2VisibilityConverter}}">
 
                     <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
-                        <UniformGrid Rows="1" Columns="2">
+                        <StackPanel Orientation="Horizontal">
                             <Label Content="Min Sens" HorizontalAlignment="Left" />
+
                             <hc:NumericUpDown Minimum="0.0" Maximum="100.0" DecimalPlaces="2" Increment="0.1"
 Value="{Binding MinAccelSens,FallbackValue='0.0'}" Margin="8,0,0,0">
                                 <hc:NumericUpDown.Style>
@@ -173,10 +174,14 @@ Value="{Binding MinAccelSens,FallbackValue='0.0'}" Margin="8,0,0,0">
                                     </Style>
                                 </hc:NumericUpDown.Style>
                             </hc:NumericUpDown>
-                        </UniformGrid>
 
-                        <UniformGrid Rows="1" Columns="2" Margin="16,0,0,0">
+                            <Label Content="RWS" Margin="2,0,0,0" BorderBrush="Transparent" />
+
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal" Margin="16,0,0,0">
                             <Label Content="Max Sens" />
+
                             <hc:NumericUpDown Minimum="0.0" Maximum="100.0" DecimalPlaces="2" Increment="0.1"
 Value="{Binding MaxAccelSens,FallbackValue='1.0'}" Margin="8,0,0,0">
                                 <hc:NumericUpDown.Style>
@@ -189,12 +194,16 @@ Value="{Binding MaxAccelSens,FallbackValue='1.0'}" Margin="8,0,0,0">
                                     </Style>
                                 </hc:NumericUpDown.Style>
                             </hc:NumericUpDown>
-                        </UniformGrid>
+
+                            <Label Content="RWS" Margin="2,0,0,0" BorderBrush="Transparent" />
+                        </StackPanel>
                     </StackPanel>
 
                     <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
-                        <UniformGrid Rows="1" Columns="2">
+
+                        <StackPanel Orientation="Horizontal">
                             <Label Content="Min Threshold" />
+
                             <hc:NumericUpDown Minimum="0.0" Maximum="500.0" DecimalPlaces="2" Increment="0.5"
 Value="{Binding MinGyroThreshold,FallbackValue='0.0'}" Margin="8,0,0,0">
                                 <hc:NumericUpDown.Style>
@@ -207,9 +216,11 @@ Value="{Binding MinGyroThreshold,FallbackValue='0.0'}" Margin="8,0,0,0">
                                     </Style>
                                 </hc:NumericUpDown.Style>
                             </hc:NumericUpDown>
-                        </UniformGrid>
 
-                        <UniformGrid Rows="1" Columns="2" Margin="16,0,0,0">
+                            <Label Content="&#xB0;" Margin="2,0,0,0" BorderBrush="Transparent" />
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal" Margin="16,0,0,0">
                             <Label Content="Max Threshold" />
                             <hc:NumericUpDown Minimum="0.0" Maximum="500.0" DecimalPlaces="2" Increment="0.5"
 Value="{Binding MaxGyroThreshold,FallbackValue='1.0'}" Margin="8,0,0,0">
@@ -223,7 +234,9 @@ Value="{Binding MaxGyroThreshold,FallbackValue='1.0'}" Margin="8,0,0,0">
                                     </Style>
                                 </hc:NumericUpDown.Style>
                             </hc:NumericUpDown>
-                        </UniformGrid>
+
+                            <Label Content="&#xB0;" Margin="2,0,0,0" BorderBrush="Transparent" />
+                        </StackPanel>
                     </StackPanel>
                 </StackPanel>
 
@@ -242,6 +255,8 @@ Value="{Binding MaxGyroThreshold,FallbackValue='1.0'}" Margin="8,0,0,0">
                             </Style>
                         </hc:NumericUpDown.Style>
                     </hc:NumericUpDown>
+
+                    <Label Content="RWS" Margin="2,0,0,0" BorderBrush="Transparent" />
                 </StackPanel>
 
                 <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
