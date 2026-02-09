@@ -184,7 +184,7 @@ namespace DS4MapperTest.GyroActions
                 {
                     JoypadActionCodes.AlwaysOn,
                 },
-                jitterCompensation = GyroMouseParams.JITTER_COMPENSATION_DEFAULT,
+                jitterCompensation = false,
                 smoothing = DEFAULT_SMOOTHING_ENABLED,
             };
 
