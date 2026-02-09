@@ -178,15 +178,18 @@ namespace DS4MapperTest
         public struct GyroMouseActionValues
         {
             public double deadzone;
+            public double maxGyroThreshold;
 
             public GyroMouseActionValues()
             {
-                deadzone = 0.6;
+                deadzone = 0.6; // dps
+                maxGyroThreshold = 11.25; // dps
             }
 
             public void Process(GyroMouse action)
             {
                 action.mouseParams.deadzone = deadzone;
+                action.mouseParams.maxGyroThreshold = maxGyroThreshold;
             }
         }
 

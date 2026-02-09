@@ -129,6 +129,8 @@ namespace DS4MapperTest.ViewModels.GyroActionPropViewModels
         {
             new AccelCurveChoiceItem("None", GyroMouseAccelCurveChoice.None),
             new AccelCurveChoiceItem("Linear", GyroMouseAccelCurveChoice.Linear),
+            new AccelCurveChoiceItem("Quadratic", GyroMouseAccelCurveChoice.Quadratic),
+            new AccelCurveChoiceItem("Cubic", GyroMouseAccelCurveChoice.Cubic),
         };
         public List<AccelCurveChoiceItem> AccelCurveChoiceItems => accelCurveChoiceItems;
 

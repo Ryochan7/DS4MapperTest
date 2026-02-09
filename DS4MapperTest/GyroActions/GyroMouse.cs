@@ -20,6 +20,8 @@ namespace DS4MapperTest.GyroActions
     {
         None,
         Linear,
+        Quadratic,
+        Cubic,
     }
 
     public struct SmoothingFilterSettings
@@ -348,7 +350,7 @@ namespace DS4MapperTest.GyroActions
             {
                 modSensMulti = mouseParams.sensitivity;
             }
-            else if (mouseParams.accelCurve == GyroMouseAccelCurveChoice.Linear)
+            else
             {
                 double activeMinThreshold = mouseParams.minThreshold < mouseParams.maxGyroThreshold ?
                 mouseParams.minThreshold : mouseParams.maxGyroThreshold;
@@ -371,6 +373,15 @@ namespace DS4MapperTest.GyroActions
                     //double alphaX = deltaAngVelX / dps_test;
                     //double alphaY = deltaAngVelY / dps_test;
                     double alpha = distSquared / dpsTestSquared;
+                    if (mouseParams.accelCurve == GyroMouseAccelCurveChoice.Quadratic)
+                    {
+                        alpha = alpha * alpha;
+                    }
+                    else if (mouseParams.accelCurve == GyroMouseAccelCurveChoice.Cubic)
+                    {
+                        alpha = alpha * alpha * alpha;
+                    }
+
                     //Trace.WriteLine($"{deltaAngVelX} {deltaAngVelY} {distSquared} {alpha}");
                     //modSensMulti = 0.4 + (1.0 - 0.4) * alpha;
                     modSensMulti = minSens + (maxSens - minSens) * alpha;
