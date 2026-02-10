@@ -247,7 +247,7 @@ namespace DS4MapperTest.GyroActions
             //Console.WriteLine("Elasped: ({0}) DOUBLE {1}", current.timeElapsed, tempDouble);
             int deltaX = mStickParams.useForXAxis == GyroMouseXAxisChoice.Yaw ?
                 joystickFrame.GyroYaw : joystickFrame.GyroRoll;
-            int deltaY = joystickFrame.GyroPitch;
+            int deltaY = -joystickFrame.GyroPitch;
 
             double tempAngle = Math.Atan2(-deltaY, deltaX);
             double normX = Math.Abs(Math.Cos(tempAngle));
