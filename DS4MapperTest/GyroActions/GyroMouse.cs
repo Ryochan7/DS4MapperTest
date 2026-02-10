@@ -26,8 +26,8 @@ namespace DS4MapperTest.GyroActions
 
     public struct SmoothingFilterSettings
     {
-        public const double DEFAULT_MIN_CUTOFF = 0.4;
-        public const double DEFAULT_BETA = 0.6;
+        public const double DEFAULT_MIN_CUTOFF = 1.5;
+        public const double DEFAULT_BETA = 0.8;
 
         public OneEuroFilter filterX;
         public OneEuroFilter filterY;
@@ -35,11 +35,14 @@ namespace DS4MapperTest.GyroActions
         public double minCutOff;
         public double beta;
 
-        public void Init()
+        public SmoothingFilterSettings()
         {
             minCutOff = DEFAULT_MIN_CUTOFF;
             beta = DEFAULT_BETA;
+        }
 
+        public void Init()
+        {
             filterX = new OneEuroFilter(minCutoff: minCutOff,
                 beta: beta);
             filterY = new OneEuroFilter(minCutoff: minCutOff,

@@ -305,7 +305,7 @@ namespace DS4MapperTest.ViewModels.GyroActionPropViewModels
 
         private List<SmoothPresetChoiceItem> smoothPresetChoiceItems = new List<SmoothPresetChoiceItem>()
         {
-            new SmoothPresetChoiceItem("", SmoothPresetChoices.None, 1.0, 1.0),
+            new SmoothPresetChoiceItem("", SmoothPresetChoices.None, 1.5, 0.8),
             new SmoothPresetChoiceItem("Stiff", SmoothPresetChoices.Stiff, 0.4, 0.6),
             new SmoothPresetChoiceItem("Normie", SmoothPresetChoices.Normie, 1.0, 1.0),
             new SmoothPresetChoiceItem("Loose", SmoothPresetChoices.Loose, 1.5, 0.8),
