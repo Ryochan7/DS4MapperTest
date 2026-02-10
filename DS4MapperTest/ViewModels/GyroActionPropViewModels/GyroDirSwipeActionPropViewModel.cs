@@ -74,13 +74,13 @@ namespace DS4MapperTest.ViewModels.GyroActionPropViewModels
         }
         public event EventHandler GyroTriggerActivatesChanged;
 
-        public int DeadZoneX
+        public double DeadZoneX
         {
             get => action.swipeParams.deadzoneX;
             set
             {
                 {
-                    action.swipeParams.deadzoneX = Math.Clamp(value, 0, 10000);
+                    action.swipeParams.deadzoneX = Math.Clamp(value, 0.0, 4000.0);
                     DeadZoneXChanged?.Invoke(this, EventArgs.Empty);
                     ActionPropertyChanged?.Invoke(this, EventArgs.Empty);
                 }
@@ -88,13 +88,13 @@ namespace DS4MapperTest.ViewModels.GyroActionPropViewModels
         }
         public event EventHandler DeadZoneXChanged;
 
-        public int DeadZoneY
+        public double DeadZoneY
         {
             get => action.swipeParams.deadzoneY;
             set
             {
                 {
-                    action.swipeParams.deadzoneY = Math.Clamp(value, 0, 10000);
+                    action.swipeParams.deadzoneY = Math.Clamp(value, 0.0, 4000.0);
                     DeadZoneYChanged?.Invoke(this, EventArgs.Empty);
                     ActionPropertyChanged?.Invoke(this, EventArgs.Empty);
                 }

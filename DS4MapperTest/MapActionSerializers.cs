@@ -6206,7 +6206,7 @@ namespace DS4MapperTest
         {
             private GyroDirectionalSwipe gyroDirSwipeAction;
 
-            public int DeadZoneX
+            public double DeadZoneX
             {
                 get => gyroDirSwipeAction.swipeParams.deadzoneX;
                 set
@@ -6217,7 +6217,7 @@ namespace DS4MapperTest
             }
             public event EventHandler DeadZoneXChanged;
 
-            public int DeadZoneY
+            public double DeadZoneY
             {
                 get => gyroDirSwipeAction.swipeParams.deadzoneY;
                 set

@@ -10,8 +10,8 @@ namespace DS4MapperTest.GyroActions
 {
     public struct GyroDirectionalSwipeParams
     {
-        public int deadzoneX;
-        public int deadzoneY;
+        public double deadzoneX; // dps
+        public double deadzoneY; // dps
         public JoypadActionCodes[] gyroTriggerButtons;
         public bool andCond;
         public bool triggerActivates;
@@ -125,8 +125,8 @@ namespace DS4MapperTest.GyroActions
             actionTypeName = ACTION_TYPE_NAME;
             swipeParams = new GyroDirectionalSwipeParams()
             {
-                deadzoneX = 80,
-                deadzoneY = 80,
+                deadzoneX = 80.0, // dps
+                deadzoneY = 80.0, // dps
                 delayTime = 20,
                 andCond = true,
                 gyroTriggerButtons = new JoypadActionCodes[1]
@@ -188,7 +188,7 @@ namespace DS4MapperTest.GyroActions
 
             if (Math.Abs(gyroFrame.AngGyroYaw) > swipeParams.deadzoneX)
             {
-                if (gyroFrame.AngGyroYaw > 0)
+                if (gyroFrame.AngGyroYaw > 0.0)
                 {
                     currentXDir = SwipeAxisXDir.Right;
                 }
@@ -216,7 +216,7 @@ namespace DS4MapperTest.GyroActions
 
             if (Math.Abs(gyroFrame.AngGyroPitch) > swipeParams.deadzoneY)
             {
-                if (gyroFrame.AngGyroPitch > 0)
+                if (gyroFrame.AngGyroPitch > 0.0)
                 {
                     currentYDir = SwipeAxisYDir.Up;
                 }
