@@ -45,7 +45,8 @@
 
                 <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
                     <Label Content="_Dead Zone" />
-                    <TextBox Text="{Binding DeadZone, UpdateSourceTrigger=LostFocus}" Width="100" ToolTip="Expressed as raw device units" Margin="8,0,0,0">
+                    <TextBox Text="{Binding DeadZone, UpdateSourceTrigger=LostFocus, StringFormat='F2'}"
+                             Width="100" ToolTip="Expressed as raw device units" Margin="8,0,0,0">
                         <TextBox.Style>
                             <Style TargetType="TextBox" BasedOn="{StaticResource TextBoxBaseStyle}">
                                 <Style.Triggers>
@@ -60,7 +61,8 @@
 
                 <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
                     <Label Content="Max Zone" />
-                    <hc:NumericUpDown Minimum="1" Maximum="10000" Value="{Binding MaxZone, UpdateSourceTrigger=LostFocus}" Increment="10" Width="100" ToolTip="Expressed as raw device units" Margin="8,0,0,0">
+                    <hc:NumericUpDown Minimum="1.0" Maximum="500.0" Value="{Binding MaxZone, UpdateSourceTrigger=LostFocus}" Increment="0.5"
+                                      DecimalPlaces="2" Width="100" ToolTip="Expressed as raw device units" Margin="8,0,0,0">
                         <hc:NumericUpDown.Style>
                             <Style TargetType="hc:NumericUpDown" BasedOn="{StaticResource NumericUpDownBaseStyle}">
                                 <Style.Triggers>

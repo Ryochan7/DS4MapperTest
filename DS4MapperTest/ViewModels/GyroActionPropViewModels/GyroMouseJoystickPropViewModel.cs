@@ -40,7 +40,7 @@ namespace DS4MapperTest.ViewModels.GyroActionPropViewModels
         }
         public event EventHandler OutputStickIndexChanged;
 
-        public int DeadZone
+        public double DeadZone
         {
             get => action.mStickParams.deadZone;
             set
@@ -52,7 +52,7 @@ namespace DS4MapperTest.ViewModels.GyroActionPropViewModels
         }
         public event EventHandler DeadZoneChanged;
 
-        public int MaxZone
+        public double MaxZone
         {
             get => action.mStickParams.maxZone;
             set

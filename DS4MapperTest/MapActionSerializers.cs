@@ -6563,7 +6563,7 @@ namespace DS4MapperTest
         {
             private GyroMouseJoystick gyroMouseStickAction;
 
-            public int DeadZone
+            public double DeadZone
             {
                 get => gyroMouseStickAction.mStickParams.deadZone;
                 set
@@ -6574,7 +6574,7 @@ namespace DS4MapperTest
             }
             public event EventHandler DeadZoneChanged;
 
-            public int MaxZone
+            public double MaxZone
             {
                 get => gyroMouseStickAction.mStickParams.maxZone;
                 set

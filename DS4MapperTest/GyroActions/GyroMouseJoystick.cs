@@ -20,8 +20,8 @@ namespace DS4MapperTest.GyroActions
     {
         public const bool JITTER_COMPENSATION_DEFAULT = true;
 
-        public int deadZone;
-        public int maxZone;
+        public double deadZone;
+        public double maxZone;
         public double antiDeadzoneX;
         public double antiDeadzoneY;
         public JoypadActionCodes[] gyroTriggerButtons;
@@ -131,8 +131,8 @@ namespace DS4MapperTest.GyroActions
             actionTypeName = ACTION_TYPE_NAME;
             mStickParams = new GyroMouseJoystickParams()
             {
-                deadZone = 24,
-                maxZone = 600,
+                deadZone = 1.50, // dps
+                maxZone = 37.5, // dps
                 antiDeadzoneX = 0.45,
                 antiDeadzoneY = 0.45,
                 verticalScale = 1.0,
@@ -144,7 +144,7 @@ namespace DS4MapperTest.GyroActions
                 {
                     JoypadActionCodes.AlwaysOn,
                 },
-                jitterCompensation = GyroMouseParams.JITTER_COMPENSATION_DEFAULT,
+                jitterCompensation = false,
                 smoothing = DEFAULT_SMOOTHING_ENABLED,
             };
 
@@ -184,8 +184,8 @@ namespace DS4MapperTest.GyroActions
             //const double antidead = 0.54;
             //const double antidead = 0.45;
 
-            int deadzone = mStickParams.deadZone;
-            int maxZone = mStickParams.maxZone;
+            double deadzone = mStickParams.deadZone;
+            double maxZone = mStickParams.maxZone;
 
             double timeElapsed = joystickFrame.timeElapsed;
 
@@ -247,7 +247,7 @@ namespace DS4MapperTest.GyroActions
             //Console.WriteLine("Elasped: ({0}) DOUBLE {1}", current.timeElapsed, tempDouble);
             int deltaX = mStickParams.useForXAxis == GyroMouseXAxisChoice.Yaw ?
                 joystickFrame.GyroYaw : joystickFrame.GyroRoll;
-            int deltaY = -joystickFrame.GyroPitch;
+            int deltaY = joystickFrame.GyroPitch;
 
             double tempAngle = Math.Atan2(-deltaY, deltaX);
             double normX = Math.Abs(Math.Cos(tempAngle));
@@ -255,71 +255,75 @@ namespace DS4MapperTest.GyroActions
             int signX = Math.Sign(deltaX);
             int signY = Math.Sign(deltaY);
 
-            int deadzoneX = (int)Math.Abs(normX * deadzone);
-            int deadzoneY = (int)Math.Abs(normY * deadzone);
+            double deltaAngVelX = (mStickParams.useForXAxis == GyroMouseXAxisChoice.Yaw ?
+                joystickFrame.AngGyroYaw : joystickFrame.AngGyroRoll);
+            double deltaAngVelY = joystickFrame.AngGyroPitch;
 
-            int maxValX = signX * maxZone;
-            int maxValY = signY * maxZone;
+            double deadzoneX = Math.Abs(normX * deadzone);
+            double deadzoneY = Math.Abs(normY * deadzone);
+
+            double maxValX = signX * maxZone;
+            double maxValY = signY * maxZone;
 
             double xratio = 0.0, yratio = 0.0;
             double antiX = mStickParams.antiDeadzoneX * normX;
             double antiY = mStickParams.antiDeadzoneY * normY;
 
-            if (Math.Abs(deltaX) > deadzoneX)
+            if (Math.Abs(deltaAngVelX) > deadzoneX)
             {
-                deltaX -= signX * deadzoneX;
-                deltaX = (int)(deltaX * tempDouble);
-                deltaX = (deltaX < 0 && deltaX < maxValX) ? maxValX :
-                    (deltaX > 0 && deltaX > maxValX) ? maxValX : deltaX;
-                //if (deltaX != maxValX) deltaX -= deltaX % (signX * GyroMouseFuzz);
+                deltaAngVelX -= signX * deadzoneX;
+                deltaAngVelX = deltaAngVelX * tempDouble;
+                deltaAngVelX = (deltaAngVelX < 0.0 && deltaAngVelX < -maxValX) ? -maxValX :
+                    (deltaAngVelX > 0.0 && deltaAngVelX > maxValX) ? maxValX : deltaAngVelX;
+                //if (deltaAngVelX != maxValX) deltaAngVelX -= deltaAngVelX % (signX * GyroMouseFuzz);
             }
             else
             {
-                deltaX = 0;
+                deltaAngVelX = 0.0;
             }
 
-            if (Math.Abs(deltaY) > deadzoneY)
+            if (Math.Abs(deltaAngVelY) > deadzoneY)
             {
-                deltaY -= signY * deadzoneY;
-                deltaY = (int)(deltaY * tempDouble);
-                deltaY = (deltaY < 0 && deltaY < maxValY) ? maxValY :
-                    (deltaY > 0 && deltaY > maxValY) ? maxValY : deltaY;
-                //if (deltaY != maxValY) deltaY -= deltaY % (signY * GyroMouseFuzz);
+                deltaAngVelY -= signY * deadzoneY;
+                deltaAngVelY = deltaY * tempDouble;
+                deltaAngVelY = (deltaAngVelY < 0.0 && deltaAngVelY < -maxValY) ? -maxValY :
+                    (deltaAngVelY > 0.0 && deltaAngVelY > maxValY) ? maxValY : deltaAngVelY;
+                //if (deltaAngVelY != maxValY) deltaAngVelY -= deltaAngVelY % (signY * GyroMouseFuzz);
             }
             else
             {
-                deltaY = 0;
+                deltaAngVelY = 0.0;
             }
 
             if (mStickParams.jitterCompensation)
             {
                 // Possibly expose threshold later
-                const double threshold = 2;
+                const double threshold = 0.125; // dps
                 const float thresholdF = (float)threshold;
 
-                double absX = Math.Abs(deltaX);
+                double absX = Math.Abs(deltaAngVelX);
                 if (absX <= normX * threshold)
                 {
-                    deltaX = (int)(signX * Math.Pow(absX / thresholdF, 1.408) * threshold);
+                    deltaAngVelX = (signX * Math.Pow(absX / thresholdF, 1.408) * threshold);
                 }
 
-                double absY = Math.Abs(deltaY);
+                double absY = Math.Abs(deltaAngVelY);
                 if (absY <= normY * threshold)
                 {
-                    deltaY = (int)(signY * Math.Pow(absY / thresholdF, 1.408) * threshold);
+                    deltaAngVelY = (signY * Math.Pow(absY / thresholdF, 1.408) * threshold);
                 }
             }
 
-            //deltaX = (int)mapper.MStickFilterX.Filter(deltaX, mapper.CurrentRate);
-            //deltaY = (int)mapper.MStickFilterY.Filter(deltaY, mapper.CurrentRate);
+            //deltaAngVelX = mapper.MStickFilterX.Filter(deltaAngVelX, mapper.CurrentRate);
+            //deltaAngVelY = mapper.MStickFilterY.Filter(deltaAngVelY, mapper.CurrentRate);
             if (mStickParams.smoothing)
             {
-                deltaX = (int)mStickParams.smoothingFilterSettings.filterX.Filter(deltaX, currentRate);
-                deltaY = (int)mStickParams.smoothingFilterSettings.filterY.Filter(deltaY, currentRate);
+                deltaAngVelX = mStickParams.smoothingFilterSettings.filterX.Filter(deltaAngVelX, currentRate);
+                deltaAngVelY = mStickParams.smoothingFilterSettings.filterY.Filter(deltaAngVelY, currentRate);
             }
 
-            if (deltaX != 0) xratio = deltaX / (double)maxValX;
-            if (deltaY != 0) yratio = deltaY / (double)maxValY;
+            if (deltaAngVelX != 0.0) xratio = deltaAngVelX / maxValX;
+            if (deltaAngVelY != 0.0) yratio = deltaAngVelY / maxValY;
 
             if (mStickParams.verticalScale != 1.0)
             {
