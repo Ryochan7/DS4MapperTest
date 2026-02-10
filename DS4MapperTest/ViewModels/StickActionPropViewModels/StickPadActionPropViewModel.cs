@@ -119,6 +119,19 @@ namespace DS4MapperTest.ViewModels.StickActionPropViewModels
         }
         public event EventHandler DiagonalRangeChanged;
 
+        public int Rotation
+        {
+            get => action.Rotation;
+            set
+            {
+                if (action.Rotation == value) return;
+                action.Rotation = value;
+                RotationChanged?.Invoke(this, EventArgs.Empty);
+                ActionPropertyChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        public event EventHandler RotationChanged;
+
         public string ActionUpBtnDisplayBind
         {
             get => action.EventCodes4[(int)StickPadAction.DpadDirections.Up].DescribeActions(mapper);
@@ -194,6 +207,13 @@ namespace DS4MapperTest.ViewModels.StickActionPropViewModels
         }
         public event EventHandler HighlightDeadZoneChanged;
 
+        public bool HighlightRotation
+        {
+            get => action.ParentAction == null ||
+                action.ChangedProperties.Contains(StickPadAction.PropertyKeyStrings.ROTATION);
+        }
+        public event EventHandler HighlightRotationChanged;
+
         public event EventHandler ActionPropertyChanged;
         public event EventHandler<StickMapAction> ActionChanged;
 
@@ -232,8 +252,20 @@ namespace DS4MapperTest.ViewModels.StickActionPropViewModels
             NameChanged += StickPadActionPropViewModel_NameChanged;
             DeadZoneChanged += StickPadActionPropViewModel_DeadZoneChanged;
             DeadZoneTypeChanged += StickPadActionPropViewModel_DeadZoneTypeChanged;
+            RotationChanged += StickPadActionPropViewModel_RotationChanged;
             SelectedPadModeIndexChanged += ChangeStickPadMode;
             SelectedPadModeIndexChanged += StickPadActionPropViewModel_SelectedPadModeIndexChanged;
+        }
+
+        private void StickPadActionPropViewModel_RotationChanged(object sender, EventArgs e)
+        {
+            if (!action.ChangedProperties.Contains(StickPadAction.PropertyKeyStrings.ROTATION))
+            {
+                action.ChangedProperties.Add(StickPadAction.PropertyKeyStrings.ROTATION);
+            }
+
+            action.RaiseNotifyPropertyChange(mapper, StickPadAction.PropertyKeyStrings.ROTATION);
+            HighlightRotationChanged?.Invoke(this, EventArgs.Empty);
         }
 
         private void StickPadActionPropViewModel_DeadZoneTypeChanged(object sender, EventArgs e)
