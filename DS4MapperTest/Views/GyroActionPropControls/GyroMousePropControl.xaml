@@ -41,6 +41,8 @@
                             </Style>
                         </TextBox.Style>
                     </TextBox>
+
+                    <Label Content="dps" Margin="2,0,0,0" BorderBrush="{x:Null}" />
                 </StackPanel>
 
                 <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
@@ -158,7 +160,7 @@ Increment="0.1" Width="100" Margin="8,0,0,0">
                 <StackPanel Orientation="Vertical" Margin="0,8,0,0"
                             Visibility="{Binding AccelCurveUsed, Converter={StaticResource Boolean2VisibilityConverter}}">
 
-                    <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,0">
                         <StackPanel Orientation="Horizontal">
                             <Label Content="Min Sens" HorizontalAlignment="Left" />
 
@@ -217,7 +219,7 @@ Value="{Binding MinGyroThreshold,FallbackValue='0.0'}" Margin="8,0,0,0">
                                 </hc:NumericUpDown.Style>
                             </hc:NumericUpDown>
 
-                            <Label Content="&#xB0;" Margin="2,0,0,0" BorderBrush="{x:Null}" />
+                            <Label Content="dps" Margin="2,0,0,0" BorderBrush="{x:Null}" />
                         </StackPanel>
 
                         <StackPanel Orientation="Horizontal" Margin="16,0,0,0">
@@ -235,7 +237,7 @@ Value="{Binding MaxGyroThreshold,FallbackValue='1.0'}" Margin="8,0,0,0">
                                 </hc:NumericUpDown.Style>
                             </hc:NumericUpDown>
 
-                            <Label Content="&#xB0;" Margin="2,0,0,0" BorderBrush="{x:Null}" />
+                            <Label Content="dps" Margin="2,0,0,0" BorderBrush="{x:Null}" />
                         </StackPanel>
                     </StackPanel>
                 </StackPanel>
