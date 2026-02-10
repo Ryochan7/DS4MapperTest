@@ -176,7 +176,7 @@ namespace DS4MapperTest.GyroActions
             mStickParams.OutputStickChanged += MStickParms_OutputStickChanged;
         }
 
-        public override void Prepare(Mapper mapper, ref GyroEventFrame joystickFrame, bool alterState = true)
+        public override void Prepare(Mapper mapper, ref GyroEventFrame gyroFrame, bool alterState = true)
         {
             //const int deadzone = 24;
             //const int deadzone = 24;
@@ -187,13 +187,13 @@ namespace DS4MapperTest.GyroActions
             double deadzone = mStickParams.deadZone;
             double maxZone = mStickParams.maxZone;
 
-            double timeElapsed = joystickFrame.timeElapsed;
+            double timeElapsed = gyroFrame.timeElapsed;
 
             JoypadActionCodes[] tempTriggerButtons = mStickParams.gyroTriggerButtons;
             bool triggerButtonActive = mapper.IsButtonsActiveDraft(tempTriggerButtons, mStickParams.andCond);
             bool triggerActivated = true;
 
-            double currentRate = joystickFrame.CurrentRate;
+            double currentRate = gyroFrame.CurrentRate;
             //if (tempTriggerButton != JoypadActionCodes.Empty)
             {
                 //bool triggerButtonActive = mapper.IsButtonActive(mStickParms.gyroTriggerButton);
@@ -243,11 +243,11 @@ namespace DS4MapperTest.GyroActions
 
             // Base speed 15 ms
             //double tempDouble = timeElapsed * 66.67;
-            double tempDouble = timeElapsed * joystickFrame.elapsedReference;
+            double tempDouble = timeElapsed * gyroFrame.elapsedReference;
             //Console.WriteLine("Elasped: ({0}) DOUBLE {1}", current.timeElapsed, tempDouble);
             int deltaX = mStickParams.useForXAxis == GyroMouseXAxisChoice.Yaw ?
-                joystickFrame.GyroYaw : joystickFrame.GyroRoll;
-            int deltaY = -joystickFrame.GyroPitch;
+                gyroFrame.GyroYaw : gyroFrame.GyroRoll;
+            int deltaY = -gyroFrame.GyroPitch;
 
             double tempAngle = Math.Atan2(-deltaY, deltaX);
             double normX = Math.Abs(Math.Cos(tempAngle));
@@ -256,8 +256,8 @@ namespace DS4MapperTest.GyroActions
             int signY = Math.Sign(deltaY);
 
             double deltaAngVelX = (mStickParams.useForXAxis == GyroMouseXAxisChoice.Yaw ?
-                joystickFrame.AngGyroYaw : joystickFrame.AngGyroRoll);
-            double deltaAngVelY = joystickFrame.AngGyroPitch;
+                gyroFrame.AngGyroYaw : gyroFrame.AngGyroRoll);
+            double deltaAngVelY = gyroFrame.AngGyroPitch;
 
             double deadzoneX = Math.Abs(normX * deadzone);
             double deadzoneY = Math.Abs(normY * deadzone);
