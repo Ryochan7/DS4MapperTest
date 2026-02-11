@@ -212,6 +212,7 @@ namespace DS4MapperTest
 
         protected VirtualKBMBase eventInputHandler;
         protected VirtualKBMMapping eventInputMapping;
+        public VirtualKBMMapping EventInputMapping => eventInputMapping;
 
         protected ViGEmClient vigemTestClient = null;
         //protected IXbox360Controller outputX360 = null;

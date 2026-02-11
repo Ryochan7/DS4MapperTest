@@ -8,11 +8,19 @@ using DS4MapperTest.ViewModels.Common;
 using DS4MapperTest.ButtonActions;
 using DS4MapperTest.StickActions;
 using DS4MapperTest.StickModifiers;
+using DS4MapperTest.MapperUtil;
 
 namespace DS4MapperTest.ViewModels.StickActionPropViewModels
 {
     public class StickPadActionPropViewModel
     {
+        public enum ActionPresetChoices
+        {
+            None,
+            WASD,
+            Arrows,
+        }
+
         private Mapper mapper;
         public Mapper Mapper
         {
@@ -136,41 +144,70 @@ namespace DS4MapperTest.ViewModels.StickActionPropViewModels
         {
             get => action.EventCodes4[(int)StickPadAction.DpadDirections.Up].DescribeActions(mapper);
         }
+        public event EventHandler ActionUpBtnDisplayBindChanged;
 
         public string ActionDownBtnDisplayBind
         {
             get => action.EventCodes4[(int)StickPadAction.DpadDirections.Down].DescribeActions(mapper);
         }
+        public event EventHandler ActionDownBtnDisplayBindChanged;
 
         public string ActionLeftBtnDisplayBind
         {
             get => action.EventCodes4[(int)StickPadAction.DpadDirections.Left].DescribeActions(mapper);
         }
+        public event EventHandler ActionLeftBtnDisplayBindChanged;
 
         public string ActionRightBtnDisplayBind
         {
             get => action.EventCodes4[(int)StickPadAction.DpadDirections.Right].DescribeActions(mapper);
         }
+        public event EventHandler ActionRightBtnDisplayBindChanged;
 
         public string ActionUpLeftBtnDisplayBind
         {
             get => action.EventCodes4[(int)StickPadAction.DpadDirections.UpLeft].DescribeActions(mapper);
         }
+        public event EventHandler ActionUpLeftBtnDisplayBindChanged;
 
         public string ActionUpRightBtnDisplayBind
         {
             get => action.EventCodes4[(int)StickPadAction.DpadDirections.UpRight].DescribeActions(mapper);
         }
+        public event EventHandler ActionUpRightBtnDisplayBindChanged;
 
         public string ActionDownLeftBtnDisplayBind
         {
             get => action.EventCodes4[(int)StickPadAction.DpadDirections.DownLeft].DescribeActions(mapper);
         }
+        public event EventHandler ActionDownLeftBtnDisplayBindChanged;
 
         public string ActionDownRightBtnDisplayBind
         {
             get => action.EventCodes4[(int)StickPadAction.DpadDirections.DownRight].DescribeActions(mapper);
         }
+        public event EventHandler ActionDownRightBtnDisplayBindChanged;
+
+        private List<EnumChoiceSelection<ActionPresetChoices>> actionPresetChoicesItems = new List<EnumChoiceSelection<ActionPresetChoices>>()
+        {
+            new EnumChoiceSelection<ActionPresetChoices>("", ActionPresetChoices.None),
+            new EnumChoiceSelection<ActionPresetChoices>("WASD", ActionPresetChoices.WASD),
+            new EnumChoiceSelection<ActionPresetChoices>("Arrows", ActionPresetChoices.Arrows),
+        };
+        public List<EnumChoiceSelection<ActionPresetChoices>> ActionPresetChoicesItems => actionPresetChoicesItems;
+
+        private ActionPresetChoices actionPresetChoice;
+        public ActionPresetChoices ActionPresetChoice
+        {
+            get => actionPresetChoice;
+            set
+            {
+                if (actionPresetChoice == value) return;
+                actionPresetChoice = value;
+                ActionPresetChoiceChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        public event EventHandler ActionPresetChoiceChanged;
 
         public bool HighlightName
         {
@@ -253,8 +290,14 @@ namespace DS4MapperTest.ViewModels.StickActionPropViewModels
             DeadZoneChanged += StickPadActionPropViewModel_DeadZoneChanged;
             DeadZoneTypeChanged += StickPadActionPropViewModel_DeadZoneTypeChanged;
             RotationChanged += StickPadActionPropViewModel_RotationChanged;
+            ActionPresetChoiceChanged += StickPadActionPropViewModel_ActionPresetChoiceChanged;
             SelectedPadModeIndexChanged += ChangeStickPadMode;
             SelectedPadModeIndexChanged += StickPadActionPropViewModel_SelectedPadModeIndexChanged;
+        }
+
+        private void StickPadActionPropViewModel_ActionPresetChoiceChanged(object sender, EventArgs e)
+        {
+            SwitchDefinedPreset();
         }
 
         private void StickPadActionPropViewModel_RotationChanged(object sender, EventArgs e)
@@ -530,6 +573,132 @@ namespace DS4MapperTest.ViewModels.StickActionPropViewModels
                 this.action.UsingParentActionButton[(int)StickPadAction.DpadDirections.DownRight] = false;
                 action.RaiseNotifyPropertyChange(mapper, StickPadAction.PropertyKeyStrings.PAD_DIR_DOWNRIGHT);
             });
+        }
+
+        public void SwitchDefinedPreset()
+        {
+            // Do nothing on first (None) choice
+            if (actionPresetChoice == ActionPresetChoices.None) return;
+
+            if (!usingRealAction)
+            {
+                ReplaceExistingLayerAction(this, EventArgs.Empty);
+            }
+
+            ExecuteInMapperThread(() =>
+            {
+                // Find and release all currently active buttons
+                List<StickPadAction.DpadDirections> tempList = new List<StickPadAction.DpadDirections>()
+                {
+                    StickPadAction.DpadDirections.Up, StickPadAction.DpadDirections.Down,
+                    StickPadAction.DpadDirections.Left, StickPadAction.DpadDirections.Right,
+                    StickPadAction.DpadDirections.UpLeft, StickPadAction.DpadDirections.UpRight,
+                    StickPadAction.DpadDirections.DownLeft, StickPadAction.DpadDirections.DownRight,
+                };
+
+                foreach(StickPadAction.DpadDirections dir in tempList)
+                {
+                    AxisDirButton oldAction = action.EventCodes4[(int)dir];
+                    if (oldAction != null)
+                    {
+                        oldAction?.Release(mapper, ignoreReleaseActions: true);
+                    }
+                }
+
+                if (actionPresetChoice == ActionPresetChoices.WASD)
+                {
+                    OutputActionData tempData = new OutputActionData(OutputActionData.ActionType.Keyboard,
+                    (int)VirtualKeys.W,
+                    (int)mapper.EventInputMapping.GetRealEventKey((uint)VirtualKeys.W));
+                    tempData.OutputCodeStr = OutputDataAliasUtil.KeyboardStringAliasDict[VirtualKeys.W];
+                    AxisDirButton newAction = new AxisDirButton(tempData);
+                    action.EventCodes4[(int)StickPadAction.DpadDirections.Up] = newAction as AxisDirButton;
+
+                    tempData = new OutputActionData(OutputActionData.ActionType.Keyboard,
+                        (int)VirtualKeys.S,
+                        (int)mapper.EventInputMapping.GetRealEventKey((uint)VirtualKeys.S));
+                    tempData.OutputCodeStr = OutputDataAliasUtil.KeyboardStringAliasDict[VirtualKeys.S];
+                    newAction = new AxisDirButton(tempData);
+                    action.EventCodes4[(int)StickPadAction.DpadDirections.Down] = newAction as AxisDirButton;
+
+                    tempData = new OutputActionData(OutputActionData.ActionType.Keyboard,
+                        (int)VirtualKeys.A,
+                        (int)mapper.EventInputMapping.GetRealEventKey((uint)VirtualKeys.A));
+                    tempData.OutputCodeStr = OutputDataAliasUtil.KeyboardStringAliasDict[VirtualKeys.A];
+                    newAction = new AxisDirButton(tempData);
+                    action.EventCodes4[(int)StickPadAction.DpadDirections.Left] = newAction as AxisDirButton;
+
+                    tempData = new OutputActionData(OutputActionData.ActionType.Keyboard,
+                        (int)VirtualKeys.D,
+                        (int)mapper.EventInputMapping.GetRealEventKey((uint)VirtualKeys.D));
+                    tempData.OutputCodeStr = OutputDataAliasUtil.KeyboardStringAliasDict[VirtualKeys.D];
+                    newAction = new AxisDirButton(tempData);
+                    action.EventCodes4[(int)StickPadAction.DpadDirections.Right] = newAction as AxisDirButton;
+
+                    this.action.UsingParentActionButton[(int)StickPadAction.DpadDirections.Up] = false;
+                    this.action.UsingParentActionButton[(int)StickPadAction.DpadDirections.Down] = false;
+                    this.action.UsingParentActionButton[(int)StickPadAction.DpadDirections.Left] = false;
+                    this.action.UsingParentActionButton[(int)StickPadAction.DpadDirections.Right] = false;
+
+                    action.ChangedProperties.Add(StickPadAction.PropertyKeyStrings.PAD_DIR_UP);
+                    action.RaiseNotifyPropertyChange(mapper, StickPadAction.PropertyKeyStrings.PAD_DIR_UP);
+                    action.ChangedProperties.Add(StickPadAction.PropertyKeyStrings.PAD_DIR_DOWN);
+                    action.RaiseNotifyPropertyChange(mapper, StickPadAction.PropertyKeyStrings.PAD_DIR_DOWN);
+                    action.ChangedProperties.Add(StickPadAction.PropertyKeyStrings.PAD_DIR_LEFT);
+                    action.RaiseNotifyPropertyChange(mapper, StickPadAction.PropertyKeyStrings.PAD_DIR_LEFT);
+                    action.ChangedProperties.Add(StickPadAction.PropertyKeyStrings.PAD_DIR_RIGHT);
+                    action.RaiseNotifyPropertyChange(mapper, StickPadAction.PropertyKeyStrings.PAD_DIR_RIGHT);
+                }
+                else if (actionPresetChoice == ActionPresetChoices.Arrows)
+                {
+                    OutputActionData tempData = new OutputActionData(OutputActionData.ActionType.Keyboard,
+                    (int)VirtualKeys.Up,
+                    (int)mapper.EventInputMapping.GetRealEventKey((uint)VirtualKeys.Up));
+                    tempData.OutputCodeStr = OutputDataAliasUtil.KeyboardStringAliasDict[VirtualKeys.Up];
+                    AxisDirButton newAction = new AxisDirButton(tempData);
+                    action.EventCodes4[(int)StickPadAction.DpadDirections.Up] = newAction as AxisDirButton;
+
+                    tempData = new OutputActionData(OutputActionData.ActionType.Keyboard,
+                        (int)VirtualKeys.Down,
+                        (int)mapper.EventInputMapping.GetRealEventKey((uint)VirtualKeys.Down));
+                    tempData.OutputCodeStr = OutputDataAliasUtil.KeyboardStringAliasDict[VirtualKeys.Down];
+                    newAction = new AxisDirButton(tempData);
+                    action.EventCodes4[(int)StickPadAction.DpadDirections.Down] = newAction as AxisDirButton;
+
+                    tempData = new OutputActionData(OutputActionData.ActionType.Keyboard,
+                        (int)VirtualKeys.Left,
+                        (int)mapper.EventInputMapping.GetRealEventKey((uint)VirtualKeys.Left));
+                    tempData.OutputCodeStr = OutputDataAliasUtil.KeyboardStringAliasDict[VirtualKeys.Left];
+                    newAction = new AxisDirButton(tempData);
+                    action.EventCodes4[(int)StickPadAction.DpadDirections.Left] = newAction as AxisDirButton;
+
+                    tempData = new OutputActionData(OutputActionData.ActionType.Keyboard,
+                        (int)VirtualKeys.Right,
+                        (int)mapper.EventInputMapping.GetRealEventKey((uint)VirtualKeys.Right));
+                    tempData.OutputCodeStr = OutputDataAliasUtil.KeyboardStringAliasDict[VirtualKeys.Right];
+                    newAction = new AxisDirButton(tempData);
+                    action.EventCodes4[(int)StickPadAction.DpadDirections.Right] = newAction as AxisDirButton;
+
+                    this.action.UsingParentActionButton[(int)StickPadAction.DpadDirections.Up] = false;
+                    this.action.UsingParentActionButton[(int)StickPadAction.DpadDirections.Down] = false;
+                    this.action.UsingParentActionButton[(int)StickPadAction.DpadDirections.Left] = false;
+                    this.action.UsingParentActionButton[(int)StickPadAction.DpadDirections.Right] = false;
+
+                    action.ChangedProperties.Add(StickPadAction.PropertyKeyStrings.PAD_DIR_UP);
+                    action.RaiseNotifyPropertyChange(mapper, StickPadAction.PropertyKeyStrings.PAD_DIR_UP);
+                    action.ChangedProperties.Add(StickPadAction.PropertyKeyStrings.PAD_DIR_DOWN);
+                    action.RaiseNotifyPropertyChange(mapper, StickPadAction.PropertyKeyStrings.PAD_DIR_DOWN);
+                    action.ChangedProperties.Add(StickPadAction.PropertyKeyStrings.PAD_DIR_LEFT);
+                    action.RaiseNotifyPropertyChange(mapper, StickPadAction.PropertyKeyStrings.PAD_DIR_LEFT);
+                    action.ChangedProperties.Add(StickPadAction.PropertyKeyStrings.PAD_DIR_RIGHT);
+                    action.RaiseNotifyPropertyChange(mapper, StickPadAction.PropertyKeyStrings.PAD_DIR_RIGHT);
+                }
+            });
+
+            ActionUpBtnDisplayBindChanged?.Invoke(this, EventArgs.Empty);
+            ActionDownBtnDisplayBindChanged?.Invoke(this, EventArgs.Empty);
+            ActionLeftBtnDisplayBindChanged?.Invoke(this, EventArgs.Empty);
+            ActionRightBtnDisplayBindChanged?.Invoke(this, EventArgs.Empty);
         }
 
         protected void ExecuteInMapperThread(Action tempAction)
