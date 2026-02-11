@@ -63,6 +63,8 @@ namespace DS4MapperTest
                 [VirtualKeys.OEM7] = "Quote",
                 [VirtualKeys.OEMComma] = "Comma",
                 [VirtualKeys.OEM2] = "Slash",
+                [VirtualKeys.OEMPlus] = "Equal",
+                [VirtualKeys.OEMPeriod] = "Period",
                 [VirtualKeys.Insert] = "Insert",
                 [VirtualKeys.Delete] = "Delete",
                 [VirtualKeys.Home] = "Home",
@@ -102,293 +104,277 @@ namespace DS4MapperTest
 
         public static Dictionary<VirtualKeys, string> KeyboardStringAliasDict => keyboardStringAliasDict;
 
-        public static string GetStringForKeyboardKey(uint keyCode)
+        public static string GetDisplayStringForKeyboardKey(uint keycode)
         {
             string result = "";
-            if (keyCode < FakerInputHandler.MODIFIER_MASK)
+            VirtualKeys key = (VirtualKeys)keycode;
+            switch(key)
             {
-                KeyboardKey tempKeyCode = (KeyboardKey)keyCode;
-                switch (tempKeyCode)
-                {
-                    case KeyboardKey.A:
-                        result = "A";
-                        break;
-                    case KeyboardKey.B:
-                        result = "B";
-                        break;
-                    case KeyboardKey.C:
-                        result = "C";
-                        break;
-                    case KeyboardKey.D:
-                        result = "D";
-                        break;
-                    case KeyboardKey.E:
-                        result = "E";
-                        break;
-                    case KeyboardKey.F:
-                        result = "F";
-                        break;
-                    case KeyboardKey.G:
-                        result = "G";
-                        break;
-                    case KeyboardKey.H:
-                        result = "H";
-                        break;
-                    case KeyboardKey.I:
-                        result = "I";
-                        break;
-                    case KeyboardKey.J:
-                        result = "J";
-                        break;
-                    case KeyboardKey.K:
-                        result = "K";
-                        break;
-                    case KeyboardKey.L:
-                        result = "L";
-                        break;
-                    case KeyboardKey.M:
-                        result = "M";
-                        break;
-                    case KeyboardKey.N:
-                        result = "N";
-                        break;
-                    case KeyboardKey.O:
-                        result = "O";
-                        break;
-                    case KeyboardKey.P:
-                        result = "P";
-                        break;
-                    case KeyboardKey.Q:
-                        result = "Q";
-                        break;
-                    case KeyboardKey.R:
-                        result = "R";
-                        break;
-                    case KeyboardKey.S:
-                        result = "S";
-                        break;
-                    case KeyboardKey.T:
-                        result = "T";
-                        break;
-                    case KeyboardKey.U:
-                        result = "U";
-                        break;
-                    case KeyboardKey.V:
-                        result = "V";
-                        break;
-                    case KeyboardKey.W:
-                        result = "W";
-                        break;
-                    case KeyboardKey.X:
-                        result = "X";
-                        break;
-                    case KeyboardKey.Y:
-                        result = "Y";
-                        break;
-                    case KeyboardKey.Z:
-                        result = "Z";
-                        break;
-                    case KeyboardKey.Tilde:
-                        result = "Grave";
-                        break;
-                    case KeyboardKey.Tab:
-                        result = "Tab";
-                        break;
-                    case KeyboardKey.Spacebar:
-                        result = "Space";
-                        break;
-                    case KeyboardKey.Escape:
-                        result = "Escape";
-                        break;
-                    case KeyboardKey.Enter:
-                        result = "Enter";
-                        break;
-                    case KeyboardKey.UpArrow:
-                        result = "Up";
-                        break;
-                    case KeyboardKey.DownArrow:
-                        result = "Down";
-                        break;
-                    case KeyboardKey.LeftArrow:
-                        result = "Left";
-                        break;
-                    case KeyboardKey.RightArrow:
-                        result = "Right";
-                        break;
-                    case KeyboardKey.CapsLock:
-                        result = "CapsLock";
-                        break;
-                    case KeyboardKey.Subtract:
-                        result = "Minus";
-                        break;
-                    case KeyboardKey.Equals:
-                        result = "Equal";
-                        break;
-                    case KeyboardKey.OpenBrace:
-                        result = "LeftBracket";
-                        break;
-                    case KeyboardKey.CloseBrace:
-                        result = "RightBracket";
-                        break;
-                    case KeyboardKey.Backslash:
-                        result = "Backslash";
-                        break;
-                    case KeyboardKey.Semicolon:
-                        result = "Semicolon";
-                        break;
-                    case KeyboardKey.Quote:
-                        result = "Quote";
-                        break;
-                    case KeyboardKey.Comma:
-                        result = "Comma";
-                        break;
-                    case KeyboardKey.Dot:
-                        result = "Period";
-                        break;
-                    case KeyboardKey.ForwardSlash:
-                        result = "Slash";
-                        break;
-                    case KeyboardKey.Insert:
-                        result = "Insert";
-                        break;
-                    case KeyboardKey.Delete:
-                        result = "Delete";
-                        break;
-                    case KeyboardKey.Home:
-                        result = "Home";
-                        break;
-                    case KeyboardKey.End:
-                        result = "End";
-                        break;
-                    case KeyboardKey.PageUp:
-                        result = "PageUp";
-                        break;
-                    case KeyboardKey.PageDown:
-                        result = "PageDown";
-                        break;
-                    case KeyboardKey.PrintScreen:
-                        result = "PrintScreen";
-                        break;
-                    case KeyboardKey.ScrollLock:
-                        result = "ScrollLock";
-                        break;
-                    case KeyboardKey.Pause:
-                        result = "Pause";
-                        break;
-                    case KeyboardKey.Number1:
-                        result = "1";
-                        break;
-                    case KeyboardKey.Number2:
-                        result = "2";
-                        break;
-                    case KeyboardKey.Number3:
-                        result = "3";
-                        break;
-                    case KeyboardKey.Number4:
-                        result = "4";
-                        break;
-                    case KeyboardKey.Number5:
-                        result = "5";
-                        break;
-                    case KeyboardKey.Number6:
-                        result = "6";
-                        break;
-                    case KeyboardKey.Number7:
-                        result = "7";
-                        break;
-                    case KeyboardKey.Number8:
-                        result = "8";
-                        break;
-                    case KeyboardKey.Number9:
-                        result = "9";
-                        break;
-                    case KeyboardKey.Number0:
-                        result = "0";
-                        break;
-                    case KeyboardKey.F1:
-                        result = "F1";
-                        break;
-                    case KeyboardKey.F2:
-                        result = "F2";
-                        break;
-                    case KeyboardKey.F3:
-                        result = "F3";
-                        break;
-                    case KeyboardKey.F4:
-                        result = "F4";
-                        break;
-                    case KeyboardKey.F5:
-                        result = "F5";
-                        break;
-                    case KeyboardKey.F6:
-                        result = "F6";
-                        break;
-                    case KeyboardKey.F7:
-                        result = "F7";
-                        break;
-                    case KeyboardKey.F8:
-                        result = "F8";
-                        break;
-                    case KeyboardKey.F9:
-                        result = "F9";
-                        break;
-                    case KeyboardKey.F10:
-                        result = "F10";
-                        break;
-                    case KeyboardKey.F11:
-                        result = "F11";
-                        break;
-                    case KeyboardKey.F12:
-                        result = "F12";
-                        break;
-                    default:
-                        result = "Empty";
-                        break;
-                }
-            }
-            else if (keyCode < FakerInputHandler.MODIFIER_ENHANCED)
-            {
-                KeyboardModifier tempKeyCode = (KeyboardModifier)keyCode;
-                switch (tempKeyCode)
-                {
-                    case KeyboardModifier.LShift:
-                        result = "LShift";
-                        break;
-                    case KeyboardModifier.RShift:
-                        result = "RShift";
-                        break;
-                    case KeyboardModifier.LAlt:
-                        result = "LAlt";
-                        break;
-                    case KeyboardModifier.RAlt:
-                        result = "RAlt";
-                        break;
-                    case KeyboardModifier.LControl:
-                        result = "LCtrl";
-                        break;
-                    case KeyboardModifier.RControl:
-                        result = "RCtrl";
-                        break;
-                    case KeyboardModifier.LWin:
-                        result = "LWin";
-                        break;
-                    case KeyboardModifier.RWin:
-                        result = "RWin";
-                        break;
-                    default:
-                        break;
-                }
-            }
-            else
-            {
-                EnhancedKey tempKeyCode = (EnhancedKey)(keyCode & ~FakerInputHandler.MODIFIER_ENHANCED);
-                switch (tempKeyCode)
-                {
-                    default:
-                        break;
-                }
-            }
+                case VirtualKeys.A:
+                    result = "A";
+                    break;
+                case VirtualKeys.B:
+                    result = "B";
+                    break;
+                case VirtualKeys.C:
+                    result = "C";
+                    break;
+                case VirtualKeys.D:
+                    result = "D";
+                    break;
+                case VirtualKeys.E:
+                    result = "E";
+                    break;
+                case VirtualKeys.F:
+                    result = "F";
+                    break;
+                case VirtualKeys.G:
+                    result = "G";
+                    break;
+                case VirtualKeys.H:
+                    result = "H";
+                    break;
+                case VirtualKeys.I:
+                    result = "I";
+                    break;
+                case VirtualKeys.J:
+                    result = "J";
+                    break;
+                case VirtualKeys.K:
+                    result = "K";
+                    break;
+                case VirtualKeys.L:
+                    result = "L";
+                    break;
+                case VirtualKeys.M:
+                    result = "M";
+                    break;
+                case VirtualKeys.N:
+                    result = "N";
+                    break;
+                case VirtualKeys.O:
+                    result = "O";
+                    break;
+                case VirtualKeys.P:
+                    result = "P";
+                    break;
+                case VirtualKeys.Q:
+                    result = "Q";
+                    break;
+                case VirtualKeys.R:
+                    result = "R";
+                    break;
+                case VirtualKeys.S:
+                    result = "S";
+                    break;
+                case VirtualKeys.T:
+                    result = "T";
+                    break;
+                case VirtualKeys.U:
+                    result = "U";
+                    break;
+                case VirtualKeys.V:
+                    result = "V";
+                    break;
+                case VirtualKeys.W:
+                    result = "W";
+                    break;
+                case VirtualKeys.X:
+                    result = "X";
+                    break;
+                case VirtualKeys.Y:
+                    result = "Y";
+                    break;
+                case VirtualKeys.Z:
+                    result = "Z";
+                    break;
 
+                case VirtualKeys.OEM3:
+                    result = "Grave";
+                    break;
+                case VirtualKeys.Tab:
+                    result = "Tab";
+                    break;
+                case VirtualKeys.Space:
+                    result = "Space";
+                    break;
+                case VirtualKeys.Escape:
+                    result = "Escape";
+                    break;
+                case VirtualKeys.Return:
+                    result = "Enter";
+                    break;
+                case VirtualKeys.Up:
+                    result = "Up";
+                    break;
+                case VirtualKeys.Down:
+                    result = "Down";
+                    break;
+                case VirtualKeys.Left:
+                    result = "Left";
+                    break;
+                case VirtualKeys.Right:
+                    result = "Right";
+                    break;
+                case VirtualKeys.CapsLock:
+                    result = "CapsLock";
+                    break;
+                case VirtualKeys.Subtract:
+                    result = "Minus";
+                    break;
+
+                // TODO
+                case VirtualKeys.OEMPlus:
+                    result = "Equal";
+                    break;
+
+                case VirtualKeys.OEM4:
+                    result = "LeftBracket";
+                    break;
+                case VirtualKeys.OEM6:
+                    result = "RightBracket";
+                    break;
+                case VirtualKeys.OEM5:
+                    result = "Backslash";
+                    break;
+                case VirtualKeys.OEM1:
+                    result = "Semicolon";
+                    break;
+                case VirtualKeys.OEM7:
+                    result = "Quote";
+                    break;
+                case VirtualKeys.OEMComma:
+                    result = "Comma";
+                    break;
+
+                // TODO
+                case VirtualKeys.OEMPeriod:
+                    result = "Period";
+                    break;
+
+                case VirtualKeys.OEM2:
+                    result = "Slash";
+                    break;
+                case VirtualKeys.Insert:
+                    result = "Insert";
+                    break;
+                case VirtualKeys.Delete:
+                    result = "Delete";
+                    break;
+                case VirtualKeys.Home:
+                    result = "Home";
+                    break;
+                case VirtualKeys.End:
+                    result = "End";
+                    break;
+                case VirtualKeys.Prior:
+                    result = "PageUp";
+                    break;
+                case VirtualKeys.Next:
+                    result = "PageDown";
+                    break;
+                case VirtualKeys.Snapshot:
+                    result = "PrintScreen";
+                    break;
+                case VirtualKeys.ScrollLock:
+                    result = "ScrollLock";
+                    break;
+                case VirtualKeys.Pause:
+                    result = "Pause";
+                    break;
+                case VirtualKeys.N1:
+                    result = "1";
+                    break;
+                case VirtualKeys.N2:
+                    result = "2";
+                    break;
+                case VirtualKeys.N3:
+                    result = "3";
+                    break;
+                case VirtualKeys.N4:
+                    result = "4";
+                    break;
+                case VirtualKeys.N5:
+                    result = "5";
+                    break;
+                case VirtualKeys.N6:
+                    result = "6";
+                    break;
+                case VirtualKeys.N7:
+                    result = "7";
+                    break;
+                case VirtualKeys.N8:
+                    result = "8";
+                    break;
+                case VirtualKeys.N9:
+                    result = "9";
+                    break;
+                case VirtualKeys.N0:
+                    result = "0";
+                    break;
+                case VirtualKeys.F1:
+                    result = "F1";
+                    break;
+                case VirtualKeys.F2:
+                    result = "F2";
+                    break;
+                case VirtualKeys.F3:
+                    result = "F3";
+                    break;
+                case VirtualKeys.F4:
+                    result = "F4";
+                    break;
+                case VirtualKeys.F5:
+                    result = "F5";
+                    break;
+                case VirtualKeys.F6:
+                    result = "F6";
+                    break;
+                case VirtualKeys.F7:
+                    result = "F7";
+                    break;
+                case VirtualKeys.F8:
+                    result = "F8";
+                    break;
+                case VirtualKeys.F9:
+                    result = "F9";
+                    break;
+                case VirtualKeys.F10:
+                    result = "F10";
+                    break;
+                case VirtualKeys.F11:
+                    result = "F11";
+                    break;
+                case VirtualKeys.F12:
+                    result = "F12";
+                    break;
+
+                case VirtualKeys.LeftShift:
+                    result = "LShift";
+                    break;
+                case VirtualKeys.RightShift:
+                    result = "RShift";
+                    break;
+                case VirtualKeys.LeftMenu:
+                    result = "LAlt";
+                    break;
+                case VirtualKeys.RightMenu:
+                    result = "RAlt";
+                    break;
+                case VirtualKeys.LeftControl:
+                    result = "LCtrl";
+                    break;
+                case VirtualKeys.RightControl:
+                    result = "RCtrl";
+                    break;
+                case VirtualKeys.LeftWindows:
+                    result = "LWin";
+                    break;
+                case VirtualKeys.RightWindows:
+                    result = "RWin";
+                    break;
+                default: break;
+            }
             return result;
         }
 

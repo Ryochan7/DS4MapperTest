@@ -74,7 +74,9 @@ namespace DS4MapperTest.MapperUtil
             public int stepNum;
         }
 
+        // internal codes
         private int outputCode;
+        // Native event code. Used primarily for keyboard translation
         private uint outputCodeAlias;
         // Hold string as stored in the profile
         private string outputCodeProfileStr;
@@ -477,7 +479,8 @@ namespace DS4MapperTest.MapperUtil
             {
                 case ActionType.Keyboard:
                     //result = OutputDataAliasUtil.GetStringForKeyboardKey(outputCodeAlias);
-                    result = OutputCodeStr;
+                    result = OutputDataAliasUtil.GetDisplayStringForKeyboardKey((uint)outputCode);
+                    //result = OutputCodeStr;
                     break;
                 case ActionType.MouseButton:
                     result = OutputDataAliasUtil.GetStringForMouseButton(outputCode);

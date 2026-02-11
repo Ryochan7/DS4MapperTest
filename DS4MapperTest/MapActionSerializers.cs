@@ -7919,9 +7919,9 @@ namespace DS4MapperTest
                                     temp = OutputActionDataSerializer.ParseKeyboardCodeString(tempKeyAlias);
                                     if (temp > 0)
                                     {
-                                        temp = ProfileSerializer.EventInputMapper.GetRealEventKey(temp);
+                                        uint realKey = ProfileSerializer.EventInputMapper.GetRealEventKey(temp);
                                         tempInstance.OutputCode = (int)temp;
-                                        tempInstance.OutputCodeAlias = temp;
+                                        tempInstance.OutputCodeAlias = realKey;
                                         tempInstance.OutputCodeStr = tempKeyAlias;
                                     }
                                     else
