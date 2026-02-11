@@ -30,7 +30,7 @@
                     </StackPanel>
 
                     <DockPanel DockPanel.Dock="Top">
-                        <ListView x:Name="deviceListView" ItemsSource="{Binding ControllerList}" SelectedIndex="{Binding SelectIndex, FallbackValue='-1'}" MouseDoubleClick="DeviceListView_MouseDoubleClick">
+                        <ListView x:Name="deviceListView" ItemsSource="{Binding ControllerList}" SelectedIndex="{Binding SelectedIndex, FallbackValue='-1'}" MouseDoubleClick="DeviceListView_MouseDoubleClick">
                             <ListView.View>
                                 <GridView>
                                     <GridView.Columns>
