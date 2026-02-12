@@ -139,6 +139,7 @@ namespace DS4MapperTest.GyroActions
                 outputAxes = GyroMouseJoystickOuputAxes.All,
                 outputStick = StickActionCodes.RS,
                 maxOutput = 1.0,
+                triggerActivates = true,
                 andCond = true,
                 gyroTriggerButtons = new JoypadActionCodes[1]
                 {
