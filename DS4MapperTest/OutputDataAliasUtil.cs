@@ -223,7 +223,6 @@ namespace DS4MapperTest
                     result = "Minus";
                     break;
 
-                // TODO
                 case VirtualKeys.OEMPlus:
                     result = "Equal";
                     break;
@@ -247,7 +246,6 @@ namespace DS4MapperTest
                     result = "Comma";
                     break;
 
-                // TODO
                 case VirtualKeys.OEMPeriod:
                     result = "Period";
                     break;
