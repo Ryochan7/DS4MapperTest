@@ -7277,201 +7277,211 @@ namespace DS4MapperTest
             string actionOutput = j["ActionMode"]?.ToString();
             //bool status = int.TryParse(j["Index"]?.ToString(), out int ind);
             object resultInstance = null;
-            switch (actionOutput)
+
+            // If action parsing fails, just skip it
+            try
             {
-                case "ButtonAction":
-                    ButtonActionSerializer instance = new ButtonActionSerializer();
-                    ButtonAction tempAction = instance.ButtonAction;
-                    /*if (ActionSetSerializer.TopActionLayer != null)
-                    {
-                        //int ind = ActionLayerSerializer.CurrentActionIndex;
-                        bool status = int.TryParse(j["Id"]?.ToString(), out int parentId);
-                        int ind = status ? ActionSetSerializer.TopActionLayer.LayerActions.FindIndex((item) => item.Id == parentId) : -1;
-                        if (status && ind >= 0)
-                        //if (ind > 0 &&
-                        //    ind < ActionSetSerializer.TopActionLayer.LayerActions.Count)
+                switch (actionOutput)
+                {
+                    case "ButtonAction":
+                        ButtonActionSerializer instance = new ButtonActionSerializer();
+                        ButtonAction tempAction = instance.ButtonAction;
+                        /*if (ActionSetSerializer.TopActionLayer != null)
                         {
-                            MapAction tempMap =
-                                ActionSetSerializer.TopActionLayer.LayerActions[ind];
-                            if (tempMap.IsSameType(tempMap, tempAction))
+                            //int ind = ActionLayerSerializer.CurrentActionIndex;
+                            bool status = int.TryParse(j["Id"]?.ToString(), out int parentId);
+                            int ind = status ? ActionSetSerializer.TopActionLayer.LayerActions.FindIndex((item) => item.Id == parentId) : -1;
+                            if (status && ind >= 0)
+                            //if (ind > 0 &&
+                            //    ind < ActionSetSerializer.TopActionLayer.LayerActions.Count)
                             {
-                                instance.ButtonAction =
-                                    ((tempMap as ButtonAction).DuplicateAction() as ButtonAction);
+                                MapAction tempMap =
+                                    ActionSetSerializer.TopActionLayer.LayerActions[ind];
+                                if (tempMap.IsSameType(tempMap, tempAction))
+                                {
+                                    instance.ButtonAction =
+                                        ((tempMap as ButtonAction).DuplicateAction() as ButtonAction);
+                                }
                             }
                         }
-                    }
-                    */
+                        */
 
-                    JsonConvert.PopulateObject(j.ToString(), instance);
-                    instance.ActionFuncSerializers.RemoveAll((item) => item == null);
-                    instance.RaiseActionFuncSerializersChanged();
-                    resultInstance = instance;
-                    break;
-                case "ButtonNoAction":
-                    ButtonNoActionSerializer btnNoActinstance = new ButtonNoActionSerializer();
-                    JsonConvert.PopulateObject(j.ToString(), btnNoActinstance);
-                    resultInstance = btnNoActinstance;
-                    break;
-                case "StickPadAction":
-                    StickPadActionSerializer stickPadInstance = new StickPadActionSerializer();
-                    JsonConvert.PopulateObject(j.ToString(), stickPadInstance);
-                    foreach (StickPadAction.DpadDirections dir in stickPadInstance.DictPadBindings.Keys)
-                    {
-                        //stickPadInstance.DictPadBindings[dir].RemoveAll((item) => item == null);
-                        //stickPadInstance.DictPadBindings[dir].RemoveAll((item) => item == null);
-                        stickPadInstance.DictPadBindings[dir].ActionFuncSerializers.RemoveAll((item) => item == null);
-                    }
+                        JsonConvert.PopulateObject(j.ToString(), instance);
+                        instance.ActionFuncSerializers.RemoveAll((item) => item == null);
+                        instance.RaiseActionFuncSerializersChanged();
+                        resultInstance = instance;
+                        break;
+                    case "ButtonNoAction":
+                        ButtonNoActionSerializer btnNoActinstance = new ButtonNoActionSerializer();
+                        JsonConvert.PopulateObject(j.ToString(), btnNoActinstance);
+                        resultInstance = btnNoActinstance;
+                        break;
+                    case "StickPadAction":
+                        StickPadActionSerializer stickPadInstance = new StickPadActionSerializer();
+                        JsonConvert.PopulateObject(j.ToString(), stickPadInstance);
+                        foreach (StickPadAction.DpadDirections dir in stickPadInstance.DictPadBindings.Keys)
+                        {
+                            //stickPadInstance.DictPadBindings[dir].RemoveAll((item) => item == null);
+                            //stickPadInstance.DictPadBindings[dir].RemoveAll((item) => item == null);
+                            stickPadInstance.DictPadBindings[dir].ActionFuncSerializers.RemoveAll((item) => item == null);
+                        }
 
-                    resultInstance = stickPadInstance;
-                    break;
-                case "StickMouseAction":
-                    StickMouseSerializer stickMouseInstance = new StickMouseSerializer();
-                    JsonConvert.PopulateObject(j.ToString(), stickMouseInstance);
-                    resultInstance = stickMouseInstance;
-                    break;
-                case "StickTranslateAction":
-                    StickTranslateSerializer stickTransActInstance = new StickTranslateSerializer();
-                    JsonConvert.PopulateObject(j.ToString(), stickTransActInstance);
-                    resultInstance = stickTransActInstance;
-                    break;
-                case "StickAbsMouseAction":
-                    StickAbsMouseActionSerializer stickAbsMouseInstance = new StickAbsMouseActionSerializer();
-                    JsonConvert.PopulateObject(j.ToString(), stickAbsMouseInstance);
-                    resultInstance = stickAbsMouseInstance;
-                    break;
-                case "StickCircularAction":
-                    StickCircularSerializer stickCircActInstance = new StickCircularSerializer();
-                    JsonConvert.PopulateObject(j.ToString(), stickCircActInstance);
-                    resultInstance = stickCircActInstance;
-                    break;
-                case "StickFlickStickAction":
-                    StickFlickStickActionSerializer flickInstance = new StickFlickStickActionSerializer();
-                    JsonConvert.PopulateObject(j.ToString(), flickInstance);
-                    resultInstance = flickInstance;
-                    break;
-                case "StickNoAction":
-                    StickNoActionSerializer stickNoActinstance = new StickNoActionSerializer();
-                    JsonConvert.PopulateObject(j.ToString(), stickNoActinstance);
-                    resultInstance = stickNoActinstance;
-                    break;
-                case "TriggerTranslateAction":
-                    TriggerTranslateActionSerializer triggerActInstance = new TriggerTranslateActionSerializer();
-                    JsonConvert.PopulateObject(j.ToString(), triggerActInstance);
-                    resultInstance = triggerActInstance;
-                    break;
-                case "TriggerButtonAction":
-                    TriggerButtonActionSerializer triggerButtonActInstance = new TriggerButtonActionSerializer();
-                    JsonConvert.PopulateObject(j.ToString(), triggerButtonActInstance);
-                    resultInstance = triggerButtonActInstance;
-                    break;
-                case "TriggerDualStageAction":
-                    TriggerDualStageActionSerializer triggerDualActInstance = new TriggerDualStageActionSerializer();
-                    JsonConvert.PopulateObject(j.ToString(), triggerDualActInstance);
-                    resultInstance = triggerDualActInstance;
-                    break;
-                case "TouchStickTranslateAction":
-                    TouchpadStickActionSerializer touchStickActInstance = new TouchpadStickActionSerializer();
-                    JsonConvert.PopulateObject(j.ToString(), touchStickActInstance);
-                    resultInstance = touchStickActInstance;
-                    break;
-                case "TouchMouseAction":
-                    TouchpadMouseSerializer touchMouseActInstance = new TouchpadMouseSerializer();
-                    JsonConvert.PopulateObject(j.ToString(), touchMouseActInstance);
-                    resultInstance = touchMouseActInstance;
-                    break;
-                case "TouchMouseJoystickAction":
-                    TouchpadMouseJoystickSerializer touchMouseJoyActInstance = new TouchpadMouseJoystickSerializer();
-                    JsonConvert.PopulateObject(j.ToString(), touchMouseJoyActInstance);
-                    resultInstance = touchMouseJoyActInstance;
-                    break;
-                case "TouchActionPadAction":
-                    TouchpadActionPadSerializer touchActionPadInstance = new TouchpadActionPadSerializer();
-                    JsonConvert.PopulateObject(j.ToString(), touchActionPadInstance);
-                    resultInstance = touchActionPadInstance;
-                    break;
-                case "TouchAbsPadAction":
-                    TouchpadAbsActionSerializer touchAbsActionInstance = new TouchpadAbsActionSerializer();
-                    JsonConvert.PopulateObject(j.ToString(), touchAbsActionInstance);
-                    resultInstance = touchAbsActionInstance;
-                    break;
-                case "TouchCircularAction":
-                    TouchpadCircularSerializer touchCircActInstance = new TouchpadCircularSerializer();
-                    JsonConvert.PopulateObject(j.ToString(), touchCircActInstance);
-                    resultInstance = touchCircActInstance;
-                    break;
-                case "TouchDirSwipeAction":
-                    TouchpadDirectionalSwipeSerializer touchDirSwipeInstance = new TouchpadDirectionalSwipeSerializer();
-                    JsonConvert.PopulateObject(j.ToString(), touchDirSwipeInstance);
-                    resultInstance = touchDirSwipeInstance;
-                    break;
-                case "TouchAxesAction":
-                    TouchpadAxesActionSerializer touchAxesActInstance = new TouchpadAxesActionSerializer();
-                    JsonConvert.PopulateObject(j.ToString(), touchAxesActInstance);
-                    resultInstance = touchAxesActInstance;
-                    break;
-                case "TouchSingleButtonAction":
-                    TouchpadSingleButtonSerializer touchSingleBtnActInstance = new TouchpadSingleButtonSerializer();
-                    JsonConvert.PopulateObject(j.ToString(), touchSingleBtnActInstance);
-                    resultInstance = touchSingleBtnActInstance;
-                    break;
-                case "TouchFlickStickAction":
-                    TouchpadFlickStickActionSerializer touchFlickInstance = new TouchpadFlickStickActionSerializer();
-                    JsonConvert.PopulateObject(j.ToString(), touchFlickInstance);
-                    resultInstance = touchFlickInstance;
-                    break;
-                case "TouchNoAction":
-                    TouchpadNoActionSerializer touchNoActinstance = new TouchpadNoActionSerializer();
-                    JsonConvert.PopulateObject(j.ToString(), touchNoActinstance);
-                    resultInstance = touchNoActinstance;
-                    break;
-                case "DPadAction":
-                    DpadActionSerializer dpadActSerializer = new DpadActionSerializer();
-                    JsonConvert.PopulateObject(j.ToString(), dpadActSerializer);
-                    foreach (DPadActions.DpadDirections dir in dpadActSerializer.DictPadBindings.Keys)
-                    {
-                        //dpadActSerializer.DictPadBindings[dir].RemoveAll((item) => item == null);
-                        dpadActSerializer.DictPadBindings[dir].ActionFuncSerializers.RemoveAll((item) => item == null);
-                    }
-                    resultInstance = dpadActSerializer;
-                    break;
-                case "DPadNoAction":
-                    DpadNoActionSerializer dpadNoActSerializer = new DpadNoActionSerializer();
-                    JsonConvert.PopulateObject(j.ToString(), dpadNoActSerializer);
-                    resultInstance = dpadNoActSerializer;
-                    break;
-                case "DPadTranslateAction":
-                    DpadTranslateSerializer dpadTransActSerializer = new DpadTranslateSerializer();
-                    JsonConvert.PopulateObject(j.ToString(), dpadTransActSerializer);
-                    resultInstance = dpadTransActSerializer;
-                    break;
-                case "GyroMouseAction":
-                    GyroMouseSerializer gyroMouseInstance = new GyroMouseSerializer();
-                    JsonConvert.PopulateObject(j.ToString(), gyroMouseInstance);
-                    resultInstance = gyroMouseInstance;
-                    break;
-                case "GyroMouseJoystickAction":
-                    GyroMouseJoystickSerializer gyroMouseStickInstance = new GyroMouseJoystickSerializer();
-                    JsonConvert.PopulateObject(j.ToString(), gyroMouseStickInstance);
-                    resultInstance = gyroMouseStickInstance;
-                    break;
-                case "GyroDirSwipeAction":
-                    GyroDirectionalSwipeSerializer gyroDirSwipeInstance = new GyroDirectionalSwipeSerializer();
-                    JsonConvert.PopulateObject(j.ToString(), gyroDirSwipeInstance);
-                    resultInstance = gyroDirSwipeInstance;
-                    break;
-                case "GyroNoAction":
-                    GyroNoMapActionSerializer gyroNoActinstance = new GyroNoMapActionSerializer();
-                    JsonConvert.PopulateObject(j.ToString(), gyroNoActinstance);
-                    resultInstance = gyroNoActinstance;
-                    break;
-                default:
-                    break;
+                        resultInstance = stickPadInstance;
+                        break;
+                    case "StickMouseAction":
+                        StickMouseSerializer stickMouseInstance = new StickMouseSerializer();
+                        JsonConvert.PopulateObject(j.ToString(), stickMouseInstance);
+                        resultInstance = stickMouseInstance;
+                        break;
+                    case "StickTranslateAction":
+                        StickTranslateSerializer stickTransActInstance = new StickTranslateSerializer();
+                        JsonConvert.PopulateObject(j.ToString(), stickTransActInstance);
+                        resultInstance = stickTransActInstance;
+                        break;
+                    case "StickAbsMouseAction":
+                        StickAbsMouseActionSerializer stickAbsMouseInstance = new StickAbsMouseActionSerializer();
+                        JsonConvert.PopulateObject(j.ToString(), stickAbsMouseInstance);
+                        resultInstance = stickAbsMouseInstance;
+                        break;
+                    case "StickCircularAction":
+                        StickCircularSerializer stickCircActInstance = new StickCircularSerializer();
+                        JsonConvert.PopulateObject(j.ToString(), stickCircActInstance);
+                        resultInstance = stickCircActInstance;
+                        break;
+                    case "StickFlickStickAction":
+                        StickFlickStickActionSerializer flickInstance = new StickFlickStickActionSerializer();
+                        JsonConvert.PopulateObject(j.ToString(), flickInstance);
+                        resultInstance = flickInstance;
+                        break;
+                    case "StickNoAction":
+                        StickNoActionSerializer stickNoActinstance = new StickNoActionSerializer();
+                        JsonConvert.PopulateObject(j.ToString(), stickNoActinstance);
+                        resultInstance = stickNoActinstance;
+                        break;
+                    case "TriggerTranslateAction":
+                        TriggerTranslateActionSerializer triggerActInstance = new TriggerTranslateActionSerializer();
+                        JsonConvert.PopulateObject(j.ToString(), triggerActInstance);
+                        resultInstance = triggerActInstance;
+                        break;
+                    case "TriggerButtonAction":
+                        TriggerButtonActionSerializer triggerButtonActInstance = new TriggerButtonActionSerializer();
+                        JsonConvert.PopulateObject(j.ToString(), triggerButtonActInstance);
+                        resultInstance = triggerButtonActInstance;
+                        break;
+                    case "TriggerDualStageAction":
+                        TriggerDualStageActionSerializer triggerDualActInstance = new TriggerDualStageActionSerializer();
+                        JsonConvert.PopulateObject(j.ToString(), triggerDualActInstance);
+                        resultInstance = triggerDualActInstance;
+                        break;
+                    case "TouchStickTranslateAction":
+                        TouchpadStickActionSerializer touchStickActInstance = new TouchpadStickActionSerializer();
+                        JsonConvert.PopulateObject(j.ToString(), touchStickActInstance);
+                        resultInstance = touchStickActInstance;
+                        break;
+                    case "TouchMouseAction":
+                        TouchpadMouseSerializer touchMouseActInstance = new TouchpadMouseSerializer();
+                        JsonConvert.PopulateObject(j.ToString(), touchMouseActInstance);
+                        resultInstance = touchMouseActInstance;
+                        break;
+                    case "TouchMouseJoystickAction":
+                        TouchpadMouseJoystickSerializer touchMouseJoyActInstance = new TouchpadMouseJoystickSerializer();
+                        JsonConvert.PopulateObject(j.ToString(), touchMouseJoyActInstance);
+                        resultInstance = touchMouseJoyActInstance;
+                        break;
+                    case "TouchActionPadAction":
+                        TouchpadActionPadSerializer touchActionPadInstance = new TouchpadActionPadSerializer();
+                        JsonConvert.PopulateObject(j.ToString(), touchActionPadInstance);
+                        resultInstance = touchActionPadInstance;
+                        break;
+                    case "TouchAbsPadAction":
+                        TouchpadAbsActionSerializer touchAbsActionInstance = new TouchpadAbsActionSerializer();
+                        JsonConvert.PopulateObject(j.ToString(), touchAbsActionInstance);
+                        resultInstance = touchAbsActionInstance;
+                        break;
+                    case "TouchCircularAction":
+                        TouchpadCircularSerializer touchCircActInstance = new TouchpadCircularSerializer();
+                        JsonConvert.PopulateObject(j.ToString(), touchCircActInstance);
+                        resultInstance = touchCircActInstance;
+                        break;
+                    case "TouchDirSwipeAction":
+                        TouchpadDirectionalSwipeSerializer touchDirSwipeInstance = new TouchpadDirectionalSwipeSerializer();
+                        JsonConvert.PopulateObject(j.ToString(), touchDirSwipeInstance);
+                        resultInstance = touchDirSwipeInstance;
+                        break;
+                    case "TouchAxesAction":
+                        TouchpadAxesActionSerializer touchAxesActInstance = new TouchpadAxesActionSerializer();
+                        JsonConvert.PopulateObject(j.ToString(), touchAxesActInstance);
+                        resultInstance = touchAxesActInstance;
+                        break;
+                    case "TouchSingleButtonAction":
+                        TouchpadSingleButtonSerializer touchSingleBtnActInstance = new TouchpadSingleButtonSerializer();
+                        JsonConvert.PopulateObject(j.ToString(), touchSingleBtnActInstance);
+                        resultInstance = touchSingleBtnActInstance;
+                        break;
+                    case "TouchFlickStickAction":
+                        TouchpadFlickStickActionSerializer touchFlickInstance = new TouchpadFlickStickActionSerializer();
+                        JsonConvert.PopulateObject(j.ToString(), touchFlickInstance);
+                        resultInstance = touchFlickInstance;
+                        break;
+                    case "TouchNoAction":
+                        TouchpadNoActionSerializer touchNoActinstance = new TouchpadNoActionSerializer();
+                        JsonConvert.PopulateObject(j.ToString(), touchNoActinstance);
+                        resultInstance = touchNoActinstance;
+                        break;
+                    case "DPadAction":
+                        DpadActionSerializer dpadActSerializer = new DpadActionSerializer();
+                        JsonConvert.PopulateObject(j.ToString(), dpadActSerializer);
+                        foreach (DPadActions.DpadDirections dir in dpadActSerializer.DictPadBindings.Keys)
+                        {
+                            //dpadActSerializer.DictPadBindings[dir].RemoveAll((item) => item == null);
+                            dpadActSerializer.DictPadBindings[dir].ActionFuncSerializers.RemoveAll((item) => item == null);
+                        }
+                        resultInstance = dpadActSerializer;
+                        break;
+                    case "DPadNoAction":
+                        DpadNoActionSerializer dpadNoActSerializer = new DpadNoActionSerializer();
+                        JsonConvert.PopulateObject(j.ToString(), dpadNoActSerializer);
+                        resultInstance = dpadNoActSerializer;
+                        break;
+                    case "DPadTranslateAction":
+                        DpadTranslateSerializer dpadTransActSerializer = new DpadTranslateSerializer();
+                        JsonConvert.PopulateObject(j.ToString(), dpadTransActSerializer);
+                        resultInstance = dpadTransActSerializer;
+                        break;
+                    case "GyroMouseAction":
+                        GyroMouseSerializer gyroMouseInstance = new GyroMouseSerializer();
+                        JsonConvert.PopulateObject(j.ToString(), gyroMouseInstance);
+                        resultInstance = gyroMouseInstance;
+                        break;
+                    case "GyroMouseJoystickAction":
+                        GyroMouseJoystickSerializer gyroMouseStickInstance = new GyroMouseJoystickSerializer();
+                        JsonConvert.PopulateObject(j.ToString(), gyroMouseStickInstance);
+                        resultInstance = gyroMouseStickInstance;
+                        break;
+                    case "GyroDirSwipeAction":
+                        GyroDirectionalSwipeSerializer gyroDirSwipeInstance = new GyroDirectionalSwipeSerializer();
+                        JsonConvert.PopulateObject(j.ToString(), gyroDirSwipeInstance);
+                        resultInstance = gyroDirSwipeInstance;
+                        break;
+                    case "GyroNoAction":
+                        GyroNoMapActionSerializer gyroNoActinstance = new GyroNoMapActionSerializer();
+                        JsonConvert.PopulateObject(j.ToString(), gyroNoActinstance);
+                        resultInstance = gyroNoActinstance;
+                        break;
+                    default:
+                        break;
+                }
             }
-
-            if (resultInstance == null)
+            catch(JsonReaderException)
             {
-                throw new JsonException($"Failed to read invalid type of ({actionOutput})");
             }
+
+            // No longer throw exception here if action type is unknown.
+            // Leaving old code here temporarily(?)
+            //if (resultInstance == null)
+            //{
+            //    throw new JsonException($"Failed to read invalid type of ({actionOutput})");
+            //}
 
             return resultInstance;
         }

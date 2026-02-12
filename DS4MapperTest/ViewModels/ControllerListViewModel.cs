@@ -129,10 +129,10 @@ namespace DS4MapperTest.ViewModels
                             if (map.ProfileFile != string.Empty)
                             {
                                 devItem.PostInit(map.ProfileFile);
-
-                                devItem.ProfileIndexChanged += DevItem_ProfileIndexChanged;
-                                devItem.EditProfileRequested += DevItem_EditProfileRequested;
                             }
+
+                            devItem.ProfileIndexChanged += DevItem_ProfileIndexChanged;
+                            devItem.EditProfileRequested += DevItem_EditProfileRequested;
                         }
 
                         //if (!string.IsNullOrWhiteSpace(backendManager.ProfileFile))

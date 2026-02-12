@@ -496,15 +496,19 @@ namespace DS4MapperTest
             actionLayer.LayerActions.Clear();
             foreach (MapActionSerializer serializer in mapActionSerializers)
             {
-                serializer.PopulateMap();
-
-                if (actionLayer.LayerActions.FindIndex((act) => act.Id == serializer.MapAction.Id) != -1)
+                // Make sure action parsing was successful
+                if (serializer != null)
                 {
-                    throw new JsonException($"Duplicate action index [{serializer.MapAction.Id}] on layer [{actionLayer.Index}]");
-                }
+                    serializer.PopulateMap();
 
-                serializer.PostPopulateMap(parentActionSet, actionLayer);
-                actionLayer.LayerActions.Add(serializer.MapAction);
+                    if (actionLayer.LayerActions.FindIndex((act) => act.Id == serializer.MapAction.Id) != -1)
+                    {
+                        throw new JsonException($"Duplicate action index [{serializer.MapAction.Id}] on layer [{actionLayer.Index}]");
+                    }
+
+                    serializer.PostPopulateMap(parentActionSet, actionLayer);
+                    actionLayer.LayerActions.Add(serializer.MapAction);
+                }
             }
         }
 
