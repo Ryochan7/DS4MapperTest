@@ -963,7 +963,7 @@ namespace DS4MapperTest.ViewModels
                     tempData.Reset();
 
                     uint tempCode = ProfileSerializer.EventInputMapper.GetRealEventKey((uint)item.Code);
-                    tempData.Prepare(OutputActionData.ActionType.Keyboard, (int)tempCode);
+                    tempData.Prepare(OutputActionData.ActionType.Keyboard, (int)item.Code);
                     tempData.OutputCodeStr = item.CodeAlias;
                     tempData.OutputCodeAlias = tempCode;
                 }
@@ -1166,13 +1166,14 @@ namespace DS4MapperTest.ViewModels
                 new KeyboardCodeItem("Grave", VirtualKeys.OEM3, "Grave", tempInd++),
                 new KeyboardCodeItem("Caps Lock", VirtualKeys.CapsLock, "CapsLock", tempInd++),
                 new KeyboardCodeItem("Minus", VirtualKeys.OEMMinus, "Minus", tempInd++),
-                new KeyboardCodeItem("Equal", VirtualKeys.NEC_Equal, "Equal", tempInd++),
+                new KeyboardCodeItem("Equal", VirtualKeys.OEMPlus, "Equal", tempInd++),
                 new KeyboardCodeItem("Left Bracket", VirtualKeys.OEM4, "LeftBracket", tempInd++),
                 new KeyboardCodeItem("Right Bracket", VirtualKeys.OEM6, "RightBracket", tempInd++),
                 new KeyboardCodeItem("Backslash", VirtualKeys.OEM5, "Backslash", tempInd++),
                 new KeyboardCodeItem("Semicolon", VirtualKeys.OEM1, "Semicolon", tempInd++),
                 new KeyboardCodeItem("Quote", VirtualKeys.OEM7, "Quote", tempInd++),
-                new KeyboardCodeItem("Comman", VirtualKeys.OEMComma, "Comma", tempInd++),
+                new KeyboardCodeItem("Comma", VirtualKeys.OEMComma, "Comma", tempInd++),
+                new KeyboardCodeItem("Period", VirtualKeys.OEMPeriod, "Period", tempInd++),
                 new KeyboardCodeItem("Slash", VirtualKeys.OEM2, "Slash", tempInd++),
 
                 new KeyboardCodeItem("Insert", VirtualKeys.Insert, "Insert", tempInd++),
