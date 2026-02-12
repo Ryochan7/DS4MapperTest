@@ -34,7 +34,7 @@
                         <ComboBox.Style>
                             <Style TargetType="ComboBox" BasedOn="{StaticResource ComboBoxBaseStyle}">
                                 <Style.Triggers>
-                                    <DataTrigger Binding="{Binding HighlightOutputStick}" Value="False">
+                                    <DataTrigger Binding="{Binding HighlightOutputAxesChoice}" Value="False">
                                         <Setter Property="Opacity" Value="0.7" />
                                     </DataTrigger>
                                 </Style.Triggers>
