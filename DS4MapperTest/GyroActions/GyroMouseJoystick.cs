@@ -247,7 +247,7 @@ namespace DS4MapperTest.GyroActions
             //Console.WriteLine("Elasped: ({0}) DOUBLE {1}", current.timeElapsed, tempDouble);
             int deltaX = mStickParams.useForXAxis == GyroMouseXAxisChoice.Yaw ?
                 gyroFrame.GyroYaw : gyroFrame.GyroRoll;
-            int deltaY = -gyroFrame.GyroPitch;
+            int deltaY = gyroFrame.GyroPitch;
 
             double tempAngle = Math.Atan2(-deltaY, deltaX);
             double normX = Math.Abs(Math.Cos(tempAngle));
@@ -273,7 +273,7 @@ namespace DS4MapperTest.GyroActions
             {
                 deltaAngVelX -= signX * deadzoneX;
                 deltaAngVelX = deltaAngVelX * tempDouble;
-                deltaAngVelX = (deltaAngVelX < 0.0 && deltaAngVelX < -maxValX) ? -maxValX :
+                deltaAngVelX = (deltaAngVelX < 0.0 && deltaAngVelX < maxValX) ? maxValX :
                     (deltaAngVelX > 0.0 && deltaAngVelX > maxValX) ? maxValX : deltaAngVelX;
                 //if (deltaAngVelX != maxValX) deltaAngVelX -= deltaAngVelX % (signX * GyroMouseFuzz);
             }
@@ -286,7 +286,7 @@ namespace DS4MapperTest.GyroActions
             {
                 deltaAngVelY -= signY * deadzoneY;
                 deltaAngVelY = deltaY * tempDouble;
-                deltaAngVelY = (deltaAngVelY < 0.0 && deltaAngVelY < -maxValY) ? -maxValY :
+                deltaAngVelY = (deltaAngVelY < 0.0 && deltaAngVelY < maxValY) ? maxValY :
                     (deltaAngVelY > 0.0 && deltaAngVelY > maxValY) ? maxValY : deltaAngVelY;
                 //if (deltaAngVelY != maxValY) deltaAngVelY -= deltaAngVelY % (signY * GyroMouseFuzz);
             }
