@@ -147,29 +147,56 @@ namespace DS4MapperTest.ViewModels.GyroActionPropViewModels
         }
         public event EventHandler AccelCurveChoiceChanged;
 
-        public double MinAccelSens
+        public double MinAccelXSens
         {
-            get => action.mouseParams.minAccelSens;
+            get => action.mouseParams.minAccelXSens;
             set
             {
-                action.mouseParams.minAccelSens = Math.Clamp(value, 0.0, 100.0);
-                MinAccelSensChanged?.Invoke(this, EventArgs.Empty);
+                action.mouseParams.minAccelXSens = Math.Clamp(value, 0.0, 100.0);
+                MinAccelXSensChanged?.Invoke(this, EventArgs.Empty);
                 ActionPropertyChanged?.Invoke(this, EventArgs.Empty);
             }
         }
-        public event EventHandler MinAccelSensChanged;
+        public event EventHandler MinAccelXSensChanged;
 
-        public double MaxAccelSens
+        public double MaxAccelXSens
         {
-            get => action.mouseParams.maxAccelSens;
+            get => action.mouseParams.maxAccelXSens;
             set
             {
-                action.mouseParams.maxAccelSens = Math.Clamp(value, 0.0, 100.0);
-                MaxAccelSensChanged?.Invoke(this, EventArgs.Empty);
+                action.mouseParams.maxAccelXSens = Math.Clamp(value, 0.0, 100.0);
+                MaxAccelXSensChanged?.Invoke(this, EventArgs.Empty);
                 ActionPropertyChanged?.Invoke(this, EventArgs.Empty);
             }
         }
-        public event EventHandler MaxAccelSensChanged;
+        public event EventHandler MaxAccelXSensChanged;
+
+
+
+        public double MinAccelYSens
+        {
+            get => action.mouseParams.minAccelYSens;
+            set
+            {
+                action.mouseParams.minAccelYSens = Math.Clamp(value, 0.0, 100.0);
+                MinAccelYSensChanged?.Invoke(this, EventArgs.Empty);
+                ActionPropertyChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        public event EventHandler MinAccelYSensChanged;
+
+        public double MaxAccelYSens
+        {
+            get => action.mouseParams.maxAccelYSens;
+            set
+            {
+                action.mouseParams.maxAccelYSens = Math.Clamp(value, 0.0, 100.0);
+                MaxAccelYSensChanged?.Invoke(this, EventArgs.Empty);
+                ActionPropertyChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        public event EventHandler MaxAccelYSensChanged;
+
 
         public double MinGyroThreshold
         {
@@ -444,19 +471,35 @@ namespace DS4MapperTest.ViewModels.GyroActionPropViewModels
         }
         public event EventHandler HighlightAccelCurveChanged;
 
-        public bool HighlightMinAccelSens
+        public bool HighlightMinAccelXSens
         {
             get => action.ParentAction == null ||
-                action.ChangedProperties.Contains(GyroMouse.PropertyKeyStrings.MIN_ACCEL_SENS);
+                action.ChangedProperties.Contains(GyroMouse.PropertyKeyStrings.MIN_ACCEL_X_SENS);
         }
-        public event EventHandler HighlightMinAccelSensChanged;
+        public event EventHandler HighlightMinAccelXSensChanged;
 
-        public bool HighlightMaxAccelSens
+        public bool HighlightMaxAccelXSens
         {
             get => action.ParentAction == null ||
-                action.ChangedProperties.Contains(GyroMouse.PropertyKeyStrings.MAX_ACCEL_SENS);
+                action.ChangedProperties.Contains(GyroMouse.PropertyKeyStrings.MAX_ACCEL_X_SENS);
         }
-        public event EventHandler HighlightMaxAccelSensChanged;
+        public event EventHandler HighlightMaxAccelXSensChanged;
+
+
+        public bool HighlightMinAccelYSens
+        {
+            get => action.ParentAction == null ||
+                action.ChangedProperties.Contains(GyroMouse.PropertyKeyStrings.MIN_ACCEL_Y_SENS);
+        }
+        public event EventHandler HighlightMinAccelYSensChanged;
+
+        public bool HighlightMaxAccelYSens
+        {
+            get => action.ParentAction == null ||
+                action.ChangedProperties.Contains(GyroMouse.PropertyKeyStrings.MAX_ACCEL_Y_SENS);
+        }
+        public event EventHandler HighlightMaxAccelYSensChanged;
+
 
         public bool HighlightMinGyroThreshold
         {
@@ -569,8 +612,10 @@ namespace DS4MapperTest.ViewModels.GyroActionPropViewModels
             RealWorldCalibrationChanged += GyroMouseActionPropViewModel_RealWorldCalibrationChanged;
             InGameSensChanged += GyroMouseActionPropViewModel_InGameSensChanged;
             AccelCurveChoiceChanged += GyroMouseActionPropViewModel_AccelCurveChoiceChanged;
-            MinAccelSensChanged += GyroMouseActionPropViewModel_MinAccelSensChanged;
-            MaxAccelSensChanged += GyroMouseActionPropViewModel_MaxAccelSensChanged;
+            MinAccelXSensChanged += GyroMouseActionPropViewModel_MinAccelXSensChanged;
+            MaxAccelXSensChanged += GyroMouseActionPropViewModel_MaxAccelXSensChanged;
+            MinAccelYSensChanged += GyroMouseActionPropViewModel_MinAccelYSensChanged;
+            MaxAccelYSensChanged += GyroMouseActionPropViewModel_MaxAccelYSensChanged;
             MinGyroThresholdChanged += GyroMouseActionPropViewModel_MinGyroThresholdChanged;
             MaxGyroThresholdChanged += GyroMouseActionPropViewModel_MaxGyroThresholdChanged;
             PowerCurveVRefChanged += GyroMouseActionPropViewModel_PowerCurveVRefChanged;
@@ -582,6 +627,28 @@ namespace DS4MapperTest.ViewModels.GyroActionPropViewModels
             SmoothingEnabledChanged += GyroMouseActionPropViewModel_SmoothingEnabledChanged;
             SmoothingMinCutoffChanged += GyroMouseActionPropViewModel_SmoothingMinCutoffChanged;
             SmoothingBetaChanged += GyroMouseActionPropViewModel_SmoothingBetaChanged;
+        }
+
+        private void GyroMouseActionPropViewModel_MaxAccelYSensChanged(object sender, EventArgs e)
+        {
+            if (!this.action.ChangedProperties.Contains(GyroMouse.PropertyKeyStrings.MAX_ACCEL_Y_SENS))
+            {
+                this.action.ChangedProperties.Add(GyroMouse.PropertyKeyStrings.MAX_ACCEL_Y_SENS);
+            }
+
+            action.RaiseNotifyPropertyChange(mapper, GyroMouse.PropertyKeyStrings.MAX_ACCEL_Y_SENS);
+            HighlightMaxAccelYSensChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void GyroMouseActionPropViewModel_MinAccelYSensChanged(object sender, EventArgs e)
+        {
+            if (!this.action.ChangedProperties.Contains(GyroMouse.PropertyKeyStrings.MIN_ACCEL_Y_SENS))
+            {
+                this.action.ChangedProperties.Add(GyroMouse.PropertyKeyStrings.MIN_ACCEL_Y_SENS);
+            }
+
+            action.RaiseNotifyPropertyChange(mapper, GyroMouse.PropertyKeyStrings.MIN_ACCEL_Y_SENS);
+            HighlightMinAccelYSensChanged?.Invoke(this, EventArgs.Empty);
         }
 
         private void GyroMouseActionPropViewModel_PowerCurveExponentChanged(object sender, EventArgs e)
@@ -621,26 +688,26 @@ namespace DS4MapperTest.ViewModels.GyroActionPropViewModels
             PowerCurveUsedChanged?.Invoke(this, EventArgs.Empty);
         }
 
-        private void GyroMouseActionPropViewModel_MaxAccelSensChanged(object sender, EventArgs e)
+        private void GyroMouseActionPropViewModel_MaxAccelXSensChanged(object sender, EventArgs e)
         {
-            if (!this.action.ChangedProperties.Contains(GyroMouse.PropertyKeyStrings.MAX_ACCEL_SENS))
+            if (!this.action.ChangedProperties.Contains(GyroMouse.PropertyKeyStrings.MAX_ACCEL_X_SENS))
             {
-                this.action.ChangedProperties.Add(GyroMouse.PropertyKeyStrings.MAX_ACCEL_SENS);
+                this.action.ChangedProperties.Add(GyroMouse.PropertyKeyStrings.MAX_ACCEL_X_SENS);
             }
 
-            action.RaiseNotifyPropertyChange(mapper, GyroMouse.PropertyKeyStrings.MAX_ACCEL_SENS);
-            HighlightMaxAccelSensChanged?.Invoke(this, EventArgs.Empty);
+            action.RaiseNotifyPropertyChange(mapper, GyroMouse.PropertyKeyStrings.MAX_ACCEL_X_SENS);
+            HighlightMaxAccelXSensChanged?.Invoke(this, EventArgs.Empty);
         }
 
-        private void GyroMouseActionPropViewModel_MinAccelSensChanged(object sender, EventArgs e)
+        private void GyroMouseActionPropViewModel_MinAccelXSensChanged(object sender, EventArgs e)
         {
-            if (!this.action.ChangedProperties.Contains(GyroMouse.PropertyKeyStrings.MIN_ACCEL_SENS))
+            if (!this.action.ChangedProperties.Contains(GyroMouse.PropertyKeyStrings.MIN_ACCEL_X_SENS))
             {
-                this.action.ChangedProperties.Add(GyroMouse.PropertyKeyStrings.MIN_ACCEL_SENS);
+                this.action.ChangedProperties.Add(GyroMouse.PropertyKeyStrings.MIN_ACCEL_X_SENS);
             }
 
-            action.RaiseNotifyPropertyChange(mapper, GyroMouse.PropertyKeyStrings.MIN_ACCEL_SENS);
-            HighlightMinAccelSensChanged?.Invoke(this, EventArgs.Empty);
+            action.RaiseNotifyPropertyChange(mapper, GyroMouse.PropertyKeyStrings.MIN_ACCEL_X_SENS);
+            HighlightMinAccelXSensChanged?.Invoke(this, EventArgs.Empty);
         }
 
         private void GyroMouseActionPropViewModel_MaxGyroThresholdChanged(object sender, EventArgs e)

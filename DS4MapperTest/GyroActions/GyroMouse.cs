@@ -82,8 +82,10 @@ namespace DS4MapperTest.GyroActions
         public GyroMouseAccelCurveChoice accelCurve;
         public double minGyroThreshold;
         public double maxGyroThreshold;
-        public double minAccelSens;
-        public double maxAccelSens;
+        public double minAccelXSens;
+        public double maxAccelXSens;
+        public double minAccelYSens;
+        public double maxAccelYSens;
         public double powerVRef;
         public double powerExponent;
         public double sensitivity;
@@ -115,8 +117,10 @@ namespace DS4MapperTest.GyroActions
             public const string REAL_WORLD_CALIBRATION = "RealWorldCalibration";
             public const string ACCEL_CURVE = "AccelCurve";
             public const string IN_GAME_SENS = "InGameSens";
-            public const string MIN_ACCEL_SENS = "MinAccelSens";
-            public const string MAX_ACCEL_SENS = "MaxAccelSens";
+            public const string MIN_ACCEL_X_SENS = "MinAccelXSens";
+            public const string MAX_ACCEL_X_SENS = "MaxAccelXSens";
+            public const string MIN_ACCEL_Y_SENS = "MinAccelYSens";
+            public const string MAX_ACCEL_Y_SENS = "MaxAccelYSens";
             public const string MIN_GYRO_THRESHOLD = "MinGyroThreshold";
             public const string MAX_GYRO_THRESHOLD = "MaxGyroThreshold";
             public const string POWER_CURVE_VREF = "PowerCurveVRef";
@@ -146,8 +150,10 @@ namespace DS4MapperTest.GyroActions
             PropertyKeyStrings.REAL_WORLD_CALIBRATION,
             PropertyKeyStrings.IN_GAME_SENS,
             PropertyKeyStrings.ACCEL_CURVE,
-            PropertyKeyStrings.MIN_ACCEL_SENS,
-            PropertyKeyStrings.MAX_ACCEL_SENS,
+            PropertyKeyStrings.MIN_ACCEL_X_SENS,
+            PropertyKeyStrings.MAX_ACCEL_X_SENS,
+            PropertyKeyStrings.MIN_ACCEL_Y_SENS,
+            PropertyKeyStrings.MAX_ACCEL_Y_SENS,
             PropertyKeyStrings.MIN_GYRO_THRESHOLD,
             PropertyKeyStrings.MAX_GYRO_THRESHOLD,
             PropertyKeyStrings.POWER_CURVE_VREF,
@@ -185,8 +191,10 @@ namespace DS4MapperTest.GyroActions
                 inGameSens = GyroMouseParams.IN_GAME_SENS_DEFAULT,
                 minGyroThreshold = 0.0,
                 maxGyroThreshold = 11.25,
-                minAccelSens = 1.2,
-                maxAccelSens = 3.0,
+                minAccelXSens = 1.2,
+                minAccelYSens = 1.2,
+                maxAccelXSens = 3.0,
+                maxAccelYSens = 3.0,
                 powerExponent = 1.0,
                 powerVRef = 1.0,
                 verticalScale = 1.0,
@@ -358,10 +366,12 @@ namespace DS4MapperTest.GyroActions
             const double minThreshold = 0.0; // dps
             const double maxThreshold = 11.25; // dps
 
-            double modSensMulti = 1.0;
+            double modSensMultiX = 1.0;
+            double modSensMultiY = 1.0;
             if (mouseParams.accelCurve == GyroMouseAccelCurveChoice.None)
             {
-                modSensMulti = mouseParams.sensitivity;
+                modSensMultiX = mouseParams.sensitivity;
+                modSensMultiY = mouseParams.sensitivity;
             }
             else
             {
@@ -369,12 +379,15 @@ namespace DS4MapperTest.GyroActions
                 mouseParams.minThreshold : mouseParams.maxGyroThreshold;
                 double activeMaxThreshold = mouseParams.maxGyroThreshold > mouseParams.minThreshold ?
                     mouseParams.maxGyroThreshold : mouseParams.minGyroThreshold;
-                double minSens = mouseParams.minAccelSens;
-                double maxSens = mouseParams.maxAccelSens;
+                double minXSens = mouseParams.minAccelXSens;
+                double maxXSens = mouseParams.maxAccelXSens;
+                double minYSens = mouseParams.minAccelYSens;
+                double maxYSens = mouseParams.maxAccelYSens;
 
                 //double modSensMulti = 1.0;
                 //double modSensMulti = minSens;
-                modSensMulti = minSens;
+                modSensMultiX = minXSens;
+                modSensMultiY = minYSens;
                 //double dps_test = 180.0 / 16.0; // ~11.25 dps
                 double dps_test = activeMaxThreshold - activeMinThreshold;
                 double dpsTestSquared = dps_test * dps_test;
@@ -407,11 +420,13 @@ namespace DS4MapperTest.GyroActions
 
                     //Trace.WriteLine($"{deltaAngVelX} {deltaAngVelY} {distSquared} {alpha}");
                     //modSensMulti = 0.4 + (1.0 - 0.4) * alpha;
-                    modSensMulti = minSens + (maxSens - minSens) * alpha;
+                    modSensMultiX = minXSens + (maxXSens - minXSens) * alpha;
+                    modSensMultiY = minYSens + (maxYSens - minYSens) * alpha;
                 }
                 else if (isPastMinThreshold)
                 {
-                    modSensMulti = maxSens;
+                    modSensMultiX = maxXSens;
+                    modSensMultiY = maxYSens;
                 }
             }
 
@@ -420,12 +435,13 @@ namespace DS4MapperTest.GyroActions
             double yAng = deltaAngVelY * timeElapsed;
 
             //double finalCoefficient = coefficient * sensMulti * modSensMulti;
-            double finalCoefficient = coefficient * modSensMulti;
+            double finalCoefficient = coefficient * modSensMultiX;
+            double finalCoefficientY = coefficient * modSensMultiY;
 
             xMotion = deltaAngVelX != 0 ? finalCoefficient * (xAng * tempDouble)
                 + (normX * (offset * signX)) : 0;
 
-            yMotion = deltaAngVelY != 0 ? finalCoefficient * (yAng * tempDouble)
+            yMotion = deltaAngVelY != 0 ? finalCoefficientY * (yAng * tempDouble)
                 + (normY * (offset * signY)) : 0;
 
             if (mouseParams.verticalScale != 1.0)
@@ -629,11 +645,17 @@ namespace DS4MapperTest.GyroActions
                         case PropertyKeyStrings.ACCEL_CURVE:
                             mouseParams.accelCurve = tempMouseAction.mouseParams.accelCurve;
                             break;
-                        case PropertyKeyStrings.MIN_ACCEL_SENS:
-                            mouseParams.minAccelSens = tempMouseAction.mouseParams.minAccelSens;
+                        case PropertyKeyStrings.MIN_ACCEL_X_SENS:
+                            mouseParams.minAccelXSens = tempMouseAction.mouseParams.minAccelXSens;
                             break;
-                        case PropertyKeyStrings.MAX_ACCEL_SENS:
-                            mouseParams.maxAccelSens = tempMouseAction.mouseParams.maxAccelSens;
+                        case PropertyKeyStrings.MAX_ACCEL_X_SENS:
+                            mouseParams.maxAccelXSens = tempMouseAction.mouseParams.maxAccelXSens;
+                            break;
+                        case PropertyKeyStrings.MIN_ACCEL_Y_SENS:
+                            mouseParams.minAccelYSens = tempMouseAction.mouseParams.minAccelYSens;
+                            break;
+                        case PropertyKeyStrings.MAX_ACCEL_Y_SENS:
+                            mouseParams.maxAccelYSens = tempMouseAction.mouseParams.maxAccelYSens;
                             break;
                         case PropertyKeyStrings.MIN_GYRO_THRESHOLD:
                             mouseParams.minGyroThreshold = tempMouseAction.mouseParams.minGyroThreshold;
@@ -746,11 +768,17 @@ namespace DS4MapperTest.GyroActions
                 case PropertyKeyStrings.ACCEL_CURVE:
                     mouseParams.accelCurve = tempMouseAction.mouseParams.accelCurve;
                     break;
-                case PropertyKeyStrings.MIN_ACCEL_SENS:
-                    mouseParams.minAccelSens = tempMouseAction.mouseParams.minAccelSens;
+                case PropertyKeyStrings.MIN_ACCEL_X_SENS:
+                    mouseParams.minAccelXSens = tempMouseAction.mouseParams.minAccelXSens;
                     break;
-                case PropertyKeyStrings.MAX_ACCEL_SENS:
-                    mouseParams.maxAccelSens = tempMouseAction.mouseParams.maxAccelSens;
+                case PropertyKeyStrings.MAX_ACCEL_X_SENS:
+                    mouseParams.maxAccelXSens = tempMouseAction.mouseParams.maxAccelXSens;
+                    break;
+                case PropertyKeyStrings.MIN_ACCEL_Y_SENS:
+                    mouseParams.minAccelYSens = tempMouseAction.mouseParams.minAccelYSens;
+                    break;
+                case PropertyKeyStrings.MAX_ACCEL_Y_SENS:
+                    mouseParams.maxAccelYSens = tempMouseAction.mouseParams.maxAccelYSens;
                     break;
                 case PropertyKeyStrings.MIN_GYRO_THRESHOLD:
                     mouseParams.minGyroThreshold = tempMouseAction.mouseParams.minGyroThreshold;
