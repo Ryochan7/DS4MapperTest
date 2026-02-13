@@ -8,7 +8,7 @@
              xmlns:local1="clr-namespace:DS4MapperTest.Views"
              xmlns:localConverters="clr-namespace:DS4MapperTest.Converters"
              mc:Ignorable="d" 
-             d:DesignHeight="4500" d:DesignWidth="800">
+             d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
         <localConverters:InvertBoolToVisibilityConverter x:Key="InvertBoolToVisibilityConverter"/>
     </UserControl.Resources>
