@@ -170,7 +170,7 @@ SelectedValuePath="ChoiceValue" SelectedValue="{Binding ActionPresetChoice}" Min
             <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
                 <Label Content="Rotation" />
                 <hc:NumericUpDown Minimum="-180" Maximum="180" Value="{Binding Rotation}" DecimalPlaces="0"
-Increment="1" Width="100" Margin="8,0,0,0">
+Increment="1" ToolTip="+ = Clockwise. - = Counter-clockwise" Width="100" Margin="8,0,0,0">
                     <hc:NumericUpDown.Style>
                         <Style TargetType="hc:NumericUpDown" BasedOn="{StaticResource NumericUpDownBaseStyle}">
                             <Style.Triggers>
