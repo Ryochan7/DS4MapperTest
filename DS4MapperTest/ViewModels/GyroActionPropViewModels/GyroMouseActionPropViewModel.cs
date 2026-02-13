@@ -131,6 +131,7 @@ namespace DS4MapperTest.ViewModels.GyroActionPropViewModels
             new AccelCurveChoiceItem("Linear", GyroMouseAccelCurveChoice.Linear),
             new AccelCurveChoiceItem("Quadratic", GyroMouseAccelCurveChoice.Quadratic),
             new AccelCurveChoiceItem("Cubic", GyroMouseAccelCurveChoice.Cubic),
+            new AccelCurveChoiceItem("Power", GyroMouseAccelCurveChoice.Power),
         };
         public List<AccelCurveChoiceItem> AccelCurveChoiceItems => accelCurveChoiceItems;
 
@@ -193,6 +194,38 @@ namespace DS4MapperTest.ViewModels.GyroActionPropViewModels
             }
         }
         public event EventHandler MaxGyroThresholdChanged;
+
+        public bool PowerCurveUsed
+        {
+            get => action.mouseParams.accelCurve == GyroMouseAccelCurveChoice.Power;
+        }
+        public event EventHandler PowerCurveUsedChanged;
+
+        public double PowerCurveVRef
+        {
+            get => action.mouseParams.powerVRef;
+            set
+            {
+                if (action.mouseParams.powerVRef == value) return;
+                action.mouseParams.powerVRef = Math.Clamp(value, 0.1, 500.0);
+                PowerCurveVRefChanged?.Invoke(this, EventArgs.Empty);
+                ActionPropertyChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        public event EventHandler PowerCurveVRefChanged;
+
+        public double PowerCurveExponent
+        {
+            get => action.mouseParams.powerExponent;
+            set
+            {
+                if (action.mouseParams.powerExponent == value) return;
+                action.mouseParams.powerExponent = Math.Clamp(value, 1.0, 500.0);
+                PowerCurveExponentChanged?.Invoke(this, EventArgs.Empty);
+                ActionPropertyChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        public event EventHandler PowerCurveExponentChanged;
 
         public double Sensitivity
         {
@@ -439,6 +472,20 @@ namespace DS4MapperTest.ViewModels.GyroActionPropViewModels
         }
         public event EventHandler HighlightMaxGyroThresholdChanged;
 
+        public bool HighlightPowerCurveVRef
+        {
+            get => action.ParentAction == null ||
+                action.ChangedProperties.Contains(GyroMouse.PropertyKeyStrings.POWER_CURVE_VREF);
+        }
+        public event EventHandler HighlightPowerCurveVRefChanged;
+
+        public bool HighlightPowerCurveExponent
+        {
+            get => action.ParentAction == null ||
+                action.ChangedProperties.Contains(GyroMouse.PropertyKeyStrings.POWER_CURVE_EXPONENT);
+        }
+        public event EventHandler HighlightPowerCurveExponentChanged;
+
         public bool HighlightSensitivity
         {
             get => action.ParentAction == null ||
@@ -526,6 +573,8 @@ namespace DS4MapperTest.ViewModels.GyroActionPropViewModels
             MaxAccelSensChanged += GyroMouseActionPropViewModel_MaxAccelSensChanged;
             MinGyroThresholdChanged += GyroMouseActionPropViewModel_MinGyroThresholdChanged;
             MaxGyroThresholdChanged += GyroMouseActionPropViewModel_MaxGyroThresholdChanged;
+            PowerCurveVRefChanged += GyroMouseActionPropViewModel_PowerCurveVRefChanged;
+            PowerCurveExponentChanged += GyroMouseActionPropViewModel_PowerCurveExponentChanged;
             SensitivityChanged += GyroMouseActionPropViewModel_SensitivityChanged;
             VerticalScaleChanged += GyroMouseActionPropViewModel_VerticalScaleChanged;
             InvertChoicesChanged += GyroMouseActionPropViewModel_InvertChoicesChanged;
@@ -533,6 +582,28 @@ namespace DS4MapperTest.ViewModels.GyroActionPropViewModels
             SmoothingEnabledChanged += GyroMouseActionPropViewModel_SmoothingEnabledChanged;
             SmoothingMinCutoffChanged += GyroMouseActionPropViewModel_SmoothingMinCutoffChanged;
             SmoothingBetaChanged += GyroMouseActionPropViewModel_SmoothingBetaChanged;
+        }
+
+        private void GyroMouseActionPropViewModel_PowerCurveExponentChanged(object sender, EventArgs e)
+        {
+            if (!this.action.ChangedProperties.Contains(GyroMouse.PropertyKeyStrings.POWER_CURVE_EXPONENT))
+            {
+                this.action.ChangedProperties.Add(GyroMouse.PropertyKeyStrings.POWER_CURVE_EXPONENT);
+            }
+
+            action.RaiseNotifyPropertyChange(mapper, GyroMouse.PropertyKeyStrings.POWER_CURVE_EXPONENT);
+            HighlightPowerCurveExponentChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void GyroMouseActionPropViewModel_PowerCurveVRefChanged(object sender, EventArgs e)
+        {
+            if (!this.action.ChangedProperties.Contains(GyroMouse.PropertyKeyStrings.POWER_CURVE_VREF))
+            {
+                this.action.ChangedProperties.Add(GyroMouse.PropertyKeyStrings.POWER_CURVE_VREF);
+            }
+
+            action.RaiseNotifyPropertyChange(mapper, GyroMouse.PropertyKeyStrings.POWER_CURVE_VREF);
+            HighlightPowerCurveVRefChanged?.Invoke(this, EventArgs.Empty);
         }
 
         private void GyroMouseActionPropViewModel_AccelCurveChoiceChanged(object sender, EventArgs e)
@@ -547,6 +618,7 @@ namespace DS4MapperTest.ViewModels.GyroActionPropViewModels
 
             StaticSensUsedChanged?.Invoke(this, EventArgs.Empty);
             AccelCurveUsedChanged?.Invoke(this, EventArgs.Empty);
+            PowerCurveUsedChanged?.Invoke(this, EventArgs.Empty);
         }
 
         private void GyroMouseActionPropViewModel_MaxAccelSensChanged(object sender, EventArgs e)

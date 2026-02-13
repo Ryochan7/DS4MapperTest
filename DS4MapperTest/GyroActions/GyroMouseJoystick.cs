@@ -149,6 +149,7 @@ namespace DS4MapperTest.GyroActions
                 smoothing = DEFAULT_SMOOTHING_ENABLED,
             };
 
+            mStickParams.smoothingFilterSettings = new SmoothingFilterSettings();
             mStickParams.smoothingFilterSettings.Init();
             mStickParams.smoothingFilterSettings.minCutOff = DEFAULT_MJOY_MINCUTOFFF;
             mStickParams.smoothingFilterSettings.beta = DEFAULT_MJOY_BETA;

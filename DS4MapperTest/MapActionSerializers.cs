@@ -5811,6 +5811,38 @@ namespace DS4MapperTest
                 return gyroMouseAction.ChangedProperties.Contains(GyroMouse.PropertyKeyStrings.MAX_GYRO_THRESHOLD);
             }
 
+            public double PowerVRef
+            {
+                get => gyroMouseAction.mouseParams.powerVRef;
+                set
+                {
+                    gyroMouseAction.mouseParams.powerVRef = Math.Clamp(value, 0.1, 500.0);
+                    PowerVRefChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler PowerVRefChanged;
+
+            public bool ShouldSerializePowerVRef()
+            {
+                return gyroMouseAction.ChangedProperties.Contains(GyroMouse.PropertyKeyStrings.POWER_CURVE_VREF);
+            }
+
+            public double PowerExponent
+            {
+                get => gyroMouseAction.mouseParams.powerExponent;
+                set
+                {
+                    gyroMouseAction.mouseParams.powerExponent = Math.Clamp(value, 0.1, 500.0);
+                    PowerExponentChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler PowerExponentChanged;
+
+            public bool ShouldSerializePowerExponent()
+            {
+                return gyroMouseAction.ChangedProperties.Contains(GyroMouse.PropertyKeyStrings.POWER_CURVE_EXPONENT);
+            }
+
             public double Sensitivity
             {
                 get => gyroMouseAction.mouseParams.sensitivity;
@@ -6023,6 +6055,8 @@ namespace DS4MapperTest
             settings.MaxAccelSensChanged += Settings_MaxAccelSensChanged;
             settings.MinGyroThresholdChanged += Settings_MinGyroThresholdChanged;
             settings.MaxGyroThresholdChanged += Settings_MaxGyroThresholdChanged;
+            settings.PowerVRefChanged += Settings_PowerVRefChanged;
+            settings.PowerExponentChanged += Settings_PowerExponentChanged;
             settings.SensitivityChanged += Settings_SensitivityChanged;
             settings.VerticalScaleChanged += Settings_VerticalScaleChanged;
             settings.InvertXChanged += Settings_InvertXChanged;
@@ -6037,6 +6071,16 @@ namespace DS4MapperTest
             settings.SmoothingEnabledChanged += Settings_SmoothingEnabledChanged;
             settings.SmoothingMinCutoffChanged += Settings_SmoothingMinCutoffChanged;
             settings.SmoothingBetaChanged += Settings_SmoothingMinBetaChanged;
+        }
+
+        private void Settings_PowerExponentChanged(object sender, EventArgs e)
+        {
+            gyroMouseAction.ChangedProperties.Add(GyroMouse.PropertyKeyStrings.POWER_CURVE_EXPONENT);
+        }
+
+        private void Settings_PowerVRefChanged(object sender, EventArgs e)
+        {
+            gyroMouseAction.ChangedProperties.Add(GyroMouse.PropertyKeyStrings.POWER_CURVE_VREF);
         }
 
         private void Settings_MaxGyroThresholdChanged(object sender, EventArgs e)

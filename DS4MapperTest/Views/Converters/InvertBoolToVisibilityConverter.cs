@@ -18,7 +18,7 @@ namespace DS4MapperTest.Converters
             Visibility result = Visibility.Visible;
             if (!temp)
             {
-                result = Visibility.Hidden;
+                result = Visibility.Collapsed;
             }
 
             return result;
