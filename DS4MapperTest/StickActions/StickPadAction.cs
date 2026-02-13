@@ -153,6 +153,7 @@ namespace DS4MapperTest.StickActions
         public DPadMode CurrentMode { get => currentMode; set => currentMode = value; }
         public AxisDirButton[] EventCodes4 { get => eventCodes4; set => eventCodes4 = value; }
 
+        // + = Clockwise. - = Counter-clockwise
         private int rotation;
         public int Rotation
         {
