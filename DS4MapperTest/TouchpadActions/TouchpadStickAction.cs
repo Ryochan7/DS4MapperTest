@@ -272,7 +272,8 @@ namespace DS4MapperTest.TouchpadActions
                 wasCenterHit = false;
             }
 
-            if (touchingActive && inSafeZone)
+            bool touchEventActive = touchingActive && inSafeZone;
+            if (touchEventActive)
             {
                 if (outputCurve != StickOutCurve.Curve.Linear)
                 {
@@ -319,13 +320,14 @@ namespace DS4MapperTest.TouchpadActions
 
                 if (smoothing)
                 {
-                    //smoothingFilterSettings.filterX.Filter(0.0, mapper.CurrentRate);
-                    //smoothingFilterSettings.filterY.Filter(0.0, mapper.CurrentRate);
+                    // Need to add empty data here
+                    smoothingFilterSettings.filterX.Filter(0.0, mapper.CurrentRate);
+                    smoothingFilterSettings.filterY.Filter(0.0, mapper.CurrentRate);
                 }
             }
 
-            active = true;
-            activeEvent = true;
+            active = touchEventActive;
+            activeEvent = touchEventActive;
         }
 
         public override void Event(Mapper mapper)
