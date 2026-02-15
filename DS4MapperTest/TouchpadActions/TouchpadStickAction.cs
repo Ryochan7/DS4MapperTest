@@ -317,6 +317,8 @@ namespace DS4MapperTest.TouchpadActions
             else
             {
                 xNorm = yNorm = 0.0;
+                prevXNorm = xNorm;
+                prevYNorm = yNorm;
 
                 if (smoothing)
                 {
