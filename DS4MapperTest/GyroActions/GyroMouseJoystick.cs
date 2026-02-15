@@ -320,8 +320,14 @@ namespace DS4MapperTest.GyroActions
             //deltaAngVelY = mapper.MStickFilterY.Filter(deltaAngVelY, mapper.CurrentRate);
             if (mStickParams.smoothing)
             {
-                deltaAngVelX = mStickParams.smoothingFilterSettings.filterX.Filter(deltaAngVelX, currentRate);
-                deltaAngVelY = mStickParams.smoothingFilterSettings.filterY.Filter(deltaAngVelY, currentRate);
+                deltaAngVelX = mStickParams.smoothingFilterSettings.filterX.Filter(deltaAngVelX * 1.001, currentRate);
+                deltaAngVelY = mStickParams.smoothingFilterSettings.filterY.Filter(deltaAngVelY * 1.001, currentRate);
+
+                // Perform clamping
+                deltaAngVelX = (deltaAngVelX < 0.0 && deltaAngVelX < maxValX) ? maxValX :
+                    (deltaAngVelX > 0.0 && deltaAngVelX > maxValX) ? maxValX : deltaAngVelX;
+                deltaAngVelY = (deltaAngVelY < 0.0 && deltaAngVelY < maxValY) ? maxValY :
+                    (deltaAngVelY > 0.0 && deltaAngVelY > maxValY) ? maxValY : deltaAngVelY;
             }
 
             if (deltaAngVelX != 0.0) xratio = deltaAngVelX / maxValX;
