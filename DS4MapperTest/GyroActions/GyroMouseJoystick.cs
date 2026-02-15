@@ -267,7 +267,6 @@ namespace DS4MapperTest.GyroActions
             double maxValX = signX * maxZone;
             double maxValY = signY * maxZone;
 
-            double xratio = 0.0, yratio = 0.0;
             double antiX = mStickParams.antiDeadzoneX * normX;
             double antiY = mStickParams.antiDeadzoneY * normY;
 
@@ -330,8 +329,9 @@ namespace DS4MapperTest.GyroActions
                     (deltaAngVelY > 0.0 && deltaAngVelY > maxValY) ? maxValY : deltaAngVelY;
             }
 
-            if (deltaAngVelX != 0.0) xratio = deltaAngVelX / maxValX;
-            if (deltaAngVelY != 0.0) yratio = deltaAngVelY / maxValY;
+            double xratio = 0.0, yratio = 0.0;
+            if (deltaAngVelX != 0.0 && maxValX != 0.0) xratio = deltaAngVelX / maxValX;
+            if (deltaAngVelY != 0.0 && maxValY != 0.0) yratio = deltaAngVelY / maxValY;
 
             if (mStickParams.verticalScale != 1.0)
             {
