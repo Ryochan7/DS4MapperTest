@@ -286,7 +286,7 @@ namespace DS4MapperTest.GyroActions
             if (Math.Abs(deltaAngVelY) > deadzoneY)
             {
                 deltaAngVelY -= signY * deadzoneY;
-                deltaAngVelY = deltaAngVelX * tempDouble;
+                deltaAngVelY = deltaAngVelY * tempDouble;
                 deltaAngVelY = (deltaAngVelY < 0.0 && deltaAngVelY < maxValY) ? maxValY :
                     (deltaAngVelY > 0.0 && deltaAngVelY > maxValY) ? maxValY : deltaAngVelY;
                 //if (deltaAngVelY != maxValY) deltaAngVelY -= deltaAngVelY % (signY * GyroMouseFuzz);
