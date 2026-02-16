@@ -398,7 +398,8 @@ namespace DS4MapperTest.GyroActions
                 {
                     //double alphaX = deltaAngVelX / dps_test;
                     //double alphaY = deltaAngVelY / dps_test;
-                    double alpha = distSquared / dpsTestSquared;
+                    double dist = Math.Sqrt(distSquared);
+                    double alpha = (dist - activeMinThreshold) / dps_test;
                     switch (mouseParams.accelCurve)
                     {
                         case GyroMouseAccelCurveChoice.Quadratic:
@@ -408,7 +409,7 @@ namespace DS4MapperTest.GyroActions
                             alpha = alpha * alpha * alpha;
                             break;
                         case GyroMouseAccelCurveChoice.Power:
-                            double pastMinThreshold = Math.Sqrt(distSquared) - activeMinThreshold;
+                            double pastMinThreshold = dist - activeMinThreshold;
                             double ratio = pastMinThreshold / mouseParams.powerVRef;
                             double x = Math.Pow(ratio, mouseParams.powerExponent);
                             alpha = 1.0 - Math.Exp(-x);
