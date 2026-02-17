@@ -400,7 +400,7 @@ namespace DS4MapperTest.TouchpadActions
                 y_out /= finalWeight;
                 trackData.trackballYVel = y_out;
 
-                double dist = Math.Sqrt(trackData.trackballXVel * trackData.trackballXVel + trackData.trackballYVel * trackData.trackballYVel);
+                double dist = Math.Sqrt((trackData.trackballXVel * trackData.trackballXVel) + (trackData.trackballYVel * trackData.trackballYVel));
                 if (dist >= 1.0)
                 {
                     trackData.trackballActive = true;
@@ -501,42 +501,46 @@ namespace DS4MapperTest.TouchpadActions
                 dy = 0;
             }
 
-            double xMotion = dx != 0 ? coefficient * (dx * tempDouble)
+            double finalCoefficient = coefficient;
+            if (touchpadDefinition.throttleRelMouse)
+            {
+                double sensMulti = 1.0;
+                double distSquared = (dx * dx) + (dy * dy);
+                //Trace.WriteLine($"{Math.Sqrt(distSquared)}");
+                double testThreshold = touchpadDefinition.throttleRelMouseZone;
+                double testSquared = testThreshold * testThreshold;
+                if (distSquared != 0.0 && distSquared < testSquared)
+                {
+                    double dist = Math.Sqrt(distSquared);
+                    //double alpha = (dist - 0.0) / testThreshold;
+                    double alpha = 0.0;
+                    double distPastMin = (dist - 0.0);
+                    double baconator = distPastMin / testThreshold;
+                    double ratio = distPastMin / testThreshold;
+                    //double pastMinThreshold = dist - activeMinThreshold;
+                    //double ratio = pastMinThreshold / mouseParams.powerVRef;
+                    double x = Math.Pow(ratio, touchpadDefinition.throttleRelMousePower);
+                    alpha = 1.0 - Math.Exp(-x);
+                    alpha = Math.Clamp(alpha, 0.0, 1.0);
+                    //alpha = alpha * alpha;
+
+                    // Alpha will likely max out around 0.65. Change max sens value to compensate
+                    sensMulti = 0.0 + (1.45 - 0.0) * alpha;
+                    sensMulti = Math.Clamp(sensMulti, 0.0, 1.0);
+                    //Trace.WriteLine($"{baconator} {ratio} {alpha} {-x} {Math.Exp(-x)}");
+
+                    finalCoefficient = coefficient * sensMulti;
+                }
+            }
+
+            double xMotion = dx != 0 ? finalCoefficient * (dx * tempDouble)
                 + (normX * (offset * signX)) : 0;
 
-            double yMotion = dy != 0 ? coefficient * (dy * tempDouble)
+            double yMotion = dy != 0 ? finalCoefficient * (dy * tempDouble)
                 + (normY * (offset * signY)) : 0;
             if (verticalScale != DEFAULT_VERTICAL_SCALE)
             {
                 yMotion *= verticalScale;
-            }
-
-            if (touchpadDefinition.throttleRelMouse)
-            {
-                double throttla = touchpadDefinition.throttleRelMousePower;
-                double offman = touchpadDefinition.throttleRelMouseZone;
-                //double throttla = 1.428;
-                //double offman = 10;
-                //double throttla = 1.4;
-                //double offman = 12;
-
-                double absX = Math.Abs(xMotion);
-                if (absX <= normX * offman)
-                {
-                    //double before = xMotion;
-                    //double adjOffman = normX != 0.0 ? normX * offman : offman;
-                    xMotion = signX * Math.Pow(absX / offman, throttla) * offman;
-                    //Console.WriteLine("Before: {0} After {1}", before, xMotion);
-                    //Console.WriteLine(absX / adjOffman);
-                }
-
-                double absY = Math.Abs(yMotion);
-                if (absY <= normY * offman)
-                {
-                    //double adjOffman = normY != 0.0 ? normY * offman : offman;
-                    yMotion = signY * Math.Pow(absY / offman, throttla) * offman;
-                    //Console.WriteLine(absY / adjOffman);
-                }
             }
 
             this.xMotion = xMotion; this.yMotion = yMotion;
