@@ -2888,6 +2888,19 @@ namespace DS4MapperTest
                             intermediateState.LY = yNorm;
                             intermediateState.LSDirty = true;
                         }
+                        else
+                        {
+                            // Attempt to compare current stick data if attempting to overwrite
+                            if (Math.Abs(xNorm) > intermediateState.LX)
+                            {
+                                intermediateState.LX = xNorm;
+                            }
+
+                            if (Math.Abs(yNorm) > intermediateState.LY)
+                            {
+                                intermediateState.LY = yNorm;
+                            }
+                        }
                     }
 
                     intermediateState.Dirty = true;
@@ -2906,6 +2919,19 @@ namespace DS4MapperTest
                             intermediateState.RX = xNorm;
                             intermediateState.RY = yNorm;
                             intermediateState.RSDirty = true;
+                        }
+                        else
+                        {
+                            // Attempt to compare current stick data if attempting to overwrite
+                            if (Math.Abs(xNorm) > intermediateState.RX)
+                            {
+                                intermediateState.RX = xNorm;
+                            }
+
+                            if (Math.Abs(yNorm) > intermediateState.RY)
+                            {
+                                intermediateState.RY = yNorm;
+                            }
                         }
                     }
 
