@@ -249,9 +249,10 @@ namespace DS4MapperTest.GyroActions
             //Console.WriteLine("Elasped: ({0}) DOUBLE {1}", current.timeElapsed, tempDouble);
             int deltaX = mStickParams.useForXAxis == GyroMouseXAxisChoice.Yaw ?
                 gyroFrame.GyroYaw : gyroFrame.GyroRoll;
-            int deltaY = gyroFrame.GyroPitch;
+            int origDeltaY = gyroFrame.GyroPitch;
+            int deltaY = -gyroFrame.GyroPitch; // Need to invert pitch
 
-            double tempAngle = Math.Atan2(-deltaY, deltaX);
+            double tempAngle = Math.Atan2(-origDeltaY, deltaX);
             double normX = Math.Abs(Math.Cos(tempAngle));
             double normY = Math.Abs(Math.Sin(tempAngle));
             int signX = Math.Sign(deltaX);
@@ -259,7 +260,7 @@ namespace DS4MapperTest.GyroActions
 
             double deltaAngVelX = (mStickParams.useForXAxis == GyroMouseXAxisChoice.Yaw ?
                 gyroFrame.AngGyroYaw : gyroFrame.AngGyroRoll);
-            double deltaAngVelY = gyroFrame.AngGyroPitch;
+            double deltaAngVelY = -gyroFrame.AngGyroPitch; // Need to invert pitch
 
             double deadzoneX = Math.Abs(normX * deadzone);
             double deadzoneY = Math.Abs(normY * deadzone);
