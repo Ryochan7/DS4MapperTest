@@ -379,21 +379,18 @@ namespace DS4MapperTest.GyroActions
                 active = true;
                 activeEvent = true;
             }
-            else if (prevXNorm != 0.0 || prevYNorm != 0.0)
-            {
-                active = true;
-                activeEvent = true;
-
-                if (mStickParams.smoothing)
-                {
-                    mStickParams.smoothingFilterSettings.filterX.Filter(0.0, currentRate);
-                    mStickParams.smoothingFilterSettings.filterY.Filter(0.0, currentRate);
-                }
-            }
             else
             {
-                active = false;
-                activeEvent = false;
+                if (prevXNorm != 0.0 || prevYNorm != 0.0)
+                {
+                    active = true;
+                    activeEvent = true;
+                }
+                else
+                {
+                    active = false;
+                    activeEvent = false;
+                }
 
                 if (mStickParams.smoothing)
                 {
