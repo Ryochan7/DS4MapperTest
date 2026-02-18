@@ -275,8 +275,9 @@ namespace DS4MapperTest.GyroActions
             {
                 deltaAngVelX -= signX * deadzoneX;
                 deltaAngVelX = deltaAngVelX * tempDouble;
-                deltaAngVelX = (deltaAngVelX < 0.0 && deltaAngVelX < maxValX) ? maxValX :
-                    (deltaAngVelX > 0.0 && deltaAngVelX > maxValX) ? maxValX : deltaAngVelX;
+                deltaAngVelX = Math.Clamp(deltaAngVelX, -maxZone, maxZone);
+                //deltaAngVelX = (deltaAngVelX < 0.0 && deltaAngVelX < maxValX) ? maxValX :
+                //    (deltaAngVelX > 0.0 && deltaAngVelX > maxValX) ? maxValX : deltaAngVelX;
                 //if (deltaAngVelX != maxValX) deltaAngVelX -= deltaAngVelX % (signX * GyroMouseFuzz);
             }
             else
@@ -288,8 +289,9 @@ namespace DS4MapperTest.GyroActions
             {
                 deltaAngVelY -= signY * deadzoneY;
                 deltaAngVelY = deltaAngVelY * tempDouble;
-                deltaAngVelY = (deltaAngVelY < 0.0 && deltaAngVelY < maxValY) ? maxValY :
-                    (deltaAngVelY > 0.0 && deltaAngVelY > maxValY) ? maxValY : deltaAngVelY;
+                deltaAngVelY = Math.Clamp(deltaAngVelY, -maxZone, maxZone);
+                //deltaAngVelY = (deltaAngVelY < 0.0 && deltaAngVelY < maxValY) ? maxValY :
+                //    (deltaAngVelY > 0.0 && deltaAngVelY > maxValY) ? maxValY : deltaAngVelY;
                 //if (deltaAngVelY != maxValY) deltaAngVelY -= deltaAngVelY % (signY * GyroMouseFuzz);
             }
             else
