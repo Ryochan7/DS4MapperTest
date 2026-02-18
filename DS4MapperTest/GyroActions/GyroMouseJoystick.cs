@@ -320,7 +320,7 @@ namespace DS4MapperTest.GyroActions
 
             //deltaAngVelX = mapper.MStickFilterX.Filter(deltaAngVelX, mapper.CurrentRate);
             //deltaAngVelY = mapper.MStickFilterY.Filter(deltaAngVelY, mapper.CurrentRate);
-            if (mStickParams.smoothing)
+            /*if (mStickParams.smoothing)
             {
                 deltaAngVelX = mStickParams.smoothingFilterSettings.filterX.Filter(deltaAngVelX * 1.001, currentRate);
                 deltaAngVelY = mStickParams.smoothingFilterSettings.filterY.Filter(deltaAngVelY * 1.001, currentRate);
@@ -333,7 +333,12 @@ namespace DS4MapperTest.GyroActions
                 // Perform clamping
                 deltaAngVelX = Math.Clamp(deltaAngVelX, -maxZone, maxZone);
                 deltaAngVelY = Math.Clamp(deltaAngVelY, -maxZone, maxZone);
+
+                // Need to double check current signs
+                signX = Math.Sign(deltaAngVelX);
+                signY = Math.Sign(deltaAngVelY);
             }
+            */
 
             double xratio = 0.0, yratio = 0.0;
             if (deltaAngVelX != 0.0 && maxValX != 0.0) xratio = deltaAngVelX / maxValX;
@@ -378,11 +383,23 @@ namespace DS4MapperTest.GyroActions
             {
                 active = true;
                 activeEvent = true;
+
+                if (mStickParams.smoothing)
+                {
+                    mStickParams.smoothingFilterSettings.filterX.Filter(0.0, currentRate);
+                    mStickParams.smoothingFilterSettings.filterY.Filter(0.0, currentRate);
+                }
             }
             else
             {
                 active = false;
                 activeEvent = false;
+
+                if (mStickParams.smoothing)
+                {
+                    mStickParams.smoothingFilterSettings.filterX.Filter(0.0, currentRate);
+                    mStickParams.smoothingFilterSettings.filterY.Filter(0.0, currentRate);
+                }
             }
         }
 
@@ -399,6 +416,24 @@ namespace DS4MapperTest.GyroActions
             double outXNorm = xNorm;
             double outYNorm = yNorm;
 
+            double tempXNorm = outXNorm;
+            double tempYNorm = outYNorm;
+
+            if (mStickParams.smoothing)
+            {
+                tempXNorm = mStickParams.smoothingFilterSettings.filterX.Filter(tempXNorm * 1.0005, mapper.CurrentRate);
+                tempYNorm = mStickParams.smoothingFilterSettings.filterY.Filter(tempYNorm * 1.0005, mapper.CurrentRate);
+
+                // Filter does not go back to absolute zero for reasons. Check
+                // for low number and reset to zero
+                if (Math.Abs(tempXNorm) < 0.001) tempXNorm = 0.0;
+                if (Math.Abs(tempYNorm) < 0.001) tempYNorm = 0.0;
+
+                // Perform clamping
+                tempXNorm = Math.Clamp(tempXNorm, -1.0, 1.0);
+                tempYNorm = Math.Clamp(tempYNorm, -1.0, 1.0);
+            }
+
             // Adjust sensitivity to work around rounding in filter method
             /*outXNorm *= 1.0005;
             outYNorm *= 1.0005;
@@ -414,8 +449,6 @@ namespace DS4MapperTest.GyroActions
             tempXNorm = Math.Clamp(tempXNorm, -1.0, 1.0);
             tempYNorm = Math.Clamp(tempYNorm, -1.0, 1.0);
             */
-            double tempXNorm = outXNorm;
-            double tempYNorm = outYNorm;
 
             if (mStickParams.invertX) tempXNorm = -1.0 * tempXNorm;
             if (mStickParams.invertY) tempYNorm = -1.0 * tempYNorm;
