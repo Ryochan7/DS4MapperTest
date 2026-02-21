@@ -5876,6 +5876,21 @@ namespace DS4MapperTest
                 return gyroMouseAction.ChangedProperties.Contains(GyroMouse.PropertyKeyStrings.POWER_CURVE_EXPONENT);
             }
 
+            public double NaturalVHalf
+            {
+                get => gyroMouseAction.mouseParams.naturalVHalf;
+                set
+                {
+                    gyroMouseAction.mouseParams.naturalVHalf = Math.Clamp(value, 0.1, 500.0);
+                    NaturalVHalfChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler NaturalVHalfChanged;
+            public bool ShouldSerializeNaturalVHalf()
+            {
+                return gyroMouseAction.ChangedProperties.Contains(GyroMouse.PropertyKeyStrings.NATURAL_CURVE_VHALF);
+            }
+
             public double Sensitivity
             {
                 get => gyroMouseAction.mouseParams.sensitivity;
@@ -6092,6 +6107,7 @@ namespace DS4MapperTest
             settings.MaxGyroThresholdChanged += Settings_MaxGyroThresholdChanged;
             settings.PowerVRefChanged += Settings_PowerVRefChanged;
             settings.PowerExponentChanged += Settings_PowerExponentChanged;
+            settings.NaturalVHalfChanged += Settings_NaturalVHalfChanged;
             settings.SensitivityChanged += Settings_SensitivityChanged;
             settings.VerticalScaleChanged += Settings_VerticalScaleChanged;
             settings.InvertXChanged += Settings_InvertXChanged;
@@ -6106,6 +6122,11 @@ namespace DS4MapperTest
             settings.SmoothingEnabledChanged += Settings_SmoothingEnabledChanged;
             settings.SmoothingMinCutoffChanged += Settings_SmoothingMinCutoffChanged;
             settings.SmoothingBetaChanged += Settings_SmoothingMinBetaChanged;
+        }
+
+        private void Settings_NaturalVHalfChanged(object sender, EventArgs e)
+        {
+            gyroMouseAction.ChangedProperties.Add(GyroMouse.PropertyKeyStrings.NATURAL_CURVE_VHALF);
         }
 
         private void Settings_MaxAccelYSensChanged(object sender, EventArgs e)

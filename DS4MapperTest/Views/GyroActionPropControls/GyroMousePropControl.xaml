@@ -263,7 +263,24 @@ Value="{Binding MinGyroThreshold,FallbackValue='0.0'}" Margin="8,0,0,0">
                             <Label Content="dps" Margin="2,0,0,0" BorderBrush="{x:Null}" />
                         </StackPanel>
 
-                        <StackPanel Orientation="Horizontal" Margin="16,0,0,0" Visibility="{Binding PowerCurveUsed, Converter={StaticResource InvertBoolToVisibilityConverter}, FallbackValue=Visible}">
+                        <StackPanel Orientation="Horizontal" Margin="16,0,0,0" Visibility="{Binding UsesMaxThreshold, Converter={StaticResource InvertBoolToVisibilityConverter}, FallbackValue=Visible}">
+                            <Label Content="Natural Midpoint (vHalf)" />
+                            <hc:NumericUpDown Minimum="1.0" Maximum="500.0" DecimalPlaces="2" Increment="0.5"
+Value="{Binding NaturalVHalf,FallbackValue='1.0'}" Margin="8,0,0,0">
+                                <hc:NumericUpDown.Style>
+                                    <Style TargetType="hc:NumericUpDown" BasedOn="{StaticResource NumericUpDownBaseStyle}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding HighlightNaturalVHalf}" Value="False">
+                                                <Setter Property="Opacity" Value="0.7" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </hc:NumericUpDown.Style>
+                            </hc:NumericUpDown>
+
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal" Margin="16,0,0,0" Visibility="{Binding UsesMaxThreshold, Converter={StaticResource Boolean2VisibilityConverter}, FallbackValue=Visible}">
                             <Label Content="Max Threshold" />
                             <hc:NumericUpDown Minimum="0.0" Maximum="500.0" DecimalPlaces="2" Increment="0.5"
 Value="{Binding MaxGyroThreshold,FallbackValue='1.0'}" Margin="8,0,0,0">

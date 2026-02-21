@@ -23,6 +23,7 @@ namespace DS4MapperTest.GyroActions
         Quadratic,
         Cubic,
         Power,
+        Natural,
     }
 
     public struct SmoothingFilterSettings
@@ -88,6 +89,7 @@ namespace DS4MapperTest.GyroActions
         public double maxAccelYSens;
         public double powerVRef;
         public double powerExponent;
+        public double naturalVHalf;
         public double sensitivity;
         public double verticalScale;
         public bool invertX;
@@ -125,6 +127,7 @@ namespace DS4MapperTest.GyroActions
             public const string MAX_GYRO_THRESHOLD = "MaxGyroThreshold";
             public const string POWER_CURVE_VREF = "PowerCurveVRef";
             public const string POWER_CURVE_EXPONENT = "PowerCurveExponent";
+            public const string NATURAL_CURVE_VHALF = "NaturalCurveVHalf";
 
             public const string TRIGGER_BUTTONS = "Triggers";
             public const string TRIGGER_ACTIVATE = "TriggersActivate";
@@ -158,6 +161,7 @@ namespace DS4MapperTest.GyroActions
             PropertyKeyStrings.MAX_GYRO_THRESHOLD,
             PropertyKeyStrings.POWER_CURVE_VREF,
             PropertyKeyStrings.POWER_CURVE_EXPONENT,
+            PropertyKeyStrings.NATURAL_CURVE_VHALF,
             PropertyKeyStrings.TRIGGER_BUTTONS,
             PropertyKeyStrings.TRIGGER_ACTIVATE,
             PropertyKeyStrings.TRIGGER_EVAL_COND,
@@ -197,6 +201,7 @@ namespace DS4MapperTest.GyroActions
                 maxAccelYSens = 3.0,
                 powerExponent = 1.0,
                 powerVRef = 1.0,
+                naturalVHalf = 1.0,
                 verticalScale = 1.0,
                 triggerActivates = true,
                 andCond = true,
@@ -399,7 +404,9 @@ namespace DS4MapperTest.GyroActions
                     //double alphaX = deltaAngVelX / dps_test;
                     //double alphaY = deltaAngVelY / dps_test;
                     double dist = Math.Sqrt(distSquared);
+                    double pastMinThreshold = dist - activeMinThreshold;
                     double alpha = (dist - activeMinThreshold) / dps_test;
+                    bool filled = false;
                     switch (mouseParams.accelCurve)
                     {
                         case GyroMouseAccelCurveChoice.Quadratic:
@@ -409,11 +416,26 @@ namespace DS4MapperTest.GyroActions
                             alpha = alpha * alpha * alpha;
                             break;
                         case GyroMouseAccelCurveChoice.Power:
-                            double pastMinThreshold = dist - activeMinThreshold;
                             double ratio = pastMinThreshold / mouseParams.powerVRef;
                             double x = Math.Pow(ratio, mouseParams.powerExponent);
                             alpha = 1.0 - Math.Exp(-x);
                             alpha = Math.Clamp(alpha, 0.0, 1.0);
+
+                            break;
+                        case GyroMouseAccelCurveChoice.Natural:
+                            if (mouseParams.naturalVHalf <= 0.0)
+                            {
+                                modSensMultiX = maxXSens;
+                                modSensMultiY = maxYSens;
+                                break;
+                            }
+
+                            double sensRangeX = maxXSens - minXSens;
+                            double sensRangeY = maxYSens - minYSens;
+                            double temp = Math.Log(2.0) / mouseParams.naturalVHalf;
+                            modSensMultiX = maxXSens - sensRangeX * Math.Exp(-temp * pastMinThreshold);
+                            modSensMultiY = maxYSens - sensRangeY * Math.Exp(-temp * pastMinThreshold);
+                            filled = true;
 
                             break;
                         default: break;
@@ -421,8 +443,11 @@ namespace DS4MapperTest.GyroActions
 
                     //Trace.WriteLine($"{deltaAngVelX} {deltaAngVelY} {distSquared} {alpha}");
                     //modSensMulti = 0.4 + (1.0 - 0.4) * alpha;
-                    modSensMultiX = minXSens + (maxXSens - minXSens) * alpha;
-                    modSensMultiY = minYSens + (maxYSens - minYSens) * alpha;
+                    if (!filled)
+                    {
+                        modSensMultiX = minXSens + (maxXSens - minXSens) * alpha;
+                        modSensMultiY = minYSens + (maxYSens - minYSens) * alpha;
+                    }
                 }
                 else if (isPastMinThreshold)
                 {
@@ -670,6 +695,9 @@ namespace DS4MapperTest.GyroActions
                         case PropertyKeyStrings.POWER_CURVE_EXPONENT:
                             mouseParams.powerExponent = tempMouseAction.mouseParams.powerExponent;
                             break;
+                        case PropertyKeyStrings.NATURAL_CURVE_VHALF:
+                            mouseParams.naturalVHalf = tempMouseAction.mouseParams.naturalVHalf;
+                            break;
                         case PropertyKeyStrings.SENSITIVITY:
                             mouseParams.sensitivity = tempMouseAction.mouseParams.sensitivity;
                             break;
@@ -792,6 +820,9 @@ namespace DS4MapperTest.GyroActions
                     break;
                 case PropertyKeyStrings.POWER_CURVE_EXPONENT:
                     mouseParams.powerExponent = tempMouseAction.mouseParams.powerExponent;
+                    break;
+                case PropertyKeyStrings.NATURAL_CURVE_VHALF:
+                    mouseParams.naturalVHalf = tempMouseAction.mouseParams.naturalVHalf;
                     break;
                 case PropertyKeyStrings.SENSITIVITY:
                     mouseParams.sensitivity = tempMouseAction.mouseParams.sensitivity;
