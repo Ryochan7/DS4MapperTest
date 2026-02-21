@@ -468,7 +468,11 @@ namespace DS4MapperTest.TouchpadActions
             double oldTimeElapsed = timeElapsed;
             timeElapsed = timeElapsed - (mapper.remainderCutoff(timeElapsed * 10000.0, 1.0) / 10000.0);
             //double coefficient = TOUCHPAD_COEFFICIENT;
-            double coefficient = touchpadDefinition.mouseScale;
+            //double coefficient = touchpadDefinition.mouseScale;
+
+            // Static. 11 RWC / 1.0 In-Game Sens.
+            // Shadow Warrior (2013)
+            double coefficient = (11.0 / 1.0);
             if (sensitivity != DEFAULT_SENSITIVITY)
             {
                 coefficient = coefficient * sensitivity;
@@ -533,10 +537,15 @@ namespace DS4MapperTest.TouchpadActions
                 }
             }
 
-            double xMotion = dx != 0 ? finalCoefficient * (dx * tempDouble)
+            double fakeXAng = (double)dx / (65535.0 / 360.0);
+            double fakeYAng = (double)dy / (65535.0 / 360.0);
+
+            //Trace.WriteLine($"DX {dx} {fakeXAng}");
+
+            double xMotion = dx != 0 ? finalCoefficient * (fakeXAng * tempDouble)
                 + (normX * (offset * signX)) : 0;
 
-            double yMotion = dy != 0 ? finalCoefficient * (dy * tempDouble)
+            double yMotion = dy != 0 ? finalCoefficient * (fakeYAng * tempDouble)
                 + (normY * (offset * signY)) : 0;
             if (verticalScale != DEFAULT_VERTICAL_SCALE)
             {
