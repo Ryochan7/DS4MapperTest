@@ -201,7 +201,7 @@ namespace DS4MapperTest.GyroActions
                 maxAccelYSens = 3.0,
                 powerExponent = 1.0,
                 powerVRef = 1.0,
-                naturalVHalf = 1.0,
+                naturalVHalf = 20.0,
                 verticalScale = 1.0,
                 triggerActivates = true,
                 andCond = true,
