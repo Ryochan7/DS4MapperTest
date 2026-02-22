@@ -147,8 +147,8 @@ namespace DS4MapperTest.SteamControllerLibrary
                 elapsedReference: device.BaseElapsedReference, mouseScale: 0.012 * 1.1, mouseOffset: 0.4,
                 trackballScale: 0.000023);
             leftPadDefiniton.throttleRelMouse = true;
-            leftPadDefiniton.throttleRelMousePower = 1.428;
-            leftPadDefiniton.throttleRelMouseZone = 700.0;
+            leftPadDefiniton.throttleRelMousePower = 1.58;
+            leftPadDefiniton.throttleRelMouseZone = 800.0;
 
             TouchpadDefinition.TouchAxisData rpadXAxis = new TouchpadDefinition.TouchAxisData
             {
