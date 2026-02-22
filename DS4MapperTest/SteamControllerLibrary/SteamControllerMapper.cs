@@ -176,8 +176,8 @@ namespace DS4MapperTest.SteamControllerLibrary
                 elapsedReference: device.BaseElapsedReference, mouseScale: 0.012 * 1.1, mouseOffset: 0.4,
                 trackballScale: 0.000023);
             rightPadDefinition.throttleRelMouse = true;
-            rightPadDefinition.throttleRelMousePower = 1.428;
-            rightPadDefinition.throttleRelMouseZone = 700.0;
+            rightPadDefinition.throttleRelMousePower = 1.58;
+            rightPadDefinition.throttleRelMouseZone = 800.0;
 
             TriggerDefinition.TriggerAxisData ltAxis = new TriggerDefinition.TriggerAxisData
             {
