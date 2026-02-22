@@ -393,27 +393,48 @@ namespace DS4MapperTest.GyroActions
                 //double modSensMulti = minSens;
                 modSensMultiX = minXSens;
                 modSensMultiY = minYSens;
-                //double dps_test = 180.0 / 16.0; // ~11.25 dps
-                double dps_test = activeMaxThreshold - activeMinThreshold;
-                double dpsTestSquared = dps_test * dps_test;
+
                 double minThresSquared = activeMinThreshold * activeMinThreshold;
                 double distSquared = (deltaAngVelX * deltaAngVelX) + (deltaAngVelY * deltaAngVelY);
                 bool isPastMinThreshold = distSquared >= activeMinThreshold;
-                if (isPastMinThreshold && distSquared < dpsTestSquared)
+                if (isPastMinThreshold)
                 {
                     //double alphaX = deltaAngVelX / dps_test;
                     //double alphaY = deltaAngVelY / dps_test;
+
+                    //double dps_test = 180.0 / 16.0; // ~11.25 dps
+                    double dps_test = activeMaxThreshold - activeMinThreshold;
+                    double dpsTestSquared = dps_test * dps_test;
                     double dist = Math.Sqrt(distSquared);
                     double pastMinThreshold = dist - activeMinThreshold;
-                    double alpha = (dist - activeMinThreshold) / dps_test;
                     bool filled = false;
+                    double alpha = 0.0;
+
                     switch (mouseParams.accelCurve)
                     {
                         case GyroMouseAccelCurveChoice.Quadratic:
-                            alpha = alpha * alpha;
+                            if (pastMinThreshold < dps_test)
+                            {
+                                alpha = (dist - activeMinThreshold) / dps_test;
+                                alpha = alpha * alpha;
+                            }
+                            else
+                            {
+                                alpha = 1.0;
+                            }
+
                             break;
                         case GyroMouseAccelCurveChoice.Cubic:
-                            alpha = alpha * alpha * alpha;
+                            if (pastMinThreshold < dps_test)
+                            {
+                                alpha = (dist - activeMinThreshold) / dps_test;
+                                alpha = alpha * alpha * alpha;
+                            }
+                            else
+                            {
+                                alpha = 1.0;
+                            }
+
                             break;
                         case GyroMouseAccelCurveChoice.Power:
                             double ratio = pastMinThreshold / mouseParams.powerVRef;
@@ -449,11 +470,11 @@ namespace DS4MapperTest.GyroActions
                         modSensMultiY = minYSens + (maxYSens - minYSens) * alpha;
                     }
                 }
-                else if (isPastMinThreshold)
-                {
-                    modSensMultiX = maxXSens;
-                    modSensMultiY = maxYSens;
-                }
+                //else if (isPastMinThreshold)
+                //{
+                //    modSensMultiX = maxXSens;
+                //    modSensMultiY = maxYSens;
+                //}
             }
 
             // Find degrees displacement for gamepad poll
