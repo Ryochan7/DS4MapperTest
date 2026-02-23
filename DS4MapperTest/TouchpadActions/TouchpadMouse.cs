@@ -472,7 +472,7 @@ namespace DS4MapperTest.TouchpadActions
 
             // Static. 11 RWC / 1.0 In-Game Sens.
             // Shadow Warrior (2013)
-            //double coefficient = (11.0 / 2.0);
+            //double coefficient = (11.0 / 1.0);
             if (sensitivity != DEFAULT_SENSITIVITY)
             {
                 coefficient = coefficient * sensitivity;
