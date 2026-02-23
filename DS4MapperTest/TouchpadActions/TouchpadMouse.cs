@@ -515,6 +515,7 @@ namespace DS4MapperTest.TouchpadActions
                 double testSquared = testThreshold * testThreshold;
 
                 if (distSquared != 0.0 && distSquared < testSquared)
+                //if (distSquared != 0.0)// && distSquared < testSquared)
                 {
                     double dist = Math.Sqrt(distSquared);
                     //double alpha = (dist - 0.0) / testThreshold;
@@ -522,6 +523,18 @@ namespace DS4MapperTest.TouchpadActions
                     double distPastMin = (dist - 0.0);
                     double baconator = distPastMin / testThreshold;
                     double ratio = distPastMin / testThreshold;
+
+                    /*
+                    // Experimental Natural Curve changes
+                    {
+                        double sensRange = 1.0 - 0.0;
+                        double temp = Math.Log(2.0) / 700.0;
+                        sensMulti = 1.0 - sensRange * Math.Exp(-temp * distPastMin);
+
+                        //Trace.WriteLine($"{distPastMin} {sensMulti} {Math.Exp(-temp * distPastMin)}");
+                    }
+                    */
+
                     //double pastMinThreshold = dist - activeMinThreshold;
                     //double ratio = pastMinThreshold / mouseParams.powerVRef;
                     double x = Math.Pow(ratio, touchpadDefinition.throttleRelMousePower);
