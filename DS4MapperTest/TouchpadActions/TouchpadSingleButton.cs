@@ -68,17 +68,28 @@ namespace DS4MapperTest.TouchpadActions
 
             active = false;
             xNorm = 0.0; yNorm = 0.0;
+            bool inSafeZone = false;
 
-            int axisXVal = touchFrame.X;
-            int axisYVal = touchFrame.Y;
-            int axisXMid = touchpadDefinition.xAxis.mid, axisYMid = touchpadDefinition.yAxis.mid;
-            int axisXDir = axisXVal - axisXMid, axisYDir = axisYVal - axisYMid;
-            bool xNegative = axisXDir < 0;
-            bool yNegative = axisYDir < 0;
-            int maxDirX = (!xNegative ? touchpadDefinition.xAxis.max : touchpadDefinition.xAxis.min) - axisXMid;
-            int maxDirY = (!yNegative ? touchpadDefinition.yAxis.max : touchpadDefinition.yAxis.min) - axisYMid;
-            deadMod.CalcOutValues(axisXDir, axisYDir, maxDirX, maxDirY, out xNorm, out yNorm);
-            if (deadMod.inSafeZone)
+            if (!touchFrame.Touch)
+            {
+                inSafeZone = false;
+            }
+            else
+            {
+                int axisXVal = touchFrame.X;
+                int axisYVal = touchFrame.Y;
+                int axisXMid = touchpadDefinition.xAxis.mid, axisYMid = touchpadDefinition.yAxis.mid;
+                int axisXDir = axisXVal - axisXMid, axisYDir = axisYVal - axisYMid;
+                bool xNegative = axisXDir < 0;
+                bool yNegative = axisYDir < 0;
+                int maxDirX = (!xNegative ? touchpadDefinition.xAxis.max : touchpadDefinition.xAxis.min) - axisXMid;
+                int maxDirY = (!yNegative ? touchpadDefinition.yAxis.max : touchpadDefinition.yAxis.min) - axisYMid;
+                deadMod.CalcOutValues(axisXDir, axisYDir, maxDirX, maxDirY,
+                    out xNorm, out yNorm);
+                inSafeZone = deadMod.inSafeZone;
+            }
+
+            if (inSafeZone)
             {
                 inputStatus = true;
                 active = true;
