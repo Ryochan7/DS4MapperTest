@@ -517,6 +517,7 @@ namespace DS4MapperTest.DS4Library
                             Y2 = Math.Clamp(TouchpadAxisScale(currentMapperState.Touch2.Y, true, cpadDefinition.yAxis),
                                 (short)0, (short)DS4State.TouchInfo.TOUCHPAD_MAX_Y),
                             Touch = currentMapperState.Touch1.Touch,
+                            Click = currentMapperState.TouchClickButton,
                             numTouches = currentMapperState.NumTouches,
                             timeElapsed = currentMapperState.timeElapsed,
                             passDelta = current.TouchPacketNum == previousMapperState.TouchPacketNum,
