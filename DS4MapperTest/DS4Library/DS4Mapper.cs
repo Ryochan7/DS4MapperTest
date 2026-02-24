@@ -800,7 +800,7 @@ namespace DS4MapperTest.DS4Library
         {
             switch (padID)
             {
-                case TouchpadActionCodes.Touch3:
+                case TouchpadActionCodes.TouchCenterWhole:
                     return ref previousTouchFramePad;
                 case TouchpadActionCodes.TouchL:
                     return ref previousSplitLeftTouchFramePad;
