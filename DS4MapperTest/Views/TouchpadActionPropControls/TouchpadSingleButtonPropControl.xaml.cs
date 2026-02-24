@@ -53,5 +53,13 @@ namespace DS4MapperTest.Views.TouchpadActionPropControls
                 !touchSingleBtnVM.Action.UseParentActions,
                 touchSingleBtnVM.UpdateEventButton));
         }
+
+        private void BtnEditClickBinding_Click(object sender, RoutedEventArgs e)
+        {
+            RequestFuncEditor?.Invoke(this,
+                new DirButtonBindingArgs(touchSingleBtnVM.Action.ClickEventButton,
+                !touchSingleBtnVM.Action.UseParentClickActions,
+                touchSingleBtnVM.UpdateClickEventButton));
+        }
     }
 }

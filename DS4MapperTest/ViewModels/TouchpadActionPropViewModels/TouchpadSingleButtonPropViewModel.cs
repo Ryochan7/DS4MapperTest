@@ -36,6 +36,11 @@ namespace DS4MapperTest.ViewModels.TouchpadActionPropViewModels
             get => action.EventButton.DescribeActions(mapper);
         }
 
+        public string ClickActionDisplayBind
+        {
+            get => action.ClickEventButton.DescribeActions(mapper);
+        }
+
         public bool HighlightName
         {
             get => action.ParentAction == null ||
@@ -129,6 +134,26 @@ namespace DS4MapperTest.ViewModels.TouchpadActionPropViewModels
 
                 action.ChangedProperties.Add(TouchpadSingleButton.PropertyKeyStrings.FUNCTIONS);
                 action.UseParentActions = false;
+            });
+        }
+
+        public void UpdateClickEventButton(ButtonAction oldAction, ButtonAction newAction)
+        {
+            if (!usingRealAction)
+            {
+                ReplaceExistingLayerAction(this, EventArgs.Empty);
+            }
+
+            ExecuteInMapperThread(() =>
+            {
+                if (oldAction != null)
+                {
+                    oldAction.Release(mapper, ignoreReleaseActions: true);
+                    action.ClickEventButton = newAction;
+                }
+
+                action.ChangedProperties.Add(TouchpadSingleButton.PropertyKeyStrings.FUNCTIONS_CLICK);
+                action.UseParentClickActions = false;
             });
         }
     }

@@ -15,12 +15,14 @@ namespace DS4MapperTest.TouchpadActions
             public const string NAME = "Name";
             public const string FUNCTIONS = "Functions";
             public const string DEAD_ZONE = "DeadZone";
+            public const string FUNCTIONS_CLICK = "FunctionsClick";
         }
 
         private HashSet<string> fullPropertySet = new HashSet<string>()
         {
             PropertyKeyStrings.NAME,
             PropertyKeyStrings.FUNCTIONS,
+            PropertyKeyStrings.FUNCTIONS_CLICK,
             PropertyKeyStrings.DEAD_ZONE,
         };
 
@@ -28,6 +30,10 @@ namespace DS4MapperTest.TouchpadActions
         public const string ACTION_TYPE_NAME = "TouchSingleButtonAction";
 
         private bool inputStatus;
+        private bool inputClickStatus;
+
+        private ButtonAction clickEventButton = new ButtonAction();
+        private bool useParentClickActions;
 
         private ButtonAction usedEventButton = new ButtonAction();
         private bool useParentActions;
@@ -41,6 +47,18 @@ namespace DS4MapperTest.TouchpadActions
         {
             get => usedEventButton;
             set => usedEventButton = value;
+        }
+
+        public ButtonAction ClickEventButton
+        {
+            get => clickEventButton;
+            set => clickEventButton = value;
+        }
+
+        public bool UseParentClickActions
+        {
+            get => useParentClickActions;
+            set => useParentClickActions = value;
         }
 
         private StickDeadZone deadMod;
@@ -100,6 +118,17 @@ namespace DS4MapperTest.TouchpadActions
                 active = true;
             }
 
+            if (touchFrame.Touch && touchFrame.Click)
+            {
+                inputClickStatus = true;
+                active = true;
+            }
+            else if (inputClickStatus)
+            {
+                inputClickStatus = false;
+                active = true;
+            }
+
             activeEvent = true;
         }
 
@@ -107,6 +136,9 @@ namespace DS4MapperTest.TouchpadActions
         {
             usedEventButton.Prepare(mapper, inputStatus);
             usedEventButton.Event(mapper);
+
+            clickEventButton.Prepare(mapper, inputClickStatus);
+            clickEventButton.Event(mapper);
         }
 
         public override void Release(Mapper mapper, bool resetState = true, bool ignoreReleaseActions = false)
@@ -115,6 +147,11 @@ namespace DS4MapperTest.TouchpadActions
             {
                 usedEventButton.Prepare(mapper, false);
                 usedEventButton.Event(mapper);
+                inputStatus = false;
+
+                clickEventButton.Prepare(mapper, false);
+                clickEventButton.Event(mapper);
+                inputClickStatus = false;
             }
         }
 
@@ -124,6 +161,14 @@ namespace DS4MapperTest.TouchpadActions
             {
                 usedEventButton.Prepare(mapper, false);
                 usedEventButton.Event(mapper);
+                inputStatus = false;
+            }
+
+            if (!useParentClickActions && active)
+            {
+                clickEventButton.Prepare(mapper, false);
+                clickEventButton.Event(mapper);
+                inputClickStatus = false;
             }
 
             if (resetState)
@@ -155,6 +200,10 @@ namespace DS4MapperTest.TouchpadActions
                         case PropertyKeyStrings.FUNCTIONS:
                             useParentActions = true;
                             usedEventButton = tempButtonAct.usedEventButton;
+                            break;
+                        case PropertyKeyStrings.FUNCTIONS_CLICK:
+                            useParentClickActions = true;
+                            clickEventButton = tempButtonAct.clickEventButton;
                             break;
                         case PropertyKeyStrings.DEAD_ZONE:
                             deadMod.DeadZone = tempButtonAct.deadMod.DeadZone;
@@ -194,6 +243,10 @@ namespace DS4MapperTest.TouchpadActions
                 case PropertyKeyStrings.FUNCTIONS:
                     useParentActions = true;
                     usedEventButton = tempButtonAct.usedEventButton;
+                    break;
+                case PropertyKeyStrings.FUNCTIONS_CLICK:
+                    useParentClickActions = true;
+                    clickEventButton = tempButtonAct.clickEventButton;
                     break;
                 case PropertyKeyStrings.DEAD_ZONE:
                     deadMod.DeadZone = tempButtonAct.deadMod.DeadZone;

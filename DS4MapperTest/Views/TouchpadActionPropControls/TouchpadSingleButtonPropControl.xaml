@@ -32,8 +32,13 @@
             </StackPanel>
 
             <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
-                <Label Content="Binding" />
+                <Label Content="Touch" />
                 <Button x:Name="btnEditBinding" Content="{Binding ActionDisplayBind,Mode=OneTime,FallbackValue='Test Binding'}" Click="BtnEditBinding_Click" Margin="8,0,0,0" MinWidth="60" />
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                <Label Content="Click" />
+                <Button x:Name="btnEditClickBinding" Content="{Binding ClickActionDisplayBind,Mode=OneTime,FallbackValue='Test Binding'}" Click="BtnEditClickBinding_Click" Margin="8,0,0,0" MinWidth="60" />
             </StackPanel>
 
         </StackPanel>

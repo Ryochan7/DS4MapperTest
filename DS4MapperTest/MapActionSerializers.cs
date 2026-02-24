@@ -3636,6 +3636,30 @@ namespace DS4MapperTest
 
     public class TouchpadSingleButtonSerializer : MapActionSerializer
     {
+        public class TouchClickBinding
+        {
+            private List<ActionFuncSerializer> actionFuncSerializers =
+                new List<ActionFuncSerializer>();
+            [JsonProperty("Functions")]
+            public List<ActionFuncSerializer> ActionFuncSerializers
+            {
+                get => actionFuncSerializers;
+                set
+                {
+                    actionFuncSerializers = value;
+                    ActionFuncSerializersChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler ActionFuncSerializersChanged;
+            // TODO: Decide whether Functions property should be always required or not.
+            // Conflicting statements here
+            public bool ShouldSerializeActionFuncSerializers()
+            {
+                return actionFuncSerializers != null &&
+                    actionFuncSerializers.Count > 0;
+            }
+        }
+
         public class TouchpadSingleButtonSettings
         {
             private TouchpadSingleButton touchpadSingleBtnAct;
@@ -3661,7 +3685,7 @@ namespace DS4MapperTest
 
         private List<ActionFuncSerializer> actionFuncSerializers =
                 new List<ActionFuncSerializer>();
-        [JsonProperty("Functions", Required = Required.Always)]
+        [JsonProperty("Functions", Required = Required.Default)]
         public List<ActionFuncSerializer> ActionFuncSerializers
         {
             get => actionFuncSerializers;
@@ -3672,6 +3696,23 @@ namespace DS4MapperTest
             }
         }
         public event EventHandler ActionFuncSerializersChanged;
+
+        private TouchClickBinding clickBinding = new TouchClickBinding();
+
+        [JsonProperty("Click", Required = Required.Default)]
+        public TouchClickBinding ClickBinding
+        {
+            get => clickBinding;
+            set
+            {
+                clickBinding = value;
+            }
+        }
+        public bool ShouldSerializeClickBinding()
+        {
+            return buttonAction.ChangedProperties.Contains(TouchpadSingleButton.PropertyKeyStrings.FUNCTIONS_CLICK);
+        }
+
 
         private TouchpadSingleButtonSettings settings;
         public TouchpadSingleButtonSettings Settings
@@ -3688,6 +3729,7 @@ namespace DS4MapperTest
 
             NameChanged += TouchpadSingleButtonSerializer_NameChanged;
             ActionFuncSerializersChanged += TouchpadSingleButtonSerializer_ActionFuncSerializersChanged;
+            clickBinding.ActionFuncSerializersChanged += ClickBinding_ActionFuncSerializersChanged;
             settings.DeadZoneChanged += Settings_DeadZoneChanged;
         }
 
@@ -3699,6 +3741,7 @@ namespace DS4MapperTest
             {
                 buttonAction = temp;
                 this.mapAction = buttonAction;
+                settings = new TouchpadSingleButtonSettings(buttonAction);
                 PopulateFuncs();
             }
         }
@@ -3718,6 +3761,19 @@ namespace DS4MapperTest
                     }
                 }
             }
+
+            if (!buttonAction.UseParentClickActions)
+            {
+                foreach (ActionFunc tempFunc in buttonAction.ClickEventButton.ActionFuncs)
+                {
+                    ActionFuncSerializer tempSerializer =
+                        ActionFuncSerializerFactory.CreateSerializer(tempFunc);
+                    if (tempSerializer != null)
+                    {
+                        clickBinding.ActionFuncSerializers.Add(tempSerializer);
+                    }
+                }
+            }
         }
 
         // Deserialize
@@ -3729,6 +3785,18 @@ namespace DS4MapperTest
                 serializer.PopulateFunc();
                 buttonAction.EventButton.ActionFuncs.Add(serializer.ActionFunc);
             }
+
+            buttonAction.ClickEventButton.ActionFuncs.Clear();
+            foreach (ActionFuncSerializer serializer in clickBinding.ActionFuncSerializers)
+            {
+                serializer.PopulateFunc();
+                buttonAction.ClickEventButton.ActionFuncs.Add(serializer.ActionFunc);
+            }
+        }
+
+        private void ClickBinding_ActionFuncSerializersChanged(object sender, EventArgs e)
+        {
+            buttonAction.ChangedProperties.Add(TouchpadSingleButton.PropertyKeyStrings.FUNCTIONS_CLICK);
         }
 
         private void Settings_DeadZoneChanged(object sender, EventArgs e)
