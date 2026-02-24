@@ -34,12 +34,16 @@ namespace DS4MapperTest.DualSense
         private DualSenseState previousMapperState;
 
         private TouchEventFrame previousTouchFramePad;
+        private TouchEventFrame previousSplitLeftTouchFramePad;
+        private TouchEventFrame previousSplitRightTouchFramePad;
 
         private StickDefinition lsDefintion;
         private StickDefinition rsDefintion;
         private TriggerDefinition leftTriggerDefinition;
         private TriggerDefinition rightTriggerDefinition;
         private TouchpadDefinition cpadDefinition;
+        private TouchpadDefinition leftTouchpadDefinition;
+        private TouchpadDefinition rightTouchpadDefinition;
         private GyroSensDefinition gyroSensDefinition;
 
         private bool hapticsEvent;
@@ -82,6 +86,8 @@ namespace DS4MapperTest.DualSense
                 new InputBindingMeta("DPad", "DPad", InputBindingMeta.InputControlType.DPad),
                 new InputBindingMeta("Gyro", "Gyro", InputBindingMeta.InputControlType.Gyro),
                 new InputBindingMeta("Touchpad", "Touchpad", InputBindingMeta.InputControlType.Touchpad),
+                new InputBindingMeta("TouchpadLeft", "Touchpad Left", InputBindingMeta.InputControlType.TouchpadRegion),
+                new InputBindingMeta("TouchpadRight", "Touchpad Right", InputBindingMeta.InputControlType.TouchpadRegion),
             };
 
             if (device.SubType == DualSenseDevice.DeviceSubType.DSEdge)
@@ -163,7 +169,37 @@ namespace DS4MapperTest.DualSense
             cpadYAxis.PostInit();
 
             cpadDefinition = new TouchpadDefinition(cpadXAxis, cpadYAxis,
-                TouchpadActionCodes.Touch, elapsedReference: device.BaseElapsedReference,
+                TouchpadActionCodes.TouchCenterWhole, elapsedReference: device.BaseElapsedReference,
+                mouseScale: 1.0, mouseOffset: 0.015, trackballScale: 0.004);
+
+            TouchpadDefinition.TouchAxisData splitPadLeftXAxis = new TouchpadDefinition.TouchAxisData
+            {
+                min = 0,
+                max = (1920 / 2) - 1,
+                mid = 1920 / 4,
+
+                hard_min = 0,
+                hard_max = (1920 / 2) - 1,
+            };
+            splitPadLeftXAxis.PostInit();
+
+            TouchpadDefinition.TouchAxisData splitPadRightXAxis = new TouchpadDefinition.TouchAxisData
+            {
+                min = 1920 / 2,
+                max = 1920,
+                mid = (1920 / 2) + (1920 / 4),
+
+                hard_min = 0,
+                hard_max = 1920 / 2,
+            };
+            splitPadRightXAxis.PostInit();
+
+            leftTouchpadDefinition = new TouchpadDefinition(splitPadLeftXAxis, cpadYAxis,
+                TouchpadActionCodes.TouchL, elapsedReference: device.BaseElapsedReference,
+                mouseScale: 1.0, mouseOffset: 0.015, trackballScale: 0.004);
+
+            rightTouchpadDefinition = new TouchpadDefinition(splitPadRightXAxis, cpadYAxis,
+                TouchpadActionCodes.TouchR, elapsedReference: device.BaseElapsedReference,
                 mouseScale: 1.0, mouseOffset: 0.015, trackballScale: 0.004);
 
             gyroSensDefinition = new GyroSensDefinition()
@@ -186,6 +222,8 @@ namespace DS4MapperTest.DualSense
             knownTriggerDefinitions.Add("L2", leftTriggerDefinition);
             knownTriggerDefinitions.Add("R2", rightTriggerDefinition);
             knownTouchpadDefinitions.Add("Touchpad", cpadDefinition);
+            knownTouchpadDefinitions.Add("TouchpadLeft", leftTouchpadDefinition);
+            knownTouchpadDefinitions.Add("TouchpadRight", rightTouchpadDefinition);
             knownGyroSensDefinitions.Add("Gyro", gyroSensDefinition);
 
             actionTriggerItems.Clear();
@@ -532,32 +570,150 @@ namespace DS4MapperTest.DualSense
                     //sender.CombLatency = 0;
                 }
 
-                TouchpadMapAction tempTouchAction = currentLayer.touchpadActionDict["Touchpad"];
-                //if (current.TouchPacketNum != previousMapperState.TouchPacketNum)
-                //if (currentMapperState.LeftPad.Touch || currentMapperState.LeftPad.Touch != previousMapperState.LeftPad.Touch)
+                // Center whole pad
                 {
-                    //Trace.WriteLine($"{currentMapperState.LeftPad.X} {currentMapperState.LeftPad.Y}");
-                    TouchEventFrame eventFrame = new TouchEventFrame
+                    TouchpadMapAction tempTouchAction = currentLayer.touchpadActionDict["Touchpad"];
+                    //if (current.TouchPacketNum != previousMapperState.TouchPacketNum)
+                    //if (currentMapperState.LeftPad.Touch || currentMapperState.LeftPad.Touch != previousMapperState.LeftPad.Touch)
                     {
-                        X = Math.Clamp(currentMapperState.Touch1.X, (short)0, (short)DualSenseState.TouchInfo.TOUCHPAD_MAX_X),
-                        X2 = Math.Clamp(currentMapperState.Touch2.X, (short)0, (short)DualSenseState.TouchInfo.TOUCHPAD_MAX_X),
-                        Y = Math.Clamp(TouchpadAxisScale(currentMapperState.Touch1.Y, true, cpadDefinition.yAxis),
-                            (short)0, (short)DualSenseState.TouchInfo.TOUCHPAD_MAX_Y),
-                        Y2 = Math.Clamp(TouchpadAxisScale(currentMapperState.Touch2.Y, true, cpadDefinition.yAxis),
-                            (short)0, (short)DualSenseState.TouchInfo.TOUCHPAD_MAX_Y),
-                        Touch = currentMapperState.Touch1.Touch,
-                        numTouches = currentMapperState.NumTouches,
-                        timeElapsed = currentMapperState.timeElapsed,
-                        passDelta = current.TouchPacketNum == previousMapperState.TouchPacketNum,
-                    };
+                        //Trace.WriteLine($"{currentMapperState.LeftPad.X} {currentMapperState.LeftPad.Y}");
+                        TouchEventFrame eventFrame = new TouchEventFrame
+                        {
+                            X = Math.Clamp(currentMapperState.Touch1.X, (short)0, (short)DualSenseState.TouchInfo.TOUCHPAD_MAX_X),
+                            X2 = Math.Clamp(currentMapperState.Touch2.X, (short)0, (short)DualSenseState.TouchInfo.TOUCHPAD_MAX_X),
+                            Y = Math.Clamp(TouchpadAxisScale(currentMapperState.Touch1.Y, true, cpadDefinition.yAxis),
+                                (short)0, (short)DualSenseState.TouchInfo.TOUCHPAD_MAX_Y),
+                            Y2 = Math.Clamp(TouchpadAxisScale(currentMapperState.Touch2.Y, true, cpadDefinition.yAxis),
+                                (short)0, (short)DualSenseState.TouchInfo.TOUCHPAD_MAX_Y),
+                            Touch = currentMapperState.Touch1.Touch,
+                            Click = currentMapperState.TouchClickButton,
+                            numTouches = currentMapperState.NumTouches,
+                            timeElapsed = currentMapperState.timeElapsed,
+                            passDelta = current.TouchPacketNum == previousMapperState.TouchPacketNum,
+                        };
 
-                    //Trace.WriteLine($"{eventFrame.X} {eventFrame.Y} deltax:{eventFrame.X - previousTouchFramePad.X} | deltay:{eventFrame.Y - previousTouchFramePad.Y}");
-                    //Trace.WriteLine("BACON");
+                        //Trace.WriteLine($"{eventFrame.X} {eventFrame.Y} deltax:{eventFrame.X - previousTouchFramePad.X} | deltay:{eventFrame.Y - previousTouchFramePad.Y}");
+                        //Trace.WriteLine("BACON");
 
-                    tempTouchAction.Prepare(this, ref eventFrame);
-                    if (tempTouchAction.active) tempTouchAction.Event(this);
+                        tempTouchAction.Prepare(this, ref eventFrame);
+                        if (tempTouchAction.active) tempTouchAction.Event(this);
 
-                    previousTouchFramePad = eventFrame;
+                        previousTouchFramePad = eventFrame;
+                    }
+                }
+
+                // Left and Right Touchpad Regions
+                {
+                    TouchpadMapAction tempTouchAction = currentLayer.touchpadActionDict["TouchpadLeft"];
+                    //if (current.TouchPacketNum != previousMapperState.TouchPacketNum)
+                    //if (currentMapperState.LeftPad.Touch || currentMapperState.LeftPad.Touch != previousMapperState.LeftPad.Touch)
+                    {
+                        bool inLeftRegion = false;
+                        bool inRightRegion = false;
+
+                        short touchL1X = currentMapperState.Touch1.X, touchL2X = currentMapperState.Touch2.X;
+                        short touchL1Y = currentMapperState.Touch1.Y, touchL2Y = currentMapperState.Touch2.Y;
+                        short touchR1X = currentMapperState.Touch1.X, touchR2X = currentMapperState.Touch2.X;
+                        short touchR1Y = currentMapperState.Touch1.Y, touchR2Y = currentMapperState.Touch2.Y;
+
+                        if (currentMapperState.NumTouches > 0)
+                        {
+                            if (currentMapperState.Touch1.Touch)
+                            {
+                                if (currentMapperState.Touch1.X >= leftTouchpadDefinition.xAxis.min &&
+                                    currentMapperState.Touch1.X <= leftTouchpadDefinition.xAxis.max)
+                                {
+                                    inLeftRegion = true;
+                                    touchL1X = currentMapperState.Touch1.X;
+                                    touchL1Y = currentMapperState.Touch1.Y;
+                                    touchL2X = currentMapperState.Touch2.X;
+                                    touchL2Y = currentMapperState.Touch2.Y;
+                                }
+                                else if (currentMapperState.Touch1.X >= rightTouchpadDefinition.xAxis.min &&
+                                    currentMapperState.Touch1.X <= rightTouchpadDefinition.xAxis.max)
+                                {
+                                    inRightRegion = true;
+                                    touchR1X = currentMapperState.Touch1.X;
+                                    touchR1Y = currentMapperState.Touch1.Y;
+                                    touchR2X = currentMapperState.Touch2.X;
+                                    touchR2Y = currentMapperState.Touch2.Y;
+                                }
+                            }
+
+                            if (currentMapperState.Touch2.Touch)
+                            {
+                                if (currentMapperState.Touch2.X >= leftTouchpadDefinition.xAxis.min &&
+                                    currentMapperState.Touch2.X <= leftTouchpadDefinition.xAxis.max)
+                                {
+                                    if (!inLeftRegion)
+                                    {
+                                        inLeftRegion = true;
+                                        touchL1X = currentMapperState.Touch2.X;
+                                        touchL1Y = currentMapperState.Touch2.Y;
+                                        touchL2X = currentMapperState.Touch1.X;
+                                        touchL2Y = currentMapperState.Touch1.Y;
+                                    }
+                                }
+                                else if (currentMapperState.Touch2.X >= rightTouchpadDefinition.xAxis.min &&
+                                    currentMapperState.Touch2.X <= rightTouchpadDefinition.xAxis.max)
+                                {
+                                    if (!inRightRegion)
+                                    {
+                                        inRightRegion = true;
+                                        touchR1X = currentMapperState.Touch2.X;
+                                        touchR1Y = currentMapperState.Touch2.Y;
+                                        touchR2X = currentMapperState.Touch1.X;
+                                        touchR2Y = currentMapperState.Touch1.Y;
+                                    }
+                                }
+                            }
+                        }
+
+                        //Trace.WriteLine($"{currentMapperState.LeftPad.X} {currentMapperState.LeftPad.Y}");
+                        TouchEventFrame eventLeftFrame = new TouchEventFrame
+                        {
+                            X = Math.Clamp(touchL1X, (short)0, (short)DS4State.TouchInfo.TOUCHPAD_MAX_X),
+                            X2 = Math.Clamp(touchL2X, (short)0, (short)DS4State.TouchInfo.TOUCHPAD_MAX_X),
+                            Y = Math.Clamp(TouchpadAxisScale(touchL1Y, true, cpadDefinition.yAxis),
+                                (short)0, (short)DS4State.TouchInfo.TOUCHPAD_MAX_Y),
+                            Y2 = Math.Clamp(TouchpadAxisScale(touchL2Y, true, cpadDefinition.yAxis),
+                                (short)0, (short)DS4State.TouchInfo.TOUCHPAD_MAX_Y),
+                            Touch = inLeftRegion,
+                            Click = inLeftRegion && currentMapperState.TouchClickButton,
+                            numTouches = currentMapperState.NumTouches,
+                            timeElapsed = currentMapperState.timeElapsed,
+                            passDelta = current.TouchPacketNum == previousMapperState.TouchPacketNum,
+                        };
+
+                        //Trace.WriteLine($"{eventLeftFrame.X} {eventLeftFrame.Y} deltax:{eventLeftFrame.X - previousSplitLeftTouchFramePad.X} | deltay:{eventLeftFrame.Y - previousSplitLeftTouchFramePad.Y}");
+                        //Trace.WriteLine("BACON");
+
+                        tempTouchAction.Prepare(this, ref eventLeftFrame);
+                        if (tempTouchAction.active) tempTouchAction.Event(this);
+
+                        tempTouchAction = currentLayer.touchpadActionDict["TouchpadRight"];
+
+                        TouchEventFrame eventRightFrame = new TouchEventFrame
+                        {
+                            X = Math.Clamp(touchR1X, (short)0, (short)DS4State.TouchInfo.TOUCHPAD_MAX_X),
+                            X2 = Math.Clamp(touchR2X, (short)0, (short)DS4State.TouchInfo.TOUCHPAD_MAX_X),
+                            Y = Math.Clamp(TouchpadAxisScale(touchR1Y, true, cpadDefinition.yAxis),
+                                (short)0, (short)DS4State.TouchInfo.TOUCHPAD_MAX_Y),
+                            Y2 = Math.Clamp(TouchpadAxisScale(touchR2Y, true, cpadDefinition.yAxis),
+                                (short)0, (short)DS4State.TouchInfo.TOUCHPAD_MAX_Y),
+                            Touch = inRightRegion,
+                            Click = inRightRegion && currentMapperState.TouchClickButton,
+                            numTouches = currentMapperState.NumTouches,
+                            timeElapsed = currentMapperState.timeElapsed,
+                            passDelta = current.TouchPacketNum == previousMapperState.TouchPacketNum,
+                        };
+
+                        tempTouchAction.Prepare(this, ref eventRightFrame);
+                        if (tempTouchAction.active) tempTouchAction.Event(this);
+
+                        previousSplitLeftTouchFramePad = eventLeftFrame;
+                        previousSplitRightTouchFramePad = eventRightFrame;
+                    }
                 }
             }
 
@@ -689,8 +845,12 @@ namespace DS4MapperTest.DualSense
         {
             switch (padID)
             {
-                case TouchpadActionCodes.Touch1:
+                case TouchpadActionCodes.TouchCenterWhole:
                     return ref previousTouchFramePad;
+                case TouchpadActionCodes.TouchL:
+                    return ref previousSplitLeftTouchFramePad;
+                case TouchpadActionCodes.TouchR:
+                    return ref previousSplitRightTouchFramePad;
                 default:
                     break;
             }
