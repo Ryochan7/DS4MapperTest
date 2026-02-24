@@ -181,6 +181,7 @@ namespace DS4MapperTest
             DPad,
             Trigger,
             Touchpad,
+            TouchpadRegion,
             Gyro
         }
 

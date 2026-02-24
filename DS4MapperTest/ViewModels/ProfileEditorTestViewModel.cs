@@ -495,6 +495,17 @@ namespace DS4MapperTest.ViewModels
             }
 
             foreach (InputBindingMeta meta in
+                mapper.BindingList.Where((item) => item.controlType == InputBindingMeta.InputControlType.TouchpadRegion))
+            {
+                if (tempProfile.CurrentActionSet.CurrentActionLayer.touchpadActionDict.
+                        TryGetValue(meta.id, out TouchpadMapAction tempTouchAct))
+                {
+                    TouchBindingItemsTest tempItem = new TouchBindingItemsTest(meta.id, meta.displayName, tempTouchAct, mapper);
+                    touchpadBindings.Add(tempItem);
+                }
+            }
+
+            foreach (InputBindingMeta meta in
                 mapper.BindingList.Where((item) => item.controlType == InputBindingMeta.InputControlType.Trigger))
             {
                 if (tempProfile.CurrentActionSet.CurrentActionLayer.triggerActionDict.

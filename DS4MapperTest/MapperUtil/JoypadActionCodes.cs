@@ -100,6 +100,7 @@ namespace DS4MapperTest.MapperUtil
         Empty,
         Touch1, Touch = Touch1, TouchL = Touch1,
         Touch2, TouchR = Touch2,
+        Touch3, TouchCenterWhole = Touch3,
     }
 
     public enum TriggerActionCodes : uint

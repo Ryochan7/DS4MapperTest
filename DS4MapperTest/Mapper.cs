@@ -365,6 +365,19 @@ namespace DS4MapperTest
                                     }
 
                                     break;
+                                case InputBindingMeta.InputControlType.TouchpadRegion:
+                                    {
+                                        TouchpadNoAction touchNoAct = new TouchpadNoAction();
+                                        touchNoAct.MappingId = tempMeta.Key;
+                                        if (knownTouchpadDefinitions.TryGetValue(tempMeta.Key,
+                                            out TouchpadDefinition tempDef))
+                                        {
+                                            touchNoAct.TouchDefinition = tempDef;
+                                        }
+                                        layer.touchpadActionDict.Add(tempMeta.Key, touchNoAct);
+                                    }
+
+                                    break;
                                 case InputBindingMeta.InputControlType.Gyro:
                                     {
                                         GyroNoMapAction gyroNoMapAct = new GyroNoMapAction();
@@ -504,6 +517,28 @@ namespace DS4MapperTest
 
                                             break;
                                         case InputBindingMeta.InputControlType.Touchpad:
+                                            if (tempAction is TouchpadMapAction)
+                                            {
+                                                TouchpadMapAction touchAct = tempAction as TouchpadMapAction;
+                                                if (knownTouchpadDefinitions.TryGetValue(tempBind.id, out TouchpadDefinition tempDef))
+                                                {
+                                                    touchAct.TouchDefinition = tempDef;
+                                                }
+
+                                                //tempAction.DefaultUnbound = false;
+                                                tempAction.MappingId = tempBind.id;
+                                                tempLayer.touchpadActionDict[tempBind.id] = tempAction as TouchpadMapAction;
+                                                if (parentLayer != null && parentLayer.touchpadActionDict.TryGetValue(tempBind.id, out TouchpadMapAction tempParentTouchAction) &&
+                                                    MapAction.IsSameType(tempAction, tempParentTouchAction))
+                                                {
+                                                    (tempAction as TouchpadMapAction).SoftCopyFromParent(tempParentTouchAction);
+                                                }
+
+                                                touchAct.PrepareActions();
+                                            }
+
+                                            break;
+                                        case InputBindingMeta.InputControlType.TouchpadRegion:
                                             if (tempAction is TouchpadMapAction)
                                             {
                                                 TouchpadMapAction touchAct = tempAction as TouchpadMapAction;
@@ -687,6 +722,18 @@ namespace DS4MapperTest
 
                                     break;
                                 case InputBindingMeta.InputControlType.Touchpad:
+                                    {
+                                        TouchpadNoAction touchNoAct = new TouchpadNoAction();
+                                        touchNoAct.MappingId = tempMeta.Key;
+                                        if (knownTouchpadDefinitions.TryGetValue(tempMeta.Key, out TouchpadDefinition tempDef))
+                                        {
+                                            touchNoAct.TouchDefinition = tempDef;
+                                        }
+                                        layer.touchpadActionDict.Add(tempMeta.Key, touchNoAct);
+                                    }
+
+                                    break;
+                                case InputBindingMeta.InputControlType.TouchpadRegion:
                                     {
                                         TouchpadNoAction touchNoAct = new TouchpadNoAction();
                                         touchNoAct.MappingId = tempMeta.Key;
