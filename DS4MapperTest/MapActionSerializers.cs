@@ -1150,6 +1150,17 @@ namespace DS4MapperTest
                 return touchActionPadAction.ChangedProperties.Contains(TouchpadActionPad.PropertyKeyStrings.MAX_ZONE);
             }
 
+            public bool RequiresClick
+            {
+                get => touchActionPadAction.RequiresClick;
+                set
+                {
+                    touchActionPadAction.RequiresClick = value;
+                    RequiresClickChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler RequiresClickChanged;
+
             [JsonConverter(typeof(SafeStringEnumConverter),
                 TouchpadActionPad.DPadMode.Standard)]
             public TouchpadActionPad.DPadMode PadMode
@@ -1368,6 +1379,7 @@ namespace DS4MapperTest
 
             NameChanged += TouchpadActionPadSerializer_NameChanged;
             RingBindingChanged += TouchpadActionPadSerializer_RingBindingChanged;
+            settings.RequiresClickChanged += Settings_RequiresClickChanged;
             settings.DeadZoneChanged += Settings_DeadZoneChanged;
             settings.MaxZoneChanged += Settings_MaxZoneChanged;
             settings.DeadZoneTypeChanged += Settings_DeadZoneTypeChanged;
@@ -1381,6 +1393,11 @@ namespace DS4MapperTest
             settings.UseAsOuterRingChanged += Settings_UseAsOuterRingChanged;
             settings.OuterRingDeadZoneChanged += Settings_OuterRingDeadZoneChanged;
             settings.OuterRingRangeChanged += Settings_OuterRingRangeChanged;
+        }
+
+        private void Settings_RequiresClickChanged(object sender, EventArgs e)
+        {
+            touchActionPadAction.ChangedProperties.Add(TouchpadActionPad.PropertyKeyStrings.REQUIRES_CLICK);
         }
 
         private void Settings_OuterRingRangeChanged(object sender, EventArgs e)
