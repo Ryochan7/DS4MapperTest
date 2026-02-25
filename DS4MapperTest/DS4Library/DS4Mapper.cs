@@ -225,8 +225,14 @@ namespace DS4MapperTest.DS4Library
                 new ActionTriggerItem("R2", JoypadActionCodes.AxisRTrigger),
                 new ActionTriggerItem("L3", JoypadActionCodes.BtnThumbL),
                 new ActionTriggerItem("R3", JoypadActionCodes.BtnThumbR),
-                new ActionTriggerItem("Touchpad Touch", JoypadActionCodes.LPadTouch),
-                new ActionTriggerItem("Touchpad Click", JoypadActionCodes.LPadClick),
+                new ActionTriggerItem("Touchpad Touch", JoypadActionCodes.CenterPadTouch),
+                new ActionTriggerItem("Touchpad Click", JoypadActionCodes.CenterPadClick),
+
+                new ActionTriggerItem("TouchpadLeft Touch", JoypadActionCodes.LPadTouch),
+                new ActionTriggerItem("TouchpadLeft Click", JoypadActionCodes.LPadClick),
+                new ActionTriggerItem("TouchpadRight Touch", JoypadActionCodes.RPadTouch),
+                new ActionTriggerItem("TouchpadRight Click", JoypadActionCodes.RPadClick),
+
                 new ActionTriggerItem("Share", JoypadActionCodes.BtnSelect),
                 new ActionTriggerItem("Options", JoypadActionCodes.BtnStart),
                 new ActionTriggerItem("PS", JoypadActionCodes.BtnHome),
@@ -539,78 +545,41 @@ namespace DS4MapperTest.DS4Library
                     //if (current.TouchPacketNum != previousMapperState.TouchPacketNum)
                     //if (currentMapperState.LeftPad.Touch || currentMapperState.LeftPad.Touch != previousMapperState.LeftPad.Touch)
                     {
-                        bool inLeftRegion = false;
-                        bool inRightRegion = false;
-
-                        short touchL1X = currentMapperState.Touch1.X, touchL2X = currentMapperState.Touch2.X;
-                        short touchL1Y = currentMapperState.Touch1.Y, touchL2Y = currentMapperState.Touch2.Y;
-                        short touchR1X = currentMapperState.Touch1.X, touchR2X = currentMapperState.Touch2.X;
-                        short touchR1Y = currentMapperState.Touch1.Y, touchR2Y = currentMapperState.Touch2.Y;
+                        ref DS4State.TouchInfo leftPrimaryTouchData = ref currentMapperState.Touch1;
+                        ref DS4State.TouchInfo rightPrimaryTouchData = ref currentMapperState.Touch2;
 
                         if (currentMapperState.NumTouches > 0)
                         {
-                            if (currentMapperState.Touch1.Touch)
+                            if (currentMapperState.Touch1.Touch && currentMapperState.Touch1.LeftRegion)
                             {
-                                if (currentMapperState.Touch1.X >= leftTouchpadDefinition.xAxis.min &&
-                                    currentMapperState.Touch1.X <= leftTouchpadDefinition.xAxis.max)
-                                {
-                                    inLeftRegion = true;
-                                    touchL1X = currentMapperState.Touch1.X;
-                                    touchL1Y = currentMapperState.Touch1.Y;
-                                    touchL2X = currentMapperState.Touch2.X;
-                                    touchL2Y = currentMapperState.Touch2.Y;
-                                }
-                                else if (currentMapperState.Touch1.X >= rightTouchpadDefinition.xAxis.min &&
-                                    currentMapperState.Touch1.X <= rightTouchpadDefinition.xAxis.max)
-                                {
-                                    inRightRegion = true;
-                                    touchR1X = currentMapperState.Touch1.X;
-                                    touchR1Y = currentMapperState.Touch1.Y;
-                                    touchR2X = currentMapperState.Touch2.X;
-                                    touchR2Y = currentMapperState.Touch2.Y;
-                                }
+                                leftPrimaryTouchData = ref currentMapperState.Touch1;
+                            }
+                            else if (currentMapperState.Touch2.Touch && currentMapperState.Touch2.LeftRegion)
+                            {
+                                leftPrimaryTouchData = ref currentMapperState.Touch2;
                             }
 
-                            if (currentMapperState.Touch2.Touch)
+                            if (currentMapperState.Touch1.Touch && currentMapperState.Touch1.RightRegion)
                             {
-                                if (currentMapperState.Touch2.X >= leftTouchpadDefinition.xAxis.min &&
-                                    currentMapperState.Touch2.X <= leftTouchpadDefinition.xAxis.max)
-                                {
-                                    if (!inLeftRegion)
-                                    {
-                                        inLeftRegion = true;
-                                        touchL1X = currentMapperState.Touch2.X;
-                                        touchL1Y = currentMapperState.Touch2.Y;
-                                        touchL2X = currentMapperState.Touch1.X;
-                                        touchL2Y = currentMapperState.Touch1.Y;
-                                    }
-                                }
-                                else if (currentMapperState.Touch2.X >= rightTouchpadDefinition.xAxis.min &&
-                                    currentMapperState.Touch2.X <= rightTouchpadDefinition.xAxis.max)
-                                {
-                                    if (!inRightRegion)
-                                    {
-                                        inRightRegion = true;
-                                        touchR1X = currentMapperState.Touch2.X;
-                                        touchR1Y = currentMapperState.Touch2.Y;
-                                        touchR2X = currentMapperState.Touch1.X;
-                                        touchR2Y = currentMapperState.Touch1.Y;
-                                    }
-                                }
+                                rightPrimaryTouchData = ref currentMapperState.Touch1;
+                            }
+                            else if (currentMapperState.Touch2.Touch && currentMapperState.Touch2.RightRegion)
+                            {
+                                rightPrimaryTouchData = ref currentMapperState.Touch2;
                             }
                         }
 
                         //Trace.WriteLine($"{currentMapperState.LeftPad.X} {currentMapperState.LeftPad.Y}");
                         TouchEventFrame eventLeftFrame = new TouchEventFrame
                         {
-                            X = Math.Clamp(touchL1X, (short)0, (short)DS4State.TouchInfo.TOUCHPAD_MAX_X),
-                            X2 = Math.Clamp(touchL2X, (short)0, (short)DS4State.TouchInfo.TOUCHPAD_MAX_X),
-                            Y = Math.Clamp(TouchpadAxisScale(touchL1Y, true, cpadDefinition.yAxis),
+                            X = Math.Clamp(leftPrimaryTouchData.X, (short)0, (short)DS4State.TouchInfo.TOUCHPAD_MAX_X),
+                            X2 = Math.Clamp(rightPrimaryTouchData.X, (short)0, (short)DS4State.TouchInfo.TOUCHPAD_MAX_X),
+                            Y = Math.Clamp(TouchpadAxisScale(leftPrimaryTouchData.Y, true, cpadDefinition.yAxis),
                                 (short)0, (short)DS4State.TouchInfo.TOUCHPAD_MAX_Y),
-                            Y2 = Math.Clamp(TouchpadAxisScale(touchL2Y, true, cpadDefinition.yAxis),
+                            Y2 = Math.Clamp(TouchpadAxisScale(rightPrimaryTouchData.Y, true, cpadDefinition.yAxis),
                                 (short)0, (short)DS4State.TouchInfo.TOUCHPAD_MAX_Y),
-                            Touch = inLeftRegion,
-                            Click = inLeftRegion && currentMapperState.TouchClickButton,
+                            Touch = leftPrimaryTouchData.LeftRegion && leftPrimaryTouchData.Touch,
+                            Click = leftPrimaryTouchData.LeftRegion && currentMapperState.TouchClickButton,
                             numTouches = currentMapperState.NumTouches,
                             timeElapsed = currentMapperState.timeElapsed,
                             passDelta = current.TouchPacketNum == previousMapperState.TouchPacketNum,
@@ -626,14 +595,14 @@ namespace DS4MapperTest.DS4Library
 
                         TouchEventFrame eventRightFrame = new TouchEventFrame
                         {
-                            X = Math.Clamp(touchR1X, (short)0, (short)DS4State.TouchInfo.TOUCHPAD_MAX_X),
-                            X2 = Math.Clamp(touchR2X, (short)0, (short)DS4State.TouchInfo.TOUCHPAD_MAX_X),
-                            Y = Math.Clamp(TouchpadAxisScale(touchR1Y, true, cpadDefinition.yAxis),
+                            X = Math.Clamp(rightPrimaryTouchData.X, (short)0, (short)DS4State.TouchInfo.TOUCHPAD_MAX_X),
+                            X2 = Math.Clamp(leftPrimaryTouchData.X, (short)0, (short)DS4State.TouchInfo.TOUCHPAD_MAX_X),
+                            Y = Math.Clamp(TouchpadAxisScale(rightPrimaryTouchData.Y, true, cpadDefinition.yAxis),
                                 (short)0, (short)DS4State.TouchInfo.TOUCHPAD_MAX_Y),
-                            Y2 = Math.Clamp(TouchpadAxisScale(touchR2Y, true, cpadDefinition.yAxis),
+                            Y2 = Math.Clamp(TouchpadAxisScale(leftPrimaryTouchData.Y, true, cpadDefinition.yAxis),
                                 (short)0, (short)DS4State.TouchInfo.TOUCHPAD_MAX_Y),
-                            Touch = inRightRegion,
-                            Click = inRightRegion && currentMapperState.TouchClickButton,
+                            Touch = rightPrimaryTouchData.RightRegion && rightPrimaryTouchData.Touch,
+                            Click = rightPrimaryTouchData.RightRegion && currentMapperState.TouchClickButton,
                             numTouches = currentMapperState.NumTouches,
                             timeElapsed = currentMapperState.timeElapsed,
                             passDelta = current.TouchPacketNum == previousMapperState.TouchPacketNum,
@@ -872,12 +841,29 @@ namespace DS4MapperTest.DS4Library
                 case JoypadActionCodes.BtnDPadRight:
                     result = currentMapperState.DpadRight;
                     break;
-                case JoypadActionCodes.LPadClick:
+                case JoypadActionCodes.CenterPadClick:
                     result = currentMapperState.TouchClickButton;
                     break;
-                case JoypadActionCodes.LPadTouch:
+                case JoypadActionCodes.CenterPadTouch:
                     result = currentMapperState.NumTouches > 0;
                     break;
+                case JoypadActionCodes.LPadClick:
+                    result = (currentMapperState.Touch1.LeftRegion || currentMapperState.Touch2.LeftRegion)
+                        && currentMapperState.TouchClickButton;
+                    break;
+                case JoypadActionCodes.LPadTouch:
+                    result = currentMapperState.NumTouches > 0 &&
+                        (currentMapperState.Touch1.LeftRegion || currentMapperState.Touch2.LeftRegion);
+                    break;
+                case JoypadActionCodes.RPadClick:
+                    result = (currentMapperState.Touch1.RightRegion || currentMapperState.Touch2.RightRegion)
+                        && currentMapperState.TouchClickButton;
+                    break;
+                case JoypadActionCodes.RPadTouch:
+                    result = currentMapperState.NumTouches > 0 &&
+                        (currentMapperState.Touch1.LeftRegion || currentMapperState.Touch2.LeftRegion);
+                    break;
+
 
                 default: break;
             }
@@ -946,11 +932,27 @@ namespace DS4MapperTest.DS4Library
                     case JoypadActionCodes.BtnDPadRight:
                         btnActive = currentMapperState.DpadRight;
                         break;
-                    case JoypadActionCodes.LPadClick:
+                    case JoypadActionCodes.CenterPadClick:
                         btnActive = currentMapperState.TouchClickButton;
                         break;
-                    case JoypadActionCodes.LPadTouch:
+                    case JoypadActionCodes.CenterPadTouch:
                         btnActive = currentMapperState.NumTouches > 0;
+                        break;
+                    case JoypadActionCodes.LPadClick:
+                        btnActive = (currentMapperState.Touch1.LeftRegion || currentMapperState.Touch2.LeftRegion)
+                            && currentMapperState.TouchClickButton;
+                        break;
+                    case JoypadActionCodes.LPadTouch:
+                        btnActive = currentMapperState.NumTouches > 0 &&
+                            (currentMapperState.Touch1.LeftRegion || currentMapperState.Touch2.LeftRegion);
+                        break;
+                    case JoypadActionCodes.RPadClick:
+                        btnActive = (currentMapperState.Touch1.RightRegion || currentMapperState.Touch2.RightRegion)
+                            && currentMapperState.TouchClickButton;
+                        break;
+                    case JoypadActionCodes.RPadTouch:
+                        btnActive = currentMapperState.NumTouches > 0 &&
+                            (currentMapperState.Touch1.LeftRegion || currentMapperState.Touch2.LeftRegion);
                         break;
 
                     default: break;

@@ -31,6 +31,7 @@ namespace DS4MapperTest.MapperUtil
         Btn18, BtnLGrip = Btn18,
         Btn19, BtnRGrip = Btn19,
 
+        // Steam Controller Touchpads. DS4 and DS Touchpad Regions
         Btn20, LPadTouch = Btn20,
         Btn21, LPadClick = Btn21,
         Btn22, RPadTouch = Btn22,
@@ -51,6 +52,10 @@ namespace DS4MapperTest.MapperUtil
         Btn31, BtnLSideR = Btn31,
         Btn32, BtnRSideL = Btn32,
         Btn33, BtnRSideR = Btn33,
+
+        // Mainly DS4 and DS Whole Touchpad
+        Btn34, CenterPadTouch = Btn34,
+        Btn35, CenterPadClick = Btn35,
 
         BtnMax = 255,
 

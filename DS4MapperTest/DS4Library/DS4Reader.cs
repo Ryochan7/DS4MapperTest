@@ -296,12 +296,50 @@ namespace DS4MapperTest.DS4Library
                     current.Touch1.X = (short)(((ushort)(inputReportBuffer[37 + reportOffset] & 0x0f) << 8) | (ushort)(inputReportBuffer[36 + reportOffset]));
                     current.Touch1.Y = (short)(((ushort)(inputReportBuffer[38 + reportOffset]) << 4) | ((ushort)(inputReportBuffer[37 + reportOffset] & 0xf0) >> 4));
 
+                    if (current.Touch1.Touch)
+                    {
+                        if (current.Touch1.X <= (DS4State.TouchInfo.TOUCHPAD_MAX_X / 2 - 1))
+                        {
+                            current.Touch1.LeftRegion = true;
+                            current.Touch1.RightRegion = false;
+                        }
+                        else
+                        {
+                            current.Touch1.LeftRegion = false;
+                            current.Touch1.RightRegion = true;
+                        }
+                    }
+                    else
+                    {
+                        current.Touch1.LeftRegion = false;
+                        current.Touch1.RightRegion = false;
+                    }
+
                     current.Touch2.RawTrackingNum = (byte)(inputReportBuffer[39 + reportOffset]);
                     current.Touch2.Id = (byte)(inputReportBuffer[39 + reportOffset] & 0x7f);
                     current.Touch2.IsActive = (inputReportBuffer[39 + reportOffset] & 0x80) == 0;
                     current.Touch2.Touch = current.Touch2.IsActive;
                     current.Touch2.X = (short)(((ushort)(inputReportBuffer[41 + reportOffset] & 0x0f) << 8) | (ushort)(inputReportBuffer[40 + reportOffset]));
                     current.Touch2.Y = (short)(((ushort)(inputReportBuffer[42 + reportOffset]) << 4) | ((ushort)(inputReportBuffer[41 + reportOffset] & 0xf0) >> 4));
+
+                    if (current.Touch2.Touch)
+                    {
+                        if (current.Touch2.X >= (DS4State.TouchInfo.TOUCHPAD_MAX_X / 2))
+                        {
+                            current.Touch2.LeftRegion = false;
+                            current.Touch2.RightRegion = true;
+                        }
+                        else
+                        {
+                            current.Touch2.LeftRegion = true;
+                            current.Touch2.RightRegion = false;
+                        }
+                    }
+                    else
+                    {
+                        current.Touch2.LeftRegion = false;
+                        current.Touch2.RightRegion = false;
+                    }
 
                     uint numTouches = 0;
                     if (current.Touch1.IsActive)
