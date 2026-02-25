@@ -2750,7 +2750,7 @@ namespace DS4MapperTest
                 get => touchStickAction.ForcedCenter;
                 set
                 {
-                    touchStickAction.ForcedCenter = true;
+                    touchStickAction.ForcedCenter = value;
                     ForcedCenterChanged?.Invoke(this, EventArgs.Empty);
                 }
             }
