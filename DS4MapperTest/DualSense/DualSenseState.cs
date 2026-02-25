@@ -19,6 +19,8 @@ namespace DS4MapperTest.DualSense
             public bool IsActive;
             public byte Id;
             public byte RawTrackingNum;
+            public bool LeftRegion;
+            public bool RightRegion;
         }
 
         public struct DS4Motion
