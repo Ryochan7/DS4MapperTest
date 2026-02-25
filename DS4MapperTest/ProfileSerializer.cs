@@ -114,8 +114,6 @@ namespace DS4MapperTest
         }
 
         private const int CURRENT_SPEC_VERSION_NUMBER = 2;
-        private int readProfileSpecVersionNumber = CURRENT_SPEC_VERSION_NUMBER;
-        public int ProfileSpecVersion { get => CURRENT_SPEC_VERSION_NUMBER; set => readProfileSpecVersionNumber = value; }
 
         private Profile tempProfile;
 
@@ -139,6 +137,9 @@ namespace DS4MapperTest
         {
             return !string.IsNullOrEmpty(tempProfile.ControllerType);
         }
+
+        private int readProfileSpecVersionNumber = CURRENT_SPEC_VERSION_NUMBER;
+        public int ProfileSpecVersion { get => CURRENT_SPEC_VERSION_NUMBER; set => readProfileSpecVersionNumber = value; }
 
         public EmulatedControllerSettings OutputGamepadSettings
         {
