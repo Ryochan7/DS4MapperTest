@@ -166,7 +166,7 @@ namespace DS4MapperTest.ViewModels.TouchpadActionPropViewModels
             {
                 if (double.TryParse(value, out double temp))
                 {
-                    action.OuterRingDeadZone = Math.Clamp(temp, 0, 10000);
+                    action.OuterRingDeadZone = Math.Clamp(temp, 0.0, 10000.0);
                     OuterRingDeadZoneChanged?.Invoke(this, EventArgs.Empty);
                     ActionPropertyChanged?.Invoke(this, EventArgs.Empty);
                 }
@@ -309,9 +309,45 @@ namespace DS4MapperTest.ViewModels.TouchpadActionPropViewModels
             DeadZoneChanged += TouchpadActionPadPropViewModel_DeadZoneChanged;
             DiagonalRangeChanged += TouchpadActionPadPropViewModel_DiagonalRangeChanged;
             RequiresClickChanged += TouchpadActionPadPropViewModel_RequiresClickChanged;
+            UseOuterRingChanged += TouchpadActionPadPropViewModel_UseOuterRingChanged;
+            OuterRingDeadZoneChanged += TouchpadActionPadPropViewModel_OuterRingDeadZoneChanged;
+            OuterRingInvertChanged += TouchpadActionPadPropViewModel_OuterRingInvertChanged;
             SelectedPadModeIndexChanged += ChangeStickPadMode;
             SelectedPadModeIndexChanged += TouchpadActionPadPropViewModel_SelectedPadModeIndexChanged;
             OuterRingRangeChoiceChanged += TouchpadActionPadPropViewModel_OuterRingRangeChoiceChanged;
+        }
+
+        private void TouchpadActionPadPropViewModel_OuterRingInvertChanged(object sender, EventArgs e)
+        {
+            if (!action.ChangedProperties.Contains(TouchpadActionPad.PropertyKeyStrings.USE_AS_OUTER_RING))
+            {
+                action.ChangedProperties.Add(TouchpadActionPad.PropertyKeyStrings.USE_AS_OUTER_RING);
+            }
+
+            action.RaiseNotifyPropertyChange(mapper, TouchpadActionPad.PropertyKeyStrings.USE_AS_OUTER_RING);
+            HighlightOuterRingInvertChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void TouchpadActionPadPropViewModel_OuterRingDeadZoneChanged(object sender, EventArgs e)
+        {
+            if (!action.ChangedProperties.Contains(TouchpadActionPad.PropertyKeyStrings.OUTER_RING_DEAD_ZONE))
+            {
+                action.ChangedProperties.Add(TouchpadActionPad.PropertyKeyStrings.OUTER_RING_DEAD_ZONE);
+            }
+
+            action.RaiseNotifyPropertyChange(mapper, TouchpadActionPad.PropertyKeyStrings.OUTER_RING_DEAD_ZONE);
+            HighlightOuterRingDeadZoneChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void TouchpadActionPadPropViewModel_UseOuterRingChanged(object sender, EventArgs e)
+        {
+            if (!action.ChangedProperties.Contains(TouchpadActionPad.PropertyKeyStrings.USE_OUTER_RING))
+            {
+                action.ChangedProperties.Add(TouchpadActionPad.PropertyKeyStrings.USE_OUTER_RING);
+            }
+
+            action.RaiseNotifyPropertyChange(mapper, TouchpadActionPad.PropertyKeyStrings.USE_OUTER_RING);
+            HighlightUseOuterRingChanged?.Invoke(this, EventArgs.Empty);
         }
 
         private void TouchpadActionPadPropViewModel_OuterRingRangeChoiceChanged(object sender, EventArgs e)
