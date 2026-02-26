@@ -104,6 +104,7 @@ namespace DS4MapperTest.TouchpadActions
         private double prevXNorm = 0.0, prevYNorm = 0.0;
         private StickDeadZone deadMod;
         private bool wasCenterHit;
+        private bool previousActive;
 
         private bool invertX;
         private bool invertY;
@@ -225,6 +226,7 @@ namespace DS4MapperTest.TouchpadActions
         public override void Prepare(Mapper mapper, ref TouchEventFrame touchFrame, bool alterState = true)
         {
             xNorm = 0.0; yNorm = 0.0;
+            previousActive = active;
 
             int axisXVal = touchFrame.X;
             int axisYVal = touchFrame.Y;
@@ -313,6 +315,14 @@ namespace DS4MapperTest.TouchpadActions
                 {
                     yNorm *= verticalScale;
                 }
+            }
+            else if (previousActive)
+            {
+                // Force event
+                touchEventActive = true;
+                xNorm = yNorm = 0.0;
+                prevXNorm = xNorm;
+                prevYNorm = yNorm;
             }
             else
             {
