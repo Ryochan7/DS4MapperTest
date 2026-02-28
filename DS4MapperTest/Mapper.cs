@@ -2379,6 +2379,8 @@ namespace DS4MapperTest
 
                 if (intermediateState.BtnLShoulder) tempButtons |= DualShock4Button.ShoulderLeft.Value;
                 if (intermediateState.BtnRShoulder) tempButtons |= DualShock4Button.ShoulderRight.Value;
+                if (intermediateState.LTrigger > 0) tempButtons |= DualShock4Button.TriggerLeft.Value;
+                if (intermediateState.RTrigger > 0) tempButtons |= DualShock4Button.TriggerRight.Value;
                 if (intermediateState.BtnMode) tempSpecial |= DualShock4SpecialButton.Ps.Value;
 
                 if (intermediateState.BtnThumbL) tempButtons |= DualShock4Button.ThumbLeft.Value;
