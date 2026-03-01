@@ -221,6 +221,9 @@ namespace DS4MapperTest
         protected Xbox360FeedbackReceivedEventHandler outputForceFeedbackDel;
         protected Xbox360FeedbackReceivedEventHandler outputForceFeedbackSecondDel;
 
+        private byte[] rawOutReportEx = new byte[63];
+        private DS4_REPORT_EX outDS4Report;
+
         // TODO: Move elsewhere
         public enum OutputContType : ushort
         {
@@ -2387,19 +2390,33 @@ namespace DS4MapperTest
                 else if (intermediateState.DpadDown) tempDPad = DualShock4DPadDirection.South;
                 else if (intermediateState.DpadLeft) tempDPad = DualShock4DPadDirection.West;
 
-                tempDS4.SetButtonsFull(tempButtons);
-                tempDS4.SetSpecialButtonsFull((byte)tempSpecial);
-                tempDS4.SetDPadDirection(tempDPad);
+                if (intermediateState.BtnMode) tempSpecial |= DualShock4SpecialButton.Ps.Value;
+                if (intermediateState.BtnTouchClick) tempSpecial |= DualShock4SpecialButton.Touchpad.Value;
+
+                outDS4Report.wButtons = tempButtons;
+                byte frameCounter = (byte)(intermediateState.PacketCounter % 128);
+                // Frame counter is high 6 bits. Low 2 bits is for extra buttons (PS, TP Click)
+                outDS4Report.bSpecial = (byte)(tempSpecial | (frameCounter << 2));
+                outDS4Report.wButtons |= tempDPad.Value;
+
+                //tempDS4.SetButtonsFull(tempButtons);
+                //tempDS4.SetSpecialButtonsFull((byte)tempSpecial);
+                //tempDS4.SetDPadDirection(tempDPad);
             }
 
-            tempDS4.LeftThumbX = (byte)((intermediateState.LX >= 0 ? (DS4_STICK_MAX - DS4_STICK_MID) : -(DS4_STICK_MIN - DS4_STICK_MID)) * intermediateState.LX + DS4_STICK_MID);
-            tempDS4.LeftThumbY = (byte)((intermediateState.LY >= 0 ? -(DS4_STICK_MIN - DS4_STICK_MID) : (DS4_STICK_MAX - DS4_STICK_MID)) * -intermediateState.LY + DS4_STICK_MID);
+            outDS4Report.bThumbLX = (byte)((intermediateState.LX >= 0 ? (DS4_STICK_MAX - DS4_STICK_MID) : -(DS4_STICK_MIN - DS4_STICK_MID)) * intermediateState.LX + DS4_STICK_MID);
+            outDS4Report.bThumbLY = (byte)((intermediateState.LY >= 0 ? -(DS4_STICK_MIN - DS4_STICK_MID) : (DS4_STICK_MAX - DS4_STICK_MID)) * -intermediateState.LY + DS4_STICK_MID);
 
-            tempDS4.RightThumbX = (byte)((intermediateState.RX >= 0 ? (DS4_STICK_MAX - DS4_STICK_MID) : -(DS4_STICK_MIN - DS4_STICK_MID)) * intermediateState.RX + DS4_STICK_MID);
-            tempDS4.RightThumbY = (byte)((intermediateState.RY >= 0 ? -(DS4_STICK_MIN - DS4_STICK_MID) : (DS4_STICK_MAX - DS4_STICK_MID)) * -intermediateState.RY + DS4_STICK_MID);
+            outDS4Report.bThumbRX = (byte)((intermediateState.RX >= 0 ? (DS4_STICK_MAX - DS4_STICK_MID) : -(DS4_STICK_MIN - DS4_STICK_MID)) * intermediateState.RX + DS4_STICK_MID);
+            outDS4Report.bThumbRY = (byte)((intermediateState.RY >= 0 ? -(DS4_STICK_MIN - DS4_STICK_MID) : (DS4_STICK_MAX - DS4_STICK_MID)) * -intermediateState.RY + DS4_STICK_MID);
 
-            tempDS4.LeftTrigger = (byte)(intermediateState.LTrigger * 255);
-            tempDS4.RightTrigger = (byte)(intermediateState.RTrigger * 255);
+            outDS4Report.bTriggerL = (byte)(intermediateState.LTrigger * 255);
+            outDS4Report.bTriggerR = (byte)(intermediateState.RTrigger * 255);
+
+            DS4OutDeviceExtras.CopyBytes(ref outDS4Report, rawOutReportEx);
+            tempDS4.SubmitRawReport(rawOutReportEx);
+
+            intermediateState.PacketCounter = intermediateState.PacketCounter + 1;
         }
 
         public void ProcessActionSetLayerChecks()
@@ -2545,7 +2562,7 @@ namespace DS4MapperTest
                     else if (outputControlType == OutputContType.DualShock4)
                     {
                         PopulateDualShock4();
-                        outputController?.SubmitReport();
+                        //outputController?.SubmitReport();
                     }
                 }
 

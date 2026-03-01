@@ -8,6 +8,7 @@ namespace DS4MapperTest.MapperUtil
 {
     public struct IntermediateState
     {
+        public uint PacketCounter;
         public double LX;
         public double LY;
         public bool LSDirty;
