@@ -1145,30 +1145,22 @@ namespace DS4MapperTest
                 if (actionProfile.OutputGamepadSettings.Enabled && outputController == null &&
                     actionProfile.OutputGamepadSettings.OutputGamepad != OutputContType.None)
                 {
-                    Thread contThr = new Thread(() =>
+                    if (actionProfile.OutputGamepadSettings.OutputGamepad == OutputContType.Xbox360)
                     {
-                        if (actionProfile.OutputGamepadSettings.OutputGamepad == OutputContType.Xbox360)
-                        {
-                            IXbox360Controller tempOutputX360 = vigemTestClient.CreateXbox360Controller();
-                            tempOutputX360.AutoSubmitReport = false;
-                            tempOutputX360.Connect();
-                            outputController = tempOutputX360;
-                            outputControlType = OutputContType.Xbox360;
-                        }
-                        else if (actionProfile.OutputGamepadSettings.OutputGamepad == OutputContType.DualShock4)
-                        {
-                            IDualShock4Controller tempOutputDS4 = vigemTestClient.CreateDualShock4Controller();
-                            tempOutputDS4.AutoSubmitReport = false;
-                            tempOutputDS4.Connect();
-                            outputController = tempOutputDS4;
-                            outputControlType = OutputContType.DualShock4;
-                        }
-                    });
-                    contThr.Priority = ThreadPriority.Normal;
-                    contThr.IsBackground = true;
-                    contThr.Start();
-                    contThr.Join(); // Wait for bus object start
-                    contThr = null;
+                        IXbox360Controller tempOutputX360 = vigemTestClient.CreateXbox360Controller();
+                        tempOutputX360.AutoSubmitReport = false;
+                        tempOutputX360.Connect();
+                        outputController = tempOutputX360;
+                        outputControlType = OutputContType.Xbox360;
+                    }
+                    else if (actionProfile.OutputGamepadSettings.OutputGamepad == OutputContType.DualShock4)
+                    {
+                        IDualShock4Controller tempOutputDS4 = vigemTestClient.CreateDualShock4Controller();
+                        tempOutputDS4.AutoSubmitReport = false;
+                        tempOutputDS4.Connect();
+                        outputController = tempOutputDS4;
+                        outputControlType = OutputContType.DualShock4;
+                    }
                 }
                 else if (!actionProfile.OutputGamepadSettings.enabled && outputController != null)
                 {
