@@ -688,6 +688,12 @@ namespace DS4MapperTest.SteamControllerLibrary
                 case JoypadActionCodes.RTFullPull:
                     result = currentMapperState.RTClick;
                     break;
+                case JoypadActionCodes.BtnLGrip:
+                    result = currentMapperState.LGrip;
+                    break;
+                case JoypadActionCodes.BtnRGrip:
+                    result = currentMapperState.RGrip;
+                    break;
                 default:
                     break;
             }
@@ -752,6 +758,12 @@ namespace DS4MapperTest.SteamControllerLibrary
                         break;
                     case JoypadActionCodes.RTFullPull:
                         result = currentMapperState.RTClick;
+                        break;
+                    case JoypadActionCodes.BtnLGrip:
+                        result = currentMapperState.LGrip;
+                        break;
+                    case JoypadActionCodes.BtnRGrip:
+                        result = currentMapperState.RGrip;
                         break;
                     default:
                         break;
