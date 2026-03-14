@@ -14,6 +14,13 @@ namespace DS4MapperTest.ViewModels.TouchpadActionPropViewModels
 {
     public class TouchpadActionPadPropViewModel : TouchpadActionPropVMBase
     {
+        public enum ActionPresetChoices
+        {
+            None,
+            WASD,
+            Arrows,
+        }
+
         private TouchpadActionPad action;
         public TouchpadActionPad Action
         {
@@ -97,21 +104,25 @@ namespace DS4MapperTest.ViewModels.TouchpadActionPropViewModels
         {
             get => action.EventCodes4[(int)TouchpadActionPad.DpadDirections.Up].DescribeActions(mapper);
         }
+        public event EventHandler ActionUpBtnDisplayBindChanged;
 
         public string ActionDownBtnDisplayBind
         {
             get => action.EventCodes4[(int)TouchpadActionPad.DpadDirections.Down].DescribeActions(mapper);
         }
+        public event EventHandler ActionDownBtnDisplayBindChanged;
 
         public string ActionLeftBtnDisplayBind
         {
             get => action.EventCodes4[(int)TouchpadActionPad.DpadDirections.Left].DescribeActions(mapper);
         }
+        public event EventHandler ActionLeftBtnDisplayBindChanged;
 
         public string ActionRightBtnDisplayBind
         {
             get => action.EventCodes4[(int)TouchpadActionPad.DpadDirections.Right].DescribeActions(mapper);
         }
+        public event EventHandler ActionRightBtnDisplayBindChanged;
 
         public string ActionUpLeftBtnDisplayBind
         {
@@ -207,6 +218,27 @@ namespace DS4MapperTest.ViewModels.TouchpadActionPropViewModels
                 return result;
             }
         }
+
+        private List<EnumChoiceSelection<ActionPresetChoices>> actionPresetChoicesItems = new List<EnumChoiceSelection<ActionPresetChoices>>()
+        {
+            new EnumChoiceSelection<ActionPresetChoices>("", ActionPresetChoices.None),
+            new EnumChoiceSelection<ActionPresetChoices>("WASD", ActionPresetChoices.WASD),
+            new EnumChoiceSelection<ActionPresetChoices>("Arrows", ActionPresetChoices.Arrows),
+        };
+        public List<EnumChoiceSelection<ActionPresetChoices>> ActionPresetChoicesItems => actionPresetChoicesItems;
+
+        private ActionPresetChoices actionPresetChoice;
+        public ActionPresetChoices ActionPresetChoice
+        {
+            get => actionPresetChoice;
+            set
+            {
+                if (actionPresetChoice == value) return;
+                actionPresetChoice = value;
+                ActionPresetChoiceChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        public event EventHandler ActionPresetChoiceChanged;
 
         public bool HighlightName
         {
@@ -315,6 +347,12 @@ namespace DS4MapperTest.ViewModels.TouchpadActionPropViewModels
             SelectedPadModeIndexChanged += ChangeStickPadMode;
             SelectedPadModeIndexChanged += TouchpadActionPadPropViewModel_SelectedPadModeIndexChanged;
             OuterRingRangeChoiceChanged += TouchpadActionPadPropViewModel_OuterRingRangeChoiceChanged;
+            ActionPresetChoiceChanged += TouchpadActionPadPropViewModel_ActionPresetChoiceChanged;
+        }
+
+        private void TouchpadActionPadPropViewModel_ActionPresetChoiceChanged(object sender, EventArgs e)
+        {
+            SwitchDefinedPreset();
         }
 
         private void TouchpadActionPadPropViewModel_OuterRingInvertChanged(object sender, EventArgs e)
@@ -622,6 +660,132 @@ namespace DS4MapperTest.ViewModels.TouchpadActionPropViewModels
                 action.ChangedProperties.Add(TouchpadActionPad.PropertyKeyStrings.OUTER_RING_BUTTON);
                 action.UseParentRingButton = false;
             });
+        }
+
+        public void SwitchDefinedPreset()
+        {
+            // Do nothing on first (None) choice
+            if (actionPresetChoice == ActionPresetChoices.None) return;
+
+            if (!usingRealAction)
+            {
+                ReplaceExistingLayerAction(this, EventArgs.Empty);
+            }
+
+            ExecuteInMapperThread(() =>
+            {
+                // Find and release all currently active buttons
+                List<TouchpadActionPad.DpadDirections> tempList = new List<TouchpadActionPad.DpadDirections>()
+                {
+                    TouchpadActionPad.DpadDirections.Up, TouchpadActionPad.DpadDirections.Down,
+                    TouchpadActionPad.DpadDirections.Left, TouchpadActionPad.DpadDirections.Right,
+                    TouchpadActionPad.DpadDirections.UpLeft, TouchpadActionPad.DpadDirections.UpRight,
+                    TouchpadActionPad.DpadDirections.DownLeft, TouchpadActionPad.DpadDirections.DownRight,
+                };
+
+                foreach (TouchpadActionPad.DpadDirections dir in tempList)
+                {
+                    ButtonAction oldAction = action.EventCodes4[(int)dir];
+                    if (oldAction != null)
+                    {
+                        oldAction?.Release(mapper, ignoreReleaseActions: true);
+                    }
+                }
+
+                if (actionPresetChoice == ActionPresetChoices.WASD)
+                {
+                    OutputActionData tempData = new OutputActionData(OutputActionData.ActionType.Keyboard,
+                    (int)VirtualKeys.W,
+                    (int)mapper.EventInputMapping.GetRealEventKey((uint)VirtualKeys.W));
+                    tempData.OutputCodeStr = OutputDataAliasUtil.KeyboardStringAliasDict[VirtualKeys.W];
+                    AxisDirButton newAction = new AxisDirButton(tempData);
+                    action.EventCodes4[(int)TouchpadActionPad.DpadDirections.Up] = newAction as AxisDirButton;
+
+                    tempData = new OutputActionData(OutputActionData.ActionType.Keyboard,
+                        (int)VirtualKeys.S,
+                        (int)mapper.EventInputMapping.GetRealEventKey((uint)VirtualKeys.S));
+                    tempData.OutputCodeStr = OutputDataAliasUtil.KeyboardStringAliasDict[VirtualKeys.S];
+                    newAction = new AxisDirButton(tempData);
+                    action.EventCodes4[(int)TouchpadActionPad.DpadDirections.Down] = newAction as AxisDirButton;
+
+                    tempData = new OutputActionData(OutputActionData.ActionType.Keyboard,
+                        (int)VirtualKeys.A,
+                        (int)mapper.EventInputMapping.GetRealEventKey((uint)VirtualKeys.A));
+                    tempData.OutputCodeStr = OutputDataAliasUtil.KeyboardStringAliasDict[VirtualKeys.A];
+                    newAction = new AxisDirButton(tempData);
+                    action.EventCodes4[(int)TouchpadActionPad.DpadDirections.Left] = newAction as AxisDirButton;
+
+                    tempData = new OutputActionData(OutputActionData.ActionType.Keyboard,
+                        (int)VirtualKeys.D,
+                        (int)mapper.EventInputMapping.GetRealEventKey((uint)VirtualKeys.D));
+                    tempData.OutputCodeStr = OutputDataAliasUtil.KeyboardStringAliasDict[VirtualKeys.D];
+                    newAction = new AxisDirButton(tempData);
+                    action.EventCodes4[(int)TouchpadActionPad.DpadDirections.Right] = newAction as AxisDirButton;
+
+                    this.action.UseParentActionButton[(int)TouchpadActionPad.DpadDirections.Up] = false;
+                    this.action.UseParentActionButton[(int)TouchpadActionPad.DpadDirections.Down] = false;
+                    this.action.UseParentActionButton[(int)TouchpadActionPad.DpadDirections.Left] = false;
+                    this.action.UseParentActionButton[(int)TouchpadActionPad.DpadDirections.Right] = false;
+
+                    action.ChangedProperties.Add(TouchpadActionPad.PropertyKeyStrings.PAD_DIR_UP);
+                    action.RaiseNotifyPropertyChange(mapper, TouchpadActionPad.PropertyKeyStrings.PAD_DIR_UP);
+                    action.ChangedProperties.Add(TouchpadActionPad.PropertyKeyStrings.PAD_DIR_DOWN);
+                    action.RaiseNotifyPropertyChange(mapper, TouchpadActionPad.PropertyKeyStrings.PAD_DIR_DOWN);
+                    action.ChangedProperties.Add(TouchpadActionPad.PropertyKeyStrings.PAD_DIR_LEFT);
+                    action.RaiseNotifyPropertyChange(mapper, TouchpadActionPad.PropertyKeyStrings.PAD_DIR_LEFT);
+                    action.ChangedProperties.Add(TouchpadActionPad.PropertyKeyStrings.PAD_DIR_RIGHT);
+                    action.RaiseNotifyPropertyChange(mapper, TouchpadActionPad.PropertyKeyStrings.PAD_DIR_RIGHT);
+                }
+                else if (actionPresetChoice == ActionPresetChoices.Arrows)
+                {
+                    OutputActionData tempData = new OutputActionData(OutputActionData.ActionType.Keyboard,
+                    (int)VirtualKeys.Up,
+                    (int)mapper.EventInputMapping.GetRealEventKey((uint)VirtualKeys.Up));
+                    tempData.OutputCodeStr = OutputDataAliasUtil.KeyboardStringAliasDict[VirtualKeys.Up];
+                    AxisDirButton newAction = new AxisDirButton(tempData);
+                    action.EventCodes4[(int)TouchpadActionPad.DpadDirections.Up] = newAction as AxisDirButton;
+
+                    tempData = new OutputActionData(OutputActionData.ActionType.Keyboard,
+                        (int)VirtualKeys.Down,
+                        (int)mapper.EventInputMapping.GetRealEventKey((uint)VirtualKeys.Down));
+                    tempData.OutputCodeStr = OutputDataAliasUtil.KeyboardStringAliasDict[VirtualKeys.Down];
+                    newAction = new AxisDirButton(tempData);
+                    action.EventCodes4[(int)TouchpadActionPad.DpadDirections.Down] = newAction as AxisDirButton;
+
+                    tempData = new OutputActionData(OutputActionData.ActionType.Keyboard,
+                        (int)VirtualKeys.Left,
+                        (int)mapper.EventInputMapping.GetRealEventKey((uint)VirtualKeys.Left));
+                    tempData.OutputCodeStr = OutputDataAliasUtil.KeyboardStringAliasDict[VirtualKeys.Left];
+                    newAction = new AxisDirButton(tempData);
+                    action.EventCodes4[(int)TouchpadActionPad.DpadDirections.Left] = newAction as AxisDirButton;
+
+                    tempData = new OutputActionData(OutputActionData.ActionType.Keyboard,
+                        (int)VirtualKeys.Right,
+                        (int)mapper.EventInputMapping.GetRealEventKey((uint)VirtualKeys.Right));
+                    tempData.OutputCodeStr = OutputDataAliasUtil.KeyboardStringAliasDict[VirtualKeys.Right];
+                    newAction = new AxisDirButton(tempData);
+                    action.EventCodes4[(int)TouchpadActionPad.DpadDirections.Right] = newAction as AxisDirButton;
+
+                    this.action.UseParentActionButton[(int)TouchpadActionPad.DpadDirections.Up] = false;
+                    this.action.UseParentActionButton[(int)TouchpadActionPad.DpadDirections.Down] = false;
+                    this.action.UseParentActionButton[(int)TouchpadActionPad.DpadDirections.Left] = false;
+                    this.action.UseParentActionButton[(int)TouchpadActionPad.DpadDirections.Right] = false;
+
+                    action.ChangedProperties.Add(TouchpadActionPad.PropertyKeyStrings.PAD_DIR_UP);
+                    action.RaiseNotifyPropertyChange(mapper, TouchpadActionPad.PropertyKeyStrings.PAD_DIR_UP);
+                    action.ChangedProperties.Add(TouchpadActionPad.PropertyKeyStrings.PAD_DIR_DOWN);
+                    action.RaiseNotifyPropertyChange(mapper, TouchpadActionPad.PropertyKeyStrings.PAD_DIR_DOWN);
+                    action.ChangedProperties.Add(TouchpadActionPad.PropertyKeyStrings.PAD_DIR_LEFT);
+                    action.RaiseNotifyPropertyChange(mapper, TouchpadActionPad.PropertyKeyStrings.PAD_DIR_LEFT);
+                    action.ChangedProperties.Add(TouchpadActionPad.PropertyKeyStrings.PAD_DIR_RIGHT);
+                    action.RaiseNotifyPropertyChange(mapper, TouchpadActionPad.PropertyKeyStrings.PAD_DIR_RIGHT);
+                }
+            });
+
+            ActionUpBtnDisplayBindChanged?.Invoke(this, EventArgs.Empty);
+            ActionDownBtnDisplayBindChanged?.Invoke(this, EventArgs.Empty);
+            ActionLeftBtnDisplayBindChanged?.Invoke(this, EventArgs.Empty);
+            ActionRightBtnDisplayBindChanged?.Invoke(this, EventArgs.Empty);
         }
     }
 
