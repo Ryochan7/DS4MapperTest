@@ -412,6 +412,18 @@ namespace DS4MapperTest.GyroActions
 
                     switch (mouseParams.accelCurve)
                     {
+                        case GyroMouseAccelCurveChoice.Linear:
+                            if (pastMinThreshold < dps_test)
+                            {
+                                alpha = (dist - activeMinThreshold) / dps_test;
+                            }
+                            else
+                            {
+                                alpha = 1.0;
+                            }
+
+                            break;
+
                         case GyroMouseAccelCurveChoice.Quadratic:
                             if (pastMinThreshold < dps_test)
                             {
