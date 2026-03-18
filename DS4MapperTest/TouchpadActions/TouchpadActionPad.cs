@@ -26,8 +26,6 @@ namespace DS4MapperTest.TouchpadActions
             public const string PAD_DIR_DOWNLEFT = "DirDownLeft";
             public const string PAD_DIR_DOWNRIGHT = "DirDownRight";
 
-            public const string OUTER_RING_BUTTON = "OuterRingButton";
-
             public const string PAD_MODE = "PadMode";
             public const string DEAD_ZONE_TYPE = "DeadZoneType";
             public const string DEAD_ZONE = "DeadZone";
@@ -38,6 +36,7 @@ namespace DS4MapperTest.TouchpadActions
             public const string DELAY_ENABLED = "DelayEnabled";
             public const string DELAY_TIME = "DelayTime";
 
+            public const string OUTER_RING_BUTTON = "OuterRingButton";
             public const string USE_OUTER_RING = "UseOuterRing";
             public const string OUTER_RING_DEAD_ZONE = "OuterRingDeadZone";
             public const string USE_AS_OUTER_RING = "UseAsOuterRing";
@@ -63,6 +62,7 @@ namespace DS4MapperTest.TouchpadActions
             PropertyKeyStrings.USE_OUTER_RING,
             PropertyKeyStrings.OUTER_RING_DEAD_ZONE,
             PropertyKeyStrings.USE_AS_OUTER_RING,
+            PropertyKeyStrings.OUTER_RING_FULL_RANGE,
             PropertyKeyStrings.ROTATION,
             PropertyKeyStrings.DIAGONAL_RANGE,
             PropertyKeyStrings.REQUIRES_CLICK,
