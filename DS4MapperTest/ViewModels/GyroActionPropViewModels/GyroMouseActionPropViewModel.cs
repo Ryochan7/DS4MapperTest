@@ -1,4 +1,5 @@
-﻿using DS4MapperTest.GyroActions;
+﻿using DS4MapperTest.Common;
+using DS4MapperTest.GyroActions;
 using DS4MapperTest.MapperUtil;
 using DS4MapperTest.StickActions;
 using DS4MapperTest.ViewModels.Common;
@@ -449,6 +450,40 @@ namespace DS4MapperTest.ViewModels.GyroActionPropViewModels
         }
         public event EventHandler SmoothingBetaChanged;
 
+        private double fullTurnCounts = 10.0;
+        public double FullTurnCounts
+        {
+            get => fullTurnCounts;
+            set
+            {
+                if (fullTurnCounts == value) return;
+                if (fullTurnCounts == 0.0) return; // Avoid division by zero
+                fullTurnCounts = value;
+                CalculateTestRWC();
+                //FullTurnCountsChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        //public event EventHandler FullTurnCountsChanged;
+
+        private double calculatedRWC = 0.0;
+        public double CalculatedRWC
+        {
+            get => calculatedRWC;
+            set
+            {
+                if (calculatedRWC == value) return;
+                calculatedRWC = value;
+                CalculatedRWCChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        public event EventHandler CalculatedRWCChanged;
+
+        private BasicActionCommand copyTestRWCComm;
+        public BasicActionCommand CopyTestRWCComm
+        {
+            get => copyTestRWCComm;
+        }
+
         public bool HighlightName
         {
             get => action.ParentAction == null ||
@@ -646,6 +681,11 @@ namespace DS4MapperTest.ViewModels.GyroActionPropViewModels
 
             PopulateModel();
 
+            copyTestRWCComm = new BasicActionCommand((parameter) =>
+            {
+                RealWorldCalibration = CalculatedRWC;
+            });
+
             NameChanged += GyroMouseActionPropViewModel_NameChanged;
             DeadZoneChanged += GyroMouseActionPropViewModel_DeadZoneChanged;
             GyroTriggerCondChoiceChanged += GyroMouseActionPropViewModel_GyroTriggerCondChoiceChanged;
@@ -669,6 +709,11 @@ namespace DS4MapperTest.ViewModels.GyroActionPropViewModels
             SmoothingEnabledChanged += GyroMouseActionPropViewModel_SmoothingEnabledChanged;
             SmoothingMinCutoffChanged += GyroMouseActionPropViewModel_SmoothingMinCutoffChanged;
             SmoothingBetaChanged += GyroMouseActionPropViewModel_SmoothingBetaChanged;
+        }
+
+        private void CalculateTestRWC()
+        {
+            CalculatedRWC = InGameSens / (360.0 / fullTurnCounts);
         }
 
         private void GyroMouseActionPropViewModel_NaturalVHalfChanged(object sender, EventArgs e)
