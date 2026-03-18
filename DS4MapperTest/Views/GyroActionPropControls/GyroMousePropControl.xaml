@@ -211,7 +211,7 @@ Value="{Binding MinAccelYSens,FallbackValue='0.0'}" Margin="8,0,0,0">
                                 <hc:NumericUpDown.Style>
                                     <Style TargetType="hc:NumericUpDown" BasedOn="{StaticResource NumericUpDownBaseStyle}">
                                         <Style.Triggers>
-                                            <DataTrigger Binding="{Binding HighlightMinYAccelSens}" Value="False">
+                                            <DataTrigger Binding="{Binding HighlightMinAccelYSens}" Value="False">
                                                 <Setter Property="Opacity" Value="0.7" />
                                             </DataTrigger>
                                         </Style.Triggers>
