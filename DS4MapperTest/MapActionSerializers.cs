@@ -1,22 +1,23 @@
-﻿using System;
+﻿using DS4MapperTest.ActionUtil;
+using DS4MapperTest.ButtonActions;
+using DS4MapperTest.GyroActions;
+using DS4MapperTest.MapperUtil;
+using DS4MapperTest.StickActions;
+using DS4MapperTest.StickModifiers;
+using DS4MapperTest.TouchpadActions;
+using DS4MapperTest.TriggerActions;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using Newtonsoft.Json.Linq;
-using DS4MapperTest.ActionUtil;
-using DS4MapperTest.ButtonActions;
-using DS4MapperTest.MapperUtil;
-using DS4MapperTest.StickActions;
-using DS4MapperTest.GyroActions;
 using static DS4MapperTest.MapperUtil.OutputActionData;
-using DS4MapperTest.StickModifiers;
-using DS4MapperTest.TouchpadActions;
-using DS4MapperTest.TriggerActions;
+using static DS4MapperTest.TouchpadActionPadSerializer;
 
 namespace DS4MapperTest
 {
@@ -2777,6 +2778,70 @@ namespace DS4MapperTest
                 return touchStickAction.ChangedProperties.Contains(TouchpadStickAction.PropertyKeyStrings.FORCED_CENTER);
             }
 
+            [JsonProperty("UseOuterRing")]
+            public bool UseOuterRing
+            {
+                get => touchStickAction.UseRingButton;
+                set
+                {
+                    touchStickAction.UseRingButton = value;
+                    UseOuterRingChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler UseOuterRingChanged;
+            public bool ShouldSerializeUseOuterRing()
+            {
+                return touchStickAction.ChangedProperties.Contains(TouchpadStickAction.PropertyKeyStrings.USE_OUTER_RING);
+            }
+
+            [JsonProperty("OuterRingDeadZone")]
+            public double OuterRingDeadZone
+            {
+                get => touchStickAction.OuterRingDeadZone;
+                set
+                {
+                    touchStickAction.OuterRingDeadZone = value;
+                    OuterRingDeadZoneChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler OuterRingDeadZoneChanged;
+            public bool ShouldSerializeOuterRingDeadZone()
+            {
+                return touchStickAction.ChangedProperties.Contains(TouchpadStickAction.PropertyKeyStrings.OUTER_RING_DEAD_ZONE);
+            }
+
+            [JsonProperty("UseAsOuterRing")]
+            public bool UseAsOuterRing
+            {
+                get => touchStickAction.UseAsOuterRing;
+                set
+                {
+                    touchStickAction.UseAsOuterRing = value;
+                    UseAsOuterRingChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler UseAsOuterRingChanged;
+            public bool ShouldSerializeUseAsOuterRing()
+            {
+                return touchStickAction.ChangedProperties.Contains(TouchpadStickAction.PropertyKeyStrings.USE_AS_OUTER_RING);
+            }
+
+            [JsonConverter(typeof(StringEnumConverter))]
+            public OuterRingUseRange OuterRingRange
+            {
+                get => touchStickAction.UsedOuterRingRange;
+                set
+                {
+                    touchStickAction.UsedOuterRingRange = value;
+                    OuterRingRangeChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler OuterRingRangeChanged;
+            public bool ShouldSerializeOuterRange()
+            {
+                return touchStickAction.ChangedProperties.Contains(TouchpadStickAction.PropertyKeyStrings.OUTER_RING_FULL_RANGE);
+            }
+
             public bool SmoothingEnabled
             {
                 get => touchStickAction.Smoothing;
@@ -2830,6 +2895,24 @@ namespace DS4MapperTest
             }
         }
 
+        private TouchPadDirBinding ringBinding;
+
+        [JsonProperty("OuterRingBinding")]
+        public TouchPadDirBinding RingBinding
+        {
+            get => ringBinding;
+            set
+            {
+                ringBinding = value;
+                RingBindingChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        public event EventHandler RingBindingChanged;
+        public bool ShouldSerializeRingBinding()
+        {
+            return ringBinding != null && ringBinding.ActionFuncSerializers.Count > 0;
+        }
+
         private TouchpadStickAction touchStickAction = new TouchpadStickAction();
 
         private TouchStickActionSettings settings;
@@ -2846,6 +2929,7 @@ namespace DS4MapperTest
             settings = new TouchStickActionSettings(touchStickAction);
 
             NameChanged += TouchpadStickActionSerializer_NameChanged;
+            RingBindingChanged += TouchpadStickActionSerializer_RingBindingChanged;
             settings.OutputStickChanged += Settings_OutputStickChanged;
             settings.OutputCurveChanged += Settings_OutputCurveChanged;
             settings.DeadZoneChanged += Settings_DeadZoneChanged;
@@ -2861,9 +2945,39 @@ namespace DS4MapperTest
             settings.DeadZoneTypeChanged += Settings_DeadZoneTypeChanged;
             settings.ForcedCenterChanged += Settings_ForcedCenterChanged;
 
+            settings.UseOuterRingChanged += Settings_UseOuterRingChanged;
+            settings.UseAsOuterRingChanged += Settings_UseAsOuterRingChanged;
+            settings.OuterRingDeadZoneChanged += Settings_OuterRingDeadZoneChanged;
+            settings.OuterRingRangeChanged += Settings_OuterRingRangeChanged;
+
             settings.SmoothingEnabledChanged += Settings_SmoothingEnabledChanged;
             settings.SmoothingMinCutoffChanged += Settings_SmoothingMinCutoffChanged;
             settings.SmoothingBetaChanged += Settings_SmoothingBetaChanged;
+        }
+
+        private void TouchpadStickActionSerializer_RingBindingChanged(object sender, EventArgs e)
+        {
+            touchStickAction.ChangedProperties.Add(TouchpadStickAction.PropertyKeyStrings.OUTER_RING_BUTTON);
+        }
+
+        private void Settings_OuterRingRangeChanged(object sender, EventArgs e)
+        {
+            touchStickAction.ChangedProperties.Add(TouchpadStickAction.PropertyKeyStrings.OUTER_RING_FULL_RANGE);
+        }
+
+        private void Settings_OuterRingDeadZoneChanged(object sender, EventArgs e)
+        {
+            touchStickAction.ChangedProperties.Add(TouchpadStickAction.PropertyKeyStrings.OUTER_RING_DEAD_ZONE);
+        }
+
+        private void Settings_UseAsOuterRingChanged(object sender, EventArgs e)
+        {
+            touchStickAction.ChangedProperties.Add(TouchpadStickAction.PropertyKeyStrings.USE_AS_OUTER_RING);
+        }
+
+        private void Settings_UseOuterRingChanged(object sender, EventArgs e)
+        {
+            touchStickAction.ChangedProperties.Add(TouchpadStickAction.PropertyKeyStrings.USE_OUTER_RING);
         }
 
         private void Settings_SmoothingBetaChanged(object sender, EventArgs e)
@@ -2945,6 +3059,44 @@ namespace DS4MapperTest
                 touchStickAction = temp;
                 this.mapAction = touchStickAction;
                 settings = new TouchStickActionSettings(touchStickAction);
+                PopulateFuns();
+            }
+        }
+
+        // Pre-serialize
+        private void PopulateFuns()
+        {
+            if (touchStickAction.RingButton != null)
+            {
+                ringBinding = new TouchPadDirBinding();
+                ringBinding.ActionDirName = touchStickAction.RingButton.Name;
+                foreach (ActionFunc tempFunc in touchStickAction.RingButton.ActionFuncs)
+                {
+                    ActionFuncSerializer tempSerializer =
+                        ActionFuncSerializerFactory.CreateSerializer(tempFunc);
+                    if (tempSerializer != null)
+                    {
+                        ringBinding.ActionFuncSerializers.Add(tempSerializer);
+                    }
+                }
+            }
+        }
+
+        // Post-deserialize
+        public override void PopulateMap()
+        {
+            if (ringBinding != null)
+            {
+                touchStickAction.RingButton.Name = ringBinding.ActionDirName;
+                List<ActionFuncSerializer> tempSerializers = ringBinding.ActionFuncSerializers;
+                foreach (ActionFuncSerializer serializer in tempSerializers)
+                {
+                    serializer.PopulateFunc();
+                    touchStickAction.RingButton.ActionFuncs.Add(serializer.ActionFunc);
+                }
+
+                touchStickAction.ChangedProperties.Add(StickPadAction.PropertyKeyStrings.OUTER_RING_BUTTON);
+                //stickPadAct.RingButton.ChangedProperties.Add(StickPadAction.PropertyKeyStrings.OUTER_RING_BUTTON);
             }
         }
 

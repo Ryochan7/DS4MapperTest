@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DS4MapperTest.ButtonActions;
 using DS4MapperTest.MapperUtil;
 using DS4MapperTest.StickModifiers;
 using Sensorit.Base;
@@ -30,6 +31,12 @@ namespace DS4MapperTest.TouchpadActions
             public const string SQUARE_STICK_ROUNDNESS = "SquareStickRoundness";
             public const string FORCED_CENTER = "ForcedCenter";
 
+            public const string OUTER_RING_BUTTON = "OuterRingButton";
+            public const string USE_OUTER_RING = "UseOuterRing";
+            public const string OUTER_RING_DEAD_ZONE = "OuterRingDeadZone";
+            public const string USE_AS_OUTER_RING = "UseAsOuterRing";
+            public const string OUTER_RING_FULL_RANGE = "OuterRingFullRange";
+
             public const string SMOOTHING_ENABLED = "SmoothingEnabled";
             public const string SMOOTHING_FILTER = "SmoothingFilter";
         }
@@ -52,6 +59,12 @@ namespace DS4MapperTest.TouchpadActions
             PropertyKeyStrings.SQUARE_STICK_ENABLED,
             PropertyKeyStrings.SQUARE_STICK_ROUNDNESS,
             PropertyKeyStrings.FORCED_CENTER,
+
+            PropertyKeyStrings.OUTER_RING_BUTTON,
+            PropertyKeyStrings.USE_OUTER_RING,
+            PropertyKeyStrings.OUTER_RING_DEAD_ZONE,
+            PropertyKeyStrings.USE_AS_OUTER_RING,
+            PropertyKeyStrings.OUTER_RING_FULL_RANGE,
 
             PropertyKeyStrings.SMOOTHING_ENABLED,
             PropertyKeyStrings.SMOOTHING_FILTER,
@@ -212,7 +225,50 @@ namespace DS4MapperTest.TouchpadActions
             set => forcedCenter = value;
         }
 
+        /* Possibly group values in a class */
+        /// <summary>
+        /// Virtual direction button that takes the vector magnitude as its value
+        /// </summary>
+        //private AxisDirButton ringButton = new AxisDirButton(new OutputActionData(OutputActionData.ActionType.Keyboard, KeyInterop.VirtualKeyFromKey(Key.Z), 0));
+        private AxisDirButton ringButton = new AxisDirButton();
+        private AxisDirButton usedRingButton = null;
+
+        /// <summary>
+        /// Used to determine outer ring mode or inner ring mode. Will change to using an Enum later
+        /// </summary>
+        private bool outerRing = true;
+        /// <summary>
+        /// Specify whether to interpret a ring binging at all
+        /// </summary>
+        private bool useRingButton;
+
+        private const double DEFAULT_OUTER_RING_DEAD_ZONE = 0.7;
+        /// <summary>
+        /// Displacement threshold when a ring binding should execute
+        /// </summary>
+        private double outerRingDeadZone = 1.0;
+        private OuterRingUseRange usedOuterRingRange;
+        public AxisDirButton RingButton
+        {
+            get => ringButton;
+            set => ringButton = value;
+        }
+        public bool UseAsOuterRing { get => outerRing; set => outerRing = value; }
+        public bool UseRingButton { get => useRingButton; set => useRingButton = value; }
+        public double OuterRingDeadZone { get => outerRingDeadZone; set => outerRingDeadZone = value; }
+        public OuterRingUseRange UsedOuterRingRange { get => usedOuterRingRange; set => usedOuterRingRange = value; }
+
+        private bool useParentRingButton;
+        public bool UseParentRingButton
+        {
+            get => useParentRingButton;
+            set => useParentRingButton = value;
+        }
+
+        private double ringDistance = 0.0;
+
         bool touchingActive;
+
         public TouchpadStickAction()
         {
             this.outputAction = new OutputActionData(OutputActionData.ActionType.GamepadControl, StickActionCodes.X360_LS);
@@ -277,6 +333,18 @@ namespace DS4MapperTest.TouchpadActions
             bool touchEventActive = touchingActive && inSafeZone;
             if (touchEventActive)
             {
+                double fullXNorm = axisXDir / (double)maxDirX;
+                double fullYNorm = axisYDir / (double)maxDirY;
+
+                if (usedOuterRingRange == OuterRingUseRange.OnlyActive)
+                {
+                    ringDistance = Math.Sqrt((xNorm * xNorm) + (yNorm * yNorm));
+                }
+                else
+                {
+                    ringDistance = Math.Sqrt((fullXNorm * fullXNorm) + (fullYNorm * fullYNorm));
+                }
+
                 if (outputCurve != StickOutCurve.Curve.Linear)
                 {
                     StickOutCurve.CalcOutValue(outputCurve, xNorm, yNorm,
@@ -321,12 +389,14 @@ namespace DS4MapperTest.TouchpadActions
                 // Force event
                 touchEventActive = true;
                 xNorm = yNorm = 0.0;
+                ringDistance = 0.0;
                 prevXNorm = xNorm;
                 prevYNorm = yNorm;
             }
             else
             {
                 xNorm = yNorm = 0.0;
+                ringDistance = 0.0;
                 prevXNorm = xNorm;
                 prevYNorm = yNorm;
 
@@ -338,6 +408,7 @@ namespace DS4MapperTest.TouchpadActions
                 }
             }
 
+            usedRingButton = ringButton;
             active = touchEventActive;
             activeEvent = touchEventActive;
         }
@@ -365,6 +436,31 @@ namespace DS4MapperTest.TouchpadActions
                 outYNorm = tempYNorm;
             }
 
+            if (useRingButton && usedRingButton != null)
+            //if (checkRingButton)
+            {
+                //Trace.WriteLine("IN CHECK");
+                //double dist = Math.Sqrt((xNorm * xNorm) + (yNorm * yNorm));
+                bool activeMod = outerRing ? (ringDistance > outerRingDeadZone ? true : false) :
+                    (ringDistance > 0.0 && ringDistance <= outerRingDeadZone ? true : false);
+                double tempRingDistance = activeMod ? ringDistance : 0.0;
+                double tempRingUnit = activeMod ? 1.0 : 0.0;
+
+                //ringButton.PrepareAnalog(mapper, dist);
+                //if (ringButton.active)
+                //{
+                //    ringButton.Event(mapper);
+                //}
+
+                // Treat as boolean button for now
+                usedRingButton.PrepareAnalog(mapper, tempRingDistance, tempRingUnit);
+                //usedRingButton.PrepareAnalog(mapper, dist);
+                if (usedRingButton.active)
+                {
+                    usedRingButton.Event(mapper);
+                }
+            }
+
             mapper.GamepadFromStickInput(outputAction, outXNorm, outYNorm);
 
             if (xNorm != 0.0 || yNorm != 0.0)
@@ -385,6 +481,11 @@ namespace DS4MapperTest.TouchpadActions
         {
             if (active)
             {
+                if (useRingButton && usedRingButton != null)
+                {
+                    usedRingButton.Release(mapper, resetState, ignoreReleaseActions);
+                }
+
                 mapper.GamepadFromStickInput(outputAction, 0.0, 0.0);
             }
 
@@ -400,6 +501,20 @@ namespace DS4MapperTest.TouchpadActions
         {
             if (active)
             {
+                TouchpadStickAction checkStickAction = checkAction as TouchpadStickAction;
+
+                if (useRingButton && usedRingButton != null)
+                {
+                    if (!useParentRingButton)
+                    {
+                        usedRingButton.Release(mapper, resetState);
+                    }
+                    else if (checkStickAction.usedRingButton != usedRingButton)
+                    {
+                        usedRingButton.Release(mapper, resetState);
+                    }
+                }
+
                 mapper.GamepadFromStickInput(outputAction, 0.0, 0.0);
 
                 TouchpadStickAction tempAction = checkAction as TouchpadStickAction;
@@ -505,6 +620,24 @@ namespace DS4MapperTest.TouchpadActions
                         case PropertyKeyStrings.FORCED_CENTER:
                             forcedCenter = tempStickAction.forcedCenter;
                             break;
+
+                        case PropertyKeyStrings.OUTER_RING_BUTTON:
+                            ringButton = tempStickAction.ringButton;
+                            useParentRingButton = true;
+                            break;
+                        case PropertyKeyStrings.USE_OUTER_RING:
+                            useRingButton = tempStickAction.useRingButton;
+                            break;
+                        case PropertyKeyStrings.OUTER_RING_DEAD_ZONE:
+                            outerRingDeadZone = tempStickAction.outerRingDeadZone;
+                            break;
+                        case PropertyKeyStrings.USE_AS_OUTER_RING:
+                            outerRing = tempStickAction.outerRing;
+                            break;
+                        case PropertyKeyStrings.OUTER_RING_FULL_RANGE:
+                            usedOuterRingRange = tempStickAction.usedOuterRingRange;
+                            break;
+
                         case PropertyKeyStrings.SMOOTHING_ENABLED:
                             smoothing = tempStickAction.smoothing;
                             break;
@@ -589,6 +722,24 @@ namespace DS4MapperTest.TouchpadActions
                 case PropertyKeyStrings.FORCED_CENTER:
                     forcedCenter = tempStickAction.forcedCenter;
                     break;
+
+                case PropertyKeyStrings.OUTER_RING_BUTTON:
+                    ringButton = tempStickAction.ringButton;
+                    useParentRingButton = true;
+                    break;
+                case PropertyKeyStrings.USE_OUTER_RING:
+                    useRingButton = tempStickAction.useRingButton;
+                    break;
+                case PropertyKeyStrings.OUTER_RING_DEAD_ZONE:
+                    outerRingDeadZone = tempStickAction.outerRingDeadZone;
+                    break;
+                case PropertyKeyStrings.USE_AS_OUTER_RING:
+                    outerRing = tempStickAction.outerRing;
+                    break;
+                case PropertyKeyStrings.OUTER_RING_FULL_RANGE:
+                    usedOuterRingRange = tempStickAction.usedOuterRingRange;
+                    break;
+
                 case PropertyKeyStrings.SMOOTHING_ENABLED:
                     smoothing = tempStickAction.smoothing;
                     break;

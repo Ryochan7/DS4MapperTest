@@ -1,15 +1,16 @@
-﻿using System;
+﻿using DS4MapperTest.ActionUtil;
+using DS4MapperTest.ButtonActions;
+using DS4MapperTest.MapperUtil;
+using DS4MapperTest.StickActions;
+using DS4MapperTest.StickModifiers;
+using DS4MapperTest.TouchpadActions;
+using DS4MapperTest.ViewModels.Common;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Threading;
-using DS4MapperTest.ActionUtil;
-using DS4MapperTest.MapperUtil;
-using DS4MapperTest.TouchpadActions;
-using DS4MapperTest.StickModifiers;
-using DS4MapperTest.ViewModels.Common;
-using DS4MapperTest.StickActions;
+using System.Threading.Tasks;
 
 namespace DS4MapperTest.ViewModels.TouchpadActionPropViewModels
 {
@@ -300,6 +301,81 @@ namespace DS4MapperTest.ViewModels.TouchpadActionPropViewModels
         }
         public event EventHandler ForceCenterChanged;
 
+        public bool UseOuterRing
+        {
+            get => action.UseRingButton;
+            set
+            {
+                if (action.UseRingButton == value) return;
+                action.UseRingButton = value;
+                UseOuterRingChanged?.Invoke(this, EventArgs.Empty);
+                ActionPropertyChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        public event EventHandler UseOuterRingChanged;
+
+        public bool OuterRingInvert
+        {
+            get => !action.UseAsOuterRing;
+            set
+            {
+                if (action.UseAsOuterRing == !value) return;
+                action.UseAsOuterRing = !value;
+                OuterRingInvertChanged?.Invoke(this, EventArgs.Empty);
+                ActionPropertyChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        public event EventHandler OuterRingInvertChanged;
+
+        public string OuterRingDeadZone
+        {
+            get => action.OuterRingDeadZone.ToString("N2");
+            set
+            {
+                if (double.TryParse(value, out double temp))
+                {
+                    action.OuterRingDeadZone = Math.Clamp(temp, 0.0, 10000.0);
+                    OuterRingDeadZoneChanged?.Invoke(this, EventArgs.Empty);
+                    ActionPropertyChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+        }
+        public event EventHandler OuterRingDeadZoneChanged;
+
+        private List<EnumChoiceSelection<OuterRingUseRange>> outerRingRangeChoiceItems =
+            new List<EnumChoiceSelection<OuterRingUseRange>>()
+            {
+                new EnumChoiceSelection<OuterRingUseRange>("Only Active", OuterRingUseRange.OnlyActive),
+                new EnumChoiceSelection<OuterRingUseRange>("Full Range", OuterRingUseRange.FullRange),
+            };
+        public List<EnumChoiceSelection<OuterRingUseRange>> OuterRingRangeChoiceItems => outerRingRangeChoiceItems;
+
+        public OuterRingUseRange OuterRingRangeChoice
+        {
+            get => action.UsedOuterRingRange;
+            set
+            {
+                action.UsedOuterRingRange = value;
+                OuterRingRangeChoiceChanged?.Invoke(this, EventArgs.Empty);
+                ActionPropertyChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        public event EventHandler OuterRingRangeChoiceChanged;
+
+        public string ActionRingDisplayBind
+        {
+            get
+            {
+                string result = "";
+                if (action.RingButton != null)
+                {
+                    result = action.RingButton.DescribeActions(mapper);
+                }
+
+                return result;
+            }
+        }
+
         public bool SmoothingEnabled
         {
             get => action.Smoothing;
@@ -443,6 +519,34 @@ namespace DS4MapperTest.ViewModels.TouchpadActionPropViewModels
         }
         public event EventHandler HighlightForceCenterChanged;
 
+        public bool HighlightUseOuterRing
+        {
+            get => action.ParentAction == null ||
+                action.ChangedProperties.Contains(TouchpadStickAction.PropertyKeyStrings.USE_OUTER_RING);
+        }
+        public event EventHandler HighlightUseOuterRingChanged;
+
+        public bool HighlightOuterRingInvert
+        {
+            get => action.ParentAction == null ||
+                action.ChangedProperties.Contains(TouchpadStickAction.PropertyKeyStrings.USE_AS_OUTER_RING);
+        }
+        public event EventHandler HighlightOuterRingInvertChanged;
+
+        public bool HighlightOuterRingDeadZone
+        {
+            get => action.ParentAction == null ||
+                action.ChangedProperties.Contains(TouchpadStickAction.PropertyKeyStrings.OUTER_RING_DEAD_ZONE);
+        }
+        public event EventHandler HighlightOuterRingDeadZoneChanged;
+
+        public bool HighlightOuterRingRangeChoice
+        {
+            get => action.ParentAction == null ||
+                action.ChangedProperties.Contains(TouchpadStickAction.PropertyKeyStrings.OUTER_RING_FULL_RANGE);
+        }
+        public event EventHandler HighlightOuterRingRangeChoiceChanged;
+
         public bool HighlightSmoothingEnabled
         {
             get => action.ParentAction == null ||
@@ -512,9 +616,74 @@ namespace DS4MapperTest.ViewModels.TouchpadActionPropViewModels
             SquareStickRoundnessChanged += TouchpadStickActionPropViewModel_SquareStickRoundnessChanged;
             ForceCenterChanged += TouchpadStickActionPropViewModel_ForceCenterChanged;
 
+            UseOuterRingChanged += TouchpadStickActionPropViewModel_UseOuterRingChanged;
+            OuterRingDeadZoneChanged += TouchpadStickActionPropViewModel_OuterRingDeadZoneChanged;
+            OuterRingInvertChanged += TouchpadStickActionPropViewModel_OuterRingInvertChanged;
+            OuterRingRangeChoiceChanged += TouchpadStickActionPropViewModel_OuterRingRangeChoiceChanged;
+
             SmoothingEnabledChanged += TouchpadStickActionPropViewModel_SmoothingEnabledChanged;
             SmoothingMinCutoffChanged += TouchpadStickActionPropViewModel_SmoothingMinCutoffChanged;
             SmoothingBetaChanged += TouchpadStickActionPropViewModel_SmoothingBetaChanged;
+        }
+
+        private void TouchpadStickActionPropViewModel_OuterRingRangeChoiceChanged(object sender, EventArgs e)
+        {
+            if (!this.action.ChangedProperties.Contains(TouchpadStickAction.PropertyKeyStrings.OUTER_RING_FULL_RANGE))
+            {
+                this.action.ChangedProperties.Add(TouchpadStickAction.PropertyKeyStrings.OUTER_RING_FULL_RANGE);
+            }
+
+            //ExecuteInMapperThread(() =>
+            {
+                action.RaiseNotifyPropertyChange(mapper, TouchpadStickAction.PropertyKeyStrings.OUTER_RING_FULL_RANGE);
+            }//);
+
+            HighlightOuterRingRangeChoiceChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void TouchpadStickActionPropViewModel_OuterRingInvertChanged(object sender, EventArgs e)
+        {
+            if (!this.action.ChangedProperties.Contains(TouchpadStickAction.PropertyKeyStrings.USE_AS_OUTER_RING))
+            {
+                this.action.ChangedProperties.Add(TouchpadStickAction.PropertyKeyStrings.USE_AS_OUTER_RING);
+            }
+
+            //ExecuteInMapperThread(() =>
+            {
+                action.RaiseNotifyPropertyChange(mapper, TouchpadStickAction.PropertyKeyStrings.USE_AS_OUTER_RING);
+            }//);
+
+            HighlightUseOuterRingChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void TouchpadStickActionPropViewModel_OuterRingDeadZoneChanged(object sender, EventArgs e)
+        {
+            if (!this.action.ChangedProperties.Contains(TouchpadStickAction.PropertyKeyStrings.OUTER_RING_DEAD_ZONE))
+            {
+                this.action.ChangedProperties.Add(TouchpadStickAction.PropertyKeyStrings.OUTER_RING_DEAD_ZONE);
+            }
+
+            //ExecuteInMapperThread(() =>
+            {
+                action.RaiseNotifyPropertyChange(mapper, TouchpadStickAction.PropertyKeyStrings.OUTER_RING_DEAD_ZONE);
+            }//);
+
+            HighlightOuterRingDeadZoneChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void TouchpadStickActionPropViewModel_UseOuterRingChanged(object sender, EventArgs e)
+        {
+            if (!this.action.ChangedProperties.Contains(TouchpadStickAction.PropertyKeyStrings.USE_OUTER_RING))
+            {
+                this.action.ChangedProperties.Add(TouchpadStickAction.PropertyKeyStrings.USE_OUTER_RING);
+            }
+
+            //ExecuteInMapperThread(() =>
+            {
+                action.RaiseNotifyPropertyChange(mapper, TouchpadStickAction.PropertyKeyStrings.USE_OUTER_RING);
+            }//);
+
+            HighlightUseOuterRingChanged?.Invoke(this, EventArgs.Empty);
         }
 
         private void TouchpadStickActionPropViewModel_SmoothingBetaChanged(object sender, EventArgs e)
@@ -726,6 +895,26 @@ namespace DS4MapperTest.ViewModels.TouchpadActionPropViewModels
 
             action.RaiseNotifyPropertyChange(mapper, TouchpadStickAction.PropertyKeyStrings.DEAD_ZONE);
             HighlightDeadZoneChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        public void UpdateRingButton(ButtonAction oldAction, ButtonAction newAction)
+        {
+            if (!usingRealAction)
+            {
+                ReplaceExistingLayerAction(this, EventArgs.Empty);
+            }
+
+            mapper.ProcessMappingChangeAction(() =>
+            {
+                if (oldAction != null)
+                {
+                    oldAction.Release(mapper, ignoreReleaseActions: true);
+                    action.RingButton = newAction as AxisDirButton;
+                }
+
+                action.ChangedProperties.Add(TouchpadStickAction.PropertyKeyStrings.OUTER_RING_BUTTON);
+                action.UseParentRingButton = false;
+            });
         }
 
         private void ReplaceExistingLayerAction(object sender, EventArgs e)

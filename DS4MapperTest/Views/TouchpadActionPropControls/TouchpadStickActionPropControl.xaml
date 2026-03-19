@@ -221,6 +221,80 @@
                 </StackPanel>
 
                 <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                    <Expander ExpandDirection="Down" Header="Outer Ring" IsExpanded="False">
+                        <StackPanel Orientation="Vertical">
+                            <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                                <Label Content="Use Outer Ring" />
+                                <CheckBox IsChecked="{Binding UseOuterRing}" Width="20" VerticalAlignment="Center" Margin="8,0,0,0">
+                                    <CheckBox.Style>
+                                        <Style TargetType="CheckBox" BasedOn="{StaticResource CheckBoxBaseStyle}">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding HighlightUseOuterRing}" Value="False">
+                                                    <Setter Property="Opacity" Value="0.7" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </CheckBox.Style>
+                                </CheckBox>
+                            </StackPanel>
+
+                            <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                                <Label Content="Outer Ring Bind" />
+                                <Button x:Name="btnEditTest" Content="{Binding ActionRingDisplayBind,Mode=OneWay,FallbackValue='Test Bind'}" Click="btnEditTest_Click" Margin="8,0,0,0" MinWidth="60" />
+                            </StackPanel>
+
+                            <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                                <Label Content="Outer Ring Invert" />
+                                <CheckBox IsChecked="{Binding OuterRingInvert}" Width="20" VerticalAlignment="Center" Margin="8,0,0,0">
+                                    <CheckBox.Style>
+                                        <Style TargetType="CheckBox" BasedOn="{StaticResource CheckBoxBaseStyle}">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding HighlightOuterRingInvert}" Value="False">
+                                                    <Setter Property="Opacity" Value="0.7" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </CheckBox.Style>
+                                </CheckBox>
+                            </StackPanel>
+
+                            <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                                <Label Content="Outer Ring Dead Zone" />
+                                <TextBox Text="{Binding OuterRingDeadZone, UpdateSourceTrigger=LostFocus}" Width="100" Margin="8,0,0,0">
+                                    <TextBox.Style>
+                                        <Style TargetType="TextBox" BasedOn="{StaticResource TextBoxBaseStyle}">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding HighlightOuterRingDeadZone}" Value="False">
+                                                    <Setter Property="Opacity" Value="0.7" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBox.Style>
+                                </TextBox>
+                            </StackPanel>
+
+                            <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                                <Label Content="Outer Ring Active Range" />
+                                <ComboBox ItemsSource="{Binding OuterRingRangeChoiceItems}" SelectedValue="{Binding OuterRingRangeChoice}"
+          DisplayMemberPath="DisplayName" SelectedValuePath="ChoiceValue" MinWidth="150" Margin="8,0,0,0">
+                                    <ComboBox.Style>
+                                        <Style TargetType="ComboBox" BasedOn="{StaticResource ComboBoxBaseStyle}">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding HighlightOuterRingRangeChoice}" Value="False">
+                                                    <Setter Property="Opacity" Value="0.7" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </ComboBox.Style>
+                                </ComboBox>
+                            </StackPanel>
+
+
+                        </StackPanel>
+                    </Expander>
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
                     <GroupBox MinWidth="200">
                         <GroupBox.Header>
                             <CheckBox IsChecked="{Binding SmoothingEnabled}"

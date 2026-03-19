@@ -66,6 +66,7 @@ namespace DS4MapperTest.Views
                     {
                         TouchpadStickActionPropControl propControl = new TouchpadStickActionPropControl();
                         propControl.PostInit(touchBindEditVM.Mapper, touchBindEditVM.Action);
+                        propControl.RequestFuncEditor += PropControl_RequestFuncEditor1;
                         touchBindEditVM.DisplayControl = propControl;
                         touchBindEditVM.ActionBaseDisplayControl = propControl;
                     }
@@ -153,6 +154,34 @@ namespace DS4MapperTest.Views
                     touchBindEditVM.ActionBaseDisplayControl = null;
                     break;
             }
+        }
+
+        private void PropControl_RequestFuncEditor1(object sender, TouchpadStickActionPropControl.DirButtonBindingArgs e)
+        {
+            TouchpadStickActionPropControl senderControl = sender as TouchpadStickActionPropControl;
+            FuncBindingControl tempControl = new FuncBindingControl();
+            tempControl.PostInit(touchBindEditVM.Mapper, e.DirBtn);
+            tempControl.RequestBindingEditor += TempControl_RequestBindingEditor;
+            tempControl.FuncBindVM.IsRealAction = e.RealAction;
+            tempControl.PreActionSwitch += (oldAction, newAction) =>
+            {
+                e.UpdateActHandler?.Invoke(oldAction, newAction);
+            };
+            //tempControl.ActionChanged += (sender, action) =>
+            //{
+            //    e.UpdateActHandler?.Invoke(null, action);
+            //};
+
+            UserControl oldControl = touchBindEditVM.DisplayControl;
+            touchpadSelectControl.Visibility = Visibility.Collapsed;
+            tempControl.RequestClose += (sender, args) =>
+            {
+                (oldControl as TouchpadStickActionPropControl).RefreshView();
+                touchBindEditVM.DisplayControl = oldControl;
+                touchpadSelectControl.Visibility = Visibility.Visible;
+            };
+
+            touchBindEditVM.DisplayControl = tempControl;
         }
 
         private void TouchDirSwipePropControl_RequestFuncEditor(object sender, TouchpadActionPadPropControl.DirButtonBindingArgs e)
