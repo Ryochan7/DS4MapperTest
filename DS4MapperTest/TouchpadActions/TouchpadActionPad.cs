@@ -122,7 +122,7 @@ namespace DS4MapperTest.TouchpadActions
         /// <summary>
         /// Used to determine outer ring mode or inner ring mode. Will change to using an Enum later
         /// </summary>
-        private bool outerRing;
+        private bool outerRing = true;
         /// <summary>
         /// Specify whether to interpret a ring binging at all
         /// </summary>
