@@ -44,10 +44,12 @@ namespace DS4MapperTest.SteamControllerLibrary
         private const int TRACKBALL_JOY_FRICTION = 7;
         private const int TRACKBALL_MASS = 45;
         private const double TRACKBALL_RADIUS = 0.0245;
-
         private double TRACKBALL_INERTIA = 2.0 * (TRACKBALL_MASS * TRACKBALL_RADIUS * TRACKBALL_RADIUS) / 5.0;
         //private double TRACKBALL_SCALE = 0.000023;
         private double TRACKBALL_SCALE = 0.000023;
+
+        private const double TRACKPAD_MOUSE_POWER = 1.40;
+        private const double TRACKPAD_MOUSE_DISPLACEMENT = 375.0;
 
         private double trackballAccel = 0.0;
         private bool hapticsEvent;
@@ -147,8 +149,8 @@ namespace DS4MapperTest.SteamControllerLibrary
                 elapsedReference: device.BaseElapsedReference, mouseScale: 0.012 * 1.1, mouseOffset: 0.4,
                 trackballScale: 0.000023);
             leftPadDefiniton.throttleRelMouse = true;
-            leftPadDefiniton.throttleRelMousePower = 1.58;
-            leftPadDefiniton.throttleRelMouseZone = 800.0;
+            leftPadDefiniton.throttleRelMousePower = TRACKPAD_MOUSE_POWER;
+            leftPadDefiniton.throttleRelMouseZone = TRACKPAD_MOUSE_DISPLACEMENT;
 
             TouchpadDefinition.TouchAxisData rpadXAxis = new TouchpadDefinition.TouchAxisData
             {
@@ -176,8 +178,8 @@ namespace DS4MapperTest.SteamControllerLibrary
                 elapsedReference: device.BaseElapsedReference, mouseScale: 0.012 * 1.1, mouseOffset: 0.4,
                 trackballScale: 0.000023);
             rightPadDefinition.throttleRelMouse = true;
-            rightPadDefinition.throttleRelMousePower = 1.58;
-            rightPadDefinition.throttleRelMouseZone = 800.0;
+            rightPadDefinition.throttleRelMousePower = TRACKPAD_MOUSE_POWER;
+            rightPadDefinition.throttleRelMouseZone = TRACKPAD_MOUSE_DISPLACEMENT;
 
             TriggerDefinition.TriggerAxisData ltAxis = new TriggerDefinition.TriggerAxisData
             {
