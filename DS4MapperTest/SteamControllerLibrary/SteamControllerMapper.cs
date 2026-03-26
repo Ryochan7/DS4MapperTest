@@ -660,11 +660,17 @@ namespace DS4MapperTest.SteamControllerLibrary
                 case JoypadActionCodes.BtnRShoulder:
                     result = currentMapperState.RB;
                     break;
+                case JoypadActionCodes.BtnSelect:
+                    result = currentMapperState.Back;
+                    break;
                 case JoypadActionCodes.BtnStart:
                     result = currentMapperState.Start;
                     break;
                 case JoypadActionCodes.BtnMode:
                     result = currentMapperState.Guide;
+                    break;
+                case JoypadActionCodes.BtnThumbL:
+                    result = currentMapperState.LSClick;
                     break;
                 case JoypadActionCodes.AxisLTrigger:
                     result = currentMapperState.LT > 0;
@@ -731,11 +737,17 @@ namespace DS4MapperTest.SteamControllerLibrary
                     case JoypadActionCodes.BtnRShoulder:
                         result = currentMapperState.RB;
                         break;
+                    case JoypadActionCodes.BtnSelect:
+                        result = currentMapperState.Back;
+                        break;
                     case JoypadActionCodes.BtnStart:
                         result = currentMapperState.Start;
                         break;
                     case JoypadActionCodes.BtnMode:
                         result = currentMapperState.Guide;
+                        break;
+                    case JoypadActionCodes.BtnThumbL:
+                        result = currentMapperState.LSClick;
                         break;
                     case JoypadActionCodes.AxisLTrigger:
                         result = currentMapperState.LT > 0;
