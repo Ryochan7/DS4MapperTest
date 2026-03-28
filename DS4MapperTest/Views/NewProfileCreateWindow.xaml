@@ -42,6 +42,7 @@
             <Grid.RowDefinitions>
                 <RowDefinition />
                 <RowDefinition />
+                <RowDefinition />
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="377*" />
@@ -59,13 +60,18 @@
                 </DockPanel>
             </DockPanel>
 
-            <Label Content="Creator" Grid.Row="1" Grid.Column="0" Margin="0,8,0,0" />
-            <DockPanel Grid.Row="1" Grid.Column="1" Margin="0,8,0,0">
+            <Label Content="Output Controller Type" Grid.Row="1" Grid.Column="0" Margin="0,8,0,0" />
+            <ComboBox ItemsSource="{Binding OutputContList}" SelectedIndex="{Binding OutputControllerTypeIdx,FallbackValue='0'}" DisplayMemberPath="Name" Grid.Row="1" Grid.Column="1" VerticalAlignment="Center">
+            </ComboBox>
+
+            <Label Content="Creator" Grid.Row="2" Grid.Column="0" Margin="0,8,0,0" />
+            <DockPanel Grid.Row="2" Grid.Column="1" Margin="0,8,0,0">
                 <TextBlock Text="{Binding CreatorErrors}" Foreground="{StaticResource DangerBrush}" Height="20"
                             Margin="0,4,0,0" Visibility="{Binding HasCreatorError,Converter={StaticResource boolVisConverter}}" DockPanel.Dock="Bottom" />
 
                 <TextBox Text="{Binding Creator, ValidatesOnNotifyDataErrors=True}" Validation.ErrorTemplate="{StaticResource ValidationErrorTemplate}" />
             </DockPanel>
+
         </Grid>
     </DockPanel>
 </Window>
