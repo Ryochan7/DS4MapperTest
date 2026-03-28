@@ -158,7 +158,7 @@ namespace DS4MapperTest.InputDevices.SteamControllerTritonLibrary
                 hard_min = -32767,
             };
             //StickDefinition lsDefintion = new StickDefinition(STICK_MIN, STICK_MAX, STICK_NEUTRAL, StickActionCodes.LS);
-            rsDefintion = new StickDefinition(lxAxis, lyAxis, StickActionCodes.RS);
+            rsDefintion = new StickDefinition(rxAxis, ryAxis, StickActionCodes.RS);
 
             TouchpadDefinition.TouchAxisData lpadXAxis = new TouchpadDefinition.TouchAxisData
             {
