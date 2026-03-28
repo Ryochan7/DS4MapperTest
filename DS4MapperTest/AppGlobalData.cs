@@ -819,6 +819,7 @@ namespace DS4MapperTest
     {
         None,
         SteamController,
+        SteamControllerTriton,
         SwitchPro,
         DS4,
         DualSense,

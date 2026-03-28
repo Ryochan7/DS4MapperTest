@@ -199,6 +199,15 @@ namespace DS4MapperTest
         }
     }
 
+    public class SteamControllerTritionControllerOptions : SteamControllerControllerOptions
+    {
+        public new const string SETTINGS_PROP_NAME = "SteamControllerTritonSettings";
+
+        public SteamControllerTritionControllerOptions(InputDeviceType deviceType) : base(deviceType)
+        {
+        }
+    }
+
     public class Ultimate2WirelessControllerOptions : ControllerOptionsStore
     {
         public Ultimate2WirelessControllerOptions(InputDeviceType deviceType) :

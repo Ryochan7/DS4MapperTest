@@ -129,6 +129,8 @@ namespace DS4MapperTest.InputDevices.SteamControllerTritonLibrary
         public const int OUTPUT_REPORT_LEN = 65;
         public const int RUMBLE_REPORT_LEN = 65;
         public const int FEATURE_REPORT_LEN = 65;
+        private const int PROTEUS_DONGLE_PID = 0x1304;
+        private const int NEREID_DONGLE_PID = 0x1305;
 
         public virtual int InputReportLen { get => INPUT_REPORT_LEN; }
         public virtual int OutputReportLen { get => OUTPUT_REPORT_LEN; }
@@ -156,8 +158,8 @@ namespace DS4MapperTest.InputDevices.SteamControllerTritonLibrary
             get => checkForSyncChange;
         }
 
-        private SteamControllerControllerOptions nativeDeviceOptions;
-        public SteamControllerControllerOptions NativeDeviceOptions
+        private SteamControllerTritionControllerOptions nativeDeviceOptions;
+        public SteamControllerTritionControllerOptions NativeDeviceOptions
         {
             get => nativeDeviceOptions;
         }
@@ -169,11 +171,11 @@ namespace DS4MapperTest.InputDevices.SteamControllerTritonLibrary
             hidDevice = device;
             conType = DetermineConnectionType(hidDevice);
             baseElapsedReference = 250.0;
-            deviceType = InputDeviceType.SteamController;
+            deviceType = InputDeviceType.SteamControllerTriton;
             devTypeStr = displayName;
 
             deviceOptions = nativeDeviceOptions =
-                new SteamControllerControllerOptions(InputDeviceType.SteamController);
+                new SteamControllerTritionControllerOptions(InputDeviceType.SteamController);
             if (conType != ConnectionType.SCDongle)
             {
                 synced = true;
@@ -206,18 +208,18 @@ namespace DS4MapperTest.InputDevices.SteamControllerTritonLibrary
 
             // Initially assume a USB connection
             ConnectionType result = ConnectionType.USB;
-            if (device.Attributes.ProductId ==
-                0x0000)
+            if (device.Attributes.ProductId == PROTEUS_DONGLE_PID)
                 //SteamControllerEnumerator.STEAM_DONGLE_CONTROLLER_PRODUCT_ID)
             //if (device.Attributes.ProductId == 0x1142)
             {
                 result = ConnectionType.SCDongle;
             }
-            else if (device.Attributes.ProductId ==
-                0x000)
+            else if (device.Attributes.ProductId == NEREID_DONGLE_PID)
                 //SteamControllerEnumerator.STEAM_BT_CONTROLLER_PRODUCT_ID)
             {
-                result = ConnectionType.Bluetooth;
+                // TODO: Find out what the two dongle ids mean
+                //result = ConnectionType.Bluetooth;
+                result = ConnectionType.SCDongle;
             }
 
             return result;

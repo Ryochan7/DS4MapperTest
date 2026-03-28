@@ -481,4 +481,8 @@ namespace DS4MapperTest
             return result;
         }
     }
+
+    public class SteamControllerTritonDeviceDefaults : SteamControllerDeviceDefaults
+    {
+    }
 }

@@ -28,7 +28,7 @@ namespace DS4MapperTest.InputDevices.SteamControllerTritonLibrary
         private TouchEventFrame previousTouchFrameRightPad;
 
         public override DeviceReaderBase BaseReader => reader;
-        public override InputDeviceType DeviceType => InputDeviceType.SteamController;
+        public override InputDeviceType DeviceType => InputDeviceType.SteamControllerTriton;
 
         private StickDefinition lsDefintion;
         private StickDefinition rsDefintion;
@@ -71,7 +71,7 @@ namespace DS4MapperTest.InputDevices.SteamControllerTritonLibrary
             this.reader = reader;
             this.appGlobal = appGlobal;
 
-            deviceActionDefaults = new SteamControllerDeviceDefaults();
+            deviceActionDefaults = new SteamControllerTritonDeviceDefaults();
 
             bindingList = new List<InputBindingMeta>()
             {
