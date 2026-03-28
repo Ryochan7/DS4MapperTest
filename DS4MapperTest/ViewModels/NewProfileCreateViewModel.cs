@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.IO;
 using System.ComponentModel;
 using System.Collections;
+using static DS4MapperTest.Mapper;
 
 namespace DS4MapperTest.ViewModels
 {
@@ -16,6 +17,12 @@ namespace DS4MapperTest.ViewModels
         public Mapper Mapper => mapper;
 
         private BackendManager manager;
+
+        public class OutputContTypeAssoc
+        {
+            public string Name { get; set; }
+            public OutputContType Type { get; set; }
+        }
 
         private string profilePath;
         public string ProfilePath
@@ -50,6 +57,24 @@ namespace DS4MapperTest.ViewModels
                 profileCreated = value;
             }
         }
+
+        private int outputControllerTypeIdx = 0;
+        public int OutputControllerTypeIdx
+        {
+            get => outputControllerTypeIdx;
+            set
+            {
+                outputControllerTypeIdx = value;
+            }
+        }
+
+        private List<OutputContTypeAssoc> outputContList = new List<OutputContTypeAssoc>()
+        {
+            new OutputContTypeAssoc() {Name="Xbox 360", Type=OutputContType.Xbox360 },
+            new OutputContTypeAssoc() {Name="DualShock 4", Type=OutputContType.DualShock4 },
+            new OutputContTypeAssoc() {Name="None", Type=OutputContType.None },
+        };
+        public List<OutputContTypeAssoc> OutputContList => outputContList;
 
         public string ProfilePathErrors
         {
@@ -119,6 +144,17 @@ namespace DS4MapperTest.ViewModels
                 tempProfile.Creator = creator;
                 tempProfile.CreationDate = DateTime.UtcNow;
                 tempProfile.Description = profileName;
+                if (outputControllerTypeIdx >= 0)
+                {
+                    tempProfile.OutputGamepadSettings.OutputGamepad = OutputContList[outputControllerTypeIdx].Type;
+                    tempProfile.OutputGamepadSettings.Enabled = true;
+                }
+                else
+                {
+                    tempProfile.OutputGamepadSettings.OutputGamepad = OutputContType.None;
+                    tempProfile.OutputGamepadSettings.Enabled = false;
+                }
+
                 tempProfile.ActionSets[0].Name = "Main";
                 tempProfile.ActionSets[0].ActionLayers[0].Name = "Default";
 
