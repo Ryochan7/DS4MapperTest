@@ -168,7 +168,7 @@ namespace DS4MapperTest.InputDevices.SteamControllerTritonLibrary
         {
             hidDevice = device;
             conType = DetermineConnectionType(hidDevice);
-            baseElapsedReference = 125.0;
+            baseElapsedReference = 250.0;
             deviceType = InputDeviceType.SteamController;
             devTypeStr = displayName;
 

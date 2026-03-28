@@ -262,11 +262,17 @@ namespace DS4MapperTest.InputDevices.SteamControllerTritonLibrary
                         current.R4 = (buttons & 0x80) != 0;
                         current.L5 = (buttons & 0x40000) != 0;
                         current.R5 = (buttons & 0x100) != 0;
-                        //current.LeftPad.Click = (buttons & 0x02) != 0;
-                        //current.RightPad.Click = (buttons & 0x04) != 0;
-                        //current.LeftPad.Touch = (buttons & 0x08) != 0;
-                        //current.RightPad.Touch = (buttons & 0x10) != 0;
-                        
+
+                        current.LeftPad.Click = (buttons & 0x04000000) != 0;
+                        current.RightPad.Click = (buttons & 0x00400000) != 0;
+                        current.LeftPad.Touch = (buttons & 0x02000000) != 0;
+                        current.RightPad.Touch = (buttons & 0x00200000) != 0;
+
+                        current.LeftGripSenseTouch = (buttons & 0x20000000) != 0;
+                        current.RightGripSenseTouch = (buttons & 0x20000000) != 0;
+                        current.LSTouch = (buttons & 0x01000000) != 0;
+                        current.RSTouch = (buttons & 0x00100000) != 0;
+
                         current.L2 = (short)((inputReportBuffer[8] << 8) | inputReportBuffer[7]);
                         current.R2 = (short)((inputReportBuffer[10] << 8) | inputReportBuffer[9]);
 

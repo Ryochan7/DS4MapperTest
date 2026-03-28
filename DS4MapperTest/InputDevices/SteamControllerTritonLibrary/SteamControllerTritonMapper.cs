@@ -100,6 +100,11 @@ namespace DS4MapperTest.InputDevices.SteamControllerTritonLibrary
                 new InputBindingMeta("L5", "L5", InputBindingMeta.InputControlType.Button),
                 new InputBindingMeta("R5", "R5", InputBindingMeta.InputControlType.Button),
 
+                new InputBindingMeta("LSTouch", "LS Touch", InputBindingMeta.InputControlType.Button),
+                new InputBindingMeta("RSTouch", "RS Touch", InputBindingMeta.InputControlType.Button),
+                new InputBindingMeta("LeftGripSense", "Left GripSense", InputBindingMeta.InputControlType.Button),
+                new InputBindingMeta("RightGripSense", "Right GripSense", InputBindingMeta.InputControlType.Button),
+
                 new InputBindingMeta("DPad", "DPad", InputBindingMeta.InputControlType.DPad),
 
                 new InputBindingMeta("LeftTouchpad", "Left Touchpad", InputBindingMeta.InputControlType.Touchpad),
@@ -282,6 +287,12 @@ namespace DS4MapperTest.InputDevices.SteamControllerTritonLibrary
                 new ActionTriggerItem("Start", JoypadActionCodes.BtnStart),
                 new ActionTriggerItem("Steam", JoypadActionCodes.BtnHome),
                 new ActionTriggerItem("QAM", JoypadActionCodes.BtnMode),
+
+                new ActionTriggerItem("LS Touch", JoypadActionCodes.BtnMode2),
+                new ActionTriggerItem("RS Touch", JoypadActionCodes.BtnMode3),
+
+                new ActionTriggerItem("Left GripSense", JoypadActionCodes.BtnLSideL),
+                new ActionTriggerItem("Right GripSense", JoypadActionCodes.BtnRSideR),
 
                 new ActionTriggerItem("DPad Up", JoypadActionCodes.BtnDPadUp),
                 new ActionTriggerItem("DPad Down", JoypadActionCodes.BtnDPadDown),
@@ -791,6 +802,18 @@ namespace DS4MapperTest.InputDevices.SteamControllerTritonLibrary
                 case JoypadActionCodes.BtnRGrip2:
                     result = currentMapperState.R5;
                     break;
+                case JoypadActionCodes.BtnMode2:
+                    result = currentMapperState.LSTouch;
+                    break;
+                case JoypadActionCodes.BtnMode3:
+                    result = currentMapperState.RSTouch;
+                    break;
+                case JoypadActionCodes.BtnLSideL:
+                    result = currentMapperState.LeftGripSenseTouch;
+                    break;
+                case JoypadActionCodes.BtnRSideR:
+                    result = currentMapperState.RightGripSenseTouch;
+                    break;
                 case JoypadActionCodes.BtnDPadUp:
                     result = currentMapperState.DPadUp;
                     break;
@@ -885,6 +908,18 @@ namespace DS4MapperTest.InputDevices.SteamControllerTritonLibrary
                         break;
                     case JoypadActionCodes.BtnRGrip2:
                         result = currentMapperState.R5;
+                        break;
+                    case JoypadActionCodes.BtnMode2:
+                        result = currentMapperState.LSTouch;
+                        break;
+                    case JoypadActionCodes.BtnMode3:
+                        result = currentMapperState.RSTouch;
+                        break;
+                    case JoypadActionCodes.BtnLSideL:
+                        result = currentMapperState.LeftGripSenseTouch;
+                        break;
+                    case JoypadActionCodes.BtnRSideR:
+                        result = currentMapperState.RightGripSenseTouch;
                         break;
                     case JoypadActionCodes.BtnDPadUp:
                         result = currentMapperState.DPadUp;

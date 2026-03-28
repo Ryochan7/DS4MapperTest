@@ -79,14 +79,18 @@ namespace DS4MapperTest.InputDevices.SteamControllerTritonLibrary
         public TouchPadInfo RightPad;
         public short LX;
         public short LY;
+        public bool LSTouch;
         public short RX;
         public short RY;
+        public bool RSTouch;
         public bool L3;
         public bool R3;
         public bool DPadUp;
         public bool DPadDown;
         public bool DPadLeft;
         public bool DPadRight;
+        public bool LeftGripSenseTouch;
+        public bool RightGripSenseTouch;
         public SteamControllerMotion Motion;
     }
 }
