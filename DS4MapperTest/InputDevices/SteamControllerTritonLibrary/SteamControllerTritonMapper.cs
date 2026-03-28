@@ -566,6 +566,34 @@ namespace DS4MapperTest.InputDevices.SteamControllerTritonLibrary
                 }
                 if (tempBtnAct.active) tempBtnAct.Event(this);
 
+                tempBtnAct = currentLayer.buttonActionDict["LSTouch"];
+                if (currentMapperState.LSTouch || currentMapperState.LSTouch != previousMapperState.LSTouch)
+                {
+                    tempBtnAct.Prepare(this, currentMapperState.LSTouch);
+                }
+                if (tempBtnAct.active) tempBtnAct.Event(this);
+
+                tempBtnAct = currentLayer.buttonActionDict["RSTouch"];
+                if (currentMapperState.RSTouch || currentMapperState.RSTouch != previousMapperState.RSTouch)
+                {
+                    tempBtnAct.Prepare(this, currentMapperState.RSTouch);
+                }
+                if (tempBtnAct.active) tempBtnAct.Event(this);
+
+                tempBtnAct = currentLayer.buttonActionDict["LeftGripSense"];
+                if (currentMapperState.LeftGripSenseTouch || currentMapperState.LeftGripSenseTouch != previousMapperState.LeftGripSenseTouch)
+                {
+                    tempBtnAct.Prepare(this, currentMapperState.LeftGripSenseTouch);
+                }
+                if (tempBtnAct.active) tempBtnAct.Event(this);
+
+                tempBtnAct = currentLayer.buttonActionDict["RightGripSense"];
+                if (currentMapperState.RightGripSenseTouch || currentMapperState.RightGripSenseTouch != previousMapperState.RightGripSenseTouch)
+                {
+                    tempBtnAct.Prepare(this, currentMapperState.RightGripSenseTouch);
+                }
+                if (tempBtnAct.active) tempBtnAct.Event(this);
+
                 TouchpadMapAction tempTouchAction = currentLayer.touchpadActionDict["LeftTouchpad"];
                 //if (currentMapperState.LeftPad.Touch || currentMapperState.LeftPad.Touch != previousMapperState.LeftPad.Touch)
                 {
