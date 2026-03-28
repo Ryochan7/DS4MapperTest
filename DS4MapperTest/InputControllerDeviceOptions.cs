@@ -199,12 +199,58 @@ namespace DS4MapperTest
         }
     }
 
-    public class SteamControllerTritionControllerOptions : SteamControllerControllerOptions
+    public class SteamControllerTritionControllerOptions : ControllerOptionsStore
     {
-        public new const string SETTINGS_PROP_NAME = "SteamControllerTritonSettings";
+        public const string SETTINGS_PROP_NAME = "SteamControllerTritonSettings";
+
+        private int leftTouchpadRotation = 0;
+        public int LeftTouchpadRotation
+        {
+            get => leftTouchpadRotation;
+            set
+            {
+                leftTouchpadRotation = Math.Clamp(-180, value, 180);
+                LeftTouchpadRotationChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        public event EventHandler LeftTouchpadRotationChanged;
+
+        private int rightTouchpadRotation = 0;
+        public int RightTouchpadRotation
+        {
+            get => rightTouchpadRotation;
+            set
+            {
+                rightTouchpadRotation = Math.Clamp(-180, value, 180);
+                RightTouchpadRotationChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        public event EventHandler RightTouchpadRotationChanged;
 
         public SteamControllerTritionControllerOptions(InputDeviceType deviceType) : base(deviceType)
         {
+        }
+
+        public override void PersistSettings(JObject controllerJObj)
+        {
+            if (controllerJObj.SelectToken(SETTINGS_PROP_NAME) == null ||
+                controllerJObj[SETTINGS_PROP_NAME].Type != JTokenType.Object)
+            {
+                controllerJObj[SETTINGS_PROP_NAME] = new JObject();
+            }
+
+            string output = JsonConvert.SerializeObject(this);
+            controllerJObj[SETTINGS_PROP_NAME].Replace(JObject.Parse(output));
+        }
+
+        public override void LoadSettings(JObject controllerJObj)
+        {
+            if (controllerJObj.TryGetValue(SETTINGS_PROP_NAME,
+                out JToken settingsToken) && settingsToken.Type == JTokenType.Object)
+            {
+                string json = settingsToken.ToString();
+                JsonConvert.PopulateObject(json, this);
+            }
         }
     }
 
