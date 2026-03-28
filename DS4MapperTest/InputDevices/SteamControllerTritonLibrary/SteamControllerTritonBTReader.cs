@@ -9,7 +9,7 @@ using HidLibrary;
 
 namespace DS4MapperTest.InputDevices.SteamControllerTritonLibrary
 {
-    public class SteamControllerBTReader : SteamControllerTritonReader
+    public class SteamControllerTritonBTReader : SteamControllerTritonReader
     {
         private const byte LONG_PACKET = 0x80;
         private const byte SINGLE_PAYLOAD_PREFIX = 0x40;
@@ -40,7 +40,7 @@ namespace DS4MapperTest.InputDevices.SteamControllerTritonLibrary
         private byte[] tempInputReportBuffer;
         public override event SteamControllerReportDelegate Report = null;
 
-        public SteamControllerBTReader(SteamControllerTritonBTDevice inputDevice) :
+        public SteamControllerTritonBTReader(SteamControllerTritonBTDevice inputDevice) :
             base(inputDevice)
         {
             inputReportBuffer = new byte[device.InputReportLen * 3];

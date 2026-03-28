@@ -25,6 +25,7 @@ namespace DS4MapperTest
         public const string PROFILES_FOLDER_NAME = "Profiles";
         public const string LOGS_FOLDER_NAME = "Logs";
         public const string STEAM_CONTROLLER_PROFILE_DIR = "SteamController";
+        public const string STEAM_CONTROLLER_TRITON_PROFILE_DIR = "SteamControllerTriton";
         public const string DS4_PROFILE_DIR = "DualShock4";
         public const string DUALSENSE_PROFILE_DIR = "DualSense";
         public const string SWITCH_PRO_PROFILE_DIR = "SwitchPro";
@@ -87,6 +88,7 @@ namespace DS4MapperTest
         private List<string> checkFoldersList = new List<string>()
             {
                 STEAM_CONTROLLER_PROFILE_DIR,
+                STEAM_CONTROLLER_TRITON_PROFILE_DIR,
                 DS4_PROFILE_DIR,
                 DUALSENSE_PROFILE_DIR,
                 SWITCH_PRO_PROFILE_DIR,
@@ -684,6 +686,9 @@ namespace DS4MapperTest
             {
                 case InputDeviceType.SteamController:
                     result = Path.Combine(baseProfilesPath, STEAM_CONTROLLER_PROFILE_DIR);
+                    break;
+                case InputDeviceType.SteamControllerTriton:
+                    result = Path.Combine(baseProfilesPath, STEAM_CONTROLLER_TRITON_PROFILE_DIR);
                     break;
                 case InputDeviceType.DS4:
                     result = Path.Combine(baseProfilesPath, DS4_PROFILE_DIR);

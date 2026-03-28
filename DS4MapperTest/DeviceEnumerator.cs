@@ -13,6 +13,7 @@ using DS4MapperTest.DualSense;
 using DS4MapperTest.JoyConLibrary;
 using DS4MapperTest.SteamControllerLibrary;
 using DS4MapperTest.InputDevices.EightBitDoLibrary;
+using DS4MapperTest.InputDevices.SteamControllerTritonLibrary;
 
 namespace DS4MapperTest
 {
@@ -70,6 +71,8 @@ namespace DS4MapperTest
         private const int STEAM_CONTROLLER_PRODUCT_ID = 0x1102;
         private const int STEAM_DONGLE_CONTROLLER_PRODUCT_ID = 0x1142;
         private const int STEAM_BT_CONTROLLER_PRODUCT_ID = 0x1106;
+        private const int TRITON_PROTEUS_PID = SteamControllerTritonDevice.PROTEUS_DONGLE_PID;
+        private const int TRITON_NEREID_PID = SteamControllerTritonDevice.NEREID_DONGLE_PID;
 
         private const int EIGHTBITDO_VID = 0x2DC8;
         private const int EIGHTBITDO_ULTIMATE_2_WIRELESS_PID = 0x6012;
@@ -110,6 +113,9 @@ namespace DS4MapperTest
                 VidPidMeta.UsedConnectionBus.HID),
             new VidPidMeta(STEAM_CONTROLLER_VENDOR_ID, STEAM_BT_CONTROLLER_PRODUCT_ID, "Steam Controller", InputDeviceType.SteamController,
                 VidPidMeta.UsedConnectionBus.HID),
+            // TODO: Hide for now. Assume Proteus is the new dongle type and just target that for now
+            //new VidPidMeta(STEAM_CONTROLLER_VENDOR_ID, TRITON_PROTEUS_PID, "Steam Controller 2026", InputDeviceType.SteamControllerTriton,
+            //    VidPidMeta.UsedConnectionBus.HID),
             new VidPidMeta(EIGHTBITDO_VID, EIGHTBITDO_ULTIMATE_2_WIRELESS_PID, "8BitDo Ultimate 2 Wireless BT Controller", InputDeviceType.EightBitDoUltimate2Wireless,
                 VidPidMeta.UsedConnectionBus.HID)
         };
@@ -152,6 +158,11 @@ namespace DS4MapperTest
                 else if (meta.inputDevType == InputDeviceType.SteamController)
                 {
                     meta.testDelUnion.hidHandler = SteamControllerDeviceCheckHandler;
+                    vidPidMetaDict.Add($"VID_{meta.vid}&PID_{meta.pid}", meta);
+                }
+                else if (meta.inputDevType == InputDeviceType.SteamControllerTriton)
+                {
+                    meta.testDelUnion.hidHandler = SteamControllerTritonDeviceCheckHandler;
                     vidPidMetaDict.Add($"VID_{meta.vid}&PID_{meta.pid}", meta);
                 }
                 else if (meta.inputDevType == InputDeviceType.EightBitDoUltimate2Wireless)
@@ -446,6 +457,37 @@ namespace DS4MapperTest
             return result;
         }
 
+        private bool SteamControllerTritonDeviceCheckHandler(HidDevice hidDev, VidPidMeta meta)
+        {
+            bool result = false;
+
+            if (meta != null)
+            {
+                if (meta.pid == SteamControllerTritonDevice.PROTEUS_DONGLE_PID ||
+                    meta.pid == SteamControllerTritonDevice.NEREID_DONGLE_PID)
+                {
+                    SteamControllerTritonDevice tempDev =
+                        new SteamControllerTritonDevice(hidDev, meta.displayName);
+
+                    foundKnownDevices.Add(hidDev.DevicePath, tempDev);
+                    revFoundKnownDevices.Add(tempDev, hidDev.DevicePath);
+                    newKnownDevices.Add(hidDev.DevicePath, tempDev);
+                    result = true;
+                }
+                // TODO: Not sure about BLE support
+                //else if (meta.pid == STEAM_BT_CONTROLLER_PRODUCT_ID)
+                //{
+                //    SteamControllerTritonBTDevice tempDev = new SteamControllerTritonBTDevice(hidDev, meta.displayName);
+                //    foundKnownDevices.Add(hidDev.DevicePath, tempDev);
+                //    revFoundKnownDevices.Add(tempDev, hidDev.DevicePath);
+                //    newKnownDevices.Add(hidDev.DevicePath, tempDev);
+                //    result = true;
+                //}
+            }
+
+            return result;
+        }
+
         private bool EightBitDoUlt2WirelessDeviceCheckHandler(HidDevice hidDev, VidPidMeta meta)
         {
             bool result = false;
@@ -515,6 +557,24 @@ namespace DS4MapperTest
                             SteamControllerBTReader reader = new SteamControllerBTReader(btSteamDevice);
                             result = new SteamControllerMapper(btSteamDevice, reader, appGlobal);
                         }
+
+                        break;
+                    }
+                case SteamControllerTritonDevice:
+                    {
+                        SteamControllerTritonDevice steamDevice = device as SteamControllerTritonDevice;
+                        if (steamDevice.ConType != SteamControllerTritonDevice.ConnectionType.Bluetooth)
+                        {
+                            SteamControllerTritonReader reader = new SteamControllerTritonReader(steamDevice);
+                            result = new SteamControllerTritonMapper(steamDevice, reader, appGlobal);
+                        }
+                        // TODO: Not sure about BLE support
+                        //else
+                        //{
+                        //    SteamControllerTritonBTDevice btSteamDevice = steamDevice as SteamControllerTritonBTDevice;
+                        //    SteamControllerTritonBTReader reader = new SteamControllerTritonBTReader(btSteamDevice);
+                        //    result = new SteamControllerTritonMapper(btSteamDevice, reader, appGlobal);
+                        //}
 
                         break;
                     }
