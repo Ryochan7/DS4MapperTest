@@ -131,6 +131,7 @@ namespace DS4MapperTest.InputDevices.SteamControllerTritonLibrary
         public const int FEATURE_REPORT_LEN = 65;
         public const int PROTEUS_DONGLE_PID = 0x1304;
         public const int NEREID_DONGLE_PID = 0x1305;
+        public const int BLE_PID = 0x1303;
 
         public virtual int InputReportLen { get => INPUT_REPORT_LEN; }
         public virtual int OutputReportLen { get => OUTPUT_REPORT_LEN; }
@@ -208,18 +209,14 @@ namespace DS4MapperTest.InputDevices.SteamControllerTritonLibrary
 
             // Initially assume a USB connection
             ConnectionType result = ConnectionType.USB;
-            if (device.Attributes.ProductId == PROTEUS_DONGLE_PID)
-                //SteamControllerEnumerator.STEAM_DONGLE_CONTROLLER_PRODUCT_ID)
-            //if (device.Attributes.ProductId == 0x1142)
+            if (device.Attributes.ProductId == PROTEUS_DONGLE_PID ||
+                device.Attributes.ProductId == NEREID_DONGLE_PID)
             {
                 result = ConnectionType.SCDongle;
             }
-            else if (device.Attributes.ProductId == NEREID_DONGLE_PID)
-                //SteamControllerEnumerator.STEAM_BT_CONTROLLER_PRODUCT_ID)
+            else if (device.Attributes.ProductId == BLE_PID)
             {
-                // TODO: Find out what the two dongle ids mean
-                //result = ConnectionType.Bluetooth;
-                result = ConnectionType.SCDongle;
+                result = ConnectionType.Bluetooth;
             }
 
             return result;
