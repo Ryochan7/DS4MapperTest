@@ -26,13 +26,14 @@ namespace HidLibrary
         private readonly HidDeviceCapabilities _deviceCapabilities;
         private bool _monitorDeviceEvents;
         private string serial = null;
+        private int interfaceNumber;
         private SafeFileHandle safeReadHandle1;
         private FileStream fileStream1;
         private bool isOpen;
         private bool isExclusive;
         private const string BLANK_SERIAL = "00:00:00:00:00:00";
 
-        internal HidDevice(string devicePath, string description = null)
+        internal HidDevice(string devicePath, string description = null, int interfaceNumber = 0)
         {
             _devicePath = devicePath;
             _description = description;
@@ -51,6 +52,8 @@ namespace HidLibrary
                 Console.WriteLine(exception.Message);
                 throw new Exception(string.Format("Error querying HID device '{0}'.", devicePath), exception);
             }
+
+            this.interfaceNumber = interfaceNumber;
         }
 
         public SafeFileHandle safeReadHandle { get => safeReadHandle1; private set => safeReadHandle1 = value; }
@@ -62,6 +65,7 @@ namespace HidLibrary
         public HidDeviceCapabilities Capabilities { get { return _deviceCapabilities; } }
         public HidDeviceAttributes Attributes { get { return _deviceAttributes; } }
         public string DevicePath { get { return _devicePath; } }
+        public int InterfaceNumber => interfaceNumber;
 
         public override string ToString()
         {

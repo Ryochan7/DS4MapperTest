@@ -78,7 +78,12 @@ namespace HidLibrary
             return EnumerateDevices().Select(x => new HidDevice(x.Path, x.Description)).Where(x => x.Attributes.VendorId == vendorId);
         }
 
-        private class DeviceInfo { public string Path { get; set; } public string Description { get; set; } }
+        private class DeviceInfo
+        {
+            public string Path { get; set; }
+            public string Description { get; set; }
+            public int InterfaceNumber { get; set; }
+        }
 
         private static IEnumerable<DeviceInfo> EnumerateDevices()
         {
@@ -101,11 +106,11 @@ namespace HidLibrary
 
                     while (NativeMethods.SetupDiEnumDeviceInterfaces(deviceInfoSet, ref deviceInfoData, ref hidClass, deviceInterfaceIndex, ref deviceInterfaceData))
                     {
-                        deviceInterfaceIndex++;
                         var devicePath = GetDevicePath(deviceInfoSet, deviceInterfaceData);
                         var description = GetBusReportedDeviceDescription(deviceInfoSet, ref deviceInfoData) ?? 
                                           GetDeviceDescription(deviceInfoSet, ref deviceInfoData);
-                        devices.Add(new DeviceInfo { Path = devicePath, Description = description });
+                        devices.Add(new DeviceInfo { Path = devicePath, Description = description, InterfaceNumber = deviceInterfaceIndex });
+                        deviceInterfaceIndex++;
                     }
                 }
                 NativeMethods.SetupDiDestroyDeviceInfoList(deviceInfoSet);

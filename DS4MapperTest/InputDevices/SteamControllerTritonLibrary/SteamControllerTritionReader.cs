@@ -12,6 +12,9 @@ namespace DS4MapperTest.InputDevices.SteamControllerTritonLibrary
 {
     public class SteamControllerTritonReader : DeviceReaderBase
     {
+        private const int WIRELESS_STATE_DISCONNECT = 1;
+        private const int WIRELESS_STATE_CONNECT = 2;
+
         protected SteamControllerTritonDevice device;
         public SteamControllerTritonDevice Device { get => device; }
         protected Thread inputThread;
@@ -132,12 +135,13 @@ namespace DS4MapperTest.InputDevices.SteamControllerTritonLibrary
                         ref SteamControllerState current = ref device.CurrentStateRef;
                         ref SteamControllerState previous = ref device.PreviousStateRef;
 
-                        if (tempByte == SteamControllerTritonDevice.SCPacketType.PT_HOTPLUG)
+                        if (tempByte == SteamControllerTritonDevice.ID_TRITON_WIRELESS_STATUS ||
+                            tempByte == SteamControllerTritonDevice.ID_TRITON_WIRELESS_STATUS_X)
                         {
-                            byte statusByte = inputReportBuffer[5];
+                            byte statusByte = inputReportBuffer[1];
                             // 2 means a new device was connected. Looks like
                             // 1 means a device was disconnected
-                            bool hasConnected = statusByte == 2;
+                            bool hasConnected = statusByte == WIRELESS_STATE_CONNECT;
                             if (!device.Synced && hasConnected)
                             {
                                 // Disable lizard mode and activate components of newly
@@ -152,7 +156,8 @@ namespace DS4MapperTest.InputDevices.SteamControllerTritonLibrary
 
                             continue;
                         }
-                        else if (tempByte != SteamControllerTritonDevice.ID_TRITON_CONTROLLER_STATE)
+                        else if (tempByte != SteamControllerTritonDevice.ID_TRITON_CONTROLLER_STATE ||
+                            tempByte != SteamControllerTritonDevice.ID_TRITON_CONTROLLER_STATE_BLE)
                         {
                             Trace.WriteLine(String.Format("Got unexpected input report id 0x{0:X2}. Try again",
                                 inputReportBuffer[1]));
@@ -186,7 +191,8 @@ namespace DS4MapperTest.InputDevices.SteamControllerTritonLibrary
                             continue;
                         }
                         */
-                        else if (firstReport && tempByte == SteamControllerTritonDevice.ID_TRITON_CONTROLLER_STATE)
+                        else if (firstReport && (tempByte == SteamControllerTritonDevice.ID_TRITON_CONTROLLER_STATE ||
+                            tempByte != SteamControllerTritonDevice.ID_TRITON_CONTROLLER_STATE_BLE))
                         {
                             Console.WriteLine("CAN READ REPORTS. NICE");
 

@@ -470,13 +470,17 @@ namespace DS4MapperTest
                 if (meta.pid == SteamControllerTritonDevice.PROTEUS_DONGLE_PID ||
                     meta.pid == SteamControllerTritonDevice.NEREID_DONGLE_PID)
                 {
-                    SteamControllerTritonDevice tempDev =
+                    // Controller interfaces used for dongles
+                    if (hidDev.InterfaceNumber >= 2 && hidDev.InterfaceNumber <= 5)
+                    {
+                        SteamControllerTritonDevice tempDev =
                         new SteamControllerTritonDevice(hidDev, meta.displayName);
 
-                    foundKnownDevices.Add(hidDev.DevicePath, tempDev);
-                    revFoundKnownDevices.Add(tempDev, hidDev.DevicePath);
-                    newKnownDevices.Add(hidDev.DevicePath, tempDev);
-                    result = true;
+                        foundKnownDevices.Add(hidDev.DevicePath, tempDev);
+                        revFoundKnownDevices.Add(tempDev, hidDev.DevicePath);
+                        newKnownDevices.Add(hidDev.DevicePath, tempDev);
+                        result = true;
+                    }
                 }
                 // TODO: Not sure about BLE support
                 //else if (meta.pid == TRITON_BLE_PID)

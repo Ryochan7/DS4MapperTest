@@ -12,6 +12,9 @@ namespace DS4MapperTest.InputDevices.SteamControllerTritonLibrary
     {
         public const byte ID_TRITON_CONTROLLER_STATE = 0x42;
         public const byte ID_TRITON_BATTERY_STATUS = 0x43;
+        public const byte ID_TRITON_CONTROLLER_STATE_BLE = 0x45;
+        public const byte ID_TRITON_WIRELESS_STATUS_X = 0x46;
+        public const byte ID_TRITON_WIRELESS_STATUS = 0x79;
 
         public static class SCPacketType
         {
