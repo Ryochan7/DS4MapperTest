@@ -207,6 +207,16 @@ namespace DS4MapperTest.InputDevices.SteamControllerTritonLibrary
                         //ref SteamControllerState previous = ref device.PreviousStateRef;
                         tempByte = 0;
 
+                        current.PacketCounter = inputReportBuffer[1];
+                        if (current.PacketCounter == previous.PacketCounter)
+                        {
+                            // According to docs, it looks like there is a small
+                            // possibility that the controller can send duplicate input
+                            // packets. Ignore current packet if counter is the same
+                            // as the last processed input
+                            continue;
+                        }
+
                         currentTime = Stopwatch.GetTimestamp();
                         deltaElapsed = currentTime - previousTime;
                         lastElapsed = deltaElapsed * (1.0 / Stopwatch.Frequency) * 1000.0;
@@ -232,8 +242,6 @@ namespace DS4MapperTest.InputDevices.SteamControllerTritonLibrary
 
                         // ???
                         //tempByte = inputReportBuffer[8];
-
-                        current.PacketCounter = inputReportBuffer[1];
 
                         // Buttons
                         //tempByte = inputReportBuffer[2];
