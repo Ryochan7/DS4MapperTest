@@ -212,7 +212,7 @@ namespace DS4MapperTest.InputDevices.SteamControllerTritonLibrary
 
             if (synced)
             {
-                ReadSerial();
+                //ReadSerial();
             }
 
             SyncedChanged += SteamControllerDevice_SyncedChanged;
@@ -357,13 +357,15 @@ namespace DS4MapperTest.InputDevices.SteamControllerTritonLibrary
 
         protected virtual void Configure()
         {
+            byte gyroMode = 0x08 | 0x10; // SETTING_GYRO_MODE_SEND_RAW_ACCEL | SETTING_GYRO_MODE_SEND_RAW_GYRO
+
             byte[] featureData = new byte[FEATURE_REPORT_LEN];
             featureData[0] = 0x01;
             featureData[1] = 0x87; // ID_SET_SETTINGS_VALUES
             featureData[2] = 0x03;
             featureData[3] = 0x48; // SETTING_IMU_MODE
-            featureData[4] = 0x00;
-            featureData[5] = 0x08 | 0x10; // SETTING_GYRO_MODE_SEND_RAW_ACCEL | SETTING_GYRO_MODE_SEND_RAW_GYRO	
+            featureData[4] = gyroMode;
+            featureData[5] = 0x00;
             hidDevice.WriteFeatureReport(featureData);
 
 
@@ -397,8 +399,8 @@ namespace DS4MapperTest.InputDevices.SteamControllerTritonLibrary
             featureData[1] = 0x87; // ID_SET_SETTINGS_VALUES
             featureData[2] = 0x03; // Length is 3 bytes
             featureData[3] = 0x09; // SETTING_LIZARD_MODE
-            featureData[4] = 0x00;
-            featureData[5] = 0x01; // LIZARD_MODE_ON
+            featureData[4] = 0x01; // LIZARD_MODE_ON
+            featureData[5] = 0x00;
             hidDevice.WriteFeatureReport(featureData);
 
             // TODO: NEED MORE HERE?
