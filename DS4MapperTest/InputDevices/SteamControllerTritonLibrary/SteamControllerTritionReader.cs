@@ -156,19 +156,20 @@ namespace DS4MapperTest.InputDevices.SteamControllerTritonLibrary
 
                             continue;
                         }
+                        else if (tempByte == SteamControllerTritonDevice.ID_TRITON_BATTERY_STATUS)
+                        {
+                            //Trace.WriteLine($"IDLE {inputReportBuffer[1]}");
+                            byte chargeState = inputReportBuffer[1];
+                            byte batt = inputReportBuffer[2];
+                            device.Battery = Math.Clamp(batt, 0u, 100u);
+                            continue;
+                        }
                         else if (tempByte != SteamControllerTritonDevice.ID_TRITON_CONTROLLER_STATE &&
                             tempByte != SteamControllerTritonDevice.ID_TRITON_CONTROLLER_STATE_BLE)
                         {
                             Trace.WriteLine(String.Format("Got unexpected input report id 0x{0:X2}. Try again",
                                 inputReportBuffer[0]));
 
-                            continue;
-                        }
-                        else if (tempByte == SteamControllerTritonDevice.ID_TRITON_BATTERY_STATUS)
-                        {
-                            //Trace.WriteLine($"IDLE {inputReportBuffer[3]}");
-                            byte batt = inputReportBuffer[3];
-                            device.Battery = batt;
                             continue;
                         }
                         /*

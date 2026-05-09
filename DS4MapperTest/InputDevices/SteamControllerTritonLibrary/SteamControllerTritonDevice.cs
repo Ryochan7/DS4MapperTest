@@ -16,6 +16,7 @@ namespace DS4MapperTest.InputDevices.SteamControllerTritonLibrary
         public const byte ID_TRITON_WIRELESS_STATUS_X = 0x46;
         public const byte ID_TRITON_WIRELESS_STATUS = 0x79;
 
+        // TODO: Old from 2015 SC code. Remove in future
         public static class SCPacketType
         {
             public const byte PT_INPUT = 0x01;
@@ -37,6 +38,7 @@ namespace DS4MapperTest.InputDevices.SteamControllerTritonLibrary
             public const byte PT_GET_SERIAL = 0xAE;
         }
 
+        // TODO: Old from 2015 SC code. Remove in future
         public static class SCPacketLength
         {
             public const byte PL_LED = 0x03;
@@ -47,6 +49,7 @@ namespace DS4MapperTest.InputDevices.SteamControllerTritonLibrary
             public const byte PL_GET_SERIAL = 0x15;
         }
 
+        // TODO: Old from 2015 SC code. Remove in future
         public static class SCConfigType
         {
             public const byte CT_LED = 0x2D;
@@ -60,6 +63,15 @@ namespace DS4MapperTest.InputDevices.SteamControllerTritonLibrary
             SS_READY,
             SS_FAILED,
         }
+
+        public enum EChargeState : ushort
+        {
+            k_EChargeStateReset,
+            k_EChargeStateDischarging,
+            k_EChargeStateCharging,
+            k_EChargeStateSrcValidate,
+            k_EChargeStateChargingDone,
+        };
 
         public struct StickAxisData
         {
