@@ -338,8 +338,8 @@ namespace DS4MapperTest.InputDevices.SteamControllerTritonLibrary
             featureData[1] = 0x87; // ID_SET_SETTINGS_VALUES
             featureData[2] = 0x03;
             featureData[3] = 0x09; // SETTING_LIZARD_MODE
-            featureData[4] = 0x00;
-            featureData[5] = 0x00; // SETTING_LIZARD_OFF
+            featureData[4] = 0x00; // SETTING_LIZARD_OFF (2 bytes)
+            featureData[5] = 0x00;
             hidDevice.WriteFeatureReport(featureData);
         }
 
@@ -350,8 +350,8 @@ namespace DS4MapperTest.InputDevices.SteamControllerTritonLibrary
             featureData[1] = 0x87; // ID_SET_SETTINGS_VALUES
             featureData[2] = 0x03;
             featureData[3] = 0x09; // SETTING_LIZARD_MODE
-            featureData[4] = 0x00;
-            featureData[5] = 0x00; // SETTING_LIZARD_OFF
+            featureData[4] = 0x00; // SETTING_LIZARD_OFF (2 bytes)
+            featureData[5] = 0x00;
             hidDevice.WriteFeatureReport(featureData);
         }
 
@@ -364,7 +364,7 @@ namespace DS4MapperTest.InputDevices.SteamControllerTritonLibrary
             featureData[1] = 0x87; // ID_SET_SETTINGS_VALUES
             featureData[2] = 0x03;
             featureData[3] = 0x48; // SETTING_IMU_MODE
-            featureData[4] = gyroMode;
+            featureData[4] = gyroMode; // (setting value is 2 bytes)
             featureData[5] = 0x00;
             hidDevice.WriteFeatureReport(featureData);
 
@@ -399,7 +399,7 @@ namespace DS4MapperTest.InputDevices.SteamControllerTritonLibrary
             featureData[1] = 0x87; // ID_SET_SETTINGS_VALUES
             featureData[2] = 0x03; // Length is 3 bytes
             featureData[3] = 0x09; // SETTING_LIZARD_MODE
-            featureData[4] = 0x01; // LIZARD_MODE_ON
+            featureData[4] = 0x01; // LIZARD_MODE_ON (2 bytes)
             featureData[5] = 0x00;
             hidDevice.WriteFeatureReport(featureData);
 
