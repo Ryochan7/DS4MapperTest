@@ -343,6 +343,18 @@ namespace DS4MapperTest.InputDevices.SteamControllerTritonLibrary
             hidDevice.WriteFeatureReport(featureData);
         }
 
+        public void DisableLizardMode()
+        {
+            byte[] featureData = new byte[FEATURE_REPORT_LEN];
+            featureData[0] = 0x01;
+            featureData[1] = 0x87; // ID_SET_SETTINGS_VALUES
+            featureData[2] = 0x03;
+            featureData[3] = 0x09; // SETTING_LIZARD_MODE
+            featureData[4] = 0x00;
+            featureData[5] = 0x00; // SETTING_LIZARD_OFF
+            hidDevice.WriteFeatureReport(featureData);
+        }
+
         protected virtual void Configure()
         {
             byte[] featureData = new byte[FEATURE_REPORT_LEN];

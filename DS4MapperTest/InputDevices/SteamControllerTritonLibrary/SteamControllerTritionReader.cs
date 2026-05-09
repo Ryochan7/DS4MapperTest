@@ -25,6 +25,7 @@ namespace DS4MapperTest.InputDevices.SteamControllerTritonLibrary
         protected byte[] hapticsReportBuffer;
         protected GyroCalibration gyroCalibrationUtil = new GyroCalibration();
         private bool started;
+        private Stopwatch lizardCheckSW = new Stopwatch();
 
         public delegate void SteamControllerReportDelegate(SteamControllerTritonReader sender,
             SteamControllerTritonDevice device);
@@ -112,6 +113,8 @@ namespace DS4MapperTest.InputDevices.SteamControllerTritonLibrary
             double lastElapsed;
             double tempTimeElapsed;
             bool firstReport = true;
+
+            lizardCheckSW.Start();
 
             // Run continuous calibration on Gyro when starting input loop
             gyroCalibrationUtil.ResetContinuousCalibration();
@@ -216,6 +219,14 @@ namespace DS4MapperTest.InputDevices.SteamControllerTritonLibrary
                             // packets. Ignore current packet if counter is the same
                             // as the last processed input
                             continue;
+                        }
+
+                        // Keep controller from switching back to lizard mode.
+                        // Hardware watchdog reverts back after 10 seconds
+                        if (lizardCheckSW.IsRunning && lizardCheckSW.ElapsedMilliseconds >= 3000)
+                        {
+                            device.DisableLizardMode();
+                            lizardCheckSW.Restart();
                         }
 
                         currentTime = Stopwatch.GetTimestamp();
@@ -390,6 +401,8 @@ namespace DS4MapperTest.InputDevices.SteamControllerTritonLibrary
                     }
                 }
             }
+
+            lizardCheckSW.Stop();
         }
 
         public override void WriteRumbleReport()
