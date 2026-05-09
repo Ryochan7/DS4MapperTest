@@ -1,4 +1,5 @@
 ﻿using DS4MapperTest.ButtonActions;
+using DS4MapperTest.DPadActions;
 using DS4MapperTest.GyroActions;
 using DS4MapperTest.MapperUtil;
 using DS4MapperTest.StickActions;
@@ -221,7 +222,7 @@ namespace DS4MapperTest.InputDevices.SteamControllerTritonLibrary
             TriggerDefinition.TriggerAxisData ltAxis = new TriggerDefinition.TriggerAxisData
             {
                 min = 0,
-                max = 255,
+                max = 32767,
             };
 
             leftTriggerDefinition = new TriggerDefinition(ltAxis, TriggerActionCodes.LeftTrigger);
@@ -230,7 +231,7 @@ namespace DS4MapperTest.InputDevices.SteamControllerTritonLibrary
             TriggerDefinition.TriggerAxisData rtAxis = new TriggerDefinition.TriggerAxisData
             {
                 min = 0,
-                max = 255,
+                max = 32767,
             };
 
             rightTriggerDefinition = new TriggerDefinition(rtAxis, TriggerActionCodes.LeftTrigger);
@@ -251,8 +252,8 @@ namespace DS4MapperTest.InputDevices.SteamControllerTritonLibrary
 
             knownStickDefinitions.Add("LS", lsDefintion);
             knownStickDefinitions.Add("RS", rsDefintion);
-            knownTriggerDefinitions.Add("LT", leftTriggerDefinition);
-            knownTriggerDefinitions.Add("RT", rightTriggerDefinition);
+            knownTriggerDefinitions.Add("L2", leftTriggerDefinition);
+            knownTriggerDefinitions.Add("R2", rightTriggerDefinition);
             knownTouchpadDefinitions.Add("LeftTouchpad", leftPadDefiniton);
             knownTouchpadDefinitions.Add("RightTouchpad", rightPadDefinition);
             knownGyroSensDefinitions.Add("Gyro", gyroSensDefinition);
@@ -633,6 +634,23 @@ namespace DS4MapperTest.InputDevices.SteamControllerTritonLibrary
 
                     previousTouchFrameRightPad = eventFrame;
                 }
+
+                DpadDirections currentDpad =
+                    DpadDirections.Centered;
+
+                if (currentMapperState.DPadUp)
+                    currentDpad |= DpadDirections.Up;
+                if (currentMapperState.DPadRight)
+                    currentDpad |= DpadDirections.Right;
+                if (currentMapperState.DPadDown)
+                    currentDpad |= DpadDirections.Down;
+                if (currentMapperState.DPadLeft)
+                    currentDpad |= DpadDirections.Left;
+
+                DPadMapAction dpadMapAction = currentLayer.dpadActionDict["DPad"];
+                dpadMapAction.Prepare(this, currentDpad);
+                if (dpadMapAction.active)
+                    dpadMapAction.Event(this);
 
                 GyroMapAction gyroAct = currentLayer.gyroActionDict["Gyro"];
                 // Skip if duration is less than 10 ms

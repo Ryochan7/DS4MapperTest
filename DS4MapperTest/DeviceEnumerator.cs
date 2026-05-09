@@ -114,6 +114,9 @@ namespace DS4MapperTest
                 VidPidMeta.UsedConnectionBus.HID),
             new VidPidMeta(STEAM_CONTROLLER_VENDOR_ID, STEAM_BT_CONTROLLER_PRODUCT_ID, "Steam Controller", InputDeviceType.SteamController,
                 VidPidMeta.UsedConnectionBus.HID),
+            new VidPidMeta(STEAM_CONTROLLER_VENDOR_ID, 0x1302, "Steam Controller 2026 USB", InputDeviceType.SteamControllerTriton,
+                VidPidMeta.UsedConnectionBus.HID),
+            
             // TODO: Hide for now. Assume Proteus is the new dongle type and just target that for now
             //new VidPidMeta(STEAM_CONTROLLER_VENDOR_ID, TRITON_PROTEUS_PID, "Steam Controller 2026", InputDeviceType.SteamControllerTriton,
             //    VidPidMeta.UsedConnectionBus.HID),
@@ -260,6 +263,10 @@ namespace DS4MapperTest
                             value.testDelUnion.hidHandler?.Invoke(hidDev, value);
                         }
                         else if (value.inputDevType == InputDeviceType.SteamController)
+                        {
+                            value.testDelUnion.hidHandler?.Invoke(hidDev, value);
+                        }
+                        else if (value.inputDevType == InputDeviceType.SteamControllerTriton)
                         {
                             value.testDelUnion.hidHandler?.Invoke(hidDev, value);
                         }
@@ -467,7 +474,21 @@ namespace DS4MapperTest
 
             if (meta != null)
             {
-                if (meta.pid == SteamControllerTritonDevice.PROTEUS_DONGLE_PID ||
+                if (meta.pid == 0x1302)
+                {
+                    // Controller interfaces used for dongles
+                    //if (hidDev.InterfaceNumber >= 2 && hidDev.InterfaceNumber <= 5)
+                    {
+                        SteamControllerTritonDevice tempDev =
+                        new SteamControllerTritonDevice(hidDev, meta.displayName);
+
+                        foundKnownDevices.Add(hidDev.DevicePath, tempDev);
+                        revFoundKnownDevices.Add(tempDev, hidDev.DevicePath);
+                        newKnownDevices.Add(hidDev.DevicePath, tempDev);
+                        result = true;
+                    }
+                }
+                else if (meta.pid == SteamControllerTritonDevice.PROTEUS_DONGLE_PID ||
                     meta.pid == SteamControllerTritonDevice.NEREID_DONGLE_PID)
                 {
                     // Controller interfaces used for dongles

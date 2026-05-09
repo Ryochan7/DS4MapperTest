@@ -58,6 +58,7 @@ namespace DS4MapperTest.InputDevices.SteamControllerTritonLibrary
         }
 
         public double timeElapsed;
+        public byte PacketCounter;
 
         public bool A;
         public bool B;

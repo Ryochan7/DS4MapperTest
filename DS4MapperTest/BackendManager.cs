@@ -135,6 +135,10 @@ namespace DS4MapperTest
             steamControllerDeviceProfileList.Refresh();
             deviceProfileListDict.Add(InputDeviceType.SteamController, steamControllerDeviceProfileList);
 
+            ProfileList steamControllerTritonDeviceProfileList = new ProfileList(InputDeviceType.SteamControllerTriton);
+            steamControllerTritonDeviceProfileList.Refresh();
+            deviceProfileListDict.Add(InputDeviceType.SteamControllerTriton, steamControllerTritonDeviceProfileList);
+
             ProfileList ult2WirelessDeviceProfileList = new ProfileList(InputDeviceType.EightBitDoUltimate2Wireless);
             ult2WirelessDeviceProfileList.Refresh();
             deviceProfileListDict.Add(InputDeviceType.EightBitDoUltimate2Wireless, ult2WirelessDeviceProfileList);

@@ -126,7 +126,7 @@ namespace DS4MapperTest.InputDevices.SteamControllerTritonLibrary
                     if (res == HidDevice.ReadStatus.Success)
                     {
                         //Trace.WriteLine(string.Format("{0}", string.Join(" ", inputReportBuffer)));
-                        tempByte = inputReportBuffer[1];
+                        tempByte = inputReportBuffer[0];
                         //Trace.WriteLine($"{inputReportBuffer[0]} {inputReportBuffer[1]} {inputReportBuffer[2]} {inputReportBuffer[3]} {inputReportBuffer[4]}");
 
                         readWaitEv.Wait();
@@ -156,11 +156,11 @@ namespace DS4MapperTest.InputDevices.SteamControllerTritonLibrary
 
                             continue;
                         }
-                        else if (tempByte != SteamControllerTritonDevice.ID_TRITON_CONTROLLER_STATE ||
+                        else if (tempByte != SteamControllerTritonDevice.ID_TRITON_CONTROLLER_STATE &&
                             tempByte != SteamControllerTritonDevice.ID_TRITON_CONTROLLER_STATE_BLE)
                         {
                             Trace.WriteLine(String.Format("Got unexpected input report id 0x{0:X2}. Try again",
-                                inputReportBuffer[1]));
+                                inputReportBuffer[0]));
 
                             continue;
                         }
@@ -233,12 +233,14 @@ namespace DS4MapperTest.InputDevices.SteamControllerTritonLibrary
                         // ???
                         //tempByte = inputReportBuffer[8];
 
+                        current.PacketCounter = inputReportBuffer[1];
+
                         // Buttons
-                        //tempByte = inputReportBuffer[3];
-                        uint buttons = inputReportBuffer[3] |
-                                (uint)(inputReportBuffer[3 + 1] << 8) |
-                                (uint)(inputReportBuffer[3 + 2] << 16) |
-                                (uint)(inputReportBuffer[3 + 3] << 24);
+                        //tempByte = inputReportBuffer[2];
+                        uint buttons = inputReportBuffer[2] |
+                                (uint)(inputReportBuffer[2 + 1] << 8) |
+                                (uint)(inputReportBuffer[2 + 2] << 16) |
+                                (uint)(inputReportBuffer[2 + 3] << 24);
 
                         current.R1 = (buttons & 0x200) != 0;
                         current.L1 = (buttons & 0x80000) != 0;
@@ -246,6 +248,8 @@ namespace DS4MapperTest.InputDevices.SteamControllerTritonLibrary
                         current.B = (buttons & 0x02) != 0;
                         current.X = (buttons & 0x04) != 0;
                         current.A = (buttons & 0x01) != 0;
+
+                        //Trace.WriteLine($"Buttons {buttons}");
 
                         /*if (inputReportBuffer[3] != SteamControllerDevice.SCPacketType.PT_IDLE)
                         {
@@ -275,59 +279,59 @@ namespace DS4MapperTest.InputDevices.SteamControllerTritonLibrary
                         current.RightPad.Touch = (buttons & 0x00200000) != 0;
 
                         current.LeftGripSenseTouch = (buttons & 0x20000000) != 0;
-                        current.RightGripSenseTouch = (buttons & 0x20000000) != 0;
+                        current.RightGripSenseTouch = (buttons & 0x10000000) != 0;
                         current.LSTouch = (buttons & 0x01000000) != 0;
                         current.RSTouch = (buttons & 0x00100000) != 0;
 
-                        current.L2 = (short)((inputReportBuffer[8] << 8) | inputReportBuffer[7]);
-                        current.R2 = (short)((inputReportBuffer[10] << 8) | inputReportBuffer[9]);
+                        current.L2 = (short)((inputReportBuffer[7] << 8) | inputReportBuffer[6]);
+                        current.R2 = (short)((inputReportBuffer[9] << 8) | inputReportBuffer[8]);
 
                         //Console.WriteLine(current.L2);
                         //Console.WriteLine(current.R2);
 
-                        tempAxisX = (short)((inputReportBuffer[12] << 8) | inputReportBuffer[11]);
-                        tempAxisY = (short)((inputReportBuffer[14] << 8) | inputReportBuffer[13]);
+                        tempAxisX = (short)((inputReportBuffer[11] << 8) | inputReportBuffer[10]);
+                        tempAxisY = (short)((inputReportBuffer[13] << 8) | inputReportBuffer[12]);
 
                         current.LX = tempAxisX;
                         current.LY = tempAxisY;
 
-                        tempAxisX = (short)((inputReportBuffer[16] << 8) | inputReportBuffer[15]);
-                        tempAxisY = (short)((inputReportBuffer[18] << 8) | inputReportBuffer[17]);
+                        tempAxisX = (short)((inputReportBuffer[15] << 8) | inputReportBuffer[14]);
+                        tempAxisY = (short)((inputReportBuffer[17] << 8) | inputReportBuffer[16]);
 
                         current.RX = tempAxisX;
                         current.RY = tempAxisY;
 
-                        current.LeftPad.X = (short)((inputReportBuffer[20] << 8) | inputReportBuffer[19]);
-                        current.LeftPad.Y = (short)((inputReportBuffer[22] << 8) | inputReportBuffer[21]);
+                        current.LeftPad.X = (short)((inputReportBuffer[19] << 8) | inputReportBuffer[18]);
+                        current.LeftPad.Y = (short)((inputReportBuffer[21] << 8) | inputReportBuffer[20]);
 
                         // TODO: Use this somewhere.
-                        short tempTouchpadPressure = (short)((inputReportBuffer[24] << 8) | inputReportBuffer[23]);
+                        short tempTouchpadPressure = (short)((inputReportBuffer[23] << 8) | inputReportBuffer[22]);
 
-                        current.RightPad.X = (short)((inputReportBuffer[26] << 8) | inputReportBuffer[25]);
-                        current.RightPad.Y = (short)((inputReportBuffer[28] << 8) | inputReportBuffer[27]);
+                        current.RightPad.X = (short)((inputReportBuffer[25] << 8) | inputReportBuffer[24]);
+                        current.RightPad.Y = (short)((inputReportBuffer[27] << 8) | inputReportBuffer[26]);
 
                         // TODO: Use this somewhere.
-                        tempTouchpadPressure = (short)((inputReportBuffer[30] << 8) | inputReportBuffer[29]);
+                        tempTouchpadPressure = (short)((inputReportBuffer[29] << 8) | inputReportBuffer[28]);
 
                         //Trace.WriteLine(string.Format("X: {0} Y: {1} {2}", current.RightPad.X, current.RightPad.Y, current.RightPad.Touch));
 
                         // TODO: Use sometime
-                        uint devTimestamp = inputReportBuffer[31] |
-                                (uint)(inputReportBuffer[31 + 1] << 8) |
-                                (uint)(inputReportBuffer[31 + 2] << 16) |
-                                (uint)(inputReportBuffer[31 + 3] << 24);
+                        uint devTimestamp = inputReportBuffer[30] |
+                                (uint)(inputReportBuffer[30 + 1] << 8) |
+                                (uint)(inputReportBuffer[30 + 2] << 16) |
+                                (uint)(inputReportBuffer[30 + 3] << 24);
 
-                        current.Motion.AccelX = (short)(-1 * ((inputReportBuffer[36] << 8) | inputReportBuffer[35]));
-                        current.Motion.AccelY = (short)((inputReportBuffer[38] << 8) | inputReportBuffer[37]);
-                        current.Motion.AccelZ = (short)((inputReportBuffer[40] << 8) | inputReportBuffer[39]);
+                        current.Motion.AccelX = (short)(-1 * ((inputReportBuffer[35] << 8) | inputReportBuffer[34]));
+                        current.Motion.AccelY = (short)((inputReportBuffer[37] << 8) | inputReportBuffer[36]);
+                        current.Motion.AccelZ = (short)((inputReportBuffer[39] << 8) | inputReportBuffer[38]);
 
-                        current.Motion.GyroPitch = (short)(-1 * ((inputReportBuffer[42] << 8) | inputReportBuffer[41]));
+                        current.Motion.GyroPitch = (short)(-1 * ((inputReportBuffer[41] << 8) | inputReportBuffer[40]));
                         current.Motion.GyroPitch = (short)(current.Motion.GyroPitch - device.gyroCalibOffsets[SteamControllerTritonDevice.IMU_PITCH_IDX]);
 
-                        current.Motion.GyroRoll = (short)(-1 * ((inputReportBuffer[44] << 8) | inputReportBuffer[41]));
+                        current.Motion.GyroRoll = (short)(-1 * ((inputReportBuffer[43] << 8) | inputReportBuffer[42]));
                         current.Motion.GyroRoll = (short)(current.Motion.GyroRoll - device.gyroCalibOffsets[SteamControllerTritonDevice.IMU_ROLL_IDX]);
 
-                        current.Motion.GyroYaw = (short)(-1 * ((inputReportBuffer[46] << 8) | inputReportBuffer[45]));
+                        current.Motion.GyroYaw = (short)(-1 * ((inputReportBuffer[45] << 8) | inputReportBuffer[44]));
                         current.Motion.GyroYaw = (short)(current.Motion.GyroYaw - device.gyroCalibOffsets[SteamControllerTritonDevice.IMU_YAW_IDX]);
 
                         if (gyroCalibrationUtil.gyroAverageTimer.IsRunning)
@@ -354,10 +358,10 @@ namespace DS4MapperTest.InputDevices.SteamControllerTritonLibrary
                         //Trace.WriteLine(string.Format("Yaw: {0}", current.Motion.GyroYaw));
 
                         // TODO: Looks like current test SDL code does not use Quaternion data
-                        //current.Motion.QuaternionW = (short)(-1 * ((inputReportBuffer[48] << 8) | inputReportBuffer[47]));
-                        //current.Motion.QuaternionX = (short)(-1 * ((inputReportBuffer[50] << 8) | inputReportBuffer[49]));
-                        //current.Motion.QuaternionY = (short)(-1 * ((inputReportBuffer[52] << 8) | inputReportBuffer[51]));
-                        //current.Motion.QuaternionZ = (short)(-1 * ((inputReportBuffer[54] << 8) | inputReportBuffer[53]));
+                        //current.Motion.QuaternionW = (short)(-1 * ((inputReportBuffer[47] << 8) | inputReportBuffer[46]));
+                        //current.Motion.QuaternionX = (short)(-1 * ((inputReportBuffer[49] << 8) | inputReportBuffer[48]));
+                        //current.Motion.QuaternionY = (short)(-1 * ((inputReportBuffer[51] << 8) | inputReportBuffer[50]));
+                        //current.Motion.QuaternionZ = (short)(-1 * ((inputReportBuffer[53] << 8) | inputReportBuffer[52]));
                         
 
                         if (fireReport)
