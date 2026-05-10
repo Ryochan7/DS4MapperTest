@@ -118,8 +118,8 @@ namespace DS4MapperTest
                 VidPidMeta.UsedConnectionBus.HID),
             
             // TODO: Hide for now. Assume Proteus is the new dongle type and just target that for now
-            //new VidPidMeta(STEAM_CONTROLLER_VENDOR_ID, TRITON_PROTEUS_PID, "Steam Controller 2026", InputDeviceType.SteamControllerTriton,
-            //    VidPidMeta.UsedConnectionBus.HID),
+            new VidPidMeta(STEAM_CONTROLLER_VENDOR_ID, TRITON_PROTEUS_PID, "Steam Controller 2026", InputDeviceType.SteamControllerTriton,
+                VidPidMeta.UsedConnectionBus.HID),
             // TODO: Hide for now
             //new VidPidMeta(STEAM_CONTROLLER_VENDOR_ID, TRITON_BLE_PID, "Steam Controller 2026 BLE", InputDeviceType.SteamControllerTriton,
             //    VidPidMeta.UsedConnectionBus.HID),
@@ -492,7 +492,7 @@ namespace DS4MapperTest
                     meta.pid == SteamControllerTritonDevice.NEREID_DONGLE_PID)
                 {
                     // Controller interfaces used for dongles
-                    if (hidDev.InterfaceNumber >= 2 && hidDev.InterfaceNumber <= 5)
+                    //if (hidDev.InterfaceNumber >= 2 && hidDev.InterfaceNumber <= 5)
                     {
                         SteamControllerTritonDevice tempDev =
                         new SteamControllerTritonDevice(hidDev, meta.displayName);

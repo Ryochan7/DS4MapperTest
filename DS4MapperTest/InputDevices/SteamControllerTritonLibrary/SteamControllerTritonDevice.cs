@@ -287,21 +287,14 @@ namespace DS4MapperTest.InputDevices.SteamControllerTritonLibrary
         {
             bool result = false;
 
+            // Test writing a feature report to exposed device.
+            // Result will be false for any non-synced device slot
             byte[] featureData = new byte[FEATURE_REPORT_LEN];
-            featureData[1] = SCPacketType.PT_GET_SERIAL;
-            featureData[2] = 0x15;
-            featureData[3] = 0x01;
-            device.WriteFeatureReport(featureData);
-            // Sleep seems to be needed when probing from a Dongle connection
-            Thread.Sleep(100);
-
-            byte[] retReportData = new byte[FEATURE_REPORT_LEN];
-            device.readFeatureData(retReportData);
-
-            if (retReportData[4] != 0)
-            {
-                result = true;
-            }
+            featureData[0] = 0x01;
+            featureData[1] = 0xAE; // ID_GET_STRING_ATTRIBUTE
+            featureData[2] = 0x15; // length 21 bytes
+            featureData[3] = 0x01; // unknown
+            result = device.WriteFeatureReport(featureData);
 
             return result;
         }
