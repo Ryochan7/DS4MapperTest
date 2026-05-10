@@ -296,6 +296,18 @@ namespace DS4MapperTest.InputDevices.SteamControllerTritonLibrary
             featureData[3] = 0x01; // unknown
             result = device.WriteFeatureReport(featureData);
 
+            /*if (result)
+            {
+                // Sleep seems to be needed when probing from a Dongle connection
+                Thread.Sleep(100);
+
+                byte[] retReportData = new byte[FEATURE_REPORT_LEN];
+                retReportData[0] = 0x01;
+                device.readFeatureData(retReportData);
+                //Trace.WriteLine($"BYTE {retReportData[1]}");
+            }
+            */
+
             return result;
         }
 
