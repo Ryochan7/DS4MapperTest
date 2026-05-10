@@ -548,58 +548,62 @@ namespace DS4MapperTest
                             tempRootJObj = JObject.Parse(newJson);
                         }
 
-                        if (token != null)
+                        // Check there is a serial for a device before proceeding
+                        if (!string.IsNullOrEmpty(testDev.Serial))
                         {
-                            // Found existing item. Update properties and replace object
-                            JObject controllerObj = token.ToObject<JObject>();
-                            string macAddr = testDev.Serial;
-                            //string devType = InputDeviceType.SteamController.ToString();
-                            string devType = testDev.DeviceType.ToString();
-
-                            controllerObj["Mac"] = macAddr;
-                            controllerObj["Type"] = devType;
-                            if (testDev.PrimaryDevice &&
-                                activeProfiles.TryGetValue(testDev.Index, out string currentProfile) &&
-                                !string.IsNullOrEmpty(currentProfile))
+                            if (token != null)
                             {
-                                controllerObj["LastProfile"] = Path.GetFileNameWithoutExtension(currentProfile);
-                            }
+                                // Found existing item. Update properties and replace object
+                                JObject controllerObj = token.ToObject<JObject>();
+                                string macAddr = testDev.Serial;
+                                //string devType = InputDeviceType.SteamController.ToString();
+                                string devType = testDev.DeviceType.ToString();
 
-                            store.PersistSettings(controllerObj);
-                            token.Replace(controllerObj);
-                        }
-                        else
-                        {
-                            JToken controllersToken = tempRootJObj.SelectToken("Controllers");
-                            if (controllersToken == null)
-                            {
-                                tempRootJObj.Add(new JProperty("Controllers", new JArray()));
-                            }
-                            else if (controllersToken != null && controllersToken.Type != JTokenType.Array)
-                            {
-                                tempRootJObj.Remove("Controllers");
-                                tempRootJObj.Add(new JProperty("Controllers", new JArray()));
-                            }
+                                controllerObj["Mac"] = macAddr;
+                                controllerObj["Type"] = devType;
+                                if (testDev.PrimaryDevice &&
+                                    activeProfiles.TryGetValue(testDev.Index, out string currentProfile) &&
+                                    !string.IsNullOrEmpty(currentProfile))
+                                {
+                                    controllerObj["LastProfile"] = Path.GetFileNameWithoutExtension(currentProfile);
+                                }
 
-                            // No current object found. Create a new object and add it to JArray
-                            string controllerJson = @"{
+                                store.PersistSettings(controllerObj);
+                                token.Replace(controllerObj);
+                            }
+                            else
+                            {
+                                JToken controllersToken = tempRootJObj.SelectToken("Controllers");
+                                if (controllersToken == null)
+                                {
+                                    tempRootJObj.Add(new JProperty("Controllers", new JArray()));
+                                }
+                                else if (controllersToken != null && controllersToken.Type != JTokenType.Array)
+                                {
+                                    tempRootJObj.Remove("Controllers");
+                                    tempRootJObj.Add(new JProperty("Controllers", new JArray()));
+                                }
+
+                                // No current object found. Create a new object and add it to JArray
+                                string controllerJson = @"{
                                 ""Mac"": """",
                                 ""Type"": """"
                             }";
 
-                            JObject controllerObj = JObject.Parse(controllerJson);
-                            //JObject controllerObj = new JObject();
-                            string macAddr = testDev.Serial;
-                            //string devType = InputDeviceType.SteamController.ToString();
-                            string devType = testDev.DeviceType.ToString();
-                            controllerObj["Mac"] = testDev.Serial;
-                            controllerObj["Type"] = devType;
+                                JObject controllerObj = JObject.Parse(controllerJson);
+                                //JObject controllerObj = new JObject();
+                                string macAddr = testDev.Serial;
+                                //string devType = InputDeviceType.SteamController.ToString();
+                                string devType = testDev.DeviceType.ToString();
+                                controllerObj["Mac"] = testDev.Serial;
+                                controllerObj["Type"] = devType;
 
-                            store.PersistSettings(controllerObj);
+                                store.PersistSettings(controllerObj);
 
-                            JArray controllersJArray = tempRootJObj["Controllers"].ToObject<JArray>();
-                            controllersJArray.Add(controllerObj);
-                            tempRootJObj["Controllers"].Replace(controllersJArray);
+                                JArray controllersJArray = tempRootJObj["Controllers"].ToObject<JArray>();
+                                controllersJArray.Add(controllerObj);
+                                tempRootJObj["Controllers"].Replace(controllersJArray);
+                            }
                         }
                     }
                     catch (JsonReaderException)
