@@ -191,7 +191,7 @@ namespace DS4MapperTest.InputDevices.SteamControllerTritonLibrary
             devTypeStr = displayName;
 
             deviceOptions = nativeDeviceOptions =
-                new SteamControllerTritionControllerOptions(InputDeviceType.SteamController);
+                new SteamControllerTritionControllerOptions(InputDeviceType.SteamControllerTriton);
             if (conType != ConnectionType.SCDongle)
             {
                 synced = true;

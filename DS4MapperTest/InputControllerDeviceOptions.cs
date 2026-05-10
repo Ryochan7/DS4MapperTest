@@ -227,7 +227,8 @@ namespace DS4MapperTest
         }
         public event EventHandler RightTouchpadRotationChanged;
 
-        public SteamControllerTritionControllerOptions(InputDeviceType deviceType) : base(deviceType)
+        public SteamControllerTritionControllerOptions(InputDeviceType deviceType) :
+            base(deviceType)
         {
         }
 
