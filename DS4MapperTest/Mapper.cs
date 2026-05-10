@@ -2538,8 +2538,8 @@ namespace DS4MapperTest
 
             if (mouseWheelSync)
             {
-                eventInputHandler.PerformMouseWheelEvent(vertical: mouseWheelY,
-                    horizontal: mouseWheelX);
+                eventInputHandler.PerformMouseWheelEvent(vertical: mouseWheelY * eventInputMapping.WHEEL_TICK_BASE,
+                    horizontal: mouseWheelX * eventInputMapping.WHEEL_TICK_BASE);
                 mouseWheelSync = false;
             }
 

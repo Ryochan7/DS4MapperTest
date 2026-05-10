@@ -31,6 +31,7 @@ namespace DS4MapperTest
             KEY_TAB = (uint)KeyboardKey.Tab;
             KEY_LALT = (uint)KeyboardModifier.LAlt | FakerInputHandler.MODIFIER_MASK;
             WHEEL_TICK_DOWN = -1; WHEEL_TICK_UP = 1;
+            WHEEL_TICK_BASE = 1;
             macroKeyTranslate = true;
         }
 
