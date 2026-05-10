@@ -170,8 +170,8 @@ namespace DS4MapperTest.InputDevices.SteamControllerTritonLibrary
                         else if (tempByte != SteamControllerTritonDevice.ID_TRITON_CONTROLLER_STATE &&
                             tempByte != SteamControllerTritonDevice.ID_TRITON_CONTROLLER_STATE_BLE)
                         {
-                            Trace.WriteLine(String.Format("Got unexpected input report id 0x{0:X2}. Try again",
-                                inputReportBuffer[0]));
+                            //Trace.WriteLine(String.Format("Got unexpected input report id 0x{0:X2}. Try again",
+                            //    inputReportBuffer[0]));
 
                             continue;
                         }
@@ -426,13 +426,7 @@ namespace DS4MapperTest.InputDevices.SteamControllerTritonLibrary
 
             //}
 
-            // Send Left Haptic rumble
-            device.PrepareHapticsData(hapticsReportBuffer, SteamControllerTritonDevice.HAPTIC_POS_LEFT);
-            device.SendRumbleReport(hapticsReportBuffer);
-
-            // Send Right Haptic rumble
-            device.PrepareHapticsData(hapticsReportBuffer, SteamControllerTritonDevice.HAPTIC_POS_RIGHT);
-            device.SendRumbleReport(hapticsReportBuffer);
+            device.SendHapticsReportTest(rumbleReportBuffer);
 
             device.hapticInfo.dirty = false;
             device.previousHapticInfo = device.hapticInfo;

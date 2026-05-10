@@ -691,7 +691,7 @@ namespace DS4MapperTest.InputDevices.SteamControllerTritonLibrary
                 // Prefer haptics event over rumble
                 if (hapticsEvent)
                 {
-                    //reader.WriteHapticsReport();
+                    reader.WriteHapticsReport();
                     hapticsEvent = false;
 
                     bool rumbleActive = device.currentLeftAmpRatio != 0.0 || device.currentRightAmpRatio != 0.0;

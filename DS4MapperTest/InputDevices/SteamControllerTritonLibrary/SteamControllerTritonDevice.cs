@@ -547,6 +547,25 @@ namespace DS4MapperTest.InputDevices.SteamControllerTritonLibrary
             hidDevice.WriteOutputReportViaInterrupt(buffer, 100);
         }
 
+        public void SendHapticsReportTest(byte[] buffer)
+        {
+            ushort rumbleSpeedLeft = (ushort)(hapticInfo.leftActuatorAmpRatio * 255.0);
+            ushort rumbleSpeedRight = (ushort)(hapticInfo.rightActuatorAmpRatio * 255.0);
+
+            buffer[0] = 0x80; // ID_OUT_REPORT_HAPTIC_RUMBLE
+            buffer[1] = 0x00; // type
+            buffer[2] = 0x00; // intensity (byte 1)
+            buffer[3] = 0x00; // intensity (byte 2)
+            buffer[4] = (byte)(rumbleSpeedLeft); // left speed (byte 1)
+            buffer[5] = (byte)(rumbleSpeedLeft >> 8); // left speed (byte 2)
+            buffer[6] = 0x00; // left gain
+            buffer[7] = (byte)(rumbleSpeedRight); // right speed (byte 1)
+            buffer[8] = (byte)(rumbleSpeedRight >> 8); // right speed (byte 2)
+            buffer[9] = 0x00; // right gain
+
+            hidDevice.WriteOutputReportViaInterrupt(buffer, 100);
+        }
+
         public void ResetRumbleData()
         {
             currentLeftAmpRatio = currentRightAmpRatio = 0.0;
