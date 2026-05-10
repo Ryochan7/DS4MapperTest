@@ -141,8 +141,8 @@ namespace DS4MapperTest.InputDevices.SteamControllerTritonLibrary
         public ref SteamControllerState PreviousStateRef { get => ref previousState; }
 
         public const int INPUT_REPORT_LEN = 54;
-        public const int OUTPUT_REPORT_LEN = 65;
-        public const int RUMBLE_REPORT_LEN = 65;
+        public const int OUTPUT_REPORT_LEN = 64;
+        public const int RUMBLE_REPORT_LEN = 64;
         public const int FEATURE_REPORT_LEN = 64;
         public const int PROTEUS_DONGLE_PID = 0x1304;
         public const int NEREID_DONGLE_PID = 0x1305;
@@ -526,6 +526,25 @@ namespace DS4MapperTest.InputDevices.SteamControllerTritonLibrary
         public virtual void SendRumbleReport(byte[] buffer)
         {
             hidDevice.WriteFeatureReport(buffer);
+        }
+
+        public void SendRumbleReportTest(byte[] buffer)
+        {
+            ushort rumbleSpeedLeft = (ushort)(currentLeftAmpRatio * 255.0);
+            ushort rumbleSpeedRight = (ushort)(currentRightAmpRatio * 255.0);
+
+            buffer[0] = 0x80; // ID_OUT_REPORT_HAPTIC_RUMBLE
+            buffer[1] = 0x00; // type
+            buffer[2] = 0x00; // intensity (byte 1)
+            buffer[3] = 0x00; // intensity (byte 2)
+            buffer[4] = (byte)(rumbleSpeedLeft); // left speed (byte 1)
+            buffer[5] = (byte)(rumbleSpeedLeft >> 8); // left speed (byte 2)
+            buffer[6] = 0x00; // left gain
+            buffer[7] = (byte)(rumbleSpeedRight); // right speed (byte 1)
+            buffer[8] = (byte)(rumbleSpeedRight >> 8); // right speed (byte 2)
+            buffer[9] = 0x00; // right gain
+
+            hidDevice.WriteOutputReportViaInterrupt(buffer, 100);
         }
 
         public void ResetRumbleData()

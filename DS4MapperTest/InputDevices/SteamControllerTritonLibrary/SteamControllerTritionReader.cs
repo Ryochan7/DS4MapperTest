@@ -413,13 +413,7 @@ namespace DS4MapperTest.InputDevices.SteamControllerTritonLibrary
                 return;
             }
 
-            // Send Left Haptic rumble
-            device.PrepareRumbleData(rumbleReportBuffer, SteamControllerTritonDevice.HAPTIC_POS_LEFT);
-            device.SendRumbleReport(rumbleReportBuffer);
-
-            // Send Right Haptic rumble
-            device.PrepareRumbleData(rumbleReportBuffer, SteamControllerTritonDevice.HAPTIC_POS_RIGHT);
-            device.SendRumbleReport(rumbleReportBuffer);
+            device.SendRumbleReportTest(rumbleReportBuffer);
 
             device.activeLeftAmpRatio = device.currentLeftAmpRatio;
             device.activeRightAmpRatio = device.currentRightAmpRatio;
