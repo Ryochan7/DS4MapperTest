@@ -586,9 +586,9 @@ namespace DS4MapperTest
 
                                 // No current object found. Create a new object and add it to JArray
                                 string controllerJson = @"{
-                                ""Mac"": """",
-                                ""Type"": """"
-                            }";
+                                    ""Mac"": """",
+                                    ""Type"": """"
+                                }";
 
                                 JObject controllerObj = JObject.Parse(controllerJson);
                                 //JObject controllerObj = new JObject();
