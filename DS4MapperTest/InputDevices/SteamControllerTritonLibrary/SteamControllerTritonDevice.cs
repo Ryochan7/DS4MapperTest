@@ -143,7 +143,7 @@ namespace DS4MapperTest.InputDevices.SteamControllerTritonLibrary
         public const int INPUT_REPORT_LEN = 54;
         public const int OUTPUT_REPORT_LEN = 65;
         public const int RUMBLE_REPORT_LEN = 65;
-        public const int FEATURE_REPORT_LEN = 65;
+        public const int FEATURE_REPORT_LEN = 64;
         public const int PROTEUS_DONGLE_PID = 0x1304;
         public const int NEREID_DONGLE_PID = 0x1305;
         public const int BLE_PID = 0x1303;
