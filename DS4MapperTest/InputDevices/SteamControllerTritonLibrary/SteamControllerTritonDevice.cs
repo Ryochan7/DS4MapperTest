@@ -212,7 +212,7 @@ namespace DS4MapperTest.InputDevices.SteamControllerTritonLibrary
 
             if (synced)
             {
-                //ReadSerial();
+                ReadSerial();
             }
 
             SyncedChanged += SteamControllerDevice_SyncedChanged;
@@ -279,33 +279,8 @@ namespace DS4MapperTest.InputDevices.SteamControllerTritonLibrary
 
         protected virtual void ReadSerial()
         {
-            byte[] featureData = new byte[FEATURE_REPORT_LEN];
-            featureData[1] = SCPacketType.PT_GET_SERIAL;
-            featureData[2] = 0x15;
-            featureData[3] = 0x01;
-            hidDevice.WriteFeatureReport(featureData);
-            hidDevice.fileStream.Flush();
-
-            // Sleep seems to be needed when probing from a Dongle connection
-            if (conType == ConnectionType.SCDongle)
-            {
-                Thread.Sleep(100);
-            }
-
-            byte[] retReportData = new byte[FEATURE_REPORT_LEN];
-            hidDevice.readFeatureData(retReportData);
-            //Console.WriteLine("LKJDKJLLD: {0}", retReportData[1]);
-
-            string baseS = System.Text.Encoding.Default.GetString(retReportData, 4, 12);
-            string MACAddr = baseS.Replace("\0", string.Empty).ToUpper();
-            //List<string> tempStrList = new List<string>();
-            //for (int i=0; i < MACAddr.Length; i += 2)
-            //{
-            //    tempStrList.Add($"{MACAddr[i]}{MACAddr[i + 1]}");
-            //}
-
-            //serial = string.Join(":", tempStrList);
-            serial = MACAddr;
+            string test_serial = hidDevice.ReadSerial();
+            serial = test_serial;
         }
 
         public static bool TestDongleSCConnected(HidDevice device)
