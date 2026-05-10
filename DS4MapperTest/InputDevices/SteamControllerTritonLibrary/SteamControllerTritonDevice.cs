@@ -333,25 +333,29 @@ namespace DS4MapperTest.InputDevices.SteamControllerTritonLibrary
 
         protected virtual void ClearMappings()
         {
+            byte SETTING_LIZARD_OFF = 0x00;
+
             byte[] featureData = new byte[FEATURE_REPORT_LEN];
             featureData[0] = 0x01;
             featureData[1] = 0x87; // ID_SET_SETTINGS_VALUES
             featureData[2] = 0x03;
             featureData[3] = 0x09; // SETTING_LIZARD_MODE
-            featureData[4] = 0x00; // SETTING_LIZARD_OFF (2 bytes)
-            featureData[5] = 0x00;
+            featureData[4] = SETTING_LIZARD_OFF; // SETTING_LIZARD_OFF (2 bytes)
+            featureData[5] = (byte)(SETTING_LIZARD_OFF >> 8);
             hidDevice.WriteFeatureReport(featureData);
         }
 
         public void DisableLizardMode()
         {
+            byte SETTING_LIZARD_OFF = 0x00;
+
             byte[] featureData = new byte[FEATURE_REPORT_LEN];
             featureData[0] = 0x01;
             featureData[1] = 0x87; // ID_SET_SETTINGS_VALUES
             featureData[2] = 0x03;
             featureData[3] = 0x09; // SETTING_LIZARD_MODE
-            featureData[4] = 0x00; // SETTING_LIZARD_OFF (2 bytes)
-            featureData[5] = 0x00;
+            featureData[4] = SETTING_LIZARD_OFF; // SETTING_LIZARD_OFF (2 bytes)
+            featureData[5] = (byte)(SETTING_LIZARD_OFF >> 8);
             hidDevice.WriteFeatureReport(featureData);
         }
 
@@ -365,7 +369,7 @@ namespace DS4MapperTest.InputDevices.SteamControllerTritonLibrary
             featureData[2] = 0x03;
             featureData[3] = 0x48; // SETTING_IMU_MODE
             featureData[4] = gyroMode; // (setting value is 2 bytes)
-            featureData[5] = 0x00;
+            featureData[5] = (byte)(gyroMode >> 8);
             hidDevice.WriteFeatureReport(featureData);
 
 
@@ -394,13 +398,15 @@ namespace DS4MapperTest.InputDevices.SteamControllerTritonLibrary
 
         protected virtual void ChangeToLizardMode()
         {
+            byte LIZARD_MODE_ON = 0x01;
+
             byte[] featureData = new byte[FEATURE_REPORT_LEN];
             featureData[0] = 0x01;
             featureData[1] = 0x87; // ID_SET_SETTINGS_VALUES
             featureData[2] = 0x03; // Length is 3 bytes
             featureData[3] = 0x09; // SETTING_LIZARD_MODE
-            featureData[4] = 0x01; // LIZARD_MODE_ON (2 bytes)
-            featureData[5] = 0x00;
+            featureData[4] = LIZARD_MODE_ON; // LIZARD_MODE_ON (2 bytes)
+            featureData[5] = (byte)(LIZARD_MODE_ON >> 8);
             hidDevice.WriteFeatureReport(featureData);
 
             // TODO: NEED MORE HERE?
