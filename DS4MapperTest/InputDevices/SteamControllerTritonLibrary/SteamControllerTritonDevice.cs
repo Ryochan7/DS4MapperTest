@@ -342,7 +342,7 @@ namespace DS4MapperTest.InputDevices.SteamControllerTritonLibrary
             featureData[0] = 0x01;
             featureData[1] = 0x87; // ID_SET_SETTINGS_VALUES
             featureData[2] = 0x03;
-            featureData[3] = 0x48; // SETTING_IMU_MODE
+            featureData[3] = 0x30; // SETTING_IMU_MODE
             featureData[4] = gyroMode; // (setting value is 2 bytes)
             featureData[5] = (byte)(gyroMode >> 8);
             hidDevice.WriteFeatureReport(featureData);
