@@ -2,7 +2,7 @@
 
 Mainly used as a test ground for trying out different mapping ideas. The application can currently
 support using a DualShock 4, DualSense, 8BitDo Ultimate 2 Wireless, Steam Controller 2015,
-Steam Controller 2026 (upcoming), JoyCon, and Switch Pro.
+Steam Controller 2026, JoyCon, and Switch Pro.
 
 ## Runtime Dependencies
 
