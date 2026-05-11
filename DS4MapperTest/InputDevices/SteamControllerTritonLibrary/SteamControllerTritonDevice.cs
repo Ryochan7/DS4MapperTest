@@ -144,6 +144,8 @@ namespace DS4MapperTest.InputDevices.SteamControllerTritonLibrary
         public const int OUTPUT_REPORT_LEN = 64;
         public const int RUMBLE_REPORT_LEN = 64;
         public const int FEATURE_REPORT_LEN = 64;
+
+        public const int TRITON_WIRED_PID = 0x1302;
         public const int PROTEUS_DONGLE_PID = 0x1304;
         public const int NEREID_DONGLE_PID = 0x1305;
         public const int BLE_PID = 0x1303;
@@ -351,29 +353,6 @@ namespace DS4MapperTest.InputDevices.SteamControllerTritonLibrary
             featureData[4] = gyroMode; // (setting value is 2 bytes)
             featureData[5] = (byte)(gyroMode >> 8);
             hidDevice.WriteFeatureReport(featureData);
-
-
-            //int timeout = 600;
-            //int ledLevel = 30;
-            //byte[] gyroAndTimeoutFeatureData = new byte[FEATURE_REPORT_LEN];
-            //gyroAndTimeoutFeatureData[1] = SCPacketType.PT_CONFIGURE;
-            //gyroAndTimeoutFeatureData[2] = SCPacketLength.PL_CONFIGURE;
-            //gyroAndTimeoutFeatureData[3] = SCConfigType.CT_CONFIGURE;
-            //gyroAndTimeoutFeatureData[4] = 0; // Idle Timeout
-            //gyroAndTimeoutFeatureData[5] = 0; // Idle Timeout
-            //// Unknown Header
-            //Array.Copy(new byte[] { 0x18, 0x00, 0x00, 0x31, 0x02, 0x00, 0x08, 0x07, 0x00, 0x07, 0x07, 0x00, 0x30 }, 0, gyroAndTimeoutFeatureData, 6, 13);
-            //gyroAndTimeoutFeatureData[19] = true ? 0x1C : 0x00; // Gyro Enable (0x1C = Enable. 0x00 = Disable)
-            //gyroAndTimeoutFeatureData[20] = 0x00; // Unknown
-            //gyroAndTimeoutFeatureData[21] = 0x2E; // Unknown
-            //hidDevice.WriteFeatureReport(gyroAndTimeoutFeatureData);
-
-            //byte[] ledsFeatureData = new byte[FEATURE_REPORT_LEN];
-            //ledsFeatureData[1] = SCPacketType.PT_CONFIGURE;
-            //ledsFeatureData[2] = SCPacketLength.PL_LED;
-            //ledsFeatureData[3] = SCConfigType.CT_LED;
-            //ledsFeatureData[4] = (byte)(Math.Min(Math.Max(ledLevel, 0), 100)); // LED Level (0-100?)
-            //hidDevice.WriteFeatureReport(ledsFeatureData);
         }
 
         protected virtual void ChangeToLizardMode()
@@ -388,149 +367,10 @@ namespace DS4MapperTest.InputDevices.SteamControllerTritonLibrary
             featureData[4] = LIZARD_MODE_ON; // LIZARD_MODE_ON (2 bytes)
             featureData[5] = (byte)(LIZARD_MODE_ON >> 8);
             hidDevice.WriteFeatureReport(featureData);
-
-            // TODO: NEED MORE HERE?
-            //featureData[1] = SCPacketType.PT_LIZARD_MOUSE;
-            //hidDevice.WriteFeatureReport(featureData);
         }
         public void SyncStates()
         {
             previousState = currentState;
-        }
-
-        public virtual void PrepareRumbleData(byte[] buffer, byte position)
-        {
-            // Taken from SteamControllerSinger app
-            // https://gitlab.com/Pilatomic/SteamControllerSinger
-            const double STEAM_CONTROLLER_MAGIC_PERIOD_RATIO = 495483.0;
-
-            double tempRatio = (position == HAPTIC_POS_RIGHT) ?
-                currentRightAmpRatio : currentLeftAmpRatio;
-
-            ushort amplitude = 0;
-            if (tempRatio != 0.0)
-            {
-                amplitude = (ushort)((900 - 600) * tempRatio + 600);
-                //amplitude = (ushort)((1400 - 1000) * tempRatio + 1000);
-                //amplitude = 1000;
-                //amplitude = (ushort)((1200 - 100) * tempRatio + 100);
-                //amplitude = (ushort)((2000 - 1400) * tempRatio + 1400);
-                //amplitude = (ushort)((1400 - 2800) * tempRatio + 2800);
-            }
-
-            /*if (tempRatio != 0.0)
-            {
-                amplitude = 500;
-            }
-            */
-
-            ushort tmp_period_command = 15000;
-            //ushort period_command = 15000;
-            ushort period_command = 0;
-            if (tempRatio != 0.0)
-            {
-                period_command = (ushort)((6000 - 25000) * tempRatio + 25000);
-            }
-
-            double raw_period = period_command / STEAM_CONTROLLER_MAGIC_PERIOD_RATIO;
-            int duration_num_seconds = 5;
-            ushort count = 0;
-            if (raw_period != 0)
-            {
-                count = (ushort)(Math.Min((int)(duration_num_seconds * 1.5 / raw_period),
-                    0x7FFF));
-            }
-
-            buffer[1] = SCPacketType.PT_FEEDBACK;
-            buffer[2] = SCPacketLength.PL_FEEDBACK;
-            buffer[3] = position; // Left or Right Haptic actuator
-
-            // Amplitude
-            buffer[4] = (byte)amplitude;
-            buffer[5] = (byte)(amplitude >> 8);
-
-            // Period
-            buffer[6] = (byte)period_command;
-            buffer[7] = (byte)(period_command >> 8);
-
-            // Repeat count
-            buffer[8] = (byte)count;
-            buffer[9] = (byte)(count >> 8);
-        }
-
-        public virtual void PrepareHapticsData(byte[] buffer, byte position)
-        {
-            // Taken from SteamControllerSinger app
-            // https://gitlab.com/Pilatomic/SteamControllerSinger
-            const double STEAM_CONTROLLER_MAGIC_PERIOD_RATIO = 495483.0;
-
-            double tempRatio = (position == HAPTIC_POS_RIGHT) ?
-                hapticInfo.rightActuatorAmpRatio : hapticInfo.leftActuatorAmpRatio;
-
-            ushort amplitude = 0;
-            if (tempRatio != 0.0)
-            {
-                amplitude = (ushort)((1200 - 200) * tempRatio + 200);
-                //amplitude = 800;
-                //amplitude = (ushort)((1400 - 1000) * tempRatio + 1000);
-                //amplitude = 1000;
-                //amplitude = (ushort)((1200 - 100) * tempRatio + 100);
-                //amplitude = (ushort)((2000 - 1400) * tempRatio + 1400);
-                //amplitude = (ushort)((1400 - 2800) * tempRatio + 2800);
-            }
-
-            /*if (tempRatio != 0.0)
-            {
-                amplitude = 500;
-            }
-            */
-
-            ushort tmp_period_command = 15000;
-            //ushort period_command = 15000;
-            ushort period_command = 0;
-            if (tempRatio != 0.0)
-            {
-                //period_command = (ushort)((6000 - 25000) * tempRatio + 25000);
-                //period_command = 600;
-                period_command = 600;
-            }
-
-            ushort count = (position == HAPTIC_POS_RIGHT) ? (ushort)hapticInfo.countRight : (ushort)hapticInfo.countLeft;
-            if (count == 0)
-            {
-                double raw_period = period_command / STEAM_CONTROLLER_MAGIC_PERIOD_RATIO;
-                //raw_period = period_command;
-                double duration = (position == HAPTIC_POS_RIGHT) ? hapticInfo.durationRight : hapticInfo.durationLeft;
-
-                if (raw_period != 0)
-                {
-                    count = (ushort)(Math.Min((int)(duration * 1.5 / raw_period),
-                        0x7FFF));
-                }
-            }
-
-            //count = 1;
-
-            buffer[1] = SCPacketType.PT_FEEDBACK;
-            buffer[2] = SCPacketLength.PL_FEEDBACK;
-            buffer[3] = position; // Left or Right Haptic actuator
-
-            // Amplitude
-            buffer[4] = (byte)amplitude;
-            buffer[5] = (byte)(amplitude >> 8);
-
-            // Period
-            buffer[6] = (byte)period_command;
-            buffer[7] = (byte)(period_command >> 8);
-
-            // Repeat count
-            buffer[8] = (byte)count;
-            buffer[9] = (byte)(count >> 8);
-        }
-
-        public virtual void SendRumbleReport(byte[] buffer)
-        {
-            hidDevice.WriteFeatureReport(buffer);
         }
 
         public void SendRumbleReportTest(byte[] buffer)
