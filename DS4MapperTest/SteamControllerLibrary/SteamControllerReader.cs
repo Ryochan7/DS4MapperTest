@@ -145,6 +145,10 @@ namespace DS4MapperTest.SteamControllerLibrary
                                 // connected Steam Controller
                                 PrepareSyncedDevice();
                                 device.Synced = true;
+
+                                // Set first report flag so gyro calibration can
+                                // happen
+                                firstReport = true;
                             }
                             else if (device.Synced && !hasConnected)
                             {
