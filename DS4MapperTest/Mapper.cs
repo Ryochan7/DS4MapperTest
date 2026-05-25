@@ -2485,7 +2485,8 @@ namespace DS4MapperTest
             unchecked
             {
                 ushort tempButtons = 0;
-                DualShock4DPadDirection tempDPad = DualShock4DPadDirection.None;
+                //DualShock4DPadDirection tempDPad = DualShock4DPadDirection.None;
+                VIIPERDPadDir tempDPad = 0;
                 ushort tempSpecial = 0;
                 if (intermediateState.BtnSouth) tempButtons |= DualShock4Button.Cross.Value;
                 if (intermediateState.BtnEast) tempButtons |= DualShock4Button.Circle.Value;
@@ -2503,14 +2504,14 @@ namespace DS4MapperTest
                 if (intermediateState.BtnThumbL) tempButtons |= DualShock4Button.ThumbLeft.Value;
                 if (intermediateState.BtnThumbR) tempButtons |= DualShock4Button.ThumbRight.Value;
 
-                if (intermediateState.DpadUp && intermediateState.DpadRight) tempDPad = DualShock4DPadDirection.Northeast;
-                else if (intermediateState.DpadUp && intermediateState.DpadLeft) tempDPad = DualShock4DPadDirection.Northwest;
-                else if (intermediateState.DpadUp) tempDPad = DualShock4DPadDirection.North;
-                else if (intermediateState.DpadRight && intermediateState.DpadDown) tempDPad = DualShock4DPadDirection.Southeast;
-                else if (intermediateState.DpadRight) tempDPad = DualShock4DPadDirection.East;
-                else if (intermediateState.DpadDown && intermediateState.DpadLeft) tempDPad = DualShock4DPadDirection.Southwest;
-                else if (intermediateState.DpadDown) tempDPad = DualShock4DPadDirection.South;
-                else if (intermediateState.DpadLeft) tempDPad = DualShock4DPadDirection.West;
+                if (intermediateState.DpadUp && intermediateState.DpadRight) tempDPad = VIIPERDPadDir.PadUp | VIIPERDPadDir.PadRight;
+                else if (intermediateState.DpadUp && intermediateState.DpadLeft) tempDPad = VIIPERDPadDir.PadUp | VIIPERDPadDir.PadLeft;
+                else if (intermediateState.DpadUp) tempDPad = VIIPERDPadDir.PadUp;
+                else if (intermediateState.DpadRight && intermediateState.DpadDown) tempDPad = VIIPERDPadDir.PadDown | VIIPERDPadDir.PadRight;
+                else if (intermediateState.DpadRight) tempDPad = VIIPERDPadDir.PadRight;
+                else if (intermediateState.DpadDown && intermediateState.DpadLeft) tempDPad = VIIPERDPadDir.PadDown | VIIPERDPadDir.PadLeft;
+                else if (intermediateState.DpadDown) tempDPad = VIIPERDPadDir.PadDown;
+                else if (intermediateState.DpadLeft) tempDPad = VIIPERDPadDir.PadLeft;
 
                 if (intermediateState.BtnMode) tempSpecial |= DualShock4SpecialButton.Ps.Value;
                 if (intermediateState.BtnTouchClick) tempSpecial |= DualShock4SpecialButton.Touchpad.Value;
@@ -2518,7 +2519,7 @@ namespace DS4MapperTest
                 //outDS4Report.wButtons = tempButtons;
                 ds4State.Buttons = tempButtons;
                 //ds4State.Buttons |= tempDPad.Value;
-                ds4State.Dpad = (byte)tempDPad.Value;
+                ds4State.Dpad = (byte)tempDPad;
 
 
                 //byte frameCounter = (byte)(intermediateState.PacketCounter % 128);

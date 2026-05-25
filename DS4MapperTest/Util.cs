@@ -62,6 +62,15 @@ namespace DS4MapperTest
         public short Accelz;
     }
 
+    [Flags]
+    enum VIIPERDPadDir : ushort
+    {
+        PadUp = 0x01,
+        PadDown = 0x02,
+        PadLeft = 0x04,
+        PadRight = 0x08,
+    }
+
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     public delegate void Xbox360RumbleCallbackDelegate(nuint handle, byte leftMotor, byte rightMotor);
 
