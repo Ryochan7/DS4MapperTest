@@ -10,6 +10,108 @@ using HidLibrary;
 
 namespace DS4MapperTest
 {
+    // ==========================================================
+    // 1. libVIIPER NATIVE INTEROP DEFINITIONS
+    // ==========================================================
+    enum VIIPERLogLevel { Debug = -4, Info = 0, Warn = 4, Error = 8 }
+
+    [StructLayout(LayoutKind.Sequential)]
+    struct USBServerConfig
+    {
+        [MarshalAs(UnmanagedType.LPStr)] public string? addr;
+        public ulong connection_timeout_ms;
+        public ulong device_handler_connect_timeout_ms;
+        public uint write_batch_flush_interval_ms;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    struct Xbox360DeviceState
+    {
+        public uint Buttons;
+        public byte LT;
+        public byte RT;
+        public short LX;
+        public short LY;
+        public short RX;
+        public short RY;
+        public byte Reserved0, Reserved1, Reserved2, Reserved3, Reserved4, Reserved5;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    struct DS4DeviceState
+    {
+        public sbyte Sticklx;
+        public sbyte Stickly;
+        public sbyte Stickrx;
+        public sbyte Stickry;
+        public ushort Buttons;
+        public byte Dpad;
+        public byte Triggerl2;
+        public byte Triggerr2;
+        public ushort Touch1x;
+        public ushort Touch1y;
+        public byte Touch1active;
+        public ushort Touch2x;
+        public ushort Touch2y;
+        public byte Touch2active;
+        public short Gyrox;
+        public short Gyroy;
+        public short Gyroz;
+        public short Accelx;
+        public short Accely;
+        public short Accelz;
+    }
+
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    public delegate void Xbox360RumbleCallbackDelegate(nuint handle, byte leftMotor, byte rightMotor);
+
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    delegate void VIIPERLogCallbackDelegate(VIIPERLogLevel level, [MarshalAs(UnmanagedType.LPStr)] string message);
+
+    [SuppressUnmanagedCodeSecurity]
+    static class LibVIIPER
+    {
+        const string Lib = "libVIIPER";
+
+        [DllImport(Lib, CallingConvention = CallingConvention.Cdecl)]
+        [return: MarshalAs(UnmanagedType.I1)]
+        public static extern bool NewUSBServer([In] ref USBServerConfig config, out nuint outHandle, VIIPERLogCallbackDelegate? logCallback); [DllImport(Lib, CallingConvention = CallingConvention.Cdecl)]
+        [return: MarshalAs(UnmanagedType.I1)]
+        public static extern bool CloseUSBServer(nuint handle); [DllImport(Lib, CallingConvention = CallingConvention.Cdecl)]
+        [return: MarshalAs(UnmanagedType.I1)]
+        public static extern bool CreateUSBBus(nuint handle, ref uint busID);
+
+        [DllImport(Lib, CallingConvention = CallingConvention.Cdecl)]
+        [return: MarshalAs(UnmanagedType.I1)]
+        public static extern bool CreateXbox360Device(nuint serverHandle, out nuint outDeviceHandle, uint busID, [MarshalAs(UnmanagedType.I1)] bool autoAttachLocalhost, ushort idVendor, ushort idProduct, byte xinputSubType);
+
+        [DllImport(Lib, CallingConvention = CallingConvention.Cdecl)]
+        [return: MarshalAs(UnmanagedType.I1)]
+        public static extern bool RemoveXbox360Device(nuint outDeviceHandle);
+
+        [DllImport(Lib, CallingConvention = CallingConvention.Cdecl)]
+        [return: MarshalAs(UnmanagedType.I1)]
+        public static extern bool SetXbox360DeviceState(nuint deviceHandle, Xbox360DeviceState state);
+
+        [DllImport(Lib, CallingConvention = CallingConvention.Cdecl)]
+        [return: MarshalAs(UnmanagedType.I1)]
+        public static extern bool SetXbox360RumbleCallback(nuint deviceHandle, Xbox360RumbleCallbackDelegate? callback);
+
+
+        [DllImport(Lib, CallingConvention = CallingConvention.Cdecl)]
+        [return: MarshalAs(UnmanagedType.I1)]
+        public static extern bool CreateDS4Device(nuint serverHandle, out nuint outDeviceHandle, uint busID, [MarshalAs(UnmanagedType.I1)] bool autoAttachLocalhost, ushort idVendor, ushort idProduct);
+
+        [DllImport(Lib, CallingConvention = CallingConvention.Cdecl)]
+        [return: MarshalAs(UnmanagedType.I1)]
+        public static extern bool RemoveDS4Device(nuint outDeviceHandle);
+
+
+        [DllImport(Lib, CallingConvention = CallingConvention.Cdecl)]
+        [return: MarshalAs(UnmanagedType.I1)]
+        public static extern bool SetDS4DeviceState(nuint deviceHandle, DS4DeviceState state);
+    }
+
     [SuppressUnmanagedCodeSecurity]
     public class Util
     {

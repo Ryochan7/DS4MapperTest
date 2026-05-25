@@ -215,11 +215,38 @@ namespace DS4MapperTest
         public VirtualKBMMapping EventInputMapping => eventInputMapping;
 
         protected ViGEmClient vigemTestClient = null;
+
+        protected nuint viiperServerHandle;
+        public nuint VIIPERServerHanle
+        {
+            get => viiperServerHandle;
+            set
+            {
+                viiperServerHandle = value;
+            }
+        }
+
+        protected nuint deviceHandle;
+        public nuint VIIPERDeviceHanle
+        {
+            get => deviceHandle;
+            set => deviceHandle = value;
+        }
+
+        protected uint viiperBusId;
+        public uint VIIPerBusId
+        {
+            get => viiperBusId;
+            set => viiperBusId = value;
+        }
+
         //protected IXbox360Controller outputX360 = null;
         protected IVirtualGamepad outputController = null;
         protected OutputContType outputControlType = OutputContType.None;
         protected Xbox360FeedbackReceivedEventHandler outputForceFeedbackDel;
         protected Xbox360FeedbackReceivedEventHandler outputForceFeedbackSecondDel;
+
+        protected Xbox360RumbleCallbackDelegate viiper360Feedback;
 
         private byte[] rawOutReportEx = new byte[63];
         private DS4_REPORT_EX outDS4Report;
@@ -1135,63 +1162,98 @@ namespace DS4MapperTest
 
                 // Check if requested output controller is different than the currently
                 // connected type
-                if (actionProfile.OutputGamepadSettings.Enabled && outputController != null &&
+                //if (actionProfile.OutputGamepadSettings.Enabled && outputController != null &&
+                if (actionProfile.OutputGamepadSettings.Enabled &&
                     actionProfile.OutputGamepadSettings.OutputGamepad != outputControlType)
                 {
-                    outputController.Disconnect();
+                    //outputController.Disconnect();
+
+                    if (outputControlType == OutputContType.Xbox360)
+                    {
+                        LibVIIPER.RemoveXbox360Device(deviceHandle);
+                    }
+                    else if (outputControlType == OutputContType.DualShock4)
+                    {
+                        LibVIIPER.RemoveDS4Device(deviceHandle);
+                    }
+
+                    deviceHandle = 0;
                     outputController = null;
                     outputControlType = OutputContType.None;
                     Thread.Sleep(100); // More of a pre-caution
                 }
 
                 // Create virtual controller if desired
-                if (actionProfile.OutputGamepadSettings.Enabled && outputController == null &&
-                    actionProfile.OutputGamepadSettings.OutputGamepad != OutputContType.None)
+                if (actionProfile.OutputGamepadSettings.Enabled && actionProfile.OutputGamepadSettings.OutputGamepad != OutputContType.None)
                 {
                     if (actionProfile.OutputGamepadSettings.OutputGamepad == OutputContType.Xbox360)
                     {
-                        IXbox360Controller tempOutputX360 = vigemTestClient.CreateXbox360Controller();
-                        tempOutputX360.AutoSubmitReport = false;
-                        tempOutputX360.Connect();
-                        outputController = tempOutputX360;
+                        //IXbox360Controller tempOutputX360 = vigemTestClient.CreateXbox360Controller();
+                        //tempOutputX360.AutoSubmitReport = false;
+                        //tempOutputX360.Connect();
+                        //outputController = tempOutputX360;
+                        if (!LibVIIPER.CreateXbox360Device(viiperServerHandle, out deviceHandle, viiperBusId, true, 0, 0, 0))
+                        {
+                            Trace.WriteLine("Fatal Error: Failed to create Xbox 360 virtual device.");
+                            //return;
+                        }
+
+                        outputController = null;
                         outputControlType = OutputContType.Xbox360;
                     }
                     else if (actionProfile.OutputGamepadSettings.OutputGamepad == OutputContType.DualShock4)
                     {
-                        IDualShock4Controller tempOutputDS4 = vigemTestClient.CreateDualShock4Controller();
-                        tempOutputDS4.AutoSubmitReport = false;
-                        tempOutputDS4.Connect();
-                        outputController = tempOutputDS4;
+                        //IDualShock4Controller tempOutputDS4 = vigemTestClient.CreateDualShock4Controller();
+                        //tempOutputDS4.AutoSubmitReport = false;
+                        //tempOutputDS4.Connect();
+                        //outputController = tempOutputDS4;
+
+                        if (!LibVIIPER.CreateDS4Device(viiperServerHandle, out deviceHandle, viiperBusId, true, 0, 0))
+                        {
+                            Trace.WriteLine("Fatal Error: Failed to create DS$ virtual device.");
+                            //return;
+                        }
+                        outputController = null;
                         outputControlType = OutputContType.DualShock4;
                     }
                 }
-                else if (!actionProfile.OutputGamepadSettings.enabled && outputController != null)
+                //else if (!actionProfile.OutputGamepadSettings.enabled && outputController != null)
+                else if (!actionProfile.OutputGamepadSettings.enabled && outputControlType != OutputContType.None)
                 {
                     RemoveFeedback();
-                    outputController.Disconnect();
+                    //outputController.Disconnect();
+
+                    if (outputControlType == OutputContType.Xbox360)
+                    {
+                        LibVIIPER.RemoveXbox360Device(deviceHandle);
+                    }
+                    else if (outputControlType == OutputContType.DualShock4)
+                    {
+                        LibVIIPER.RemoveDS4Device(deviceHandle);
+                    }
+
+                    deviceHandle = 0;
                     outputController = null;
                     outputControlType = OutputContType.None;
                 }
 
                 // Check for current output controller and check for desired vibration
                 // status
-                if (outputController != null)
+                //if (outputController != null)
+                //{
+                if (actionProfile.OutputGamepadSettings.ForceFeedbackEnabled &&
+                    outputControlType == OutputContType.Xbox360)
                 {
-                    if (actionProfile.OutputGamepadSettings.ForceFeedbackEnabled &&
-                        outputControlType == OutputContType.Xbox360 &&
-                        outputForceFeedbackDel == null)
-                    {
-                        Thread.Sleep(100);
-                        EstablishForceFeedback();
-                        HookFeedback();
-                    }
-                    else if (!actionProfile.OutputGamepadSettings.ForceFeedbackEnabled &&
-                        outputControlType == OutputContType.Xbox360 &&
-                        outputForceFeedbackDel != null)
-                    {
-                        RemoveFeedback();
-                    }
+                    Thread.Sleep(100);
+                    EstablishForceFeedback();
+                    HookFeedback();
                 }
+                else if (!actionProfile.OutputGamepadSettings.ForceFeedbackEnabled &&
+                    outputControlType == OutputContType.Xbox360)
+                {
+                    RemoveFeedback();
+                }
+                //}
 
                 PostProfileChange?.Invoke(this, EventArgs.Empty);
 
@@ -1242,21 +1304,25 @@ namespace DS4MapperTest
 
         public virtual void HookFeedback()
         {
-            if (outputController != null &&
-                outputForceFeedbackDel != null)
-            {
-                (outputController as IXbox360Controller).FeedbackReceived += outputForceFeedbackDel;
-            }
+            bool _ = LibVIIPER.SetXbox360RumbleCallback(deviceHandle, viiper360Feedback);
+            //Trace.WriteLine($"RESULT {result}");
+
+            //if (outputController != null &&
+            //    outputForceFeedbackDel != null)
+            //{
+            //    (outputController as IXbox360Controller).FeedbackReceived += outputForceFeedbackDel;
+            //}
         }
 
         public virtual void RemoveFeedback()
         {
-            if (outputController != null &&
+            /*if (outputController != null &&
                 outputForceFeedbackDel != null)
             {
                 (outputController as IXbox360Controller).FeedbackReceived -= outputForceFeedbackDel;
                 outputForceFeedbackDel = null;
             }
+            */
         }
 
         public void SyncKeyboard()
@@ -2291,6 +2357,12 @@ namespace DS4MapperTest
             }
         }
 
+        public virtual void PassVIIPERConnection(nuint serverHanle, uint busID)
+        {
+            this.viiperServerHandle = serverHanle;
+            this.viiperBusId = busID;
+        }
+
         public virtual void Start(ViGEmClient vigemTestClient,
             VirtualKBMBase fakerInputHandler, VirtualKBMMapping eventInputMapping)
         {
@@ -2317,9 +2389,58 @@ namespace DS4MapperTest
             }
         }
 
+        Xbox360DeviceState xboxState = new Xbox360DeviceState();
+        DS4DeviceState ds4State = new DS4DeviceState();
+
         protected void PopulateXbox()
         {
-            IXbox360Controller outputX360 = outputController as IXbox360Controller;
+            unchecked
+            {
+                ushort tempButtons = 0;
+                if (intermediateState.BtnSouth) tempButtons |= Xbox360Button.A.Value;
+                if (intermediateState.BtnEast) tempButtons |= Xbox360Button.B.Value;
+                if (intermediateState.BtnWest) tempButtons |= Xbox360Button.X.Value;
+                if (intermediateState.BtnNorth) tempButtons |= Xbox360Button.Y.Value;
+                if (intermediateState.BtnStart) tempButtons |= Xbox360Button.Start.Value;
+                if (intermediateState.BtnSelect) tempButtons |= Xbox360Button.Back.Value;
+
+                if (intermediateState.BtnLShoulder) tempButtons |= Xbox360Button.LeftShoulder.Value;
+                if (intermediateState.BtnRShoulder) tempButtons |= Xbox360Button.RightShoulder.Value;
+                if (intermediateState.BtnMode) tempButtons |= Xbox360Button.Guide.Value;
+
+                if (intermediateState.BtnThumbL) tempButtons |= Xbox360Button.LeftThumb.Value;
+                if (intermediateState.BtnThumbR) tempButtons |= Xbox360Button.RightThumb.Value;
+
+                if (intermediateState.DpadUp) tempButtons |= Xbox360Button.Up.Value;
+                if (intermediateState.DpadDown) tempButtons |= Xbox360Button.Down.Value;
+                if (intermediateState.DpadLeft) tempButtons |= Xbox360Button.Left.Value;
+                if (intermediateState.DpadRight) tempButtons |= Xbox360Button.Right.Value;
+
+                /*var state = new Xbox360DeviceState
+                {
+                    Buttons = tempButtons,
+                    //LT = (byte)Math.Clamp(rawL2 / 128, 0, 255),
+                    //RT = (byte)Math.Clamp(rawR2 / 128, 0, 255),
+                    LX = (short)(intermediateState.LX * (intermediateState.LX >= 0 ? X360_STICK_MAX : -X360_STICK_MIN)),
+                    //BitConverter.ToInt16(buffer, 10),
+                    LY = (short)(intermediateState.LY * (intermediateState.LY >= 0 ? X360_STICK_MAX : -X360_STICK_MIN)),
+                    //(short)BitConverter.ToInt16(buffer, 12),
+                    //RX = BitConverter.ToInt16(buffer, 14),
+                    //RY = (short)BitConverter.ToInt16(buffer, 16)
+                };
+                */
+                xboxState.Buttons = tempButtons;
+                xboxState.LX = (short)(intermediateState.LX * (intermediateState.LX >= 0 ? X360_STICK_MAX : -X360_STICK_MIN));
+                xboxState.LY = (short)(intermediateState.LY * (intermediateState.LY >= 0 ? X360_STICK_MAX : -X360_STICK_MIN));
+                xboxState.RX = (short)(intermediateState.RX * (intermediateState.RX >= 0 ? X360_STICK_MAX : -X360_STICK_MIN));
+                xboxState.RY = (short)(intermediateState.RY * (intermediateState.RY >= 0 ? X360_STICK_MAX : -X360_STICK_MIN));
+                xboxState.LT = (byte)(intermediateState.LTrigger * 255);
+                xboxState.RT = (byte)(intermediateState.RTrigger * 255);
+
+                LibVIIPER.SetXbox360DeviceState(deviceHandle, xboxState);
+            }
+
+            /*IXbox360Controller outputX360 = outputController as IXbox360Controller;
 
             unchecked
             {
@@ -2354,11 +2475,12 @@ namespace DS4MapperTest
 
             outputX360.LeftTrigger = (byte)(intermediateState.LTrigger * 255);
             outputX360.RightTrigger = (byte)(intermediateState.RTrigger * 255);
+            */
         }
 
         protected void PopulateDualShock4()
         {
-            IDualShock4Controller tempDS4 = outputController as IDualShock4Controller;
+            //IDualShock4Controller tempDS4 = outputController as IDualShock4Controller;
 
             unchecked
             {
@@ -2393,28 +2515,44 @@ namespace DS4MapperTest
                 if (intermediateState.BtnMode) tempSpecial |= DualShock4SpecialButton.Ps.Value;
                 if (intermediateState.BtnTouchClick) tempSpecial |= DualShock4SpecialButton.Touchpad.Value;
 
-                outDS4Report.wButtons = tempButtons;
-                byte frameCounter = (byte)(intermediateState.PacketCounter % 128);
+                //outDS4Report.wButtons = tempButtons;
+                ds4State.Buttons = tempButtons;
+                //ds4State.Buttons |= tempDPad.Value;
+                ds4State.Dpad = (byte)tempDPad.Value;
+
+
+                //byte frameCounter = (byte)(intermediateState.PacketCounter % 128);
                 // Frame counter is high 6 bits. Low 2 bits is for extra buttons (PS, TP Click)
-                outDS4Report.bSpecial = (byte)(tempSpecial | (frameCounter << 2));
-                outDS4Report.wButtons |= tempDPad.Value;
+                //ds4State.Dpad = (byte)(tempSpecial | (frameCounter << 2));
+                //outDS4Report.bSpecial = (byte)(tempSpecial | (frameCounter << 2));
+                //outDS4Report.wButtons |= tempDPad.Value;
 
                 //tempDS4.SetButtonsFull(tempButtons);
                 //tempDS4.SetSpecialButtonsFull((byte)tempSpecial);
                 //tempDS4.SetDPadDirection(tempDPad);
             }
 
-            outDS4Report.bThumbLX = (byte)((intermediateState.LX >= 0 ? (DS4_STICK_MAX - DS4_STICK_MID) : -(DS4_STICK_MIN - DS4_STICK_MID)) * intermediateState.LX + DS4_STICK_MID);
-            outDS4Report.bThumbLY = (byte)((intermediateState.LY >= 0 ? -(DS4_STICK_MIN - DS4_STICK_MID) : (DS4_STICK_MAX - DS4_STICK_MID)) * -intermediateState.LY + DS4_STICK_MID);
+            ds4State.Sticklx = (sbyte)((intermediateState.LX >= 0 ? (DS4_STICK_MAX - DS4_STICK_MID) : -(DS4_STICK_MIN - DS4_STICK_MID)) * intermediateState.LX);
+            ds4State.Stickly = (sbyte)((intermediateState.LY >= 0 ? -(DS4_STICK_MIN - DS4_STICK_MID) : (DS4_STICK_MAX - DS4_STICK_MID)) * -intermediateState.LY);
+            ds4State.Stickrx = (sbyte)((intermediateState.RX >= 0 ? (DS4_STICK_MAX - DS4_STICK_MID) : -(DS4_STICK_MIN - DS4_STICK_MID)) * intermediateState.RX);
+            ds4State.Stickry = (sbyte)((intermediateState.RY >= 0 ? -(DS4_STICK_MIN - DS4_STICK_MID) : (DS4_STICK_MAX - DS4_STICK_MID)) * -intermediateState.RY);
 
-            outDS4Report.bThumbRX = (byte)((intermediateState.RX >= 0 ? (DS4_STICK_MAX - DS4_STICK_MID) : -(DS4_STICK_MIN - DS4_STICK_MID)) * intermediateState.RX + DS4_STICK_MID);
-            outDS4Report.bThumbRY = (byte)((intermediateState.RY >= 0 ? -(DS4_STICK_MIN - DS4_STICK_MID) : (DS4_STICK_MAX - DS4_STICK_MID)) * -intermediateState.RY + DS4_STICK_MID);
+            ds4State.Triggerl2 = (byte)(intermediateState.LTrigger * 255);
+            ds4State.Triggerr2 = (byte)(intermediateState.RTrigger * 255);
 
-            outDS4Report.bTriggerL = (byte)(intermediateState.LTrigger * 255);
-            outDS4Report.bTriggerR = (byte)(intermediateState.RTrigger * 255);
+            LibVIIPER.SetDS4DeviceState(deviceHandle, ds4State);
 
-            DS4OutDeviceExtras.CopyBytes(ref outDS4Report, rawOutReportEx);
-            tempDS4.SubmitRawReport(rawOutReportEx);
+            //outDS4Report.bThumbLX = (byte)((intermediateState.LX >= 0 ? (DS4_STICK_MAX - DS4_STICK_MID) : -(DS4_STICK_MIN - DS4_STICK_MID)) * intermediateState.LX + DS4_STICK_MID);
+            //outDS4Report.bThumbLY = (byte)((intermediateState.LY >= 0 ? -(DS4_STICK_MIN - DS4_STICK_MID) : (DS4_STICK_MAX - DS4_STICK_MID)) * -intermediateState.LY + DS4_STICK_MID);
+
+            //outDS4Report.bThumbRX = (byte)((intermediateState.RX >= 0 ? (DS4_STICK_MAX - DS4_STICK_MID) : -(DS4_STICK_MIN - DS4_STICK_MID)) * intermediateState.RX + DS4_STICK_MID);
+            //outDS4Report.bThumbRY = (byte)((intermediateState.RY >= 0 ? -(DS4_STICK_MIN - DS4_STICK_MID) : (DS4_STICK_MAX - DS4_STICK_MID)) * -intermediateState.RY + DS4_STICK_MID);
+
+            //outDS4Report.bTriggerL = (byte)(intermediateState.LTrigger * 255);
+            //outDS4Report.bTriggerR = (byte)(intermediateState.RTrigger * 255);
+
+            //DS4OutDeviceExtras.CopyBytes(ref outDS4Report, rawOutReportEx);
+            //tempDS4.SubmitRawReport(rawOutReportEx);
 
             intermediateState.PacketCounter = intermediateState.PacketCounter + 1;
         }
@@ -2540,6 +2678,7 @@ namespace DS4MapperTest
             {
                 eventInputHandler.PerformMouseWheelEvent(vertical: mouseWheelY * eventInputMapping.WHEEL_TICK_BASE,
                     horizontal: mouseWheelX * eventInputMapping.WHEEL_TICK_BASE);
+                mouseWheelX = mouseWheelY = 0;
                 mouseWheelSync = false;
             }
 
@@ -2552,12 +2691,12 @@ namespace DS4MapperTest
 
             if (gamepadSync && intermediateState.Dirty)
             {
-                if (outputController != null)
+                //if (outputController != null)
                 {
                     if (outputControlType == OutputContType.Xbox360)
                     {
                         PopulateXbox();
-                        outputController?.SubmitReport();
+                        //outputController?.SubmitReport();
                     }
                     else if (outputControlType == OutputContType.DualShock4)
                     {

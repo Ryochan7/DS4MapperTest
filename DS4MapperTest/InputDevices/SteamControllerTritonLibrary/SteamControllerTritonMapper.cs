@@ -761,17 +761,33 @@ namespace DS4MapperTest.InputDevices.SteamControllerTritonLibrary
 
         public override void EstablishForceFeedback()
         {
-            if (outputControlType == OutputContType.Xbox360)
+            /*if (outputControlType == OutputContType.Xbox360)
             {
-                outputForceFeedbackDel = (sender, e) =>
+                //outputForceFeedbackDel = (sender, e) =>
+                viiper360Feedback = (nuint handle, byte leftMotor, byte rightMotor) =>
                 {
-                    device.currentLeftAmpRatio = e.LargeMotor / 255.0;
-                    device.currentRightAmpRatio = e.SmallMotor / 255.0;
+                    device.currentLeftAmpRatio = leftMotor / 255.0;
+                    device.currentRightAmpRatio = rightMotor / 255.0;
                     device.rumbleDirty = true;
                     // Wait until next gamepad poll finished before pushing rumble state
                     //reader.WriteRumbleReport();
                 };
             }
+            */
+        }
+
+        public override void HookFeedback()
+        {
+            viiper360Feedback = TestVIIPER360Feedback;
+            bool result = LibVIIPER.SetXbox360RumbleCallback(deviceHandle, viiper360Feedback);
+            //Trace.WriteLine($"RESULT {result}");
+        }
+
+        public void TestVIIPER360Feedback(nuint handle, byte leftMotor, byte rightMotor)
+        {
+            device.currentLeftAmpRatio = leftMotor / 255.0;
+            device.currentRightAmpRatio = rightMotor / 255.0;
+            device.rumbleDirty = true;
         }
 
         public override bool IsButtonActive(JoypadActionCodes code)

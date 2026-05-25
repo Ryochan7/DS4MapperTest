@@ -171,6 +171,10 @@ namespace DS4MapperTest
             }
         }
 
+        nuint serverHandle = 0;
+        uint busID;
+        private readonly VIIPERLogCallbackDelegate _logCb;
+        private readonly Xbox360RumbleCallbackDelegate _rumbleCb;
         public void Start()
         {
             LogDebug("Starting service");
@@ -182,7 +186,20 @@ namespace DS4MapperTest
             // to GUI thread
             vbusThr = new Thread(() =>
             {
-                vigemTestClient = new ViGEmClient();
+                //vigemTestClient = new ViGEmClient();
+
+                USBServerConfig conf = new() { addr = "localhost:3245", write_batch_flush_interval_ms = 4 };
+                if (!LibVIIPER.NewUSBServer(ref conf, out serverHandle, _logCb))
+                {
+                    Trace.WriteLine("Fatal Error: Failed to start native libVIIPER server.");
+                    return;
+                }
+
+                if (!LibVIIPER.CreateUSBBus(serverHandle, ref busID))
+                {
+                    Trace.WriteLine("Fatal Error: Failed to create USB bus.");
+                    return;
+                }
             });
 
             vbusThr.Priority = ThreadPriority.Normal;
@@ -278,6 +295,8 @@ namespace DS4MapperTest
                 }
 
                 int tempInd = ind;
+                //testMapper.VIIPERDeviceHanle = deviceHandle;
+                testMapper.PassVIIPERConnection(serverHandle, busID);
                 testMapper.Start(vigemTestClient, virtualEventHandler, eventInputMapping);
                 testMapper.ProfileChanged += (object sender, string e) =>
                 {
@@ -573,6 +592,8 @@ namespace DS4MapperTest
             vigemTestClient?.Dispose();
             vigemTestClient = null;
 
+            LibVIIPER.CloseUSBServer(serverHandle);
+
             virtualEventHandler.Sync();
             Thread.Sleep(100);
             try
@@ -748,6 +769,7 @@ namespace DS4MapperTest
             }
 
             int tempInd = ind;
+            mapper.PassVIIPERConnection(serverHandle, busID);
             mapper.Start(vigemTestClient, virtualEventHandler, eventInputMapping);
             mapper.ProfileChanged += (object sender, string e) => {
                 appGlobal.activeProfiles[tempInd] = e;

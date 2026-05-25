@@ -74,6 +74,10 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Link>FakerInputDll.dll</Link>
     </None>
+    <None Update="libs\$(Platform)\VIIPER\libVIIPER.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>libVIIPER.dll</Link>
+    </None>
     <None Update="NLog.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
