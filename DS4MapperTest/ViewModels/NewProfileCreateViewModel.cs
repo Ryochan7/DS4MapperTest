@@ -147,11 +147,21 @@ namespace DS4MapperTest.ViewModels
                 if (outputControllerTypeIdx >= 0)
                 {
                     tempProfile.OutputGamepadSettings.OutputGamepad = OutputContList[outputControllerTypeIdx].Type;
-                    tempProfile.OutputGamepadSettings.Enabled = true;
+                    if (tempProfile.OutputGamepadSettings.OutputGamepad != OutputContType.None)
+                    {
+                        tempProfile.OutputGamepadSettings.Enabled = true;
+                    }
+                    else
+                    {
+                        tempProfile.OutputGamepadSettings.Enabled = false;
+                    }
                 }
                 else
                 {
-                    tempProfile.OutputGamepadSettings.OutputGamepad = OutputContType.None;
+                    // Default output controller type to Xbox 360 in profile
+                    // Use Enabled flag for specifying in a profile whether to output
+                    // a virtual controller
+                    tempProfile.OutputGamepadSettings.OutputGamepad = OutputContType.Xbox360;
                     tempProfile.OutputGamepadSettings.Enabled = false;
                 }
 
