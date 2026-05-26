@@ -1178,6 +1178,7 @@ namespace DS4MapperTest
                     }
 
                     deviceHandle = 0;
+                    viiperBusId = 0; // Reset bus ID slot for old device handle
                     outputController = null;
                     outputControlType = OutputContType.None;
                     Thread.Sleep(100); // More of a pre-caution
