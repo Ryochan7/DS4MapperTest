@@ -172,7 +172,6 @@ namespace DS4MapperTest
         }
 
         nuint serverHandle = 0;
-        uint busID;
         private readonly VIIPERLogCallbackDelegate _logCb;
         private readonly Xbox360RumbleCallbackDelegate _rumbleCb;
         public void Start()
@@ -192,12 +191,6 @@ namespace DS4MapperTest
                 if (!LibVIIPER.NewUSBServer(ref conf, out serverHandle, _logCb))
                 {
                     Trace.WriteLine("Fatal Error: Failed to start native libVIIPER server.");
-                    return;
-                }
-
-                if (!LibVIIPER.CreateUSBBus(serverHandle, ref busID))
-                {
-                    Trace.WriteLine("Fatal Error: Failed to create USB bus.");
                     return;
                 }
             });
@@ -296,7 +289,7 @@ namespace DS4MapperTest
 
                 int tempInd = ind;
                 //testMapper.VIIPERDeviceHanle = deviceHandle;
-                testMapper.PassVIIPERConnection(serverHandle, busID);
+                testMapper.PassVIIPERConnection(serverHandle);
                 testMapper.Start(vigemTestClient, virtualEventHandler, eventInputMapping);
                 testMapper.ProfileChanged += (object sender, string e) =>
                 {
@@ -769,7 +762,7 @@ namespace DS4MapperTest
             }
 
             int tempInd = ind;
-            mapper.PassVIIPERConnection(serverHandle, busID);
+            mapper.PassVIIPERConnection(serverHandle);
             mapper.Start(vigemTestClient, virtualEventHandler, eventInputMapping);
             mapper.ProfileChanged += (object sender, string e) => {
                 appGlobal.activeProfiles[tempInd] = e;

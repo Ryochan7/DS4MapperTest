@@ -1192,6 +1192,12 @@ namespace DS4MapperTest
                         //tempOutputX360.AutoSubmitReport = false;
                         //tempOutputX360.Connect();
                         //outputController = tempOutputX360;
+                        if (!LibVIIPER.CreateUSBBus(viiperServerHandle, ref viiperBusId))
+                        {
+                            Trace.WriteLine("Fatal Error: Failed to create USB bus.");
+                            return;
+                        }
+
                         if (!LibVIIPER.CreateXbox360Device(viiperServerHandle, out deviceHandle, viiperBusId, true, 0, 0, 0))
                         {
                             Trace.WriteLine("Fatal Error: Failed to create Xbox 360 virtual device.");
@@ -1208,11 +1214,18 @@ namespace DS4MapperTest
                         //tempOutputDS4.Connect();
                         //outputController = tempOutputDS4;
 
+                        if (!LibVIIPER.CreateUSBBus(viiperServerHandle, ref viiperBusId))
+                        {
+                            Trace.WriteLine("Fatal Error: Failed to create USB bus.");
+                            return;
+                        }
+
                         if (!LibVIIPER.CreateDS4Device(viiperServerHandle, out deviceHandle, viiperBusId, true, 0, 0))
                         {
                             Trace.WriteLine("Fatal Error: Failed to create DS4 virtual device.");
                             //return;
                         }
+
                         outputController = null;
                         outputControlType = OutputContType.DualShock4;
                     }
@@ -1233,6 +1246,7 @@ namespace DS4MapperTest
                     }
 
                     deviceHandle = 0;
+                    viiperBusId = 0; // Reset bus ID slot for old device handle
                     outputController = null;
                     outputControlType = OutputContType.None;
                 }
@@ -2357,10 +2371,9 @@ namespace DS4MapperTest
             }
         }
 
-        public virtual void PassVIIPERConnection(nuint serverHanle, uint busID)
+        public virtual void PassVIIPERConnection(nuint serverHanle)
         {
             this.viiperServerHandle = serverHanle;
-            this.viiperBusId = busID;
         }
 
         public virtual void Start(ViGEmClient vigemTestClient,
