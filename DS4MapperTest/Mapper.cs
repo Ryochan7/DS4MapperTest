@@ -1210,7 +1210,7 @@ namespace DS4MapperTest
 
                         if (!LibVIIPER.CreateDS4Device(viiperServerHandle, out deviceHandle, viiperBusId, true, 0, 0))
                         {
-                            Trace.WriteLine("Fatal Error: Failed to create DS$ virtual device.");
+                            Trace.WriteLine("Fatal Error: Failed to create DS4 virtual device.");
                             //return;
                         }
                         outputController = null;
