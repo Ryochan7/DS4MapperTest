@@ -87,6 +87,7 @@ namespace DS4MapperTest
                 appGlobal.CreateControllerDeviceSettingsFile();
             }
 
+            DispatcherUnhandledException += App_DispatcherUnhandledException;
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
 
             // Use all display space
@@ -125,7 +126,14 @@ namespace DS4MapperTest
         {
             GC.Collect(0, GCCollectionMode.Forced, false);
         }
-        
+
+        private void App_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
+        {
+            Logger logger = logHolder.Logger;
+            logger.Error($"Thread Crashed with message {e.Exception.Message}");
+            logger.Error(e.Exception.ToString());
+        }
+
         private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
             Exception exp = e.ExceptionObject as Exception;
