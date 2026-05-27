@@ -480,6 +480,7 @@ namespace DS4MapperTest
                 }
 
                 //testMapper.Start(device, reader);
+                testMapper.PassVIIPERConnection(serverHandle);
                 testMapper.Start(vigemTestClient, virtualEventHandler, eventInputMapping);
                 //testMapper.RequestOSD += TestMapper_RequestOSD;
                 int tempInd = ind;

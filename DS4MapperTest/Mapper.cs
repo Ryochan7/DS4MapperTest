@@ -2372,9 +2372,9 @@ namespace DS4MapperTest
             }
         }
 
-        public virtual void PassVIIPERConnection(nuint serverHanle)
+        public virtual void PassVIIPERConnection(nuint serverHandle)
         {
-            this.viiperServerHandle = serverHanle;
+            this.viiperServerHandle = serverHandle;
         }
 
         public virtual void Start(ViGEmClient vigemTestClient,
