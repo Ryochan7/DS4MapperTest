@@ -2820,6 +2820,10 @@ namespace DS4MapperTest
                     intermediateState.BtnThumbR = pressed;
                     intermediateState.Dirty = true;
                     break;
+                case JoypadActionCodes.CenterPadClick:
+                    intermediateState.BtnTouchClick = pressed;
+                    intermediateState.Dirty = true;
+                    break;
 
                 default:
                     break;
@@ -2917,6 +2921,10 @@ namespace DS4MapperTest
                     break;
                 case JoypadActionCodes.BtnThumbR:
                     intermediateState.BtnThumbR = active;
+                    intermediateState.Dirty = true;
+                    break;
+                case JoypadActionCodes.CenterPadClick:
+                    intermediateState.BtnTouchClick = active;
                     intermediateState.Dirty = true;
                     break;
                 default:
