@@ -484,6 +484,9 @@ namespace DS4MapperTest
                 case JoypadActionCodes.X360_RY_POS:
                     result = "RY+";
                     break;
+                case JoypadActionCodes.CenterPadClick:
+                    result = "TP Click";
+                    break;
                 case JoypadActionCodes.Empty:
                     result = "Empty";
                     break;
