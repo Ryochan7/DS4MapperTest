@@ -71,9 +71,11 @@ namespace DS4MapperTest
         PadRight = 0x08,
     }
 
+    [SuppressUnmanagedCodeSecurity]
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     public delegate void Xbox360RumbleCallbackDelegate(nuint handle, byte leftMotor, byte rightMotor);
 
+    [SuppressUnmanagedCodeSecurity]
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     delegate void VIIPERLogCallbackDelegate(VIIPERLogLevel level, [MarshalAs(UnmanagedType.LPStr)] string message);
 
