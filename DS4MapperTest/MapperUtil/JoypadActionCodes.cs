@@ -55,7 +55,7 @@ namespace DS4MapperTest.MapperUtil
 
         // Mainly DS4 and DS Whole Touchpad
         Btn34, CenterPadTouch = Btn34,
-        Btn35, CenterPadClick = Btn35,
+        Btn35, CenterPadClick = Btn35, DS4_TOUCH_CLICK = Btn35,
 
         BtnMax = 255,
 
@@ -164,7 +164,7 @@ namespace DS4MapperTest.MapperUtil
     {
         public static string ALWAYS_ON_TEXT = "AlwaysOn";
 
-        public static Dictionary<JoypadActionCodes, string> X360Mappings = new Dictionary<JoypadActionCodes, string>()
+        public static Dictionary<JoypadActionCodes, string> OutJoyMappings = new Dictionary<JoypadActionCodes, string>()
         {
             {JoypadActionCodes.Empty, "Empty"},
             {JoypadActionCodes.X360_A, "X360_A"},
@@ -194,13 +194,14 @@ namespace DS4MapperTest.MapperUtil
             {JoypadActionCodes.X360_RX_POS, "X360_RX_POS"},
             {JoypadActionCodes.X360_RY_NEG, "X360_RY_NEG"},
             {JoypadActionCodes.X360_RY_POS, "X360_RY_POS"},
+            {JoypadActionCodes.DS4_TOUCH_CLICK, "DS4_TOUCH_CLICK"},
         };
 
 
         public static string Convert(JoypadActionCodes code)
         {
             string result = code.ToString();
-            if (X360Mappings.TryGetValue(code, out string tempResult))
+            if (OutJoyMappings.TryGetValue(code, out string tempResult))
             {
                 result = tempResult;
             }
