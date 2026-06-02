@@ -355,6 +355,8 @@ namespace DS4MapperTest
             eventInputMapping.PopulateConstants();
             eventInputMapping.PopulateMappings();
 
+            ProfileSerializer.EventInputMapper = eventInputMapping;
+
             LogDebug($"KBM Event Handler: {virtualEventHandler.GetFullDisplayName()}");
         }
 

@@ -21,6 +21,7 @@ namespace DS4MapperUnitTests
     {
         private string xinputProfileJson;
         private string darkMessiahProfileJson;
+        private VirtualKBMMapping eventInputMapping;
         //private TestMapper mapper;
 
         public MappingTests()
@@ -1324,6 +1325,9 @@ namespace DS4MapperUnitTests
             #endregion
 
             mapper = new TestMapper();
+
+            eventInputMapping = new SendInputMapping();
+            ProfileSerializer.EventInputMapper = eventInputMapping;
         }
 
         [TestMethod]
@@ -1369,9 +1373,9 @@ namespace DS4MapperUnitTests
             {
                 // Run mapper routine and check output state
                 mapper.Reader_Report(inputState, out IntermediateState _);
-                Assert.AreEqual(true, TestMapper.KeyReferenceCountDict.ContainsKey(44)); // A (Space)
-                Assert.AreEqual(true, TestMapper.KeyReferenceCountDict.ContainsKey(7)); // LPad X (D)
-                Assert.AreEqual(true, TestMapper.KeyReferenceCountDict.ContainsKey(26)); // LPad Y (W)
+                Assert.AreEqual(true, TestMapper.KeyReferenceCountDict.ContainsKey(0x20)); // A (Space)
+                Assert.AreEqual(true, TestMapper.KeyReferenceCountDict.ContainsKey(0x44)); // LPad X (D)
+                Assert.AreEqual(true, TestMapper.KeyReferenceCountDict.ContainsKey(0x57)); // LPad Y (W)
             }
 
             // Populate input state struct with mock data
@@ -1390,9 +1394,9 @@ namespace DS4MapperUnitTests
             {
                 // Run mapper routine and check output state
                 mapper.Reader_Report(inputState, out IntermediateState _);
-                Assert.AreEqual(false, TestMapper.KeyReferenceCountDict.ContainsKey(44)); // A (Space)
-                Assert.AreEqual(false, TestMapper.KeyReferenceCountDict.ContainsKey(7)); // LPad X (D)
-                Assert.AreEqual(true, TestMapper.KeyReferenceCountDict.ContainsKey(26)); // LPad Y (W)
+                Assert.AreEqual(false, TestMapper.KeyReferenceCountDict.ContainsKey(0x20)); // A (Space)
+                Assert.AreEqual(false, TestMapper.KeyReferenceCountDict.ContainsKey(0x44)); // LPad X (D)
+                Assert.AreEqual(true, TestMapper.KeyReferenceCountDict.ContainsKey(0x57)); // LPad Y (W)
             }
         }
 

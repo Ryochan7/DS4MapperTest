@@ -24,6 +24,7 @@ namespace DS4MapperUnitTests
   ""Description"": ""Daggerfall"",
   ""Creator"": ""ryochan7"",
   ""CreationDate"": ""2023-10-27T02:05:40.4042828Z"",
+  ""ProfileSpecVersion"": 2,
   ""OutputGamepadSettings"": {
     ""Enabled"": false
   },
@@ -104,6 +105,7 @@ namespace DS4MapperUnitTests
               },
               ""Settings"": {
                 ""DeadZone"": 0.05,
+                ""RequiresClick"": false,
                 ""OuterRingRange"": ""OnlyActive""
               }
             },
@@ -229,7 +231,9 @@ namespace DS4MapperUnitTests
                     }
                   ],
                   ""Settings"": {
-                    ""Toggle"": true
+                    ""Toggle"": true,
+                    ""FireDelayMs"": 0,
+                    ""ShouldSerializeFireDelayMs"": false
                   }
                 }
               ]
@@ -515,6 +519,7 @@ namespace DS4MapperUnitTests
               },
               ""Settings"": {
                 ""DeadZone"": 0.05,
+                ""RequiresClick"": false,
                 ""OuterRingRange"": ""OnlyActive""
               }
             },
@@ -667,6 +672,7 @@ namespace DS4MapperUnitTests
   ""Description"": ""Daggerfall"",
   ""Creator"": ""ryochan7"",
   ""CreationDate"": ""2023-10-27T02:05:40.4042828Z"",
+  ""ProfileSpecVersion"": 2,
   ""OutputGamepadSettings"": {
     ""Enabled"": false
   },
@@ -747,6 +753,7 @@ namespace DS4MapperUnitTests
               },
               ""Settings"": {
                 ""DeadZone"": 0.05,
+                ""RequiresClick"": false,
                 ""OuterRingRange"": ""OnlyActive""
               }
             },
@@ -872,7 +879,9 @@ namespace DS4MapperUnitTests
                     }
                   ],
                   ""Settings"": {
-                    ""Toggle"": true
+                    ""Toggle"": true,
+                    ""FireDelayMs"": 0,
+                    ""ShouldSerializeFireDelayMs"": false
                   }
                 }
               ]
@@ -992,7 +1001,9 @@ namespace DS4MapperUnitTests
               ""Id"": 13,
               ""ActionMode"": ""GyroMouseAction"",
               ""Settings"": {
-                ""DeadZone"": 10,
+                ""DeadZone"": 0.6,
+                ""RealWorlCalibration"": 5.0,
+                ""InGameSens"": 1.0,
                 ""Sensitivity"": 1.0,
                 ""VerticalScale"": 1.0,
                 ""InvertX"": false,
@@ -1175,6 +1186,7 @@ namespace DS4MapperUnitTests
               },
               ""Settings"": {
                 ""DeadZone"": 0.05,
+                ""RequiresClick"": false,
                 ""OuterRingRange"": ""OnlyActive""
               }
             },
@@ -1328,6 +1340,9 @@ namespace DS4MapperUnitTests
             #endregion
 
             mapper = new TestMapper();
+
+            VirtualKBMMapping eventInputMapping = new SendInputMapping();
+            ProfileSerializer.EventInputMapper = eventInputMapping;
         }
 
         [TestMethod]

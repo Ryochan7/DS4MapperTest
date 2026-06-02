@@ -104,13 +104,16 @@ namespace DS4MapperTest
         //    }
         //}
 
+        private static VirtualKBMMapping eventInputMapper;
         public static VirtualKBMMapping EventInputMapper
         {
             get
             {
-                BackendManager manager = (App.Current as App).Manager;
-                return manager.EventInputMapping;
+                return eventInputMapper;
+                //BackendManager manager = (App.Current as App).Manager;
+                //return manager.EventInputMapping;
             }
+            set => eventInputMapper = value;
         }
 
         private const int CURRENT_SPEC_VERSION_NUMBER = 2;
