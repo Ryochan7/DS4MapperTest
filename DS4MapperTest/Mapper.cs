@@ -1168,13 +1168,16 @@ namespace DS4MapperTest
                 {
                     //outputController.Disconnect();
 
-                    if (outputControlType == OutputContType.Xbox360)
+                    if (deviceHandle != 0)
                     {
-                        LibVIIPER.RemoveXbox360Device(deviceHandle);
-                    }
-                    else if (outputControlType == OutputContType.DualShock4)
-                    {
-                        LibVIIPER.RemoveDS4Device(deviceHandle);
+                        if (outputControlType == OutputContType.Xbox360)
+                        {
+                            LibVIIPER.RemoveXbox360Device(deviceHandle);
+                        }
+                        else if (outputControlType == OutputContType.DualShock4)
+                        {
+                            LibVIIPER.RemoveDS4Device(deviceHandle);
+                        }
                     }
 
                     deviceHandle = 0;
@@ -1237,13 +1240,16 @@ namespace DS4MapperTest
                     RemoveFeedback();
                     //outputController.Disconnect();
 
-                    if (outputControlType == OutputContType.Xbox360)
+                    if (deviceHandle != 0)
                     {
-                        LibVIIPER.RemoveXbox360Device(deviceHandle);
-                    }
-                    else if (outputControlType == OutputContType.DualShock4)
-                    {
-                        LibVIIPER.RemoveDS4Device(deviceHandle);
+                        if (outputControlType == OutputContType.Xbox360)
+                        {
+                            LibVIIPER.RemoveXbox360Device(deviceHandle);
+                        }
+                        else if (outputControlType == OutputContType.DualShock4)
+                        {
+                            LibVIIPER.RemoveDS4Device(deviceHandle);
+                        }
                     }
 
                     deviceHandle = 0;
@@ -3221,12 +3227,32 @@ namespace DS4MapperTest
                 eventInputHandler.Sync();
             }
 
-            outputController?.Disconnect();
+            /*outputController?.Disconnect();
             if (outputController != null)
             {
                 RemoveFeedback();
             }
+            */
+        }
 
+        public void UnplugViiperVirtualControllers()
+        {
+            if (deviceHandle != 0)
+            {
+                if (outputControlType == OutputContType.Xbox360)
+                {
+                    LibVIIPER.RemoveXbox360Device(deviceHandle);
+                }
+                else if (outputControlType == OutputContType.DualShock4)
+                {
+                    LibVIIPER.RemoveDS4Device(deviceHandle);
+                }
+
+                Thread.Sleep(100);
+            }
+
+            deviceHandle = 0;
+            viiperBusId = 0; // Reset bus ID slot for old device handle
             outputController = null;
             outputControlType = OutputContType.None;
         }

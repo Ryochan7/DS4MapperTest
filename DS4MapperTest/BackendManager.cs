@@ -187,11 +187,14 @@ namespace DS4MapperTest
             {
                 //vigemTestClient = new ViGEmClient();
 
-                USBServerConfig conf = new() { addr = "localhost:3245", write_batch_flush_interval_ms = 4 };
-                if (!LibVIIPER.NewUSBServer(ref conf, out serverHandle, _logCb))
+                if (serverHandle == 0)
                 {
-                    Trace.WriteLine("Fatal Error: Failed to start native libVIIPER server.");
-                    return;
+                    USBServerConfig conf = new() { addr = "localhost:3245", write_batch_flush_interval_ms = 4 };
+                    if (!LibVIIPER.NewUSBServer(ref conf, out serverHandle, _logCb))
+                    {
+                        Trace.WriteLine("Fatal Error: Failed to start native libVIIPER server.");
+                        return;
+                    }
                 }
             });
 
@@ -199,6 +202,11 @@ namespace DS4MapperTest
             vbusThr.IsBackground = true;
             vbusThr.Start();
             vbusThr.Join(); // Wait for bus object start
+
+            if (serverHandle != 0)
+            {
+                LogDebug($"VIIPER connection established");
+            }
 
             Thread temper = new Thread(() =>
             {
@@ -576,6 +584,15 @@ namespace DS4MapperTest
                 reader.StopUpdate();
             }
 
+            // USBIP_WIN2 seems to be finicky when it comes to
+            // when controllers are removed
+            foreach (Mapper mapper in mapperDict.Values)
+            {
+                mapper.UnplugViiperVirtualControllers();
+            }
+
+            Thread.Sleep(500);
+
             mapperDict.Clear();
             deviceReadersMap.Clear();
             deviceMapperMap.Clear();
@@ -588,7 +605,12 @@ namespace DS4MapperTest
             vigemTestClient?.Dispose();
             vigemTestClient = null;
 
-            LibVIIPER.CloseUSBServer(serverHandle);
+            if (serverHandle != 0)
+            {
+                LogDebug($"Closing VIIPER connection");
+                LibVIIPER.CloseUSBServer(serverHandle);
+                serverHandle = 0;
+            }
 
             virtualEventHandler.Sync();
             Thread.Sleep(100);
