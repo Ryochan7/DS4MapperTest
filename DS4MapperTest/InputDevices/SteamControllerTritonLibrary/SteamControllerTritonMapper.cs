@@ -240,7 +240,7 @@ namespace DS4MapperTest.InputDevices.SteamControllerTritonLibrary
             {
                 elapsedReference = 125.0,
                 mouseCoefficient = 0.025,
-                mouseOffset = 0.3,
+                mouseOffset = 0.2,
 
                 accelMinLeanX = -16384,
                 accelMaxLeanX = 16384,
