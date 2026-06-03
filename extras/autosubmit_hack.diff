@@ -1,0 +1,178 @@
+diff --git a/internal/server/usb/server.go b/internal/server/usb/server.go
+index 24da95d..4fafbc6 100644
+--- a/internal/server/usb/server.go
++++ b/internal/server/usb/server.go
+@@ -29,6 +29,7 @@ type batchingWriter struct {
+ 	stopCh       chan struct{}
+ 	closeOnce    sync.Once
+ 	err          error
++	t            *time.Ticker
+ }
+ 
+ const (
+@@ -53,6 +54,7 @@ func newBatchingWriter(dst io.Writer, bufSize int, flushEvery time.Duration, flu
+ 		w:            bufio.NewWriterSize(dst, bufSize),
+ 		flushEvery:   flushEvery,
+ 		flushAtBytes: flushAtBytes,
++		t:            time.NewTicker(flushEvery),
+ 		stopCh:       make(chan struct{}),
+ 	}
+ 	if flushEvery > 0 {
+@@ -62,11 +64,11 @@ func newBatchingWriter(dst io.Writer, bufSize int, flushEvery time.Duration, flu
+ }
+ 
+ func (b *batchingWriter) flushLoop() {
+-	t := time.NewTicker(b.flushEvery)
+-	defer t.Stop()
++	//t := 
++	defer b.t.Stop()
+ 	for {
+ 		select {
+-		case <-t.C:
++		case <-b.t.C:
+ 			_ = b.Flush()
+ 		case <-b.stopCh:
+ 			return
+@@ -108,6 +110,22 @@ func (b *batchingWriter) Flush() error {
+ 	return nil
+ }
+ 
++func (b *batchingWriter) Flush2() error {
++	b.mu.Lock()
++	defer b.mu.Unlock()
++	
++	if b.err != nil {
++		return b.err
++	}
++	
++	b.t.Reset(b.flushEvery)
++	if err := b.w.Flush(); err != nil {
++		b.err = err
++		return err
++	}
++	return nil
++}
++
+ func (b *batchingWriter) Close() error {
+ 	b.closeOnce.Do(func() {
+ 		close(b.stopCh)
+@@ -174,6 +192,9 @@ type Server struct {
+ 	ready     chan struct{}
+ 	readyOnce sync.Once
+ 	ln        net.Listener
++	bw        *batchingWriter
++	FlushNow  bool
++	FlushMu   sync.Mutex
+ }
+ 
+ func New(config ServerConfig, logger *slog.Logger, rawLogger log.RawLogger) *Server {
+@@ -183,6 +204,7 @@ func New(config ServerConfig, logger *slog.Logger, rawLogger log.RawLogger) *Ser
+ 		rawLogger: rawLogger,
+ 		busses:    make(map[uint32]*virtualbus.VirtualBus),
+ 		ready:     make(chan struct{}),
++		FlushNow:  false,
+ 	}
+ }
+ 
+@@ -557,15 +579,20 @@ func (lc *logConn) Write(p []byte) (int, error) {
+ func (s *Server) handleUrbStream(conn net.Conn, dev usb.Device) error {
+ 	_ = conn.SetDeadline(time.Time{})
+ 
+-	var writer io.Writer
+-	var bw *batchingWriter
+-	if s.config.WriteBatchFlushInterval > 0 {
+-		bw = newBatchingWriter(conn, writeBatcherBufferSize, s.config.WriteBatchFlushInterval, writeBatcherFlushAtBytes)
+-		writer = bw
+-		defer func() { _ = bw.Close() }()
+-	} else {
+-		writer = conn
+-	}
++	//var writer io.Writer
++	//var bw *batchingWriter
++	//if s.config.WriteBatchFlushInterval > 0 {
++	//	bw = newBatchingWriter(conn, writeBatcherBufferSize, s.config.WriteBatchFlushInterval, writeBatcherFlushAtBytes)
++	//	writer = bw
++	//	defer func() { _ = bw.Close() }()
++	//} else {
++	//	writer = conn
++	//}
++
++	//writer = conn
++	var writer *batchingWriter
++	writer = newBatchingWriter(conn, writeBatcherBufferSize, s.config.WriteBatchFlushInterval, writeBatcherFlushAtBytes)
++	defer func() { _ = writer.Close() }()
+ 
+ 	var owningBus *virtualbus.VirtualBus
+ 	for _, b := range s.busses {
+@@ -672,24 +699,43 @@ func (s *Server) handleUrbStream(conn net.Conn, dev usb.Device) error {
+ 			NumberOfPackets: 0,
+ 			ErrorCount:      0,
+ 		}
++
+ 		var out bytes.Buffer
+ 		out.Grow(retSubmitHeaderSize)
+ 		if err := ret.Write(&out); err != nil {
+ 			return fmt.Errorf("build RET_SUBMIT header: %w", err)
+ 		}
++
+ 		if _, err := writer.Write(out.Bytes()); err != nil {
+ 			return fmt.Errorf("write RET_SUBMIT: %w", err)
+ 		}
++
++		s.FlushMu.Lock()
++		flushTest := s.FlushNow
++		s.FlushNow = false
++		s.FlushMu.Unlock()
++
+ 		if len(respData) > 0 {
++
+ 			if _, err := writer.Write(respData); err != nil {
+ 				return fmt.Errorf("write RET_SUBMIT payload: %w", err)
+ 			}
++
++			if flushTest {
++			  writer.Flush2()
++			}
+ 		}
+ 		_ = xferFlags
+ 		_ = devid
+ 	}
+ }
+ 
++func (s *Server) QueueAutoFlush() {
++	s.FlushMu.Lock()
++	s.FlushNow = true
++	s.FlushMu.Unlock()
++}
++
+ // isClientDisconnect tests whether an error represents a normal client
+ // disconnect (EOF, ECONNRESET, broken pipe, or the Windows WSAECONNRESET
+ // translated error). We treat those as normal client disconnects and log
+diff --git a/lib/viiper/dualshock4.go b/lib/viiper/dualshock4.go
+index 1882c18..1f345e0 100644
+--- a/lib/viiper/dualshock4.go
++++ b/lib/viiper/dualshock4.go
+@@ -189,6 +189,9 @@ func SetDS4DeviceState(handle C.DS4DeviceHandle, state C.DS4DeviceState) bool {
+ 		AccelZ:       int16(state.AccelZ),
+ 	}
+ 	ds4device.UpdateInputState(s)
++
++	shw := dhw.usbServer
++	shw.s.QueueAutoFlush()
+ 	return true
+ }
+ 
+diff --git a/lib/viiper/xbox360.go b/lib/viiper/xbox360.go
+index d7bd6df..0a18737 100644
+--- a/lib/viiper/xbox360.go
++++ b/lib/viiper/xbox360.go
+@@ -181,6 +181,9 @@ func SetXbox360DeviceState(handle C.Xbox360DeviceHandle, state C.Xbox360DeviceSt
+ 
+ 	xbox360device.UpdateInputState(deviceState)
+ 
++	shw := dhw.usbServer
++	shw.s.QueueAutoFlush()
++
+ 	return true
+ }
+ 
