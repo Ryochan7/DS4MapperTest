@@ -37,8 +37,8 @@ namespace DS4MapperTest.InputDevices.SteamControllerTritonLibrary
 
             inputReportBuffer = new byte[device.InputReportLen];
             outputReportBuffer = new byte[device.OutputReportLen];
-            rumbleReportBuffer = new byte[SteamControllerTritonDevice.FEATURE_REPORT_LEN];
-            hapticsReportBuffer = new byte[SteamControllerTritonDevice.FEATURE_REPORT_LEN];
+            rumbleReportBuffer = new byte[device.OutputReportLen];
+            hapticsReportBuffer = new byte[device.OutputReportLen];
         }
 
         public virtual void PrepareDevice()
@@ -430,7 +430,7 @@ namespace DS4MapperTest.InputDevices.SteamControllerTritonLibrary
 
             //}
 
-            device.SendHapticsReportTest(rumbleReportBuffer);
+            device.SendHapticsReportTest(hapticsReportBuffer);
 
             device.hapticInfo.dirty = false;
             device.previousHapticInfo = device.hapticInfo;
