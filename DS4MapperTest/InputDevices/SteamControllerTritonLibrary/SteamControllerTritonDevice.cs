@@ -344,14 +344,31 @@ namespace DS4MapperTest.InputDevices.SteamControllerTritonLibrary
         protected virtual void Configure()
         {
             byte gyroMode = 0x08 | 0x10; // SETTING_GYRO_MODE_SEND_RAW_ACCEL | SETTING_GYRO_MODE_SEND_RAW_GYRO
+            byte hapticType = 0x01; // HAPTIC_TYPE_TICK
+            byte hapticIntensity = 0x02; // HAPTIC_INTENSITY_MEDIUM
+            short masterDbGain = 0x02; // 2 dB
 
             byte[] featureData = new byte[FEATURE_REPORT_LEN];
             featureData[0] = 0x01;
             featureData[1] = 0x87; // ID_SET_SETTINGS_VALUES
-            featureData[2] = 0x03;
+            featureData[2] = 0x0C; // Payload length
+
             featureData[3] = 0x30; // SETTING_IMU_MODE
             featureData[4] = gyroMode; // (setting value is 2 bytes)
             featureData[5] = (byte)(gyroMode >> 8);
+
+            featureData[6] = 0x46; // SETTING_HAPTICS_ENABLED
+            featureData[7] = hapticType; // (setting value is 2 bytes)
+            featureData[8] = (byte)(hapticType >> 8);
+
+            featureData[9] = 0x4F; // SETTING_HAPTIC_INTENSITY
+            featureData[10] = hapticIntensity; // (setting value is 2 bytes)
+            featureData[11] = (byte)(hapticIntensity >> 8);
+
+            featureData[12] = 0x4C; // SETTING_HAPTIC_MASTER_GAIN_DB
+            featureData[13] = (byte)(masterDbGain); // (setting value is 2 bytes)
+            featureData[14] = (byte)(masterDbGain >> 8);
+
             hidDevice.WriteFeatureReport(featureData);
         }
 
@@ -394,19 +411,35 @@ namespace DS4MapperTest.InputDevices.SteamControllerTritonLibrary
 
         public void SendHapticsReportTest(byte[] buffer)
         {
-            ushort rumbleSpeedLeft = (ushort)(hapticInfo.leftActuatorAmpRatio * 255.0);
-            ushort rumbleSpeedRight = (ushort)(hapticInfo.rightActuatorAmpRatio * 255.0);
+            byte side = HAPTIC_POS_LEFT;
+            ushort periodOnUs = (ushort)(0x0FFF * hapticInfo.leftActuatorAmpRatio);
+            ushort periodOffUs = 0xFF;
+            ushort count = (ushort)(hapticInfo.leftActuatorAmpRatio > 0.0 ? 0x01 : 0x00);
 
-            buffer[0] = 0x80; // ID_OUT_REPORT_HAPTIC_RUMBLE
-            buffer[1] = 0x00; // type
-            buffer[2] = 0x00; // intensity (byte 1)
-            buffer[3] = 0x00; // intensity (byte 2)
-            buffer[4] = (byte)(rumbleSpeedLeft); // left speed (byte 1)
-            buffer[5] = (byte)(rumbleSpeedLeft >> 8); // left speed (byte 2)
-            buffer[6] = 0x00; // left gain
-            buffer[7] = (byte)(rumbleSpeedRight); // right speed (byte 1)
-            buffer[8] = (byte)(rumbleSpeedRight >> 8); // right speed (byte 2)
-            buffer[9] = 0x00; // right gain
+            buffer[0] = 0x81; // ID_OUT_REPORT_HAPTIC_PULSE
+            buffer[1] = side;
+            buffer[2] = (byte)(periodOnUs);
+            buffer[3] = (byte)(periodOnUs >> 8);
+            buffer[4] = (byte)(periodOffUs);
+            buffer[5] = (byte)(periodOffUs >> 8);
+            buffer[6] = (byte)(count);
+            buffer[7] = (byte)(count >> 8);
+
+            hidDevice.WriteOutputReportViaInterrupt(buffer, 100);
+
+            side = HAPTIC_POS_RIGHT;
+            periodOnUs = (ushort)(0x0FFF * hapticInfo.rightActuatorAmpRatio);
+            periodOffUs = 0xFF;
+            count = (ushort)(hapticInfo.rightActuatorAmpRatio > 0.0 ? 0x01 : 0x00);
+
+            buffer[0] = 0x81; // ID_OUT_REPORT_HAPTIC_PULSE
+            buffer[1] = side;
+            buffer[2] = (byte)(periodOnUs);
+            buffer[3] = (byte)(periodOnUs >> 8);
+            buffer[4] = (byte)(periodOffUs);
+            buffer[5] = (byte)(periodOffUs >> 8);
+            buffer[6] = (byte)(count);
+            buffer[7] = (byte)(count >> 8);
 
             hidDevice.WriteOutputReportViaInterrupt(buffer, 100);
         }
