@@ -346,7 +346,7 @@ namespace DS4MapperTest.InputDevices.SteamControllerTritonLibrary
             byte gyroMode = 0x08 | 0x10; // SETTING_GYRO_MODE_SEND_RAW_ACCEL | SETTING_GYRO_MODE_SEND_RAW_GYRO
             byte hapticType = 0x01; // HAPTIC_TYPE_TICK
             byte hapticIntensity = 0x02; // HAPTIC_INTENSITY_MEDIUM
-            short masterDbGain = 0x02; // 2 dB
+            short masterDbGain = 0x00; // 0 dB
 
             byte[] featureData = new byte[FEATURE_REPORT_LEN];
             featureData[0] = 0x01;
