@@ -1,14 +1,16 @@
-﻿using System;
+﻿using DS4MapperTest.ActionUtil;
+using DS4MapperTest.ButtonActions;
+using DS4MapperTest.MapperUtil;
+using DS4MapperTest.StickActions;
+using DS4MapperTest.StickModifiers;
+using DS4MapperTest.TouchpadActions;
+using DS4MapperTest.ViewModels.Common;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using DS4MapperTest.ActionUtil;
-using DS4MapperTest.ButtonActions;
-using DS4MapperTest.MapperUtil;
-using DS4MapperTest.TouchpadActions;
-using DS4MapperTest.ViewModels.Common;
 
 namespace DS4MapperTest.ViewModels.TouchpadActionPropViewModels
 {
@@ -41,6 +43,27 @@ namespace DS4MapperTest.ViewModels.TouchpadActionPropViewModels
             }
         }
         public event EventHandler DeadZoneChanged;
+
+        private List<EnumChoiceSelection<StickDeadZone.DeadZoneTypes>> deadZoneModesChoices =
+            new List<EnumChoiceSelection<StickDeadZone.DeadZoneTypes>>()
+            {
+                new EnumChoiceSelection<StickDeadZone.DeadZoneTypes>("Radial", StickDeadZone.DeadZoneTypes.Radial),
+                new EnumChoiceSelection<StickDeadZone.DeadZoneTypes>("Bowtie", StickDeadZone.DeadZoneTypes.Bowtie),
+            };
+
+        public List<EnumChoiceSelection<StickDeadZone.DeadZoneTypes>> DeadZoneModesChoices => deadZoneModesChoices;
+
+        public StickDeadZone.DeadZoneTypes DeadZoneType
+        {
+            get => action.DeadMod.DeadZoneType;
+            set
+            {
+                action.DeadMod.DeadZoneType = value;
+                DeadZoneTypeChanged?.Invoke(this, EventArgs.Empty);
+                ActionPropertyChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        public event EventHandler DeadZoneTypeChanged;
 
         public int DiagonalRange
         {
@@ -254,6 +277,13 @@ namespace DS4MapperTest.ViewModels.TouchpadActionPropViewModels
         }
         public event EventHandler HighlightDeadZoneChanged;
 
+        public bool HighlightDeadZoneType
+        {
+            get => action.ParentAction == null ||
+                action.ChangedProperties.Contains(TouchpadActionPad.PropertyKeyStrings.DEAD_ZONE_TYPE);
+        }
+        public event EventHandler HighlightDeadZoneTypeChanged;
+
         public bool HighlightDiagonalRange
         {
             get => action.ParentAction == null ||
@@ -339,6 +369,7 @@ namespace DS4MapperTest.ViewModels.TouchpadActionPropViewModels
 
             NameChanged += TouchpadActionPadPropViewModel_NameChanged;
             DeadZoneChanged += TouchpadActionPadPropViewModel_DeadZoneChanged;
+            DeadZoneTypeChanged += TouchpadActionPadPropViewModel_DeadZoneTypeChanged;
             DiagonalRangeChanged += TouchpadActionPadPropViewModel_DiagonalRangeChanged;
             RequiresClickChanged += TouchpadActionPadPropViewModel_RequiresClickChanged;
             UseOuterRingChanged += TouchpadActionPadPropViewModel_UseOuterRingChanged;
@@ -348,6 +379,17 @@ namespace DS4MapperTest.ViewModels.TouchpadActionPropViewModels
             SelectedPadModeIndexChanged += TouchpadActionPadPropViewModel_SelectedPadModeIndexChanged;
             OuterRingRangeChoiceChanged += TouchpadActionPadPropViewModel_OuterRingRangeChoiceChanged;
             ActionPresetChoiceChanged += TouchpadActionPadPropViewModel_ActionPresetChoiceChanged;
+        }
+
+        private void TouchpadActionPadPropViewModel_DeadZoneTypeChanged(object sender, EventArgs e)
+        {
+            if (!action.ChangedProperties.Contains(TouchpadActionPad.PropertyKeyStrings.DEAD_ZONE_TYPE))
+            {
+                action.ChangedProperties.Add(TouchpadActionPad.PropertyKeyStrings.DEAD_ZONE_TYPE);
+            }
+
+            action.RaiseNotifyPropertyChange(mapper, TouchpadActionPad.PropertyKeyStrings.DEAD_ZONE_TYPE);
+            HighlightDeadZoneChanged?.Invoke(this, EventArgs.Empty);
         }
 
         private void TouchpadActionPadPropViewModel_ActionPresetChoiceChanged(object sender, EventArgs e)
