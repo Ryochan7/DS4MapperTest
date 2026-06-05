@@ -120,9 +120,8 @@ namespace DS4MapperTest
             // TODO: Hide for now. Assume Proteus is the new dongle type and just target that for now
             new VidPidMeta(STEAM_CONTROLLER_VENDOR_ID, TRITON_PROTEUS_PID, "Steam Controller 2026", InputDeviceType.SteamControllerTriton,
                 VidPidMeta.UsedConnectionBus.HID),
-            // TODO: Hide for now
-            //new VidPidMeta(STEAM_CONTROLLER_VENDOR_ID, TRITON_BLE_PID, "Steam Controller 2026 BLE", InputDeviceType.SteamControllerTriton,
-            //    VidPidMeta.UsedConnectionBus.HID),
+            new VidPidMeta(STEAM_CONTROLLER_VENDOR_ID, TRITON_BLE_PID, "Steam Controller 2026 BLE", InputDeviceType.SteamControllerTriton,
+                VidPidMeta.UsedConnectionBus.HID),
             new VidPidMeta(EIGHTBITDO_VID, EIGHTBITDO_ULTIMATE_2_WIRELESS_PID, "8BitDo Ultimate 2 Wireless BT Controller", InputDeviceType.EightBitDoUltimate2Wireless,
                 VidPidMeta.UsedConnectionBus.HID)
         };
@@ -503,15 +502,16 @@ namespace DS4MapperTest
                         result = true;
                     }
                 }
-                // TODO: Not sure about BLE support
-                //else if (meta.pid == TRITON_BLE_PID)
-                //{
-                //    SteamControllerTritonBTDevice tempDev = new SteamControllerTritonBTDevice(hidDev, meta.displayName);
-                //    foundKnownDevices.Add(hidDev.DevicePath, tempDev);
-                //    revFoundKnownDevices.Add(tempDev, hidDev.DevicePath);
-                //    newKnownDevices.Add(hidDev.DevicePath, tempDev);
-                //    result = true;
-                //}
+                else if (meta.pid == TRITON_BLE_PID)
+                {
+                    SteamControllerTritonDevice tempDev =
+                        new SteamControllerTritonDevice(hidDev, meta.displayName);
+
+                    foundKnownDevices.Add(hidDev.DevicePath, tempDev);
+                    revFoundKnownDevices.Add(tempDev, hidDev.DevicePath);
+                    newKnownDevices.Add(hidDev.DevicePath, tempDev);
+                    result = true;
+                }
             }
 
             return result;
@@ -592,7 +592,7 @@ namespace DS4MapperTest
                 case SteamControllerTritonDevice:
                     {
                         SteamControllerTritonDevice steamDevice = device as SteamControllerTritonDevice;
-                        if (steamDevice.ConType != SteamControllerTritonDevice.ConnectionType.Bluetooth)
+                        //if (steamDevice.ConType != SteamControllerTritonDevice.ConnectionType.Bluetooth)
                         {
                             SteamControllerTritonReader reader = new SteamControllerTritonReader(steamDevice);
                             result = new SteamControllerTritonMapper(steamDevice, reader, appGlobal);
