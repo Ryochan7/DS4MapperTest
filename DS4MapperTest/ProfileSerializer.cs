@@ -488,7 +488,8 @@ namespace DS4MapperTest
             actionLayer = layer;
             parentActionSet = tempActionSet;
 
-            foreach (MapAction action in layer.LayerActions)
+            List<MapAction> tempActionList = layer.LayerActions.OrderBy((item) => item.Id).ToList();
+            foreach (MapAction action in tempActionList)
             {
                 //MapActionSerializer serializer = new MapActionSerializer(layer, action);
                 MapActionSerializer serializer = MapActionSerializerFactory.CreateSerializer(layer, action);
