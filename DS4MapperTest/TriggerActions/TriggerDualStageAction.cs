@@ -22,6 +22,7 @@ namespace DS4MapperTest.TriggerActions
             public const string HIPFIRE_DELAY = "HipFireDelay";
             public const string ANTIDEAD_ZONE = "AntiDeadZone";
             public const string FORCE_HIP_FIRE_TIME = "ForceHipFireTime";
+            public const string FULL_PULL_HAPTICS_INTENSITY = "FullPullHapticsIntensity";
             //public const string OUTPUT_TRIGGER = "OutputTrigger";
         }
 
@@ -36,6 +37,7 @@ namespace DS4MapperTest.TriggerActions
             PropertyKeyStrings.HIPFIRE_DELAY,
             PropertyKeyStrings.ANTIDEAD_ZONE,
             PropertyKeyStrings.FORCE_HIP_FIRE_TIME,
+            PropertyKeyStrings.FULL_PULL_HAPTICS_INTENSITY,
             //PropertyKeyStrings.OUTPUT_TRIGGER,
         };
 
@@ -128,6 +130,19 @@ namespace DS4MapperTest.TriggerActions
             set => hipFireMs = value;
         }
 
+        private bool feedbackActive;
+        private bool wasFeedbackActive;
+        private HapticsIntensity fullPullActionHapticsIntensity;
+        public HapticsIntensity FullPullActionHapticsIntensity
+        {
+            get => fullPullActionHapticsIntensity;
+            set
+            {
+                fullPullActionHapticsIntensity = value;
+                hapticsIntensityRatio = GetHapticsIntensityRatio(value);
+            }
+        }
+
         public AxisDeadZone DeadMod
         {
             get => deadMod;
@@ -195,8 +210,16 @@ namespace DS4MapperTest.TriggerActions
                 (previousActiveButtons & ActiveZoneButtons.FullPull) != 0;
             if (wasFullPullActive)
             {
+                if (feedbackActive)
+                {
+                    mapper.SetFeedback(mappingId, OFF_HAPTICS_INTENSITY_RATIO);
+                    feedbackActive = false;
+                }
+
                 fullPullActButton.PrepareAnalog(mapper, 0.0, 0.0);
                 fullPullActButton.Event(mapper);
+
+                wasFeedbackActive = false;
             }
 
             if (softPullActActive)
@@ -209,6 +232,18 @@ namespace DS4MapperTest.TriggerActions
             {
                 fullPullActButton.PrepareAnalog(mapper, axisNorm, 1.0);
                 if (fullPullActButton.active) fullPullActButton.Event(mapper);
+
+                if (!wasFeedbackActive)
+                {
+                    mapper.SetFeedback(mappingId, hapticsIntensityRatio);
+                    wasFeedbackActive = true;
+                    feedbackActive = true;
+                }
+                else if (feedbackActive)
+                {
+                    mapper.SetFeedback(mappingId, OFF_HAPTICS_INTENSITY_RATIO);
+                    feedbackActive = false;
+                }
             }
 
             previousActiveButtons = currentActiveButtons;
@@ -224,6 +259,13 @@ namespace DS4MapperTest.TriggerActions
             if (fullPullActActive)
             {
                 fullPullActButton.Release(mapper, resetState, ignoreReleaseActions);
+
+                if (feedbackActive)
+                {
+                    mapper.SetFeedback(mappingId, OFF_HAPTICS_INTENSITY_RATIO);
+                    feedbackActive = false;
+                    wasFeedbackActive = false;
+                }
             }
 
             axisNorm = 0.0;
@@ -231,6 +273,7 @@ namespace DS4MapperTest.TriggerActions
             previousActiveButtons = currentActiveButtons;
             fullPullClick = false;
             ResetStageState();
+            feedbackActive = wasFeedbackActive = false;
             outputActive = false;
             active = activeEvent = false;
         }
@@ -245,6 +288,12 @@ namespace DS4MapperTest.TriggerActions
             if (fullPullActActive && !useParentFullPullBtn)
             {
                 fullPullActButton.Release(mapper, resetState);
+
+                if (feedbackActive)
+                {
+                    mapper.SetFeedback(mappingId, OFF_HAPTICS_INTENSITY_RATIO);
+                    feedbackActive = false;
+                }
             }
 
             axisNorm = 0.0;
@@ -252,6 +301,7 @@ namespace DS4MapperTest.TriggerActions
             previousActiveButtons = currentActiveButtons;
             fullPullClick = false;
             ResetStageState();
+            feedbackActive = wasFeedbackActive = false;
             outputActive = false;
             active = activeEvent = false;
         }
@@ -304,6 +354,9 @@ namespace DS4MapperTest.TriggerActions
                             break;
                         case PropertyKeyStrings.FORCE_HIP_FIRE_TIME:
                             forceHipTime = tempDualTrigAction.forceHipTime;
+                            break;
+                        case PropertyKeyStrings.FULL_PULL_HAPTICS_INTENSITY:
+                            FullPullActionHapticsIntensity = tempDualTrigAction.fullPullActionHapticsIntensity;
                             break;
                         default:
                             break;
@@ -598,6 +651,9 @@ namespace DS4MapperTest.TriggerActions
                     break;
                 case PropertyKeyStrings.FORCE_HIP_FIRE_TIME:
                     forceHipTime = tempDualTrigAction.forceHipTime;
+                    break;
+                case PropertyKeyStrings.FULL_PULL_HAPTICS_INTENSITY:
+                    FullPullActionHapticsIntensity = tempDualTrigAction.fullPullActionHapticsIntensity;
                     break;
                 default:
                     break;

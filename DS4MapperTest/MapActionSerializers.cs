@@ -760,6 +760,22 @@ namespace DS4MapperTest
             }
             public event EventHandler ForceHipFireDelayChanged;
 
+            [JsonConverter(typeof(StringEnumConverter))]
+            public MapAction.HapticsIntensity FullPullHapticsIntensity
+            {
+                get => triggerDualAction.FullPullActionHapticsIntensity;
+                set
+                {
+                    triggerDualAction.FullPullActionHapticsIntensity = value;
+                    FullPullHapticsIntensityChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            public event EventHandler FullPullHapticsIntensityChanged;
+            public bool ShouldSerializeFullPullHapticsIntensity()
+            {
+                return triggerDualAction.ChangedProperties.Contains(TriggerDualStageAction.PropertyKeyStrings.FULL_PULL_HAPTICS_INTENSITY);
+            }
+
             public TriggerDualStageSettings(TriggerDualStageAction action)
             {
                 triggerDualAction = action;
@@ -853,6 +869,12 @@ namespace DS4MapperTest
             settings.DualStageModeChanged += Settings_DualStageModeChanged;
             settings.HipFireDelayChanged += Settings_HipFireDelayChanged;
             settings.ForceHipFireDelayChanged += Settings_ForceHipFireDelayChanged;
+            settings.FullPullHapticsIntensityChanged += Settings_FullPullHapticsIntensityChanged;
+        }
+
+        private void Settings_FullPullHapticsIntensityChanged(object sender, EventArgs e)
+        {
+            triggerDualAction.ChangedProperties.Add(TriggerDualStageAction.PropertyKeyStrings.FULL_PULL_HAPTICS_INTENSITY);
         }
 
         private void Settings_ForceHipFireDelayChanged(object sender, EventArgs e)
