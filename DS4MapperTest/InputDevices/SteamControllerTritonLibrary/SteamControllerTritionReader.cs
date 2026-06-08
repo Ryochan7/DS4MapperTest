@@ -330,12 +330,14 @@ namespace DS4MapperTest.InputDevices.SteamControllerTritonLibrary
 
                         // TODO: Use this somewhere.
                         short tempTouchpadPressure = (short)((inputReportBuffer[23] << 8) | inputReportBuffer[22]);
+                        current.LeftPad.Pressure = tempTouchpadPressure;
 
                         current.RightPad.X = (short)((inputReportBuffer[25] << 8) | inputReportBuffer[24]);
                         current.RightPad.Y = (short)((inputReportBuffer[27] << 8) | inputReportBuffer[26]);
 
                         // TODO: Use this somewhere.
                         tempTouchpadPressure = (short)((inputReportBuffer[29] << 8) | inputReportBuffer[28]);
+                        current.RightPad.Pressure = tempTouchpadPressure;
 
                         //Trace.WriteLine(string.Format("X: {0} Y: {1} {2}", current.RightPad.X, current.RightPad.Y, current.RightPad.Touch));
 
@@ -344,6 +346,8 @@ namespace DS4MapperTest.InputDevices.SteamControllerTritonLibrary
                                 (uint)(inputReportBuffer[30 + 1] << 8) |
                                 (uint)(inputReportBuffer[30 + 2] << 16) |
                                 (uint)(inputReportBuffer[30 + 3] << 24);
+
+                        current.timestamp = devTimestamp;
 
                         current.Motion.AccelX = (short)(-1 * ((inputReportBuffer[35] << 8) | inputReportBuffer[34]));
                         current.Motion.AccelY = (short)((inputReportBuffer[37] << 8) | inputReportBuffer[36]);

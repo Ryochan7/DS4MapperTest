@@ -12,6 +12,7 @@ namespace DS4MapperTest.InputDevices.SteamControllerTritonLibrary
         {
             public short X;
             public short Y;
+            public short Pressure;
             public bool Touch;
             public bool Click;
 
@@ -92,6 +93,7 @@ namespace DS4MapperTest.InputDevices.SteamControllerTritonLibrary
         public bool DPadRight;
         public bool LeftGripSenseTouch;
         public bool RightGripSenseTouch;
+        public uint timestamp;
         public SteamControllerMotion Motion;
     }
 }
