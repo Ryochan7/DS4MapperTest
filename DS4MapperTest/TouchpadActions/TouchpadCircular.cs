@@ -28,6 +28,7 @@ namespace DS4MapperTest.TouchpadActions
             PropertyKeyStrings.SCROLL_BUTTON_1,
             PropertyKeyStrings.SCROLL_BUTTON_2,
             PropertyKeyStrings.SENSITIVITY,
+            PropertyKeyStrings.HAPTICS_INTENSITY,
         };
 
         private enum ClickDirection
