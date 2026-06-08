@@ -8,55 +8,8 @@ using System.Threading.Tasks;
 
 namespace DS4MapperTest.InputDevices.SteamControllerTritonLibrary
 {
-    public class SteamControllerTritonDevice : InputDeviceBase
+    public partial class SteamControllerTritonDevice : InputDeviceBase
     {
-        public const byte ID_TRITON_CONTROLLER_STATE = 0x42;
-        public const byte ID_TRITON_BATTERY_STATUS = 0x43;
-        public const byte ID_TRITON_CONTROLLER_STATE_BLE = 0x45;
-        public const byte ID_TRITON_WIRELESS_STATUS_X = 0x46;
-        public const byte ID_TRITON_WIRELESS_STATUS = 0x79;
-
-        // TODO: Old from 2015 SC code. Remove in future
-        public static class SCPacketType
-        {
-            public const byte PT_INPUT = 0x01;
-            public const byte PT_HOTPLUG = 0x03;
-            public const byte PT_IDLE = 0x04;
-            public const byte PT_BATTERY = 0x04;
-            public const byte PT_OFF = 0x9F;
-            public const byte PT_AUDIO = 0xB6;
-            public const byte PT_CLEAR_MAPPINGS = 0x81;
-            public const byte PT_CONFIGURE = 0x87;
-            public const byte PT_LED = 0x87;
-            public const byte PT_CALIBRATE_JOYSTICK = 0xBF;
-            public const byte PT_CALIBRATE_TRACKPAD = 0xA7;
-            public const byte PT_SET_AUDIO_INDICES = 0xC1;
-            public const byte PT_LIZARD_BUTTONS = 0x85;
-            public const byte PT_LIZARD_MOUSE = 0x8E;
-            public const byte PT_FEEDBACK = 0x8F;
-            public const byte PT_RESET = 0x95;
-            public const byte PT_GET_SERIAL = 0xAE;
-        }
-
-        // TODO: Old from 2015 SC code. Remove in future
-        public static class SCPacketLength
-        {
-            public const byte PL_LED = 0x03;
-            public const byte PL_OFF = 0x04;
-            public const byte PL_FEEDBACK = 0x07;
-            public const byte PL_CONFIGURE = 0x15;
-            public const byte PL_CONFIGURE_BT = 0x0F;
-            public const byte PL_GET_SERIAL = 0x15;
-        }
-
-        // TODO: Old from 2015 SC code. Remove in future
-        public static class SCConfigType
-        {
-            public const byte CT_LED = 0x2D;
-            public const byte CT_CONFIGURE = 0x32;
-            public const byte CT_CONFIGURE_BT = 0x18;
-        }
-
         public enum SCControllerState : uint
         {
             SS_NOT_CONFIGURED,
