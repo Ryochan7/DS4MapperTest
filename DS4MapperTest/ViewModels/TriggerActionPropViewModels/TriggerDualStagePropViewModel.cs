@@ -1,11 +1,13 @@
-﻿using System;
+﻿using DS4MapperTest.ButtonActions;
+using DS4MapperTest.TouchpadActions;
+using DS4MapperTest.TriggerActions;
+using DS4MapperTest.ViewModels.Common;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using DS4MapperTest.ButtonActions;
-using DS4MapperTest.TriggerActions;
 
 namespace DS4MapperTest.ViewModels.TriggerActionPropViewModels
 {
@@ -132,6 +134,26 @@ namespace DS4MapperTest.ViewModels.TriggerActionPropViewModels
             get => action.SoftPullActButton.DescribeActions(mapper);
         }
 
+        private List<EnumChoiceSelection<MapAction.HapticsIntensity>> hapticsIntensityItems = new List<EnumChoiceSelection<MapAction.HapticsIntensity>>()
+        {
+            new EnumChoiceSelection<MapAction.HapticsIntensity>("Off", MapAction.HapticsIntensity.Off),
+            new EnumChoiceSelection<MapAction.HapticsIntensity>("Light", MapAction.HapticsIntensity.Light),
+            new EnumChoiceSelection<MapAction.HapticsIntensity>("Medium", MapAction.HapticsIntensity.Medium),
+            new EnumChoiceSelection<MapAction.HapticsIntensity>("Heavy", MapAction.HapticsIntensity.Heavy),
+            new EnumChoiceSelection<MapAction.HapticsIntensity>("Full", MapAction.HapticsIntensity.Full),
+        };
+        public List<EnumChoiceSelection<MapAction.HapticsIntensity>> HapticsIntensityItems => hapticsIntensityItems;
+        public MapAction.HapticsIntensity HapticsChoice
+        {
+            get => action.FullPullActionHapticsIntensity;
+            set
+            {
+                action.FullPullActionHapticsIntensity = value;
+                HapticsChoiceChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        public event EventHandler HapticsChoiceChanged;
+
         public bool HighlightName
         {
             get => action.ParentAction == null ||
@@ -181,6 +203,13 @@ namespace DS4MapperTest.ViewModels.TriggerActionPropViewModels
         }
         public event EventHandler HighlightDSModeChanged;
 
+        public bool HighlightHapticsIntensity
+        {
+            get => action.ParentAction == null ||
+                action.ChangedProperties.Contains(TriggerDualStageAction.PropertyKeyStrings.FULL_PULL_HAPTICS_INTENSITY);
+        }
+        public event EventHandler HighlightHapticsIntensityChanged;
+
         public event EventHandler ActionPropertyChanged;
 
         public event EventHandler<TriggerMapAction> ActionChanged;
@@ -221,7 +250,19 @@ namespace DS4MapperTest.ViewModels.TriggerActionPropViewModels
             MaxZoneChanged += TriggerDualStagePropViewModel_MaxZoneChanged;
             HipFireDelayChanged += TriggerDualStagePropViewModel_HipFireDelayChanged;
             ForceHipFireDelayChanged += TriggerDualStagePropViewModel_ForceHipFireDelayChanged;
+            HapticsChoiceChanged += TriggerDualStagePropViewModel_HapticsChoiceChanged;
             SelectedDSModeIndexChanged += TriggerDualStagePropViewModel_SelectedDSModeIndexChanged;
+        }
+
+        private void TriggerDualStagePropViewModel_HapticsChoiceChanged(object sender, EventArgs e)
+        {
+            if (!action.ChangedProperties.Contains(TriggerDualStageAction.PropertyKeyStrings.FULL_PULL_HAPTICS_INTENSITY))
+            {
+                action.ChangedProperties.Add(TriggerDualStageAction.PropertyKeyStrings.FULL_PULL_HAPTICS_INTENSITY);
+            }
+
+            action.RaiseNotifyPropertyChange(mapper, TriggerDualStageAction.PropertyKeyStrings.FULL_PULL_HAPTICS_INTENSITY);
+            HighlightHapticsIntensityChanged?.Invoke(this, EventArgs.Empty);
         }
 
         private void TriggerDualStagePropViewModel_ForceHipFireDelayChanged(object sender, EventArgs e)

@@ -50,7 +50,7 @@
                     <ComboBox.Style>
                         <Style TargetType="ComboBox" BasedOn="{StaticResource ComboBoxBaseStyle}">
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding HighlightGyroTriggerCond}" Value="False">
+                                <DataTrigger Binding="{Binding HighlightHapticsIntensity}" Value="False">
                                     <Setter Property="Opacity" Value="0.7" />
                                 </DataTrigger>
                             </Style.Triggers>
