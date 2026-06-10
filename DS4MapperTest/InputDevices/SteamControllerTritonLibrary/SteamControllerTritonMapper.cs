@@ -688,24 +688,15 @@ namespace DS4MapperTest.InputDevices.SteamControllerTritonLibrary
 
                 ProcessActionSetLayerChecks();
 
-                // Prefer haptics event over rumble
+                // Queue touchpad haptics event before rumble
                 if (hapticsEvent)
                 {
                     reader.WriteHapticsReport();
                     hapticsEvent = false;
-
-                    bool rumbleActive = device.currentLeftAmpRatio != 0.0 || device.currentRightAmpRatio != 0.0;
-                    if (rumbleActive)
-                    {
-                        device.ResetRumbleData();
-                    }
-
-                    if (standBySw.IsRunning)
-                    {
-                        standBySw.Reset();
-                    }
                 }
-                else if (device.rumbleDirty)
+
+                // Queue grip rumble motor event
+                if (device.rumbleDirty)
                 {
                     reader.WriteRumbleReport();
                     device.rumbleDirty = false;
@@ -725,7 +716,7 @@ namespace DS4MapperTest.InputDevices.SteamControllerTritonLibrary
                 {
                     bool rumbleActive = device.currentLeftAmpRatio != 0.0 ||
                         device.currentRightAmpRatio != 0.0;
-                    if (standBySw.ElapsedMilliseconds >= 3000L && rumbleActive)
+                    if (rumbleActive && standBySw.ElapsedMilliseconds >= 3000L)
                     {
                         // Write new rumble report before currently running rumble ends
                         reader.WriteRumbleReport();
