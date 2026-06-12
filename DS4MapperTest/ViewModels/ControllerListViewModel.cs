@@ -1,16 +1,18 @@
-﻿using System;
+﻿//using DS4MapperTest.SteamControllerLibrary;
+using DS4MapperTest.Common;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Data;
 using System.Windows.Input;
-using Newtonsoft.Json;
-//using DS4MapperTest.SteamControllerLibrary;
-using DS4MapperTest.Common;
 
 namespace DS4MapperTest.ViewModels
 {
@@ -255,6 +257,48 @@ namespace DS4MapperTest.ViewModels
             map.ProcessMappingChangeAction(() =>
             {
             });
+        }
+
+        public void DuplicateProfile(DeviceListItem item, string inputFile, string outputFile)
+        {
+            // Copy file as is
+            File.Copy(inputFile, outputFile);
+
+            string tempOutJson = string.Empty;
+            string profileName = string.Empty;
+            // Read output file as a JSON object
+            using (StreamReader sreader = new StreamReader(outputFile))
+            using (JsonTextReader jReader = new JsonTextReader(sreader))
+            {
+                JObject root = (JObject)JToken.ReadFrom(jReader);
+
+                // Edit JSON and output to string
+                profileName = Path.GetFileNameWithoutExtension(outputFile);
+                root["Name"] = profileName;
+                root["Description"] = profileName;
+                root["CreationDate"] = DateTime.UtcNow;
+                tempOutJson = root.ToString();
+            }
+
+            // Write update JSON string back to output file
+            if (!string.IsNullOrEmpty(tempOutJson))
+            {
+                using (StreamWriter writer = new StreamWriter(outputFile))
+                using (JsonTextWriter jwriter = new JsonTextWriter(writer))
+                {
+                    jwriter.Formatting = Formatting.Indented;
+                    jwriter.Indentation = 2;
+                    JObject tempJObj = JObject.Parse(tempOutJson);
+                    tempJObj.WriteTo(jwriter);
+                    //writer.Write(tempOutJson);
+                }
+
+                // Update profile list
+                Mapper mapper = backendManager.MapperDict[item.Device.Index];
+                backendManager.DeviceProfileListDict[mapper.DeviceType].CreateProfileItem(outputFile,
+                    profileName,
+                    mapper.DeviceType);
+            }
         }
     }
 
