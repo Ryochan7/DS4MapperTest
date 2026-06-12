@@ -2561,21 +2561,26 @@ namespace DS4MapperTest
             ds4State.Triggerl2 = (byte)(intermediateState.LTrigger * 255);
             ds4State.Triggerr2 = (byte)(intermediateState.RTrigger * 255);
 
+            ds4State.Gyrox = intermediateState.GyroYaw;
+            ds4State.Gyroy = intermediateState.GyroPitch;
+            ds4State.Gyroz = intermediateState.GyroRoll;
+            ds4State.Accelx = intermediateState.AccelX;
+            ds4State.Accely = intermediateState.AccelY;
+            ds4State.Accelz = intermediateState.AccelZ;
+
             LibVIIPER.SetDS4DeviceState(deviceHandle, ds4State);
 
-            //outDS4Report.bThumbLX = (byte)((intermediateState.LX >= 0 ? (DS4_STICK_MAX - DS4_STICK_MID) : -(DS4_STICK_MIN - DS4_STICK_MID)) * intermediateState.LX + DS4_STICK_MID);
-            //outDS4Report.bThumbLY = (byte)((intermediateState.LY >= 0 ? -(DS4_STICK_MIN - DS4_STICK_MID) : (DS4_STICK_MAX - DS4_STICK_MID)) * -intermediateState.LY + DS4_STICK_MID);
-
-            //outDS4Report.bThumbRX = (byte)((intermediateState.RX >= 0 ? (DS4_STICK_MAX - DS4_STICK_MID) : -(DS4_STICK_MIN - DS4_STICK_MID)) * intermediateState.RX + DS4_STICK_MID);
-            //outDS4Report.bThumbRY = (byte)((intermediateState.RY >= 0 ? -(DS4_STICK_MIN - DS4_STICK_MID) : (DS4_STICK_MAX - DS4_STICK_MID)) * -intermediateState.RY + DS4_STICK_MID);
-
-            //outDS4Report.bTriggerL = (byte)(intermediateState.LTrigger * 255);
-            //outDS4Report.bTriggerR = (byte)(intermediateState.RTrigger * 255);
-
-            //DS4OutDeviceExtras.CopyBytes(ref outDS4Report, rawOutReportEx);
-            //tempDS4.SubmitRawReport(rawOutReportEx);
-
             intermediateState.PacketCounter = intermediateState.PacketCounter + 1;
+        }
+
+        public void PopulateStateGyro(ref GyroEventFrame frame)
+        {
+            intermediateState.GyroYaw = frame.GyroYaw;
+            intermediateState.GyroPitch = frame.GyroPitch;
+            intermediateState.GyroRoll = frame.GyroRoll;
+            intermediateState.AccelX = frame.AccelX;
+            intermediateState.AccelY = frame.AccelY;
+            intermediateState.AccelZ = frame.AccelZ;
         }
 
         public void ProcessActionSetLayerChecks()

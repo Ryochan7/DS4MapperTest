@@ -38,6 +38,19 @@ namespace DS4MapperTest.MapperUtil
         public bool DpadDown;
         public bool DpadRight;
 
+        public short GyroYaw;
+        public short GyroPitch;
+        public short GyroRoll;
+        public short AngGyroYaw;
+        public short AngGyroPitch;
+        public short AngGyroRoll;
+        public short AccelX;
+        public short AccelY;
+        public short AccelZ;
+        public short AccelXG;
+        public short AccelYG;
+        public short AccelZG;
+
         public bool Dirty;
     }
 }

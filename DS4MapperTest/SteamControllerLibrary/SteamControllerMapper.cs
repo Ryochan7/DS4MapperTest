@@ -516,7 +516,7 @@ namespace DS4MapperTest.SteamControllerLibrary
                 // Skip if duration is less than 10 ms
                 //if (currentMapperState.timeElapsed > 0.01)
                 {
-                    GyroEventFrame mouseFrame = new GyroEventFrame
+                    GyroEventFrame gyroFrame = new GyroEventFrame
                     {
                         GyroYaw = currentMapperState.Motion.GyroYaw,
                         GyroPitch = currentMapperState.Motion.GyroPitch,
@@ -535,7 +535,8 @@ namespace DS4MapperTest.SteamControllerLibrary
                         //elapsedReference = device.BaseElapsedReference,
                     };
 
-                    gyroAct.Prepare(this, ref mouseFrame);
+                    PopulateStateGyro(ref gyroFrame);
+                    gyroAct.Prepare(this, ref gyroFrame);
                     if (gyroAct.active)
                     {
                         gyroAct.Event(this);
