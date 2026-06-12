@@ -102,6 +102,7 @@ namespace DS4MapperTest.InputDevices.SteamControllerTritonLibrary
         public const int PROTEUS_DONGLE_PID = 0x1304;
         public const int NEREID_DONGLE_PID = 0x1305;
         public const int BLE_PID = 0x1303;
+        private const int FEATURE_REPORT_COMMAND_ID = 0x01;
 
         public virtual int InputReportLen { get => INPUT_REPORT_LEN; }
         public virtual int OutputReportLen { get => OUTPUT_REPORT_LEN; }
@@ -395,6 +396,22 @@ namespace DS4MapperTest.InputDevices.SteamControllerTritonLibrary
             buffer[7] = (byte)(count >> 8);
 
             hidDevice.WriteOutputReportViaInterrupt(buffer, 100);
+        }
+
+        private void SendFeatureCommand(byte commandId, byte[] payload)
+        {
+            byte payloadLen = (byte)payload.Length;
+            if (payloadLen > FEATURE_REPORT_LEN - 3)
+            {
+                return;
+            }
+
+            byte[] featureData = new byte[FEATURE_REPORT_LEN];
+            featureData[0] = FEATURE_REPORT_COMMAND_ID;
+            featureData[1] = commandId;
+            featureData[2] = payloadLen;
+            Array.Copy(payload, 0, featureData, 3, payloadLen);
+            hidDevice.WriteFeatureReport(featureData);
         }
 
         public void ResetRumbleData()
