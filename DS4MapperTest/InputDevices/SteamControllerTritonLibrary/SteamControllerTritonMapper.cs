@@ -125,38 +125,42 @@ namespace DS4MapperTest.InputDevices.SteamControllerTritonLibrary
 
             StickDefinition.StickAxisData lxAxis = new StickDefinition.StickAxisData
             {
-                min = -30000,
-                max = 30000,
+                min = -32768,
+                max = 32767,
                 mid = 0,
+
                 hard_max = 32767,
-                hard_min = -32767,
+                hard_min = -32768,
             };
             StickDefinition.StickAxisData lyAxis = new StickDefinition.StickAxisData
             {
-                min = -30000,
-                max = 30000,
+                min = -32768,
+                max = 32767,
                 mid = 0,
+
                 hard_max = 32767,
-                hard_min = -32767,
+                hard_min = -32768,
             };
             //StickDefinition lsDefintion = new StickDefinition(STICK_MIN, STICK_MAX, STICK_NEUTRAL, StickActionCodes.LS);
             lsDefintion = new StickDefinition(lxAxis, lyAxis, StickActionCodes.LS);
 
             StickDefinition.StickAxisData rxAxis = new StickDefinition.StickAxisData
             {
-                min = -30000,
-                max = 30000,
+                min = -32768,
+                max = 32767,
                 mid = 0,
+
                 hard_max = 32767,
-                hard_min = -32767,
+                hard_min = -32768,
             };
             StickDefinition.StickAxisData ryAxis = new StickDefinition.StickAxisData
             {
-                min = -30000,
-                max = 30000,
+                min = -32768,
+                max = 32767,
                 mid = 0,
+
                 hard_max = 32767,
-                hard_min = -32767,
+                hard_min = -32768,
             };
             //StickDefinition lsDefintion = new StickDefinition(STICK_MIN, STICK_MAX, STICK_NEUTRAL, StickActionCodes.LS);
             rsDefintion = new StickDefinition(rxAxis, ryAxis, StickActionCodes.RS);
@@ -238,7 +242,7 @@ namespace DS4MapperTest.InputDevices.SteamControllerTritonLibrary
 
             gyroSensDefinition = new GyroSensDefinition()
             {
-                elapsedReference = 125.0,
+                elapsedReference = device.BaseElapsedReference,
                 mouseCoefficient = 0.025,
                 mouseOffset = 0.2,
 
@@ -671,8 +675,8 @@ namespace DS4MapperTest.InputDevices.SteamControllerTritonLibrary
                         AccelYG = currentMapperState.Motion.AccelYG,
                         AccelZG = currentMapperState.Motion.AccelZG,
                         timeElapsed = currentLatency,
-                        elapsedReference = 125.0,
-                        //elapsedReference = device.BaseElapsedReference,
+                        //elapsedReference = 125.0,
+                        elapsedReference = device.BaseElapsedReference,
                     };
 
                     PopulateStateGyro(ref gyroFrame);
