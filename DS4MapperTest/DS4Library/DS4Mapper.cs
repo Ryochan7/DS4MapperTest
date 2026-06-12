@@ -498,6 +498,7 @@ namespace DS4MapperTest.DS4Library
                         elapsedReference = gyroSensDefinition.elapsedReference,
                     };
 
+                    PopulateStateGyro(ref gyroFrame);
                     gyroAct.Prepare(this, ref gyroFrame);
                     if (gyroAct.active)
                     {

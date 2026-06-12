@@ -553,7 +553,7 @@ namespace DS4MapperTest.JoyConLibrary
                     bool runPrepareAction = (gyroAct.OnlyOnPrimary && currentDev);
                     //if (!gyroAct.OnlyOnPrimary || runPrepareAction)
                     {
-                        GyroEventFrame mouseFrame = new GyroEventFrame
+                        GyroEventFrame gyroFrame = new GyroEventFrame
                         {
                             GyroYaw = currentMapperState.MotionR.GyroYaw,
                             GyroPitch = currentMapperState.MotionR.GyroPitch,
@@ -572,9 +572,10 @@ namespace DS4MapperTest.JoyConLibrary
                             elapsedReference = device.BaseElapsedReference * 3,
                         };
 
+                        PopulateStateGyro(ref gyroFrame);
                         //if (currentDev || runPrepareAction)
                         {
-                            gyroAct.Prepare(this, ref mouseFrame);
+                            gyroAct.Prepare(this, ref gyroFrame);
                         }
 
                         if (gyroAct.active)

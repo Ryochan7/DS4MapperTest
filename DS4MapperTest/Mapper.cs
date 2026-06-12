@@ -2413,10 +2413,27 @@ namespace DS4MapperTest
             outDS4Report.bTriggerL = (byte)(intermediateState.LTrigger * 255);
             outDS4Report.bTriggerR = (byte)(intermediateState.RTrigger * 255);
 
+            outDS4Report.wGyroX = intermediateState.GyroYaw;
+            outDS4Report.wGyroY = intermediateState.GyroPitch;
+            outDS4Report.wGyroZ = intermediateState.GyroRoll;
+            outDS4Report.wAccelX = intermediateState.AccelX;
+            outDS4Report.wAccelY = intermediateState.AccelY;
+            outDS4Report.wAccelZ = intermediateState.AccelZ;
+
             DS4OutDeviceExtras.CopyBytes(ref outDS4Report, rawOutReportEx);
             tempDS4.SubmitRawReport(rawOutReportEx);
 
             intermediateState.PacketCounter = intermediateState.PacketCounter + 1;
+        }
+
+        public void PopulateStateGyro(ref GyroEventFrame frame)
+        {
+            intermediateState.GyroYaw = frame.GyroYaw;
+            intermediateState.GyroPitch = frame.GyroPitch;
+            intermediateState.GyroRoll = frame.GyroRoll;
+            intermediateState.AccelX = frame.AccelX;
+            intermediateState.AccelY = frame.AccelY;
+            intermediateState.AccelZ = frame.AccelZ;
         }
 
         public void ProcessActionSetLayerChecks()

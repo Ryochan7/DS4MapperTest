@@ -406,6 +406,7 @@ namespace DS4MapperTest.InputDevices.EightBitDoLibrary
                         elapsedReference = gyroSensDefinition.elapsedReference,
                     };
 
+                    PopulateStateGyro(ref gyroFrame);
                     gyroAct.Prepare(this, ref gyroFrame);
                     if (gyroAct.active)
                     {
