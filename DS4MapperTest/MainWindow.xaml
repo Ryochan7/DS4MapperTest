@@ -69,6 +69,7 @@
                                                         <hc:SplitButton.DropDownContent>
                                                             <StackPanel>
                                                                 <MenuItem Header="New" Click="NewProfMenuItem_Click" Tag="{Binding ItemIndex}" />
+                                                                <MenuItem Header="Duplicate" Click="DuplicateMenuItem_Click" Tag="{Binding ItemIndex}" />
                                                             </StackPanel>
                                                         </hc:SplitButton.DropDownContent>
                                                     </hc:SplitButton>

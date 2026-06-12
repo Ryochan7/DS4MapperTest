@@ -20,6 +20,7 @@ using System.Windows.Interop;
 using System.Diagnostics;
 using System.Threading;
 using DS4MapperTest.SteamControllerLibrary;
+using System.IO;
 
 namespace DS4MapperTest
 {
@@ -359,6 +360,51 @@ namespace DS4MapperTest
             }
 
             inHotPlug = false;
+        }
+
+        private void DuplicateMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            Control tempControl = sender as Control;
+            int itemIndex = Convert.ToInt32(tempControl.Tag);
+            //if (controlListVM.SelectedIndex >= 0)
+            if (itemIndex >= 0)
+            {
+                int selectedIndex = itemIndex;
+                controlListVM.SelectedIndex = selectedIndex;
+
+                //int selectedIndex = controlListVM.SelectedIndex;
+                BackendManager manager = (App.Current as App).Manager;
+                Mapper mapper = manager.MapperDict[selectedIndex];
+                InputDeviceType devType = mapper.DeviceType;
+                DeviceListItem item = controlListVM.ControllerList[selectedIndex];
+                ProfileEntity profileEnt = manager.DeviceProfileListDict[devType].ProfileListCol[item.ProfileIndex];
+
+                SaveFileDialog fileDialog = new SaveFileDialog();
+                fileDialog.FileOk += DuplicateFileDialog_FileOk;
+                fileDialog.InitialDirectory = mapper.AppGlobal.GetDeviceProfileFolderLocation(mapper.DeviceType);
+                fileDialog.Filter = "JSON files (*.json)|*.json|All files (*.*)|*.*";
+                if (fileDialog.ShowDialog() == true)
+                {
+                    string tempFile = fileDialog.FileName;
+                    if (tempFile.EndsWith(".json") && !File.Exists(tempFile))
+                    {
+                        controlListVM.DuplicateProfile(item, profileEnt.ProfilePath, tempFile);
+                    }
+                }
+            }
+        }
+
+        private void DuplicateFileDialog_FileOk(object sender,
+            System.ComponentModel.CancelEventArgs e)
+        {
+            SaveFileDialog fileDialog = sender as SaveFileDialog;
+            string destDir = System.IO.Path.GetDirectoryName(fileDialog.FileName);
+            if (fileDialog.InitialDirectory != destDir)
+            {
+                e.Cancel = true;
+                MessageBox.Show("Cannot move to a different directory");
+                return;
+            }
         }
     }
 }
