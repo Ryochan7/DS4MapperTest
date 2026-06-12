@@ -2519,7 +2519,7 @@ namespace DS4MapperTest
                 if (intermediateState.BtnRShoulder) tempButtons |= DualShock4Button.ShoulderRight.Value;
                 if (intermediateState.LTrigger > 0) tempButtons |= DualShock4Button.TriggerLeft.Value;
                 if (intermediateState.RTrigger > 0) tempButtons |= DualShock4Button.TriggerRight.Value;
-                if (intermediateState.BtnMode) tempSpecial |= DualShock4SpecialButton.Ps.Value;
+                //if (intermediateState.BtnMode) tempSpecial |= DualShock4SpecialButton.Ps.Value;
 
                 if (intermediateState.BtnThumbL) tempButtons |= DualShock4Button.ThumbLeft.Value;
                 if (intermediateState.BtnThumbR) tempButtons |= DualShock4Button.ThumbRight.Value;
@@ -2533,8 +2533,8 @@ namespace DS4MapperTest
                 else if (intermediateState.DpadDown) tempDPad = VIIPERDPadDir.PadDown;
                 else if (intermediateState.DpadLeft) tempDPad = VIIPERDPadDir.PadLeft;
 
-                if (intermediateState.BtnMode) tempSpecial |= DualShock4SpecialButton.Ps.Value;
-                if (intermediateState.BtnTouchClick) tempSpecial |= DualShock4SpecialButton.Touchpad.Value;
+                if (intermediateState.BtnMode) tempButtons |= DualShock4SpecialButton.Ps.Value;
+                if (intermediateState.BtnTouchClick) tempButtons |= DualShock4SpecialButton.Touchpad.Value;
 
                 //outDS4Report.wButtons = tempButtons;
                 ds4State.Buttons = tempButtons;
