@@ -204,7 +204,7 @@ namespace DS4MapperTest.SteamControllerLibrary
 
             gyroSensDefinition = new GyroSensDefinition()
             {
-                elapsedReference = 125.0,
+                elapsedReference = device.BaseElapsedReference,
                 mouseCoefficient = 0.025,
                 mouseOffset = 0.3,
 
@@ -531,8 +531,8 @@ namespace DS4MapperTest.SteamControllerLibrary
                         AccelYG = currentMapperState.Motion.AccelYG,
                         AccelZG = currentMapperState.Motion.AccelZG,
                         timeElapsed = currentLatency,
-                        elapsedReference = 125.0,
-                        //elapsedReference = device.BaseElapsedReference,
+                        //elapsedReference = 125.0,
+                        elapsedReference = device.BaseElapsedReference,
                     };
 
                     PopulateStateGyro(ref gyroFrame);
