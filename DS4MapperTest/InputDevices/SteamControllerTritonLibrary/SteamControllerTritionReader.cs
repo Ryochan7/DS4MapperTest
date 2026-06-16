@@ -200,7 +200,7 @@ namespace DS4MapperTest.InputDevices.SteamControllerTritonLibrary
                         }
                         */
                         else if (firstReport && (tempByte == SteamControllerTritonDevice.ID_TRITON_CONTROLLER_STATE ||
-                            tempByte != SteamControllerTritonDevice.ID_TRITON_CONTROLLER_STATE_BLE))
+                            tempByte == SteamControllerTritonDevice.ID_TRITON_CONTROLLER_STATE_BLE))
                         {
                             Console.WriteLine("CAN READ REPORTS. NICE");
 
