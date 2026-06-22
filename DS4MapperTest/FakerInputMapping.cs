@@ -77,12 +77,6 @@ namespace DS4MapperTest
                 // Map Numpad 0 key
                 mappingPairs.Add((ushort)KeyInterop.VirtualKeyFromKey(Key.NumPad0), (ushort)KeyboardKey.Keypad0);
 
-                // Map Arrow Keys
-                mappingPairs.Add((ushort)KeyInterop.VirtualKeyFromKey(Key.Up), (ushort)KeyboardKey.UpArrow);
-                mappingPairs.Add((ushort)KeyInterop.VirtualKeyFromKey(Key.Down), (ushort)KeyboardKey.DownArrow);
-                mappingPairs.Add((ushort)KeyInterop.VirtualKeyFromKey(Key.Left), (ushort)KeyboardKey.LeftArrow);
-                mappingPairs.Add((ushort)KeyInterop.VirtualKeyFromKey(Key.Right), (ushort)KeyboardKey.RightArrow);
-
                 // Map more Numpad keys
                 mappingPairs.Add((ushort)KeyInterop.VirtualKeyFromKey(Key.Divide), (ushort)KeyboardKey.KeypadDivide);
                 mappingPairs.Add((ushort)KeyInterop.VirtualKeyFromKey(Key.Multiply), (ushort)KeyboardKey.KeypadMultiply);
@@ -101,10 +95,13 @@ namespace DS4MapperTest
                 mappingPairs.Add((ushort)KeyInterop.VirtualKeyFromKey(Key.CapsLock), (ushort)KeyboardKey.CapsLock);
                 mappingPairs.Add((ushort)KeyInterop.VirtualKeyFromKey(Key.Enter), (ushort)KeyboardKey.Enter);
                 mappingPairs.Add((ushort)KeyInterop.VirtualKeyFromKey(Key.Space), (ushort)KeyboardKey.Spacebar);
+
+                // Map Arrow Keys
                 mappingPairs.Add((ushort)KeyInterop.VirtualKeyFromKey(Key.Up), (ushort)KeyboardKey.UpArrow);
                 mappingPairs.Add((ushort)KeyInterop.VirtualKeyFromKey(Key.Down), (ushort)KeyboardKey.DownArrow);
                 mappingPairs.Add((ushort)KeyInterop.VirtualKeyFromKey(Key.Left), (ushort)KeyboardKey.LeftArrow);
                 mappingPairs.Add((ushort)KeyInterop.VirtualKeyFromKey(Key.Right), (ushort)KeyboardKey.RightArrow);
+
                 mappingPairs.Add((ushort)KeyInterop.VirtualKeyFromKey(Key.OemOpenBrackets), (ushort)KeyboardKey.OpenBrace);
                 mappingPairs.Add((ushort)KeyInterop.VirtualKeyFromKey(Key.OemCloseBrackets), (ushort)KeyboardKey.CloseBrace);
                 mappingPairs.Add((ushort)KeyInterop.VirtualKeyFromKey(Key.Oem5), (ushort)KeyboardKey.Backslash);
