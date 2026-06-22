@@ -1402,6 +1402,7 @@ namespace DS4MapperTest
                 if (currentMouseButtons.Contains(mouseCode))
                 {
                     uint mouseButton = 0;
+                    uint xbuttonCode = 0;
                     switch (mouseCode)
                     {
                         case MouseButtonCodes.MOUSE_LEFT_BUTTON:
@@ -1416,15 +1417,31 @@ namespace DS4MapperTest
                             mouseButton = eventInputMapping.MOUSEEVENTF_RIGHTUP;
                             //mouseButton = InputMethods.MOUSEEVENTF_RIGHTUP;
                             break;
+                        case MouseButtonCodes.MOUSE_XBUTTON1:
+                            mouseButton = eventInputMapping.MOUSEEVENTF_XBUTTONUP;
+                            xbuttonCode = 1;
+                            break;
+                        case MouseButtonCodes.MOUSE_XBUTTON2:
+                            mouseButton = eventInputMapping.MOUSEEVENTF_XBUTTONUP;
+                            xbuttonCode = 2;
+                            break;
                         default:
                             break;
                     }
 
                     if (mouseButton != 0)
                     {
-                        eventInputHandler.PerformMouseButtonEvent(mouseButton);
-                        //mouseReport.ButtonUp((FakerInputWrapper.MouseButton)mouseButton);
-                        //InputMethods.MouseEvent(mouseButton);
+                        if (xbuttonCode == 0)
+                        {
+                            eventInputHandler.PerformMouseButtonEvent(mouseButton);
+                            //mouseReport.ButtonUp((FakerInputWrapper.MouseButton)mouseButton);
+                            //InputMethods.MouseEvent(mouseButton);
+                        }
+                        else
+                        {
+                            eventInputHandler.PerformMouseButtonEventAlt(mouseButton, (int)xbuttonCode);
+                        }
+
                         currentMouseButtons.Remove(mouseCode);
                     }
                 }
@@ -1435,6 +1452,7 @@ namespace DS4MapperTest
                 if (!currentMouseButtons.Contains(mouseCode))
                 {
                     uint mouseButton = 0;
+                    uint xbuttonCode = 0;
                     switch (mouseCode)
                     {
                         case MouseButtonCodes.MOUSE_LEFT_BUTTON:
@@ -1449,15 +1467,31 @@ namespace DS4MapperTest
                             mouseButton = eventInputMapping.MOUSEEVENTF_RIGHTDOWN;
                             //mouseButton = InputMethods.MOUSEEVENTF_RIGHTDOWN;
                             break;
+                        case MouseButtonCodes.MOUSE_XBUTTON1:
+                            mouseButton = eventInputMapping.MOUSEEVENTF_XBUTTONUP;
+                            xbuttonCode = 1;
+                            break;
+                        case MouseButtonCodes.MOUSE_XBUTTON2:
+                            mouseButton = eventInputMapping.MOUSEEVENTF_XBUTTONUP;
+                            xbuttonCode = 2;
+                            break;
                         default:
                             break;
                     }
 
                     if (mouseButton != 0)
                     {
-                        eventInputHandler.PerformMouseButtonPress(mouseButton);
-                        //mouseReport.ButtonDown((FakerInputWrapper.MouseButton)mouseCode);
-                        //InputMethods.MouseEvent(mouseButton);
+                        if (xbuttonCode == 0)
+                        {
+                            eventInputHandler.PerformMouseButtonPress(mouseButton);
+                            //mouseReport.ButtonDown((FakerInputWrapper.MouseButton)mouseCode);
+                            //InputMethods.MouseEvent(mouseButton);
+                        }
+                        else
+                        {
+                            eventInputHandler.PerformMouseButtonEventAlt(mouseButton, (int)xbuttonCode);
+                        }
+
                         currentMouseButtons.Add(mouseCode);
                     }
                 }
