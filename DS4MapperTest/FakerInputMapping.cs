@@ -77,6 +77,12 @@ namespace DS4MapperTest
                 // Map Numpad 0 key
                 mappingPairs.Add((ushort)KeyInterop.VirtualKeyFromKey(Key.NumPad0), (ushort)KeyboardKey.Keypad0);
 
+                // Map Arrow Keys
+                mappingPairs.Add((ushort)KeyInterop.VirtualKeyFromKey(Key.Up), (ushort)KeyboardKey.UpArrow);
+                mappingPairs.Add((ushort)KeyInterop.VirtualKeyFromKey(Key.Down), (ushort)KeyboardKey.DownArrow);
+                mappingPairs.Add((ushort)KeyInterop.VirtualKeyFromKey(Key.Left), (ushort)KeyboardKey.LeftArrow);
+                mappingPairs.Add((ushort)KeyInterop.VirtualKeyFromKey(Key.Right), (ushort)KeyboardKey.RightArrow);
+
                 // Map more Numpad keys
                 mappingPairs.Add((ushort)KeyInterop.VirtualKeyFromKey(Key.Divide), (ushort)KeyboardKey.KeypadDivide);
                 mappingPairs.Add((ushort)KeyInterop.VirtualKeyFromKey(Key.Multiply), (ushort)KeyboardKey.KeypadMultiply);
