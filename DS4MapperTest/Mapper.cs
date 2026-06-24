@@ -1914,6 +1914,8 @@ namespace DS4MapperTest
                             case MouseButtonCodes.MOUSE_LEFT_BUTTON:
                             case MouseButtonCodes.MOUSE_MIDDLE_BUTTON:
                             case MouseButtonCodes.MOUSE_RIGHT_BUTTON:
+                            case MouseButtonCodes.MOUSE_XBUTTON1:
+                            case MouseButtonCodes.MOUSE_XBUTTON2:
                                 if (pressed)
                                 {
                                     if (!currentMouseButtons.Contains(actionData.OutputCode))
@@ -2054,6 +2056,8 @@ namespace DS4MapperTest
                             case MouseButtonCodes.MOUSE_LEFT_BUTTON:
                             case MouseButtonCodes.MOUSE_MIDDLE_BUTTON:
                             case MouseButtonCodes.MOUSE_RIGHT_BUTTON:
+                            case MouseButtonCodes.MOUSE_XBUTTON1:
+                            case MouseButtonCodes.MOUSE_XBUTTON2:
                                 if (pressed)
                                 {
                                     if (!currentMouseButtons.Contains(actionData.OutputCode))
