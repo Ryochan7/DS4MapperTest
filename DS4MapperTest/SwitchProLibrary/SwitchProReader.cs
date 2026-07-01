@@ -226,26 +226,42 @@ namespace DS4MapperTest.SwitchProLibrary
                             if (tempAxisX > device.leftStickXData.mid)
                             {
                                 uint diff = (uint)(tempAxisX - device.leftStickXData.mid);
-                                device.leftStickXData.min = (ushort)(device.leftStickXData.min + diff);
+                                //device.leftStickXData.min = (ushort)(device.leftStickXData.min + diff);
+
+                                device.leftStickXData.mid = (ushort)(tempAxisX);
+                                device.leftStickXData.min = (ushort)(device.leftStickXData.min + diff + (diff / 2));
+                                device.leftStickXData.max = (ushort)(device.leftStickXData.max + diff - (diff / 2));
                                 calibUpdated = true;
                             }
                             else if (tempAxisX < device.leftStickXData.mid)
                             {
                                 uint diff = (uint)(device.leftStickXData.mid - tempAxisX);
-                                device.leftStickXData.max = (ushort)(device.leftStickXData.max - diff);
+                                //device.leftStickXData.max = (ushort)(device.leftStickXData.max - diff);
+
+                                device.leftStickXData.mid = (ushort)(tempAxisX);
+                                device.leftStickXData.min = (ushort)(device.leftStickXData.min - diff + (diff / 2));
+                                device.leftStickXData.max = (ushort)(device.leftStickXData.max - diff - (diff / 2));
                                 calibUpdated = true;
                             }
 
                             if (tempAxisY > device.leftStickYData.mid)
                             {
                                 uint diff = (uint)(tempAxisY - device.leftStickYData.mid);
-                                device.leftStickYData.min = (ushort)(device.leftStickYData.min + diff);
+                                //device.leftStickYData.min = (ushort)(device.leftStickYData.min + diff);
+
+                                device.leftStickYData.mid = (ushort)tempAxisY;
+                                device.leftStickYData.min = (ushort)(device.leftStickYData.min + diff + (diff / 2));
+                                device.leftStickYData.max = (ushort)(device.leftStickYData.max + diff - (diff / 2));
                                 calibUpdated = true;
                             }
                             else if (tempAxisY < device.leftStickYData.mid)
                             {
                                 uint diff = (uint)(device.leftStickYData.mid - tempAxisY);
-                                device.leftStickYData.max = (ushort)(device.leftStickYData.max - diff);
+                                //device.leftStickYData.max = (ushort)(device.leftStickYData.max - diff);
+
+                                device.leftStickYData.mid = (ushort)tempAxisY;
+                                device.leftStickYData.min = (ushort)(device.leftStickYData.min - diff + (diff / 2));
+                                device.leftStickYData.max = (ushort)(device.leftStickYData.max - diff - (diff / 2));
                                 calibUpdated = true;
                             }
 
@@ -288,26 +304,42 @@ namespace DS4MapperTest.SwitchProLibrary
                             if (tempAxisX > device.rightStickXData.mid)
                             {
                                 uint diff = (uint)(tempAxisX - device.rightStickXData.mid);
-                                device.rightStickXData.min = (ushort)(device.rightStickXData.min + diff);
+                                //device.rightStickXData.min = (ushort)(device.rightStickXData.min + diff);
+
+                                device.rightStickXData.mid = (ushort)tempAxisX;
+                                device.rightStickXData.min = (ushort)(device.rightStickXData.min + diff + (diff / 2));
+                                device.rightStickXData.max = (ushort)(device.rightStickXData.max + diff - (diff / 2));
                                 calibUpdated = true;
                             }
                             else if (tempAxisX < device.rightStickXData.mid)
                             {
                                 uint diff = (uint)(device.rightStickXData.mid - tempAxisX);
-                                device.rightStickXData.max = (ushort)(device.rightStickXData.max - diff);
+                                //device.rightStickXData.max = (ushort)(device.rightStickXData.max - diff);
+
+                                device.rightStickXData.mid = (ushort)tempAxisX;
+                                device.rightStickXData.min = (ushort)(device.rightStickXData.min - diff + (diff / 2));
+                                device.rightStickXData.max = (ushort)(device.rightStickXData.max - diff - (diff / 2));
                                 calibUpdated = true;
                             }
 
                             if (tempAxisY > device.rightStickYData.mid)
                             {
                                 uint diff = (uint)(tempAxisY - device.rightStickYData.mid);
-                                device.rightStickYData.min = (ushort)(device.rightStickYData.min + diff);
+                                //device.rightStickYData.min = (ushort)(device.rightStickYData.min + diff);
+
+                                device.rightStickYData.mid = (ushort)tempAxisY;
+                                device.rightStickYData.min = (ushort)(device.rightStickYData.min + diff + (diff / 2));
+                                device.rightStickYData.max = (ushort)(device.rightStickYData.max + diff - (diff / 2));
                                 calibUpdated = true;
                             }
                             else if (tempAxisY < device.rightStickYData.mid)
                             {
                                 uint diff = (uint)(device.rightStickYData.mid - tempAxisY);
-                                device.rightStickYData.max = (ushort)(device.rightStickYData.max - diff);
+                                //device.rightStickYData.max = (ushort)(device.rightStickYData.max - diff);
+
+                                device.rightStickYData.mid = (ushort)tempAxisY;
+                                device.rightStickYData.min = (ushort)(device.rightStickYData.min - diff + (diff / 2));
+                                device.rightStickYData.max = (ushort)(device.rightStickYData.max - diff - (diff / 2));
                                 calibUpdated = true;
                             }
 
