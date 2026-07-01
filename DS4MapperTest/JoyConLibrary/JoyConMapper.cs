@@ -618,7 +618,7 @@ namespace DS4MapperTest.JoyConLibrary
 
         public override void EstablishForceFeedback()
         {
-            if (outputControlType == OutputContType.Xbox360)
+            /*if (outputControlType == OutputContType.Xbox360)
             {
                 if (device != null)
                 {
@@ -650,11 +650,12 @@ namespace DS4MapperTest.JoyConLibrary
                     };
                 }
             }
+            */
         }
 
         private void EstablishSecondaryForceFeedback()
         {
-            outputForceFeedbackSecondDel = (sender, e) =>
+            /*outputForceFeedbackSecondDel = (sender, e) =>
             {
                 secondJoyDevice.currentLeftAmpRatio = e.LargeMotor / 255.0;
                 secondJoyDevice.currentRightAmpRatio = e.SmallMotor / 255.0;
@@ -664,6 +665,7 @@ namespace DS4MapperTest.JoyConLibrary
                 }
                 //secondJoyReader.WriteRumbleReport();
             };
+            */
         }
 
         public override bool IsButtonActive(JoypadActionCodes code)
@@ -864,8 +866,8 @@ namespace DS4MapperTest.JoyConLibrary
                 }
 
                 if (actionProfile.OutputGamepadSettings.ForceFeedbackEnabled &&
-                    outputControlType == OutputContType.Xbox360 &&
-                    outputForceFeedbackSecondDel != null)
+                    outputControlType == OutputContType.Xbox360)// &&
+                    //outputForceFeedbackSecondDel != null)
                 {
                     HookSecondaryFeedback();
                 }
@@ -903,36 +905,57 @@ namespace DS4MapperTest.JoyConLibrary
             if (actionProfile.OutputGamepadSettings.ForceFeedbackEnabled &&
                 outputControlType == OutputContType.Xbox360)
             {
-                if (outputForceFeedbackDel != null)
-                {
-                    (outputController as IXbox360Controller).FeedbackReceived += outputForceFeedbackDel;
-                }
+                viiper360Feedback = TestVIIPER360Feedback;
+                bool result = LibVIIPER.SetXbox360RumbleCallback(deviceHandle, viiper360Feedback);
+
+                //if (outputForceFeedbackDel != null)
+                //{
+                //    (outputController as IXbox360Controller).FeedbackReceived += outputForceFeedbackDel;
+                //}
 
                 HookSecondaryFeedback();                
             }
         }
 
+        public void TestVIIPER360Feedback(nuint handle, byte leftMotor, byte rightMotor)
+        {
+            device.currentLeftAmpRatio = leftMotor / 255.0;
+            device.currentRightAmpRatio = rightMotor / 255.0;
+            device.rumbleDirty = true;
+
+            if (secondJoyDevice != null)
+            {
+                secondJoyDevice.currentLeftAmpRatio = leftMotor / 255.0;
+                secondJoyDevice.currentRightAmpRatio = rightMotor / 255.0;
+                using (WriteLocker locker = new WriteLocker(secondJoyDevice.rumbleDataLock))
+                {
+                    secondJoyDevice.rumbleDirty = true;
+                }
+                //secondJoyReader.WriteRumbleReport();
+            }
+        }
+
         public override void RemoveFeedback()
         {
-            if (outputForceFeedbackDel != null)
-            {
-                (outputController as IXbox360Controller).FeedbackReceived -= outputForceFeedbackDel;
-                outputForceFeedbackDel = null;
-            }
+            //if (outputForceFeedbackDel != null)
+            //{
+            //    (outputController as IXbox360Controller).FeedbackReceived -= outputForceFeedbackDel;
+            //    outputForceFeedbackDel = null;
+            //}
 
-            if (outputForceFeedbackSecondDel != null)
-            {
-                (outputController as IXbox360Controller).FeedbackReceived -= outputForceFeedbackSecondDel;
-                outputForceFeedbackSecondDel = null;
-            }
+            //if (outputForceFeedbackSecondDel != null)
+            //{
+            //    (outputController as IXbox360Controller).FeedbackReceived -= outputForceFeedbackSecondDel;
+            //    outputForceFeedbackSecondDel = null;
+            //}
         }
 
         private void HookSecondaryFeedback()
         {
-            if (outputForceFeedbackSecondDel != null)
-            {
-                (outputController as IXbox360Controller).FeedbackReceived += outputForceFeedbackSecondDel;
-            }
+            //if (outputForceFeedbackSecondDel != null)
+            //{
+            //    (outputController as IXbox360Controller).FeedbackReceived += outputForceFeedbackSecondDel;
+            //}
         }
 
         private void CopyStateData(JoyConDevice device, ref JoyConState srcState)

@@ -424,7 +424,7 @@ namespace DS4MapperTest.SwitchProLibrary
 
         public override void EstablishForceFeedback()
         {
-            if (outputControlType == OutputContType.Xbox360)
+            /*if (outputControlType == OutputContType.Xbox360)
             {
                 outputForceFeedbackDel = (sender, e) =>
                 {
@@ -433,6 +433,7 @@ namespace DS4MapperTest.SwitchProLibrary
                     reader.WriteRumbleReport();
                 };
             }
+            */
         }
 
         public override bool IsButtonActive(JoypadActionCodes code)
