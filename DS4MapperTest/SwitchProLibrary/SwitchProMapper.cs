@@ -103,7 +103,7 @@ namespace DS4MapperTest.SwitchProLibrary
             gyroSensDefinition = new GyroSensDefinition()
             {
                 //elapsedReference = 250.0,
-                elapsedReference = device.BaseElapsedReference * 3.0,
+                elapsedReference = device.BaseElapsedReference,
                 mouseCoefficient = 0.012,
                 mouseOffset = 0.7,
 
@@ -391,7 +391,7 @@ namespace DS4MapperTest.SwitchProLibrary
                         AccelZG = currentMapperState.Motion.AccelZG,
                         timeElapsed = currentLatency,
                         //elapsedReference = 66.7,
-                        elapsedReference = device.BaseElapsedReference * 3,
+                        elapsedReference = device.BaseElapsedReference,
                     };
 
                     PopulateStateGyro(ref gyroFrame);

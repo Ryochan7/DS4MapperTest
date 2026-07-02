@@ -162,7 +162,7 @@ namespace DS4MapperTest.JoyConLibrary
             gyroLSensDefinition = new GyroSensDefinition()
             {
                 //elapsedReference = 250.0,
-                elapsedReference = device.BaseElapsedReference * 3.0,
+                elapsedReference = device.BaseElapsedReference,
                 mouseCoefficient = 0.012,
                 mouseOffset = 0.3,
 
@@ -177,7 +177,7 @@ namespace DS4MapperTest.JoyConLibrary
             gyroRSensDefinition = new GyroSensDefinition()
             {
                 //elapsedReference = 250.0,
-                elapsedReference = device.BaseElapsedReference * 3.0,
+                elapsedReference = device.BaseElapsedReference,
                 mouseCoefficient = 0.012,
                 mouseOffset = 0.3,
 
@@ -429,7 +429,7 @@ namespace DS4MapperTest.JoyConLibrary
                             AccelZG = currentMapperState.MotionL.AccelZG,
                             timeElapsed = currentMapperState.timeElapsed,
                             //elapsedReference = 66.7,
-                            elapsedReference = device.BaseElapsedReference * 3,
+                            elapsedReference = device.BaseElapsedReference,
                         };
 
                         //if (currentDev || runPrepareAction)
@@ -569,7 +569,7 @@ namespace DS4MapperTest.JoyConLibrary
                             AccelZG = currentMapperState.MotionR.AccelZG,
                             timeElapsed = currentMapperState.timeElapsedR,
                             //elapsedReference = 66.7,
-                            elapsedReference = device.BaseElapsedReference * 3,
+                            elapsedReference = device.BaseElapsedReference,
                         };
 
                         PopulateStateGyro(ref gyroFrame);
