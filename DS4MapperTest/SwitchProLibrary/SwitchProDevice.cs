@@ -256,7 +256,7 @@ namespace DS4MapperTest.SwitchProLibrary
 
             if (connectionType == ConnectionType.USB)
             {
-                baseElapsedReference = BT_ELAPSED_REFERENCE;
+                baseElapsedReference = USB_ELAPSED_REFERENCE;
             }
             else
             {
