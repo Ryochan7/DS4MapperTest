@@ -412,13 +412,18 @@ namespace DS4MapperTest.JoyConLibrary
                         short accelY = accel_raw[IMU_YAXIS_IDX];
                         short accelZ = accel_raw[IMU_ZAXIS_IDX];
 
-                        // Just use most recent sample for now
-                        //short gyroYaw = (short)(-1 * (gyro_out[6 + IMU_YAW_IDX] - device.gyroBias[IMU_YAW_IDX]));
-                        //short gyroPitch = (short)(gyro_out[6 + IMU_PITCH_IDX] - device.gyroBias[IMU_PITCH_IDX]);
-                        //short gyroRoll = (short)(gyro_out[6 + IMU_ROLL_IDX] - device.gyroBias[IMU_ROLL_IDX]);
-                        short gyroYaw = (short)(-1 * (gyro_out[6 + IMU_YAW_IDX] - device.gyroBias[IMU_YAW_IDX] + device.gyroCalibOffsets[IMU_YAW_IDX]));
-                        short gyroPitch = (short)(gyro_out[6 + IMU_PITCH_IDX] - device.gyroBias[IMU_PITCH_IDX] - device.gyroCalibOffsets[IMU_PITCH_IDX]);
-                        short gyroRoll = (short)(gyro_out[6 + IMU_ROLL_IDX] - device.gyroBias[IMU_ROLL_IDX] - device.gyroCalibOffsets[IMU_ROLL_IDX]);
+                        // Combine all gyro samples for use in DPS conversion
+                        short gyroYaw = (short)(-1 * (gyro_out[0 + IMU_YAW_IDX] - device.gyroBias[IMU_YAW_IDX] + device.gyroCalibOffsets[IMU_YAW_IDX]));
+                        gyroYaw += (short)(-1 * (gyro_out[3 + IMU_YAW_IDX] - device.gyroBias[IMU_YAW_IDX] + device.gyroCalibOffsets[IMU_YAW_IDX]));
+                        gyroYaw += (short)(-1 * (gyro_out[6 + IMU_YAW_IDX] - device.gyroBias[IMU_YAW_IDX] + device.gyroCalibOffsets[IMU_YAW_IDX]));
+
+                        short gyroPitch = (short)(gyro_out[0 + IMU_PITCH_IDX] - device.gyroBias[IMU_PITCH_IDX] - device.gyroCalibOffsets[IMU_PITCH_IDX]);
+                        gyroPitch += (short)(gyro_out[3 + IMU_PITCH_IDX] - device.gyroBias[IMU_PITCH_IDX] - device.gyroCalibOffsets[IMU_PITCH_IDX]);
+                        gyroPitch += (short)(gyro_out[6 + IMU_PITCH_IDX] - device.gyroBias[IMU_PITCH_IDX] - device.gyroCalibOffsets[IMU_PITCH_IDX]);
+
+                        short gyroRoll = (short)(gyro_out[0 + IMU_ROLL_IDX] - device.gyroBias[IMU_ROLL_IDX] - device.gyroCalibOffsets[IMU_ROLL_IDX]);
+                        gyroRoll += (short)(gyro_out[3 + IMU_ROLL_IDX] - device.gyroBias[IMU_ROLL_IDX] - device.gyroCalibOffsets[IMU_ROLL_IDX]);
+                        gyroRoll += (short)(gyro_out[6 + IMU_ROLL_IDX] - device.gyroBias[IMU_ROLL_IDX] - device.gyroCalibOffsets[IMU_ROLL_IDX]);
 
                         if (gyroCalibrationUtil.gyroAverageTimer.IsRunning)
                         {
