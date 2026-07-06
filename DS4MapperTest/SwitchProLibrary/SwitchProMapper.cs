@@ -3,7 +3,7 @@ using DS4MapperTest.DPadActions;
 using DS4MapperTest.GyroActions;
 using DS4MapperTest.MapperUtil;
 using DS4MapperTest.StickActions;
-using Nefarius.ViGEm.Client;
+//using Nefarius.ViGEm.Client;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -144,10 +144,12 @@ namespace DS4MapperTest.SwitchProLibrary
             };
         }
 
-        public override void Start(ViGEmClient vigemTestClient,
-            VirtualKBMBase eventInputHandler, VirtualKBMMapping eventInputMapping)
+        //public override void Start(ViGEmClient vigemTestClient,
+        //    VirtualKBMBase eventInputHandler, VirtualKBMMapping eventInputMapping)
+        public override void Start(VirtualKBMBase eventInputHandler, VirtualKBMMapping eventInputMapping)
         {
-            base.Start(vigemTestClient, eventInputHandler, eventInputMapping);
+            //base.Start(vigemTestClient, eventInputHandler, eventInputMapping);
+            base.Start(eventInputHandler, eventInputMapping);
 
             reader.Report += Reader_Report;
             reader.LeftStickCalibUpdated += Reader_LeftStickCalibUpdated;
@@ -205,7 +207,7 @@ namespace DS4MapperTest.SwitchProLibrary
 
             unchecked
             {
-                outputController?.ResetReport();
+                //outputController?.ResetReport();
 
                 intermediateState = new IntermediateState();
                 currentLatency = currentMapperState.timeElapsed;

@@ -5,8 +5,8 @@ using DS4MapperTest.GyroActions;
 using DS4MapperTest.MapperUtil;
 using DS4MapperTest.StickActions;
 using DS4MapperTest.SwitchProLibrary;
-using Nefarius.ViGEm.Client;
-using Nefarius.ViGEm.Client.Targets;
+//using Nefarius.ViGEm.Client;
+//using Nefarius.ViGEm.Client.Targets;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -221,10 +221,12 @@ namespace DS4MapperTest.JoyConLibrary
             };
         }
 
-        public override void Start(ViGEmClient vigemTestClient,
-            VirtualKBMBase eventInputHandler, VirtualKBMMapping eventInputMapping)
+        //public override void Start(ViGEmClient vigemTestClient,
+        //    VirtualKBMBase eventInputHandler, VirtualKBMMapping eventInputMapping)
+        public override void Start(VirtualKBMBase eventInputHandler, VirtualKBMMapping eventInputMapping)
         {
-            base.Start(vigemTestClient, eventInputHandler, eventInputMapping);
+            //base.Start(vigemTestClient, eventInputHandler, eventInputMapping);
+            base.Start(eventInputHandler, eventInputMapping);
 
             reader.Report += Reader_Report;
             reader.LeftStickCalibUpdated += Reader_LeftStickCalibUpdated;
@@ -818,8 +820,8 @@ namespace DS4MapperTest.JoyConLibrary
             secondJoyDevice.Removal += SecondaryDeviceRemoval;
 
             if (actionProfile.OutputGamepadSettings.ForceFeedbackEnabled &&
-                outputControlType == OutputContType.Xbox360 &&
-                outputForceFeedbackSecondDel == null)
+                outputControlType == OutputContType.Xbox360)// &&
+                //outputForceFeedbackSecondDel == null)
             {
                 EstablishSecondaryForceFeedback();
                 //outputForceFeedbackSecondDel = (sender, e) =>

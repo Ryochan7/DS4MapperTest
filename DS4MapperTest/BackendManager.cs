@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Nefarius.ViGEm.Client;
+//using Nefarius.ViGEm.Client;
 using DS4MapperTest.DS4Library;
 using System.Windows.Threading;
 using System.Runtime.InteropServices;
@@ -99,7 +99,7 @@ namespace DS4MapperTest
         private DeviceEnumerator testEnumerator;
         //private List<DeviceEnumeratorBase> enumeratorList;
 
-        private ViGEmClient vigemTestClient = null;
+        //private ViGEmClient vigemTestClient = null;
         private ArgumentParser _argParser;
 
         public delegate void HotplugControllerHandler(InputDeviceBase device, int ind);
@@ -298,7 +298,8 @@ namespace DS4MapperTest
                 int tempInd = ind;
                 //testMapper.VIIPERDeviceHanle = deviceHandle;
                 testMapper.PassVIIPERConnection(serverHandle);
-                testMapper.Start(vigemTestClient, virtualEventHandler, eventInputMapping);
+                //testMapper.Start(vigemTestClient, virtualEventHandler, eventInputMapping);
+                testMapper.Start(virtualEventHandler, eventInputMapping);
                 testMapper.ProfileChanged += (object sender, string e) =>
                 {
                     appGlobal.activeProfiles[tempInd] = e;
@@ -491,7 +492,8 @@ namespace DS4MapperTest
 
                 //testMapper.Start(device, reader);
                 testMapper.PassVIIPERConnection(serverHandle);
-                testMapper.Start(vigemTestClient, virtualEventHandler, eventInputMapping);
+                //testMapper.Start(vigemTestClient, virtualEventHandler, eventInputMapping);
+                testMapper.Start(virtualEventHandler, eventInputMapping);
                 //testMapper.RequestOSD += TestMapper_RequestOSD;
                 int tempInd = ind;
                 testMapper.ProfileChanged += (object sender, string e) => {
@@ -602,8 +604,8 @@ namespace DS4MapperTest
 
             appGlobal.activeProfiles.Clear();
 
-            vigemTestClient?.Dispose();
-            vigemTestClient = null;
+            //vigemTestClient?.Dispose();
+            //vigemTestClient = null;
 
             if (serverHandle != 0)
             {
@@ -788,7 +790,8 @@ namespace DS4MapperTest
 
             int tempInd = ind;
             mapper.PassVIIPERConnection(serverHandle);
-            mapper.Start(vigemTestClient, virtualEventHandler, eventInputMapping);
+            //mapper.Start(vigemTestClient, virtualEventHandler, eventInputMapping);
+            mapper.Start(virtualEventHandler, eventInputMapping);
             mapper.ProfileChanged += (object sender, string e) => {
                 appGlobal.activeProfiles[tempInd] = e;
                 appGlobal.SaveControllerDeviceSettings(device, device.DeviceOptions);

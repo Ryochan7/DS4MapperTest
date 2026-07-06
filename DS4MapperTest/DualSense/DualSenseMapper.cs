@@ -14,7 +14,7 @@ using DS4MapperTest.MapperUtil;
 using DS4MapperTest.StickActions;
 using DS4MapperTest.TouchpadActions;
 using DS4MapperTest.TriggerActions;
-using Nefarius.ViGEm.Client;
+//using Nefarius.ViGEm.Client;
 
 namespace DS4MapperTest.DualSense
 {
@@ -270,13 +270,15 @@ namespace DS4MapperTest.DualSense
             }
         }
 
-        public override void Start(ViGEmClient vigemTestClient,
-            VirtualKBMBase eventInputHandler, VirtualKBMMapping eventInputMapping)
+        //public override void Start(ViGEmClient vigemTestClient,
+        //    VirtualKBMBase eventInputHandler, VirtualKBMMapping eventInputMapping)
+        public override void Start(VirtualKBMBase eventInputHandler, VirtualKBMMapping eventInputMapping)
         {
             PostProfileChange += DualSenseMapper_PostProfileChange;
             lightProcess.Reset();
 
-            base.Start(vigemTestClient, eventInputHandler, eventInputMapping);
+            //base.Start(vigemTestClient, eventInputHandler, eventInputMapping);
+            base.Start(eventInputHandler, eventInputMapping);
             // Update current lightbar status before sending first output packet
             lightProcess.UpdateLightbarDS(device, actionProfile);
 
@@ -313,7 +315,7 @@ namespace DS4MapperTest.DualSense
 
             unchecked
             {
-                outputController?.ResetReport();
+                //outputController?.ResetReport();
 
                 intermediateState = new IntermediateState();
                 currentLatency = currentMapperState.timeElapsed;
@@ -1057,7 +1059,7 @@ namespace DS4MapperTest.DualSense
         {
             if (outputControlType == OutputContType.Xbox360)
             {
-                outputForceFeedbackDel = (sender, e) =>
+                /*outputForceFeedbackDel = (sender, e) =>
                 {
                     device.FeedbackStateRef.LeftHeavy = e.LargeMotor;
                     device.FeedbackStateRef.RightLight = e.SmallMotor;
@@ -1066,6 +1068,7 @@ namespace DS4MapperTest.DualSense
                     rumbleDirty = true;
                     //reader.WriteRumbleReport();
                 };
+                */
             }
         }
 

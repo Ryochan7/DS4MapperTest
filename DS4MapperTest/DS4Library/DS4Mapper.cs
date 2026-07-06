@@ -5,7 +5,7 @@ using DS4MapperTest.MapperUtil;
 using DS4MapperTest.StickActions;
 using DS4MapperTest.TouchpadActions;
 using DS4MapperTest.TriggerActions;
-using Nefarius.ViGEm.Client;
+//using Nefarius.ViGEm.Client;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -243,15 +243,17 @@ namespace DS4MapperTest.DS4Library
             };
         }
 
-        public override void Start(ViGEmClient vigemTestClient,
-            VirtualKBMBase eventInputHandler, VirtualKBMMapping eventInputMapping)
+        //public override void Start(ViGEmClient vigemTestClient,
+        //    VirtualKBMBase eventInputHandler, VirtualKBMMapping eventInputMapping)
+        public override void Start(VirtualKBMBase eventInputHandler, VirtualKBMMapping eventInputMapping)
         {
             //profileFile = "C:\\Users\\ryoch\\source\\repos\\DS4MapperTest\\DS4MapperTest\\bin\\x64\\Debug\\net6.0-windows\\Profiles\\XInput.json";
 
             PostProfileChange += DS4Mapper_PostProfileChange;
             lightProcess.Reset();
 
-            base.Start(vigemTestClient, eventInputHandler, eventInputMapping);
+            //base.Start(vigemTestClient, eventInputHandler, eventInputMapping);
+            base.Start(eventInputHandler, eventInputMapping);
             // Update current lightbar status before sending first output packet
             lightProcess.UpdateLightbarDS4(device, actionProfile);
 
@@ -288,7 +290,7 @@ namespace DS4MapperTest.DS4Library
 
             unchecked
             {
-                outputController?.ResetReport();
+                //outputController?.ResetReport();
 
                 intermediateState = new IntermediateState();
                 currentLatency = currentMapperState.timeElapsed;
@@ -1093,7 +1095,7 @@ namespace DS4MapperTest.DS4Library
         {
             if (outputControlType == OutputContType.Xbox360)
             {
-                outputForceFeedbackDel = (sender, e) =>
+                /*outputForceFeedbackDel = (sender, e) =>
                 {
                     device.FeedbackStateRef.LeftHeavy = e.LargeMotor;
                     device.FeedbackStateRef.RightLight = e.SmallMotor;
@@ -1101,6 +1103,7 @@ namespace DS4MapperTest.DS4Library
                     rumbleDirty = true;
                     //reader.WriteRumbleReport();
                 };
+                */
             }
         }
     }

@@ -71,6 +71,44 @@ namespace DS4MapperTest
         PadRight = 0x08,
     }
 
+    public static class DS4Button
+    {
+        public static ushort Ps = 1;
+        public static ushort Touchpad = 2;
+
+        public static ushort Square = 16;
+        public static ushort Cross = 32;
+        public static ushort Circle = 64;
+        public static ushort Triangle = 128;
+        public static ushort ShoulderLeft = 256;
+        public static ushort ShoulderRight = 512;
+        public static ushort TriggerLeft = 1024;
+        public static ushort TriggerRight = 2048;
+        public static ushort Share = 4096;
+        public static ushort Options = 8192;
+        public static ushort ThumbLeft = 16384;
+        public static ushort ThumbRight = 32768;
+    }
+
+    public static class Xbox360Button
+    {
+        public static ushort Up = 1;
+        public static ushort Down = 2;
+        public static ushort Left = 4;
+        public static ushort Right = 8;
+        public static ushort Start = 16;
+        public static ushort Back = 32;
+        public static ushort LeftThumb = 64;
+        public static ushort RightThumb = 128;
+        public static ushort LeftShoulder = 256;
+        public static ushort RightShoulder = 512;
+        public static ushort Guide = 1024;
+        public static ushort A = 4096;
+        public static ushort B = 8192;
+        public static ushort X = 16384;
+        public static ushort Y = 32768;
+    }
+
     [SuppressUnmanagedCodeSecurity]
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     public delegate void Xbox360RumbleCallbackDelegate(nuint handle, byte leftMotor, byte rightMotor);

@@ -12,7 +12,7 @@ using DS4MapperTest.MapperUtil;
 using DS4MapperTest.StickActions;
 using DS4MapperTest.TouchpadActions;
 using DS4MapperTest.TriggerActions;
-using Nefarius.ViGEm.Client;
+//using Nefarius.ViGEm.Client;
 
 namespace DS4MapperTest.InputDevices.EightBitDoLibrary
 {
@@ -168,10 +168,11 @@ namespace DS4MapperTest.InputDevices.EightBitDoLibrary
             };
         }
 
-        public override void Start(ViGEmClient vigemTestClient,
-            VirtualKBMBase eventInputHandler, VirtualKBMMapping eventInputMapping)
+        //public override void Start(ViGEmClient vigemTestClient,
+        //    VirtualKBMBase eventInputHandler, VirtualKBMMapping eventInputMapping)
+        public override void Start(VirtualKBMBase eventInputHandler, VirtualKBMMapping eventInputMapping)
         {
-            base.Start(vigemTestClient, eventInputHandler, eventInputMapping);
+            base.Start(eventInputHandler, eventInputMapping);
 
             reader.Report += Reader_Report;
             reader.StartUpdate();
@@ -197,7 +198,7 @@ namespace DS4MapperTest.InputDevices.EightBitDoLibrary
 
             unchecked
             {
-                outputController?.ResetReport();
+                //outputController?.ResetReport();
 
                 intermediateState = new IntermediateState();
                 currentLatency = currentMapperState.timeElapsed;
@@ -446,7 +447,7 @@ namespace DS4MapperTest.InputDevices.EightBitDoLibrary
         {
             if (outputControlType == OutputContType.Xbox360)
             {
-                outputForceFeedbackDel = (sender, e) =>
+                /*outputForceFeedbackDel = (sender, e) =>
                 {
                     device.FeedbackStateRef.LeftHeavy = e.LargeMotor;
                     device.FeedbackStateRef.RightLight = e.SmallMotor;
@@ -454,6 +455,7 @@ namespace DS4MapperTest.InputDevices.EightBitDoLibrary
                     //rumbleDirty = true;
                     //reader.WriteRumbleReport();
                 };
+                */
             }
         }
 
