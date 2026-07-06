@@ -39,9 +39,6 @@ namespace DS4MapperTest.InputDevices.SteamControllerTritonLibrary
         private TriggerDefinition rightTriggerDefinition;
         private GyroSensDefinition gyroSensDefinition;
 
-        private const short STICK_MAX = 30000;
-        private const short STICK_MIN = -30000;
-
         private const int TRACKBALL_INIT_FRICTION = 10;
         private const int TRACKBALL_JOY_FRICTION = 7;
         private const int TRACKBALL_MASS = 45;
@@ -125,42 +122,42 @@ namespace DS4MapperTest.InputDevices.SteamControllerTritonLibrary
 
             StickDefinition.StickAxisData lxAxis = new StickDefinition.StickAxisData
             {
-                min = -32768,
+                min = -32767,
                 max = 32767,
                 mid = 0,
 
                 hard_max = 32767,
-                hard_min = -32768,
+                hard_min = -32767,
             };
             StickDefinition.StickAxisData lyAxis = new StickDefinition.StickAxisData
             {
-                min = -32768,
+                min = -32767,
                 max = 32767,
                 mid = 0,
 
                 hard_max = 32767,
-                hard_min = -32768,
+                hard_min = -32767,
             };
             //StickDefinition lsDefintion = new StickDefinition(STICK_MIN, STICK_MAX, STICK_NEUTRAL, StickActionCodes.LS);
             lsDefintion = new StickDefinition(lxAxis, lyAxis, StickActionCodes.LS);
 
             StickDefinition.StickAxisData rxAxis = new StickDefinition.StickAxisData
             {
-                min = -32768,
+                min = -32767,
                 max = 32767,
                 mid = 0,
 
                 hard_max = 32767,
-                hard_min = -32768,
+                hard_min = -32767,
             };
             StickDefinition.StickAxisData ryAxis = new StickDefinition.StickAxisData
             {
-                min = -32768,
+                min = -32767,
                 max = 32767,
                 mid = 0,
 
                 hard_max = 32767,
-                hard_min = -32768,
+                hard_min = -32767,
             };
             //StickDefinition lsDefintion = new StickDefinition(STICK_MIN, STICK_MAX, STICK_NEUTRAL, StickActionCodes.LS);
             rsDefintion = new StickDefinition(rxAxis, ryAxis, StickActionCodes.RS);
@@ -379,9 +376,7 @@ namespace DS4MapperTest.InputDevices.SteamControllerTritonLibrary
                 //if ((currentMapperState.LX != previousMapperState.LX) || (currentMapperState.LY != previousMapperState.LY))
                 {
                     //Trace.WriteLine($"{currentMapperState.LX} {currentMapperState.LY}");
-                    int LX = Math.Clamp(currentMapperState.LX, STICK_MIN, STICK_MAX);
-                    int LY = Math.Clamp(currentMapperState.LY, STICK_MIN, STICK_MAX);
-                    mapAction.Prepare(this, LX, LY);
+                    mapAction.Prepare(this, currentMapperState.LX, currentMapperState.LY);
                 }
 
                 if (mapAction.active)
@@ -393,9 +388,7 @@ namespace DS4MapperTest.InputDevices.SteamControllerTritonLibrary
                 //if ((currentMapperState.RX != previousMapperState.RX) || (currentMapperState.RY != previousMapperState.RY))
                 {
                     //Trace.WriteLine($"{currentMapperState.RX} {currentMapperState.RY}");
-                    int RX = Math.Clamp(currentMapperState.RX, STICK_MIN, STICK_MAX);
-                    int RY = Math.Clamp(currentMapperState.RY, STICK_MIN, STICK_MAX);
-                    mapAction.Prepare(this, RX, RY);
+                    mapAction.Prepare(this, currentMapperState.RX, currentMapperState.RY);
                 }
 
                 if (mapAction.active)
