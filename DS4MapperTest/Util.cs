@@ -124,9 +124,13 @@ namespace DS4MapperTest
 
         [DllImport(Lib, CallingConvention = CallingConvention.Cdecl)]
         [return: MarshalAs(UnmanagedType.I1)]
-        public static extern bool NewUSBServer([In] ref USBServerConfig config, out nuint outHandle, VIIPERLogCallbackDelegate? logCallback); [DllImport(Lib, CallingConvention = CallingConvention.Cdecl)]
+        public static extern bool NewUSBServer([In] ref USBServerConfig config, out nuint outHandle, VIIPERLogCallbackDelegate? logCallback);
+
+        [DllImport(Lib, CallingConvention = CallingConvention.Cdecl)]
         [return: MarshalAs(UnmanagedType.I1)]
-        public static extern bool CloseUSBServer(nuint handle); [DllImport(Lib, CallingConvention = CallingConvention.Cdecl)]
+        public static extern bool CloseUSBServer(nuint handle);
+
+        [DllImport(Lib, CallingConvention = CallingConvention.Cdecl)]
         [return: MarshalAs(UnmanagedType.I1)]
         public static extern bool CreateUSBBus(nuint handle, ref uint busID);
 
@@ -146,7 +150,6 @@ namespace DS4MapperTest
         [return: MarshalAs(UnmanagedType.I1)]
         public static extern bool SetXbox360RumbleCallback(nuint deviceHandle, Xbox360RumbleCallbackDelegate? callback);
 
-
         [DllImport(Lib, CallingConvention = CallingConvention.Cdecl)]
         [return: MarshalAs(UnmanagedType.I1)]
         public static extern bool CreateDS4Device(nuint serverHandle, out nuint outDeviceHandle, uint busID, [MarshalAs(UnmanagedType.I1)] bool autoAttachLocalhost, ushort idVendor, ushort idProduct);
@@ -154,7 +157,6 @@ namespace DS4MapperTest
         [DllImport(Lib, CallingConvention = CallingConvention.Cdecl)]
         [return: MarshalAs(UnmanagedType.I1)]
         public static extern bool RemoveDS4Device(nuint outDeviceHandle);
-
 
         [DllImport(Lib, CallingConvention = CallingConvention.Cdecl)]
         [return: MarshalAs(UnmanagedType.I1)]
