@@ -1088,6 +1088,55 @@ namespace DS4MapperUnitTests
           ""Name"": ""Meta"",
           ""MappedActions"": [
             {
+              ""Id"": 0,
+              ""ActionMode"": ""TouchMouseAction"",
+              ""Settings"": {
+                ""Sensitivity"": 1.0,
+                ""VerticalScale"": 1.0
+              }
+            },
+            {
+              ""Id"": 1,
+              ""ActionMode"": ""TouchActionPadAction"",
+              ""Bindings"": {
+                ""Up"": {
+                  ""Functions"": [
+                    {
+                      ""Type"": ""NormalPress"",
+                      ""OutputActions"": [
+                        {
+                          ""Type"": ""Empty""
+                        }
+                      ]
+                    }
+                  ]
+                },
+                ""Down"": {},
+                ""Left"": {},
+                ""Right"": {}
+              },
+              ""Settings"": {
+                ""DeadZone"": 0.05,
+                ""RequiresClick"": false,
+                ""OuterRingRange"": ""OnlyActive""
+              }
+            },
+            {
+              ""Id"": 2,
+              ""ActionMode"": ""ButtonAction"",
+              ""Functions"": [
+                {
+                  ""Type"": ""NormalPress"",
+                  ""OutputActions"": [
+                    {
+                      ""Type"": ""Keyboard"",
+                      ""Code"": ""F6""
+                    }
+                  ]
+                }
+              ]
+            },
+            {
               ""Id"": 3,
               ""ActionMode"": ""ButtonAction"",
               ""Functions"": [
@@ -1124,21 +1173,6 @@ namespace DS4MapperUnitTests
               ]
             },
             {
-              ""Id"": 2,
-              ""ActionMode"": ""ButtonAction"",
-              ""Functions"": [
-                {
-                  ""Type"": ""NormalPress"",
-                  ""OutputActions"": [
-                    {
-                      ""Type"": ""Keyboard"",
-                      ""Code"": ""F6""
-                    }
-                  ]
-                }
-              ]
-            },
-            {
               ""Id"": 5,
               ""ActionMode"": ""ButtonAction"",
               ""Functions"": [
@@ -1157,38 +1191,19 @@ namespace DS4MapperUnitTests
               ]
             },
             {
-              ""Id"": 0,
-              ""ActionMode"": ""TouchMouseAction"",
-              ""Settings"": {
-                ""Sensitivity"": 1.0,
-                ""VerticalScale"": 1.0
-              }
-            },
-            {
-              ""Id"": 1,
-              ""ActionMode"": ""TouchActionPadAction"",
-              ""Bindings"": {
-                ""Up"": {
-                  ""Functions"": [
+              ""Id"": 6,
+              ""ActionMode"": ""ButtonAction"",
+              ""Functions"": [
+                {
+                  ""Type"": ""NormalPress"",
+                  ""OutputActions"": [
                     {
-                      ""Type"": ""NormalPress"",
-                      ""OutputActions"": [
-                        {
-                          ""Type"": ""Empty""
-                        }
-                      ]
+                      ""Type"": ""Keyboard"",
+                      ""Code"": ""F""
                     }
                   ]
-                },
-                ""Down"": {},
-                ""Left"": {},
-                ""Right"": {}
-              },
-              ""Settings"": {
-                ""DeadZone"": 0.05,
-                ""RequiresClick"": false,
-                ""OuterRingRange"": ""OnlyActive""
-              }
+                }
+              ]
             },
             {
               ""Id"": 11,
@@ -1199,21 +1214,6 @@ namespace DS4MapperUnitTests
                   ""OutputActions"": [
                     {
                       ""Type"": ""Empty""
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              ""Id"": 6,
-              ""ActionMode"": ""ButtonAction"",
-              ""Functions"": [
-                {
-                  ""Type"": ""NormalPress"",
-                  ""OutputActions"": [
-                    {
-                      ""Type"": ""Keyboard"",
-                      ""Code"": ""F""
                     }
                   ]
                 }
