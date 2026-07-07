@@ -14,7 +14,6 @@ using DS4MapperTest.MapperUtil;
 using DS4MapperTest.StickActions;
 using DS4MapperTest.TouchpadActions;
 using DS4MapperTest.TriggerActions;
-//using Nefarius.ViGEm.Client;
 
 namespace DS4MapperTest.DualSense
 {

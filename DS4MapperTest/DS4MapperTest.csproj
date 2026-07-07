@@ -10,9 +10,9 @@
     <EnableNETAnalyzers>False</EnableNETAnalyzers>
     <RunAnalyzersDuringLiveAnalysis>False</RunAnalyzersDuringLiveAnalysis>
     <ServerGarbageCollection>true</ServerGarbageCollection>
-    <AssemblyVersion>0.0.30</AssemblyVersion>
-    <FileVersion>0.0.30</FileVersion>
-    <Version>0.0.30</Version>
+    <AssemblyVersion>0.0.31</AssemblyVersion>
+    <FileVersion>0.0.31</FileVersion>
+    <Version>0.0.31</Version>
     <Configuration Condition="'$(Configuration)' == ''">Debug</Configuration>
     <Platform Condition="'$(Platform)' == ''">x64</Platform>
     <Configurations>Debug;Release;Debug Tests;Release Tests</Configurations>
@@ -61,9 +61,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <!--<Reference Include="Nefarius.ViGEm.Client">
-      <HintPath>..\libs\$(Platform)\Nefarius.ViGEm.Client\Nefarius.ViGEm.Client.dll</HintPath>
-    </Reference>-->
     <Reference Include="FakerInputWrapper">
       <HintPath>..\libs\$(Platform)\FakerInputWrapper\FakerInputWrapper.dll</HintPath>
     </Reference>

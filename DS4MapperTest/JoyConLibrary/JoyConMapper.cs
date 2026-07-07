@@ -5,8 +5,6 @@ using DS4MapperTest.GyroActions;
 using DS4MapperTest.MapperUtil;
 using DS4MapperTest.StickActions;
 using DS4MapperTest.SwitchProLibrary;
-//using Nefarius.ViGEm.Client;
-//using Nefarius.ViGEm.Client.Targets;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;

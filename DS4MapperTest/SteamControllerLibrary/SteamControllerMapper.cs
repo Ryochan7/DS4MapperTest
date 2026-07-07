@@ -4,7 +4,6 @@ using DS4MapperTest.MapperUtil;
 using DS4MapperTest.StickActions;
 using DS4MapperTest.TouchpadActions;
 using DS4MapperTest.TriggerActions;
-//using Nefarius.ViGEm.Client;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
