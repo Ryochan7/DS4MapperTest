@@ -10,7 +10,8 @@ https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/runtime-10.0.9-wind
 
 .NET 10 Desktop Runtime x64 - [https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/runtime-10.0.9-windows-x64-installer](https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/runtime-10.0.9-windows-x64-installer)  
 Visual C++ 2015-2022 Redistributable. [x64](https://aka.ms/vs/17/release/vc_redist.x64.exe)  
-USBIP Driver (0.9.7.7 or later) - [https://github.com/vadimgrn/usbip-win2](https://github.com/vadimgrn/usbip-win2)
+USBIP Driver (0.9.7.7 or later) - [https://github.com/vadimgrn/usbip-win2](https://github.com/vadimgrn/usbip-win2)  
+libVIIPER (Bundled) - [https://github.com/Alia5/VIIPER](https://github.com/Alia5/VIIPER)
 
 ### Optional Tools
 
