@@ -10,7 +10,7 @@ https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/runtime-10.0.9-wind
 
 .NET 10 Desktop Runtime x64 - [https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/runtime-10.0.9-windows-x64-installer](https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/runtime-10.0.9-windows-x64-installer)  
 Visual C++ 2015-2022 Redistributable. [x64](https://aka.ms/vs/17/release/vc_redist.x64.exe)  
-ViGEmBus 1.22.0 - [https://github.com/nefarius/ViGEmBus/releases/download/v1.22.0/ViGEmBus_1.22.0_x64_x86_arm64.exe](https://github.com/nefarius/ViGEmBus/releases/download/v1.22.0/ViGEmBus_1.22.0_x64_x86_arm64.exe)
+USBIP Driver (0.9.7.7 or later) - [https://github.com/vadimgrn/usbip-win2](https://github.com/vadimgrn/usbip-win2)
 
 ### Optional Tools
 
@@ -19,7 +19,7 @@ HidHide - [https://vigem.org/projects/HidHide/](https://vigem.org/projects/HidHi
 
 ## Current Beta
 
-https://github.com/Ryochan7/DS4MapperTest/releases/tag/v0.0.30
+https://github.com/Ryochan7/DS4MapperTest/releases/tag/v0.0.31
 
 ## Screenshots
 
