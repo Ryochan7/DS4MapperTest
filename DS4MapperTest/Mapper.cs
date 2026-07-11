@@ -1174,6 +1174,8 @@ namespace DS4MapperTest
                             return;
                         }
 
+                        Thread.Sleep(200);
+
                         if (!LibVIIPER.CreateXbox360Device(viiperServerHandle, out deviceHandle, viiperBusId, true, 0, 0, 0))
                         {
                             Trace.WriteLine("Fatal Error: Failed to create Xbox 360 virtual device.");
@@ -1189,6 +1191,8 @@ namespace DS4MapperTest
                             Trace.WriteLine("Fatal Error: Failed to create USB bus.");
                             return;
                         }
+
+                        Thread.Sleep(200);
 
                         if (!LibVIIPER.CreateDS4Device(viiperServerHandle, out deviceHandle, viiperBusId, true, 0, 0))
                         {
