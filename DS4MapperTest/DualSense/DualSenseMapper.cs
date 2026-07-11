@@ -1071,6 +1071,20 @@ namespace DS4MapperTest.DualSense
             }
         }
 
+        public override void HookFeedback()
+        {
+            viiper360Feedback = TestVIIPER360Feedback;
+            bool result = LibVIIPER.SetXbox360RumbleCallback(deviceHandle, viiper360Feedback);
+            //Trace.WriteLine($"RESULT {result}");
+        }
+
+        public void TestVIIPER360Feedback(nuint handle, byte leftMotor, byte rightMotor)
+        {
+            device.FeedbackStateRef.LeftHeavy = leftMotor;
+            device.FeedbackStateRef.RightLight = rightMotor;
+            device.RumbleDirty = true;
+        }
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void CheckLeftHapticSide(double ratio, MapAction.HapticsSide side,
             bool checkDefault = true)

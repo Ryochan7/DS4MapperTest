@@ -458,6 +458,20 @@ namespace DS4MapperTest.InputDevices.EightBitDoLibrary
             }
         }
 
+        public override void HookFeedback()
+        {
+            viiper360Feedback = TestVIIPER360Feedback;
+            bool result = LibVIIPER.SetXbox360RumbleCallback(deviceHandle, viiper360Feedback);
+            //Trace.WriteLine($"RESULT {result}");
+        }
+
+        public void TestVIIPER360Feedback(nuint handle, byte leftMotor, byte rightMotor)
+        {
+            device.FeedbackStateRef.LeftHeavy = leftMotor;
+            device.FeedbackStateRef.RightLight = rightMotor;
+            device.RumbleDirty = true;
+        }
+
         public override bool IsButtonActive(JoypadActionCodes code)
         {
             bool result = false;
