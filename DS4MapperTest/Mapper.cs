@@ -1174,6 +1174,7 @@ namespace DS4MapperTest
                             return;
                         }
 
+                        // Add a small delay before plugging in virtual device
                         Thread.Sleep(200);
 
                         if (!LibVIIPER.CreateXbox360Device(viiperServerHandle, out deviceHandle, viiperBusId, true, 0, 0, 0))
@@ -1192,6 +1193,7 @@ namespace DS4MapperTest
                             return;
                         }
 
+                        // Add a small delay before plugging in virtual device
                         Thread.Sleep(200);
 
                         if (!LibVIIPER.CreateDS4Device(viiperServerHandle, out deviceHandle, viiperBusId, true, 0, 0))
