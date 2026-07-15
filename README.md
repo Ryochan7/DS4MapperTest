@@ -18,9 +18,9 @@ libVIIPER (Bundled) - [https://github.com/Alia5/VIIPER](https://github.com/Alia5
 FakerInput 0.1.1 - [https://github.com/Ryochan7/FakerInput/releases/download/v0.1.1/FakerInput_Setup_0.1.1_x64.msi](https://github.com/Ryochan7/FakerInput/releases/download/v0.1.1/FakerInput_Setup_0.1.1_x64.msi)  
 HidHide - [https://vigem.org/projects/HidHide/](https://vigem.org/projects/HidHide/)
 
-## Current Beta
+## Final Release
 
-https://github.com/Ryochan7/DS4MapperTest/releases/tag/v0.0.31
+https://github.com/Ryochan7/DS4MapperTest/releases/tag/v0.0.32
 
 ## Screenshots
 
